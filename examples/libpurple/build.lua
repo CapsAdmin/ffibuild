@@ -222,97 +222,64 @@ end
 
 do -- metatables
 	local prefix_translate = {
-		PurpleSrvTxtQueryData = {"srv_txt_query"},
-		PurpleConvMessage = {"conversation_message"},
-		PurpleThemeManager = {"theme_loader"},
-		PurpleStoredImage = {"imgstore"},
-		PurpleConversation = {"conversation", "conv"},
-		PurpleRequestFields = {"request_fields"},
-		PurpleRequestFields = {"request_field"},
-		PurpleSslConnection = {"ssl"},
-		PurpleSavedStatus = {"savedstatus"},
+		ssl_connection = {"ssl"},
+		conv_message = {"conversation_message"},
+		request_fields = {"request_fields", "request_field"},
+		srv_txt_query_data = {"srv_txt_query"},
+		theme_manager = {"theme_loader"},
+		stored_image = {"imgstore"},
+		conversation = {"conv"},
+		saved_status = {"savedstatus"},
 	}
-
-	local function starts_with(a, b)
-		if type(b) == "table" then
-			for _, b in ipairs(b) do
-				if starts_with(a, b) then
-					return true
-				end
-			end
-		end
-
-		return a:sub(0, #b) == b
-	end
-
-	local sorted = {}
-
-	-- find all types that start with Purple and are structs
-	for type_name, types in pairs(meta_data.typedefs) do
-		if type_name:find("^Purple") then
-			local type = types[#types]
-			local name = type:GetDeclaration()
-			if name:find("^struct ") then
-				table.insert(sorted, name)
-			end
-		end
-	end
-
-	-- sort them by length to avoid functions like purple_>>conversation<<_foo_bar() to conflict with purple_>>conversation_im<<_foo_bar()
-	table.sort(sorted, function(a, b) return #a > #b end)
 
 	local objects = {}
 
-	-- find all objects
-	for _, type_name in ipairs(sorted) do
-		local prefix = prefix_translate[type_name] or {ffibuild.ChangeCase(type_name:match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")}
+	for _, type_info in ipairs(ffibuild.GetStructTypes(meta_data, "^Purple(.+)")) do
+		meta_types[type_info.info.type] = type_info.name
+		objects[type_info.name] = {declaration = type_info.info:GetDeclaration(), functions = {}}
+		local prefix = ffibuild.ChangeCase(type_info.info.type:match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
 
-		for func_name, info in pairs(meta_data.functions) do
-			if
-				info.arguments and
-				not info.is_meta_function and
-				starts_with(func_name:sub(#"purple_" + 1), prefix) and
-				(info.arguments[1]:GetEvaluated(meta_data) or info.arguments[1]).type == type_name
-			then
-				local meta_name = prefix[1]
+		for func_name, func_info in pairs(ffibuild.GetFunctionsStartingWithType(meta_data, type_info.info)) do
+			local friendly = func_name:match("purple_" .. prefix .. "_(.+)")
 
-				local friendly_name = ffibuild.ChangeCase(func_name:sub(#("purple_" .. prefix[1]) + 2), "foo_bar", "FooBar")
+			if not friendly and prefix_translate[prefix] then
+				for _, prefix in ipairs(prefix_translate[prefix]) do
+					friendly = func_name:match("purple_" .. prefix .. "_(.+)")
+					if friendly then break end
+				end
+			end
 
-				objects[meta_name] = objects[meta_name] or {functions = {}}
-				objects[meta_name].tag = info.arguments[1]:GetDeclaration()
-				objects[meta_name].functions[func_name] = objects[meta_name].functions[func_name] or info
-
-				info.is_meta_function = true
-				info.friendly_name = friendly_name
-
-				meta_types[type_name] = meta_name
+			if friendly then
+				friendly = ffibuild.ChangeCase(friendly, "foo_bar", "FooBar")
+				objects[type_info.name].functions[friendly] = func_info
+				func_info.done = true
 			end
 		end
-	end
 
-	local s = ""
+		if not next(objects[type_info.name].functions) then
+			objects[type_info.name] = nil
+		end
+	end
 
 	for meta_name, info in pairs(objects) do
-		s = s .. "do\n"
-		s = s .. "\tlocal META = {\n"
-		s = s .. "\t\tctype = ffi.typeof(\"" .. info.tag .. "\"),\n"
-		for func_name, info in pairs(info.functions) do
-			s = s .. "\t\t" .. ffibuild.BuildFunction(info.friendly_name, func_name, info, argument_translate, return_translate, meta_data, true) .. ",\n"
+		lua = lua .. "do\n"
+		lua = lua .. "\tlocal META = {\n"
+		lua = lua .. "\t\tctype = ffi.typeof(\"" .. info.declaration .. "\"),\n"
+		for friendly_name, info in pairs(info.functions) do
+			lua = lua .. "\t\t" .. ffibuild.BuildFunction(friendly_name, info.name, info, argument_translate, return_translate, meta_data, true) .. ",\n"
 		end
-		s = s .. "\t}\n"
-		s = s .. "\tMETA.__index = META\n"
-		s = s .. "\tmetatables." .. meta_name .. " = META\n"
-		s = s .. "end\n"
+		lua = lua .. "\t}\n"
+		lua = lua .. "\tMETA.__index = META\n"
+		lua = lua .. "\tmetatables." .. meta_name .. " = META\n"
+		lua = lua .. "end\n"
 	end
-
-	lua = lua .. s
 end
 
 do -- libraries
 	local libraries = {}
 
 	for func_name, info in pairs(meta_data.functions) do
-		if not info.is_meta_function and func_name:find("^purple_") then
+		if not info.done and func_name:find("^purple_") then
 			local library_name, friendly_name = func_name:match("purple_(.-)_(.+)")
 
 			if not library_name then
@@ -320,30 +287,24 @@ do -- libraries
 				friendly_name = func_name:match("purple_(.+)")
 			end
 
-			info.friendly_name = ffibuild.ChangeCase(friendly_name, "foo_bar", "FooBar")
+			friendly_name = ffibuild.ChangeCase(friendly_name, "foo_bar", "FooBar")
 
 			libraries[library_name] = libraries[library_name] or {}
-			libraries[library_name][func_name] = info
+			libraries[library_name][friendly_name] = info
 		end
 	end
-
-	local s = ""
 
 	for library_name, functions in pairs(libraries) do
-		s = s .. "purple." .. library_name .. " = {\n"
-		for func_name, info in pairs(functions) do
-			s = s .. "\t" .. ffibuild.BuildFunction(info.friendly_name, func_name, info, argument_translate, return_translate, meta_data) .. ",\n"
+		lua = lua .. "purple." .. library_name .. " = {\n"
+		for friendly_name, info in pairs(functions) do
+			lua = lua .. "\t" .. ffibuild.BuildFunction(friendly_name, info.name, info, argument_translate, return_translate, meta_data) .. ",\n"
 		end
-		s = s .. "}\n"
+		lua = lua .. "}\n"
 	end
-
-	lua = lua .. s
 end
 
 do -- callbacks
-	local s = ""
-
-	s = s .. "local callbacks = {}\n"
+	lua = lua .. "local callbacks = {}\n"
 
 	for func_name, info in pairs(meta_data.functions) do
 		if func_name:find("__signal_callback__") then
@@ -384,14 +345,14 @@ do -- callbacks
 				ret_line = " if ret == nil then return ffi.new(\"" .. info.return_type.type .. "\") end " .. ret_line
 			end
 
-			s = s .. "callbacks[\"" .. func_name:gsub("__signal_callback__", ""):gsub("_", "-") .. "\"] = {\n"
-			s = s .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
-			s = s .. "\tdefinition = \"" .. info:GetDeclaration(true) .. "\",\n"
-			s = s .. "}\n"
+			lua = lua .. "callbacks[\"" .. func_name:gsub("__signal_callback__", ""):gsub("_", "-") .. "\"] = {\n"
+			lua = lua .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
+			lua = lua .. "\tdefinition = \"" .. info:GetDeclaration(true) .. "\",\n"
+			lua = lua .. "}\n"
 		end
 	end
 
-	lua = lua .. s .. [[
+	lua = lua .. [[
 purple.signal.Connect_real = purple.signal.Connect
 
 function purple.signal.Connect(signal, callback)

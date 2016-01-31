@@ -555,7 +555,7 @@ function ffibuild.GetMetaData(header)
 	return out
 end
 
-function ffibuild.StripHeader(header, meta_data, check_function, force_void, empty_structs)
+function ffibuild.StripHeader(header, meta_data, check_function, force_void, empty_structs, global_enum_filter)
 	local required = {}
 
 	local bottom = ""
@@ -578,7 +578,7 @@ function ffibuild.StripHeader(header, meta_data, check_function, force_void, emp
 	end
 
 	if meta_data.global_enums then
-		top = meta_data.global_enums .. top
+		--top = meta_data.global_enums .. top
 	end
 
 	return top .. bottom
@@ -614,7 +614,7 @@ function ffibuild.BuildFunction(friendly_name, real_name, info, call_translate, 
 		type = type:GetEvaluated(meta_data) or type
 		local declaration = type:GetDeclaration()
 
-		return call_translate(declaration, name, type, info) or name
+		return call_translate and call_translate(declaration, name, type, info) or name
 	end)
 
 	local s = ""
@@ -623,12 +623,14 @@ function ffibuild.BuildFunction(friendly_name, real_name, info, call_translate, 
 	local return_type = info.return_type:GetEvaluated(meta_data) or info.return_type
 	local declaration = return_type:GetDeclaration()
 
-	local ret, func = return_translate(declaration, return_type, info)
+	if return_translate then
+		local ret, func = return_translate(declaration, return_type, info)
 
-	s = s .. (ret or "")
+		s = s .. (ret or "")
 
-	if func then
-		s = func(s)
+		if func then
+			s = func(s)
+		end
 	end
 
 	s = s .. " return v "
@@ -640,15 +642,54 @@ end
 function ffibuild.FindFunctions(meta_data, pattern, from, to)
 	local out = {}
 	for func_name, type in pairs(meta_data.functions) do
-		if func_name:find(pattern) then
-			func_name = func_name:gsub(pattern, "")
+		local capture = func_name:match(pattern)
+		if capture then
 			if from and to then
-				func_name = ffibuild.ChangeCase(func_name, from, to)
+				capture = ffibuild.ChangeCase(capture, from, to)
 			end
-			out[func_name] = type
+			out[capture] = type
 		end
 	end
-	return pairs(out)
+	return out
+end
+
+
+function ffibuild.GetStructTypes(meta_data, pattern)
+	local out = {}
+
+	-- find all types that start with *pattern* and are also structs
+	for type_name, types in pairs(meta_data.typedefs) do
+		local name = type_name:match(pattern)
+		if name then
+			local evaluated = types[#types]
+			if evaluated.type:find("^struct ") then
+				table.insert(out, {
+					name = name,
+					info = evaluated,
+				})
+			end
+		end
+	end
+
+	-- sort them by length to avoid functions like purple_>>conversation<<_foo_bar() to conflict with purple_>>conversation_im<<_foo_bar()
+	table.sort(out, function(a, b) return #a.name > #b.name end)
+
+	return out
+end
+
+function ffibuild.GetFunctionsStartingWithType(meta_data, type)
+	local out = {}
+
+	for func_name, func_info in pairs(meta_data.functions) do
+		if func_info.arguments then
+			local evaluated = func_info.arguments[1]:GetEvaluated(meta_data) or func_info.arguments[1]
+			if evaluated.type == type.type then
+				out[func_name] = func_info
+			end
+		end
+	end
+
+	return out
 end
 
 return ffibuild
