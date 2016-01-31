@@ -1,4 +1,4 @@
-#### simple example:
+## simple example:
 
 ```lua
 local header = ffibuild.GetHeader([[
@@ -20,7 +20,10 @@ io.write(code)
 
 This creates a bunch of globals from this_casing to thisCasing based header input.
 
-#### ffi.GetMetaData(header)
+
+
+
+## ffi.GetMetaData(header)
 ffi.GetMetaData returns a table structured like so
 
 ```lua
@@ -37,14 +40,14 @@ ffi.GetMetaData returns a table structured like so
 
 Where [???] represents a type object.
 
-#### types
+## types
 ```lua
 string = type:GetDeclaration() -- Gets the string declaration of the type as a string. such as "gint**"
 [type] = type:GetEvaluated(meta_data) -- Gets the evaluated type using meta_data to look it up. Otherwise it returns nil.
 nil = type:Evaluate(meta_data) -- Evaluates itself to its original type using meta_data to look it up.
 ```
 
-#### functions
+## functions
 A function type is structured like so:
 ```lua
 func_type:GetDeclaration(as_callback) -- gets the function declaration or as a callback if requested. A function cold also be a callback intitially and so GetDeclaration would return that by default.
@@ -60,7 +63,7 @@ end
 func_type.return_type -- the return argument type
 ```
 
-#### trimming the header and evaluating types
+## trimming the header and evaluating types
 
 In the first example you would get glib functions exported as well since purple uses them internally. This is generally not wanted but there are tools in ffibuild to handle this.
 
@@ -70,6 +73,6 @@ You can then call `local meta_data = ffibuild.GetMetaData(bottom_header)` to get
 
 Now it's possible to build your own header using meta_data and type:GetDeclaration()
 
-#### todo
+## todo
 Use mingw or visual studio on windows somehow.
 Structs and enums are not objects with content info but instead just strings. In the meantime it's possible to generate empty struct types.
