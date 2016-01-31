@@ -1,5 +1,3 @@
-ffibuild is a utility for generating C bindings for luajit using ffi and wrap them safe lua code. 
-
 #### todo:
 Use mingw or visual studio on windows somehow.
 Structs and enums are not objects with content info but instead just strings. In the meantime it's possible to generate empty struct types.
