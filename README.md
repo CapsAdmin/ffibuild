@@ -48,7 +48,6 @@ nil = type:Evaluate(meta_data) -- Evaluates itself to its original type using me
 ```
 
 ## functions
-A function type is structured like so:
 ```lua
 func_type:GetDeclaration(as_callback) -- gets the function declaration or as a callback if requested. A function cold also be a callback intitially and so GetDeclaration would return that by default.
 func_type.callback -- if this is a callback or not
