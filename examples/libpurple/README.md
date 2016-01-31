@@ -6,4 +6,4 @@ This is just something I personally wanted and so the !l command serves more as 
 
 input and output looks like so:
 
-[input](https://gist.github.com/CapsAdmin/cfe25510646274122699) > build.lua > [output](https://gist.github.com/CapsAdmin/9ddeb5a0b1825ab265f4)
+[input](https://gist.github.com/CapsAdmin/cfe25510646274122699) > [build.lua](build.lua) > [output](https://gist.github.com/CapsAdmin/9ddeb5a0b1825ab265f4)
