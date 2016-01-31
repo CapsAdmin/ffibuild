@@ -1,11 +1,12 @@
-ffibuild is a utility for generating C bindings for luajit using ffi and wrap them safe lua code. Look in examples/*/build.lua for usage.
+ffibuild is a utility for generating C bindings for luajit using ffi and wrap them safe lua code. 
 
-This is Linux only at the moment but it should in theory work fine on windows with mingw or something.
-Structs and enums are just strings at the moment but I will make it possible to get information about them in the future. In the meantime it's possible to generate empty struct types.
+#### todo:
+Use mingw or visual studio on windows somehow.
+Structs and enums are not objects with content info but instead just strings. In the meantime it's possible to generate empty struct types.
 
 A very simple example:
 
-```
+```lua
 local header = ffibuild.GetHeader([[
 	#define PURPLE_PLUGINS
 	#include <libpurple/purple.h>
@@ -25,9 +26,10 @@ io.write(code)
 
 This creates a bunch of globals from this_casing to thisCasing based header input.
 
-ffi.GetMetaData returns a table like so
+#### ffi.GetMetaData(header)
+ffi.GetMetaData returns a table structured like so
 
-```
+```lua
 {
 	functions = {[function], ...},
 	structs = {struct _PurpleAccount = [struct], struct _PurpleBuddy = [struct]},
@@ -41,25 +43,35 @@ ffi.GetMetaData returns a table like so
 
 Where [???] represents a type object.
 
-
-A function type is structured like this:
+#### types
+```lua
+string = type:GetDeclaration() -- Gets the string declaration of the type as a string. such as "gint**"
+[type] = type:GetEvaluated(meta_data) -- Gets the evaluated type using meta_data to look it up. Otherwise it returns nil.
+nil = type:Evaluate(meta_data) -- Evaluates itself to its original type using meta_data to look it up.
 ```
-func_type:GetDeclaration(as_callback) -- gets the function declaration
+
+#### functions
+A function type is structured like so:
+```lua
+func_type:GetDeclaration(as_callback) -- gets the function declaration or as a callback if requested. A function cold also be a callback intitially and so GetDeclaration would return that by default.
+func_type.callback -- if this is a callback or not
 
 if func_type.arguments then
 	for _, type in ipairs(func_type.arguments) do
-		type:GetDeclaration() -- gets the string declaration of the type: gint**
-		type:GetEvaluated(meta_data) -- gets the evaluated type
-		type:GetEvaluated(meta_data):GetDeclaration(): gboolean* >> int*
-		type:Evaluate(meta_data) -- collapses the type to its original type. this is very useful to avoid ffi header conflicts and reduce the size of the header
+		-- see type section above
 		type.name -- the name of this argument if any
 	end
 end
 
-func_type.return_type -- see argument type
+func_type.return_type -- the return argument type
 ```
 
-In the first example you would get glib functions as well since purple uses them externally. This is generally not wanted but there are tools in ffibuild to handle this.
+#### trimming the header and evaluating types
 
-You can use `local top, bottom = ffibuild.SplitHeader(header, "_Purple"})` which would find the first instance of _Purple and legally (syntax wise) split the header there where top would be linux and glib internal functions and bottom would be libpurple only.
-You can then call `ffibuild.GetMetaData(bottom)` to get libpurple specific info only and then evaluate the metadata types with `ffibuild.GetMetaData(top)` and then build your own header using :GetDeclaration()
+In the first example you would get glib functions exported as well since purple uses them internally. This is generally not wanted but there are tools in ffibuild to handle this.
+
+You can use `local top_header, bottom_header = ffibuild.SplitHeader(header, "_Purple")` which would find the first instance of _Purple and  split the header by closest statement where "top_header" is linux and glib internal functions and bottom is libpurple only.
+
+You can then call `local meta_data = ffibuild.GetMetaData(bottom_header)` to get libpurple specific info only and then evaluate types with `local meta_data_internal = ffibuild.GetMetaData(top_header)`
+
+Now it's possible to build your own header using meta_data and type:GetDeclaration()
