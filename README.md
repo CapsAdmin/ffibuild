@@ -1,8 +1,4 @@
-#### todo:
-Use mingw or visual studio on windows somehow.
-Structs and enums are not objects with content info but instead just strings. In the meantime it's possible to generate empty struct types.
-
-A very simple example:
+#### simple example:
 
 ```lua
 local header = ffibuild.GetHeader([[
@@ -73,3 +69,7 @@ You can use `local top_header, bottom_header = ffibuild.SplitHeader(header, "_Pu
 You can then call `local meta_data = ffibuild.GetMetaData(bottom_header)` to get libpurple specific info only and then evaluate types with `local meta_data_internal = ffibuild.GetMetaData(top_header)`
 
 Now it's possible to build your own header using meta_data and type:GetDeclaration()
+
+#### todo
+Use mingw or visual studio on windows somehow.
+Structs and enums are not objects with content info but instead just strings. In the meantime it's possible to generate empty struct types.
