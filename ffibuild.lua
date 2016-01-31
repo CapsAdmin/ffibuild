@@ -637,4 +637,18 @@ function ffibuild.BuildFunction(friendly_name, real_name, info, call_translate, 
 	return s
 end
 
+function ffibuild.FindFunctions(meta_data, pattern, from, to)
+	local out = {}
+	for func_name, type in pairs(meta_data.functions) do
+		if func_name:find(pattern) then
+			func_name = func_name:gsub(pattern, "")
+			if from and to then
+				func_name = ffibuild.ChangeCase(func_name, from, to)
+			end
+			out[func_name] = type
+		end
+	end
+	return pairs(out)
+end
+
 return ffibuild
