@@ -66,11 +66,11 @@ func_type.return_type -- the return argument type
 
 In the first example you would get glib functions exported as well since purple uses them internally. This is generally not wanted but there are tools in ffibuild to handle this.
 
-You can use `local top_header, bottom_header = ffibuild.SplitHeader(header, "_Purple")` which would find the first instance of _Purple and  split the header by closest statement where "top_header" is linux and glib internal functions and bottom is libpurple only.
+You can use `local top_header, bottom_header = ffibuild.SplitHeader(header, "_Purple")` which would find the first instance of _Purple and  split the header by closest statement where `top_header` is linux and glib internal functions and `bottom_header` is libpurple only.
 
 You can then call `local meta_data = ffibuild.GetMetaData(bottom_header)` to get libpurple specific info only and then evaluate types with `local meta_data_internal = ffibuild.GetMetaData(top_header)`
 
-Now it's possible to build your own header using meta_data and type:GetDeclaration()
+Now it's possible to build your own header using `local header = ffibuild.StripHeader(bottom_header, meta_data_internal, <check_function, empty_structs>)` or `type:GetPrimitive(meta_data)` along with `type:GetDeclaration()`
 
 ## todo
 Use mingw or visual studio on windows somehow.
