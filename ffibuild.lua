@@ -54,10 +54,11 @@ local function create_type_template(name)
 	--BASE.__tostring = function(s) return ("%s[%s]"):format(s:GetDeclaration(), name) end
 
 	function BASE:Create() return setmetatable({}, BASE) end
-	function BASE:GetDeclaration() return self.type end
+	function BASE:GetDeclaration() end
 	function BASE:GetEvaluated()end
 	function BASE:Evaluate() end
-	function BASE:GetCopy() return self end
+	function BASE:GetCopy() end
+	function BASE:GetType() end
 
 	return BASE
 end
@@ -68,47 +69,183 @@ local VARARG = create_type_template("var_arg")
 
 do -- type metatables
 	do -- type
+		local flags = {
+			const = true,
+			volatile = true,
+			struct = true,
+			enum = true,
+			union = true,
+			unsigned = true,
+			signed = true,
+			pointer = true,
+		}
+
+		local function declaration_to_tree(declaration)
+			local tree = {}
+
+			local node = tree
+
+			local prev_token
+			local prev_node
+
+			for token in (declaration:reverse() .. " "):gmatch("(%S+) ") do
+				token = token:reverse()
+
+				if token == "*" then
+					token = "pointer"
+				end
+
+				if flags[token] then
+					node[token] = true
+				else
+					node.type = token
+				end
+
+				if token == "struct" or token == "union" or token == "enum" then
+					prev_node[prev_token] = nil
+					node.type = token .. " " .. prev_token
+				end
+
+				if token == "pointer" then
+					prev_node = node
+					node.to = {}
+					node = node.to
+				end
+
+				prev_token = token
+				prev_node = node
+			end
+
+			return tree, node
+		end
+
+		local flags = {
+			"signed",
+			"unsigned",
+			"const",
+			"volatile",
+		}
+
+		local function tree_to_declaration(tree)
+			local node = tree
+
+			local declaration = {}
+
+			while true do
+				if node.type then
+					table.insert(declaration, node.type:reverse())
+				end
+
+				for _, flag in ipairs(flags) do
+					if node[flag] then
+						table.insert(declaration, flag:reverse())
+					end
+				end
+
+				if node.pointer then
+					table.insert(declaration, "*")
+					node = node.to
+				else
+					break
+				end
+			end
+
+			return table.concat(declaration, " "):reverse()
+		end
+
+		function TYPE:GetType()
+			return self.last_node.type
+		end
+
 		function TYPE:Create(declaration)
-			local type, pointers = declaration:gsub("%s$", ""):gsub("const ", ""):gsub(" %*", "")
+			local tree, last_node = declaration_to_tree(declaration)
 
-			local info = {
-				name = name,
-				type = type,
-				pointers = pointers,
-				const = declaration:find("const", nil, true) ~= nil,
-			}
-
-			return setmetatable(info, TYPE)
+			return setmetatable({
+				last_node = last_node,
+				tree = tree,
+			}, TYPE)
 		end
 
 		function TYPE:GetCopy()
-			local copy = {}
-			for k,v in pairs(self) do copy[k] = v end
-			return setmetatable(copy, TYPE)
+			return self:Create(tree_to_declaration(self.tree))
 		end
 
 		function TYPE:GetDeclaration(meta_data)
-			return
-				(self.const and "const " or "") ..
-				(meta_data and self:GetEvaluated(meta_data).type or self.type) ..
-				("*"):rep(self.pointers)
+			return tree_to_declaration(self.tree)
 		end
 
-		function TYPE:GetEvaluated(meta_data)
-			if not meta_data then return self end
-			local types = meta_data.typedefs[self.type]
-			if types then
-				local copy = types[#types]:GetCopy()
+		--[[
 
-				if copy.pointers then
-					copy.pointers = copy.pointers + self.pointers
-				else
-					copy.pointers = self.pointers
+			typedef 	signed char 				foo_char;
+			typedef 	const foo_char * 			foo_string;
+			typedef 	volatile foo_string * * 	foo_bar;
+
+			foo_char 	= signed char
+			foo_string 	= const *
+			foo_bar 	= volatile * *
+
+
+			volatile (const (signed char ) * ) * *
+
+
+			signed char const * volatile * *
+
+
+
+			typedef signed char c;
+			c = char
+
+			typedef const c *cp;
+			*cp is a const c, ergo cp is a pointer to const char
+
+			typedef volatile cp **bar;
+			**bar is a volatile cp, i.e. a volatile pointer to const char
+
+			so the type of bar in my example would be "pointer to pointer to volatile pointer to const char"
+
+			if x is a pointer to pointer to volatile pointer to const char,
+			then **x is volatile and a pointer to const char,
+			i.e. volatile **x is a pointer to const char,
+			so *volatile **x is a const char, ergo   const char *volatile **x
+			so the type bar is:   typedef const char *volatile **bar
+		]]
+
+		function TYPE:GetEvaluated(meta_data, lol)
+			if not meta_data then return self end
+
+			if meta_data.typedefs[self:GetType()] then
+				local self = self:GetCopy()
+				local type = self
+
+				for i = 1, 10 do
+					type = meta_data.typedefs[type:GetType()]
+
+					if not type then break end
+
+					local type = type:GetCopy()
+
+					if getmetatable(type) ~= getmetatable(self) then
+
+						for k,v in pairs(self) do self[k] = nil end
+						for k,v in pairs(type) do self[k] = v end
+
+						setmetatable(self, getmetatable(type))
+
+						return self:GetEvaluated(meta_data) or self
+					elseif type.tree then
+						self.last_node.type = nil
+						for k, v in pairs(type.tree) do
+							self.last_node[k] = v
+						end
+						if type.last_node ~= type.tree then
+							self.last_node = type.last_node
+						end
+					else
+						break
+					end
 				end
 
-				copy.const = self.const
-
-				return copy
+				return self
 			end
 		end
 
@@ -129,15 +266,15 @@ do -- type metatables
 				for k,v in pairs(self) do self[k] = nil end
 				for k,v in pairs(new_type) do self[k] = v end
 
-				setmetatable(self, getmetatable(new_type))
-
-				if self.callback then
+				if getmetatable(new_type) ~= getmetatable(self) then
+					setmetatable(self, getmetatable(new_type))
 					self:Evaluate(meta_data, highest_evaluation, out)
+					--TYPE:Create("gboolean"):GetEvaluated(meta_data, true)
 				end
 
 				if out then
 					for i, v in ipairs(out) do
-						if v.type == self.type then
+						if v:GetType() == self:GetType() then
 							return
 						end
 					end
@@ -210,14 +347,14 @@ do -- type metatables
 					elseif arg:find("%b() %b()") then
 						type = FUNCTION:Create(arg, true)
 					else
-						local real_type, name = arg:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
+						local declaration, name = arg:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
 
-						if not real_type then
-							real_type = arg:match("^([%a%d%s_%*]-)$")
+						if not declaration then
+							declaration = arg
 							name = "unknown"
 						end
 
-						type = TYPE:Create(real_type)
+						type = TYPE:Create(declaration)
 						type.name = name
 					end
 
@@ -237,21 +374,13 @@ do -- type metatables
 				return_line, func_name, arg_line = line:match("(.-) ([%a%d_]+) (%b())")
 			end
 
-			local info = {
+			return setmetatable({
 				name = func_name,
 				arguments = parse_argument_line(arg_line:sub(3, -3)),
 				return_type = TYPE:Create(return_line),
-			}
-
-			if is_callback then
-				info.callback = true
-				info.type = return_line .. "( " .. func_type .. " ) " .. arg_line
-				info.func_type = func_type
-			else
-				info.type = return_line .. " " .. func_name .. " " .. arg_line
-			end
-
-			return setmetatable(info, FUNCTION)
+				callback = is_callback,
+				func_type = func_type,
+			}, FUNCTION)
 		end
 
 		function FUNCTION:GetCopy()
@@ -272,6 +401,10 @@ do -- type metatables
 			end
 
 			return setmetatable(copy, FUNCTION)
+		end
+
+		function FUNCTION:GetType()
+			return self.callback and "callback" or "function"
 		end
 
 		function FUNCTION:GetDeclaration(as_callback)
@@ -372,6 +505,15 @@ do -- type metatables
 
 	do -- var arg
 		VARARG.type = "..."
+		function VARARG:GetDeclaration()
+			return "..."
+		end
+		function VARARG:GetCopy()
+			return VARARG:Create()
+		end
+		function VARARG:GetType()
+			return "var_arg"
+		end
 	end
 end
 
@@ -519,21 +661,6 @@ function ffibuild.GetMetaData(header)
 		end
 	end
 
-	do -- sort typedefs
-		local typedefs = {}
-
-		for alias, type in pairs(out.typedefs) do
-			local types = {}
-			repeat
-				table.insert(types, type)
-				type = out.typedefs[type.type]
-			until not type
-			typedefs[alias] = types
-		end
-
-		out.typedefs = typedefs
-	end
-
 	do -- global enums
 		local enums
 
@@ -568,17 +695,18 @@ function ffibuild.StripHeader(header, meta_data, check_function, force_void, emp
 
 	local top = ""
 	for i, v in ipairs(required) do
-		if v.type:find("^struct") then
-			top = top .. v.type .. " " .. (empty_structs and "{}" or meta_data.structs[v.type]) .. ";\n"
-		elseif v.type:find("^union") then
-			top = top .. v.type .. " " .. (empty_structs and "{}" or meta_data.unions[v.type]) .. ";\n"
-		elseif v.type:find("^enum") then
-			top = top .. "typedef " .. v.type .. " " .. meta_data.enums[v.type] .. ";\n"
+		local type = v:GetType()
+		if type:find("^struct") then
+			top = top .. type .. " " .. (empty_structs and "{}" or meta_data.structs[type]) .. ";\n"
+		elseif type:find("^union") then
+			top = top .. type .. " " .. (empty_structs and "{}" or meta_data.unions[type]) .. ";\n"
+		elseif type:find("^enum") then
+			top = top .. "typedef " .. type .. " " .. meta_data.enums[type] .. ";\n"
 		end
 	end
 
 	if meta_data.global_enums then
-		--top = meta_data.global_enums .. top
+		top = meta_data.global_enums .. top
 	end
 
 	return top .. bottom
@@ -658,16 +786,13 @@ function ffibuild.GetStructTypes(meta_data, pattern)
 	local out = {}
 
 	-- find all types that start with *pattern* and are also structs
-	for type_name, types in pairs(meta_data.typedefs) do
+	for type_name, type in pairs(meta_data.typedefs) do
 		local name = type_name:match(pattern)
-		if name then
-			local evaluated = types[#types]
-			if evaluated.type:find("^struct ") then
-				table.insert(out, {
-					name = name,
-					info = evaluated,
-				})
-			end
+		if name and type:GetType():find("^struct ") then
+			table.insert(out, {
+				name = name,
+				info = type,
+			})
 		end
 	end
 
@@ -683,7 +808,7 @@ function ffibuild.GetFunctionsStartingWithType(meta_data, type)
 	for func_name, func_info in pairs(meta_data.functions) do
 		if func_info.arguments then
 			local evaluated = func_info.arguments[1]:GetEvaluated(meta_data) or func_info.arguments[1]
-			if evaluated.type == type.type then
+			if evaluated:GetType() == type:GetType() then
 				out[func_name] = func_info
 			end
 		end

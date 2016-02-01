@@ -196,14 +196,14 @@ purple.P = P
 
 ]]
 
-local meta_types = {}
+local struct_to_type = {}
 
 local function get_meta_type(info)
-	return meta_types[info.type]
+	return struct_to_type[info:GetType()]
 end
 
 local function argument_translate(declaration, name, type)
-	if declaration == "sturct _GList" or declaration == "struct _GList" then
+	if declaration == "sturct _GList *" or declaration == "struct _GList *" then
 		return "table_to_glist(" .. name .. ")"
 	elseif get_meta_type(type) then
 		return name .. ".ptr"
@@ -211,9 +211,9 @@ local function argument_translate(declaration, name, type)
 end
 
 local function return_translate(declaration, type)
-	if declaration == "const char*" or declaration == "char*" then
+	if declaration == "const char *" or declaration == "char *" then
 		return "v = chars_to_string(v)"
-	elseif t == "sturct _GList" or t == "struct _GList" then
+	elseif declaration == "sturct _GList *" or declaration == "struct _GList *" then
 		return "v = glist_to_table(v, cast_type)", function(s) return s:gsub("^(.-)%)", function(s) if s:find(",") then return s .. ", cast_type)" else return s .. "cast_type)" end end) end
 	elseif get_meta_type(type) then
 		return "v = wrap_object(v, \"" .. get_meta_type(type) .. "\")"
@@ -235,9 +235,9 @@ do -- metatables
 	local objects = {}
 
 	for _, type_info in ipairs(ffibuild.GetStructTypes(meta_data, "^Purple(.+)")) do
-		meta_types[type_info.info.type] = type_info.name
+		struct_to_type[type_info.info:GetType()] = type_info.name
 		objects[type_info.name] = {declaration = type_info.info:GetDeclaration(), functions = {}}
-		local prefix = ffibuild.ChangeCase(type_info.info.type:match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
+		local prefix = ffibuild.ChangeCase(type_info.info:GetType():match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
 
 		for func_name, func_info in pairs(ffibuild.GetFunctionsStartingWithType(meta_data, type_info.info)) do
 			local friendly = func_name:match("purple_" .. prefix .. "_(.+)")
@@ -314,19 +314,20 @@ do -- callbacks
 			if info.arguments then
 				for i, arg in ipairs(info.arguments) do
 					arg = arg:GetEvaluated(meta_data) or arg
+					local decl = arg:GetDeclaration()
 
-					if arg.const and arg.type == "char" and arg.pointers == 1 then
+					if decl == "const char *" or decl == "char *" then
 						wrap_line[i] = "chars_to_string(_"..i..")"
-					elseif arg.type == "sturct _GList" or arg.type == "struct _GList" then
+					elseif decl == "sturct _GList *" or decl == "struct _GList *" then
 						wrap_line[i] = "glist_to_table(_"..i..", 'void *')"
-					elseif arg.type == "char" and arg.pointers == 2 then
-						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) replace_buffer(p, #v, v) end, function(p) return ffi.string(p[0]) end)"
-					elseif arg.type == "struct GList" and arg.pointers == 2 then
+					elseif decl == "struct GList * *"then
 						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) p[0] = table_to_glist(v) end, function(p) return glist_to_table(p[0]) end)"
+					elseif decl == "char * *" then
+						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) replace_buffer(p, #v, v) end, function(p) return ffi.string(p[0]) end)"
 					elseif get_meta_type(arg) then
 						wrap_line[i] = "wrap_object(_"..i..", \"" .. get_meta_type(arg) .. "\")"
 					else
-						wrap_line[i] = "_" .. i .. " --[["..arg.type.."]] "
+						wrap_line[i] = "_" .. i .. " --[["..decl.."]] "
 					end
 
 
@@ -341,8 +342,8 @@ do -- callbacks
 
 			local ret_line = "return ret"
 
-			if info.return_type.type ~= "void" then
-				ret_line = " if ret == nil then return ffi.new(\"" .. info.return_type.type .. "\") end " .. ret_line
+			if info.return_type:GetType() ~= "void" then
+				ret_line = " if ret == nil then return ffi.new(\"" .. info.return_type:GetType() .. "\") end " .. ret_line
 			end
 
 			lua = lua .. "callbacks[\"" .. func_name:gsub("__signal_callback__", ""):gsub("_", "-") .. "\"] = {\n"
@@ -393,6 +394,6 @@ if not RELOAD then
 	if jit then
 		require("ffi").cdef(header)
 	end
-end
 
-assert(loadstring(lua))
+	assert(loadstring(lua))
+end
