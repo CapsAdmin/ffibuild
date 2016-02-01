@@ -108,7 +108,7 @@ bool __signal_callback__chat_nick_clicked ( PurpleConversation * , const char * 
 
 local meta_data = ffibuild.GetMetaData(header)
 local top, bottom = ffibuild.SplitHeader(header, {"_Purple", "purple"})
-local header = ffibuild.StripHeader(bottom, meta_data, function(func_name) return func_name:find("^purple_") or func_name:find("^__signal_callback__") end, nil, true)
+local header = ffibuild.StripHeader(bottom, meta_data, function(func_name) return func_name:find("^purple_") or func_name:find("^__signal_callback__") end, true)
 
 local lua = ""
 
@@ -196,16 +196,13 @@ purple.P = P
 
 ]]
 
-local struct_to_type = {}
-
-local function get_meta_type(info)
-	return struct_to_type[info:GetType()]
-end
+local objects = {}
+local libraries = {}
 
 local function argument_translate(declaration, name, type)
 	if declaration == "sturct _GList *" or declaration == "struct _GList *" then
 		return "table_to_glist(" .. name .. ")"
-	elseif get_meta_type(type) then
+	elseif objects[type:GetBasicType()] then
 		return name .. ".ptr"
 	end
 end
@@ -215,8 +212,8 @@ local function return_translate(declaration, type)
 		return "v = chars_to_string(v)"
 	elseif declaration == "sturct _GList *" or declaration == "struct _GList *" then
 		return "v = glist_to_table(v, cast_type)", function(s) return s:gsub("^(.-)%)", function(s) if s:find(",") then return s .. ", cast_type)" else return s .. "cast_type)" end end) end
-	elseif get_meta_type(type) then
-		return "v = wrap_object(v, \"" .. get_meta_type(type) .. "\")"
+	elseif objects[type:GetBasicType()] then
+		return "v = wrap_object(v, \"" .. objects[type:GetBasicType()].meta_name .. "\")"
 	end
 end
 
@@ -232,14 +229,13 @@ do -- metatables
 		saved_status = {"savedstatus"},
 	}
 
-	local objects = {}
+	for _, info in ipairs(ffibuild.GetStructTypes(meta_data, "^Purple(.+)")) do
+		local basic_type = info.type:GetBasicType()
+		objects[basic_type] = {meta_name = info.name, declaration = info.type:GetDeclaration(), functions = {}}
 
-	for _, type_info in ipairs(ffibuild.GetStructTypes(meta_data, "^Purple(.+)")) do
-		struct_to_type[type_info.info:GetType()] = type_info.name
-		objects[type_info.name] = {declaration = type_info.info:GetDeclaration(), functions = {}}
-		local prefix = ffibuild.ChangeCase(type_info.info:GetType():match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
+		local prefix = ffibuild.ChangeCase(basic_type:match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
 
-		for func_name, func_info in pairs(ffibuild.GetFunctionsStartingWithType(meta_data, type_info.info)) do
+		for func_name, func_info in pairs(ffibuild.GetFunctionsStartingWithType(meta_data, info.type)) do
 			local friendly = func_name:match("purple_" .. prefix .. "_(.+)")
 
 			if not friendly and prefix_translate[prefix] then
@@ -251,17 +247,17 @@ do -- metatables
 
 			if friendly then
 				friendly = ffibuild.ChangeCase(friendly, "foo_bar", "FooBar")
-				objects[type_info.name].functions[friendly] = func_info
+				objects[basic_type].functions[friendly] = func_info
 				func_info.done = true
 			end
 		end
 
-		if not next(objects[type_info.name].functions) then
-			objects[type_info.name] = nil
+		if not next(objects[basic_type].functions) then
+			objects[basic_type] = nil
 		end
 	end
 
-	for meta_name, info in pairs(objects) do
+	for _, info in pairs(objects) do
 		lua = lua .. "do\n"
 		lua = lua .. "\tlocal META = {\n"
 		lua = lua .. "\t\tctype = ffi.typeof(\"" .. info.declaration .. "\"),\n"
@@ -270,16 +266,14 @@ do -- metatables
 		end
 		lua = lua .. "\t}\n"
 		lua = lua .. "\tMETA.__index = META\n"
-		lua = lua .. "\tmetatables." .. meta_name .. " = META\n"
+		lua = lua .. "\tmetatables." .. info.meta_name .. " = META\n"
 		lua = lua .. "end\n"
 	end
 end
 
 do -- libraries
-	local libraries = {}
-
-	for func_name, info in pairs(meta_data.functions) do
-		if not info.done and func_name:find("^purple_") then
+	for func_name, type in pairs(meta_data.functions) do
+		if not type.done and func_name:find("^purple_") then
 			local library_name, friendly_name = func_name:match("purple_(.-)_(.+)")
 
 			if not library_name then
@@ -290,14 +284,14 @@ do -- libraries
 			friendly_name = ffibuild.ChangeCase(friendly_name, "foo_bar", "FooBar")
 
 			libraries[library_name] = libraries[library_name] or {}
-			libraries[library_name][friendly_name] = info
+			libraries[library_name][friendly_name] = type
 		end
 	end
 
 	for library_name, functions in pairs(libraries) do
 		lua = lua .. "purple." .. library_name .. " = {\n"
-		for friendly_name, info in pairs(functions) do
-			lua = lua .. "\t" .. ffibuild.BuildFunction(friendly_name, info.name, info, argument_translate, return_translate, meta_data) .. ",\n"
+		for friendly_name, type in pairs(functions) do
+			lua = lua .. "\t" .. ffibuild.BuildFunction(friendly_name, type.name, type, argument_translate, return_translate, meta_data) .. ",\n"
 		end
 		lua = lua .. "}\n"
 	end
@@ -306,14 +300,14 @@ end
 do -- callbacks
 	lua = lua .. "local callbacks = {}\n"
 
-	for func_name, info in pairs(meta_data.functions) do
+	for func_name, type in pairs(meta_data.functions) do
 		if func_name:find("__signal_callback__") then
 			local arg_line =  {}
 			local wrap_line = {}
 
-			if info.arguments then
-				for i, arg in ipairs(info.arguments) do
-					arg = arg:GetEvaluated(meta_data) or arg
+			if type.arguments then
+				for i, arg in ipairs(type.arguments) do
+					arg = arg:GetPrimitive(meta_data) or arg
 					local decl = arg:GetDeclaration()
 
 					if decl == "const char *" or decl == "char *" then
@@ -324,8 +318,8 @@ do -- callbacks
 						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) p[0] = table_to_glist(v) end, function(p) return glist_to_table(p[0]) end)"
 					elseif decl == "char * *" then
 						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) replace_buffer(p, #v, v) end, function(p) return ffi.string(p[0]) end)"
-					elseif get_meta_type(arg) then
-						wrap_line[i] = "wrap_object(_"..i..", \"" .. get_meta_type(arg) .. "\")"
+					elseif objects[arg:GetBasicType()] then
+						wrap_line[i] = "wrap_object(_"..i..", \"" .. objects[arg:GetBasicType()].meta_name .. "\")"
 					else
 						wrap_line[i] = "_" .. i .. " --[["..decl.."]] "
 					end
@@ -342,13 +336,13 @@ do -- callbacks
 
 			local ret_line = "return ret"
 
-			if info.return_type:GetType() ~= "void" then
-				ret_line = " if ret == nil then return ffi.new(\"" .. info.return_type:GetType() .. "\") end " .. ret_line
+			if type.return_type:GetBasicType() ~= "void" then
+				ret_line = " if ret == nil then return ffi.new(\"" .. type.return_type:GetBasicType() .. "\") end " .. ret_line
 			end
 
 			lua = lua .. "callbacks[\"" .. func_name:gsub("__signal_callback__", ""):gsub("_", "-") .. "\"] = {\n"
 			lua = lua .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
-			lua = lua .. "\tdefinition = \"" .. info:GetDeclaration(true) .. "\",\n"
+			lua = lua .. "\tdefinition = \"" .. type:GetDeclaration(true) .. "\",\n"
 			lua = lua .. "}\n"
 		end
 	end

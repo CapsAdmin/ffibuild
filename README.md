@@ -31,7 +31,7 @@ ffi.GetMetaData returns a table structured like so
 	functions = {[function], ...},
 	structs = {struct _PurpleAccount = [struct], struct _PurpleBuddy = [struct]},
 	unions = {union _PurpleAccount = [union], ...},
-	typedefs = {gboolean = {[gint], [int]}, gint = {[int]}, ...},
+	typedefs = {gboolean = [type], gint = [type], ...},
 	variables = {[variable], ...},
 	enums = {PurpleStatusType = "enum PurpleStatusType{...}", ...},
 	global_enums = "enum {...}",
@@ -42,18 +42,18 @@ Where [???] represents a type object.
 
 ## types
 ```lua
-string = type:GetDeclaration() -- Gets the string declaration of the type as a string. such as "gint**"
-[type] = type:GetEvaluated(meta_data) -- Gets the evaluated type using meta_data to look it up. Otherwise it returns nil.
-nil = type:Evaluate(meta_data) -- Evaluates itself to its original type using meta_data to look it up.
+string = type:GetDeclaration() -- Gets the declaration for the type such as "const char *"
+string = type:GetBasicType() -- Gets the basic type such as if type:GetDeclaration() would return "const char *" type:GetbasicType() would return "char"
+[type] = type:GetPrimitive(meta_data) -- Attempts to get the primitive type using meta_data. It returns itself otherwise.
+nil = type:MakePrimitive(meta_data) -- Essentially type:GetPrimitive() except it transforms itself if successful.
 ```
 
 ## functions
 ```lua
 func_type:GetDeclaration(as_callback) -- gets the function declaration or as a callback if requested. A function cold also be a callback intitially and so GetDeclaration would return that by default.
-func_type.callback -- if this is a callback or not
 
 if func_type.arguments then
-	for _, type in ipairs(func_type.arguments) do
+	for arg_pos, type in ipairs(func_type.arguments) do
 		-- see type section above
 		type.name -- the name of this argument if any
 	end

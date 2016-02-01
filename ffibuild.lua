@@ -55,10 +55,10 @@ local function create_type_template(name)
 
 	function BASE:Create() return setmetatable({}, BASE) end
 	function BASE:GetDeclaration() end
-	function BASE:GetEvaluated()end
-	function BASE:Evaluate() end
+	function BASE:GetPrimitive() return self end
+	function BASE:MakePrimitive() end
 	function BASE:GetCopy() end
-	function BASE:GetType() end
+	function BASE:GetBasicType() end
 
 	return BASE
 end
@@ -153,7 +153,7 @@ do -- type metatables
 			return table.concat(declaration, " "):reverse()
 		end
 
-		function TYPE:GetType()
+		function TYPE:GetBasicType()
 			return self.last_node.type
 		end
 
@@ -210,71 +210,59 @@ do -- type metatables
 			so the type bar is:   typedef const char *volatile **bar
 		]]
 
-		function TYPE:GetEvaluated(meta_data, lol)
-			if not meta_data then return self end
+		function TYPE:GetPrimitive(meta_data, lol)
+			if not meta_data or not meta_data.typedefs[self:GetBasicType()] then return self end
 
-			if meta_data.typedefs[self:GetType()] then
-				local self = self:GetCopy()
-				local type = self
+			local copy = self:GetCopy()
+			local type = copy
 
-				for i = 1, 10 do
-					type = meta_data.typedefs[type:GetType()]
+			for i = 1, 10 do
+				type = meta_data.typedefs[type:GetBasicType()]
 
-					if not type then break end
+				if not type then break end
 
-					local type = type:GetCopy()
+				local type = type:GetCopy()
 
-					if getmetatable(type) ~= getmetatable(self) then
+				if getmetatable(type) ~= getmetatable(copy) then
 
-						for k,v in pairs(self) do self[k] = nil end
-						for k,v in pairs(type) do self[k] = v end
+					for k,v in pairs(copy) do copy[k] = nil end
+					for k,v in pairs(type) do copy[k] = v end
 
-						setmetatable(self, getmetatable(type))
+					setmetatable(copy, getmetatable(type))
 
-						return self:GetEvaluated(meta_data) or self
-					elseif type.tree then
-						self.last_node.type = nil
-						for k, v in pairs(type.tree) do
-							self.last_node[k] = v
-						end
-						if type.last_node ~= type.tree then
-							self.last_node = type.last_node
-						end
-					else
-						break
+					return copy:GetPrimitive(meta_data) or copy
+				elseif type.tree then
+					copy.last_node.type = nil
+					for k, v in pairs(type.tree) do
+						copy.last_node[k] = v
 					end
+					if type.last_node ~= type.tree then
+						copy.last_node = type.last_node
+					end
+				else
+					break
 				end
-
-				return self
 			end
+
+			return copy
 		end
 
-		function TYPE:Evaluate(meta_data, highest_evaluation, out)
-			local new_type = self:GetEvaluated(meta_data)
+		function TYPE:MakePrimitive(meta_data, out)
+			local primitive = self:GetPrimitive(meta_data)
 
-			if highest_evaluation then
-				new_type = new_type or self:GetCopy()
-
-				if self.pointers and self.pointers > 0 and (new_type.type:find("^struct") or new_type.type:find("^union")) then
-					new_type = TYPE:Create("void *")
-					new_type.pointers = self.pointers
-					new_type.const = self.const
-				end
-			end
-
-			if new_type then
+			if primitive:GetBasicType() ~= self:GetBasicType() then
 				for k,v in pairs(self) do self[k] = nil end
-				for k,v in pairs(new_type) do self[k] = v end
+				for k,v in pairs(primitive) do self[k] = v end
 
-				if getmetatable(new_type) ~= getmetatable(self) then
-					setmetatable(self, getmetatable(new_type))
-					self:Evaluate(meta_data, highest_evaluation, out)
-					--TYPE:Create("gboolean"):GetEvaluated(meta_data, true)
+				if getmetatable(primitive) ~= getmetatable(self) then
+					setmetatable(self, getmetatable(primitive))
+					self:MakePrimitive(meta_data, out)
+					--TYPE:Create("gboolean"):GetPrimitive(meta_data, true)
 				end
 
 				if out then
 					for i, v in ipairs(out) do
-						if v:GetType() == self:GetType() then
+						if v:GetBasicType() == self:GetBasicType() then
 							return
 						end
 					end
@@ -403,7 +391,7 @@ do -- type metatables
 			return setmetatable(copy, FUNCTION)
 		end
 
-		function FUNCTION:GetType()
+		function FUNCTION:GetBasicType()
 			return self.callback and "callback" or "function"
 		end
 
@@ -430,11 +418,11 @@ do -- type metatables
 			end
 		end
 
-		function FUNCTION:Evaluate(...)
-			self.return_type:Evaluate(...)
+		function FUNCTION:MakePrimitive(...)
+			self.return_type:MakePrimitive(...)
 			if self.arguments then
 				for i, arg in ipairs(self.arguments) do
-					arg:Evaluate(...)
+					arg:MakePrimitive(...)
 				end
 			end
 		end
@@ -511,7 +499,7 @@ do -- type metatables
 		function VARARG:GetCopy()
 			return VARARG:Create()
 		end
-		function VARARG:GetType()
+		function VARARG:GetBasicType()
 			return "var_arg"
 		end
 	end
@@ -682,20 +670,20 @@ function ffibuild.GetMetaData(header)
 	return out
 end
 
-function ffibuild.StripHeader(header, meta_data, check_function, force_void, empty_structs, global_enum_filter)
+function ffibuild.StripHeader(header, meta_data, check_function, empty_structs, global_enum_filter)
 	local required = {}
 
 	local bottom = ""
-	for func_name, func_info in pairs(meta_data.functions) do
-		if check_function(func_name, func_info) then
-			func_info:Evaluate(meta_data, force_void, required)
-			bottom = bottom .. func_info:GetDeclaration() .. ";\n"
+	for func_name, func_type in pairs(meta_data.functions) do
+		if check_function(func_name, func_type) then
+			func_type:MakePrimitive(meta_data, required)
+			bottom = bottom .. func_type:GetDeclaration() .. ";\n"
 		end
 	end
 
 	local top = ""
 	for i, v in ipairs(required) do
-		local type = v:GetType()
+		local type = v:GetBasicType()
 		if type:find("^struct") then
 			top = top .. type .. " " .. (empty_structs and "{}" or meta_data.structs[type]) .. ";\n"
 		elseif type:find("^union") then
@@ -735,24 +723,26 @@ function ffibuild.ChangeCase(str, from, to)
 	return str
 end
 
-function ffibuild.BuildFunction(friendly_name, real_name, info, call_translate, return_translate, meta_data, first_argument_self, clib)
+function ffibuild.BuildFunction(friendly_name, real_name, func_type, call_translate, return_translate, meta_data, first_argument_self, clib)
 	clib = clib or "CLIB"
 
-	local parameters, call = info:GetParameters(first_argument_self, function(type, name)
-		type = type:GetEvaluated(meta_data) or type
-		local declaration = type:GetDeclaration()
+	local parameters, call = func_type:GetParameters(first_argument_self, function(type, name)
+		type = type:GetPrimitive(meta_data)
 
-		return call_translate and call_translate(declaration, name, type, info) or name
+		return
+			call_translate and
+			call_translate(type:GetDeclaration(), name, type, func_type) or
+			name
 	end)
 
 	local s = ""
 	s = s .. friendly_name .. " = function(" .. parameters .. ") "
 	s = s .. "local v = " .. clib .. "." .. real_name .. "(" .. call .. ") "
-	local return_type = info.return_type:GetEvaluated(meta_data) or info.return_type
+	local return_type = func_type.return_type:GetPrimitive(meta_data)
 	local declaration = return_type:GetDeclaration()
 
 	if return_translate then
-		local ret, func = return_translate(declaration, return_type, info)
+		local ret, func = return_translate(declaration, return_type, func_type)
 
 		s = s .. (ret or "")
 
@@ -769,13 +759,13 @@ end
 
 function ffibuild.FindFunctions(meta_data, pattern, from, to)
 	local out = {}
-	for func_name, type in pairs(meta_data.functions) do
+	for func_name, func_type in pairs(meta_data.functions) do
 		local capture = func_name:match(pattern)
 		if capture then
 			if from and to then
 				capture = ffibuild.ChangeCase(capture, from, to)
 			end
-			out[capture] = type
+			out[capture] = func_type
 		end
 	end
 	return out
@@ -788,10 +778,10 @@ function ffibuild.GetStructTypes(meta_data, pattern)
 	-- find all types that start with *pattern* and are also structs
 	for type_name, type in pairs(meta_data.typedefs) do
 		local name = type_name:match(pattern)
-		if name and type:GetType():find("^struct ") then
+		if name and type:GetBasicType():find("^struct ") then
 			table.insert(out, {
 				name = name,
-				info = type,
+				type = type,
 			})
 		end
 	end
@@ -805,11 +795,10 @@ end
 function ffibuild.GetFunctionsStartingWithType(meta_data, type)
 	local out = {}
 
-	for func_name, func_info in pairs(meta_data.functions) do
-		if func_info.arguments then
-			local evaluated = func_info.arguments[1]:GetEvaluated(meta_data) or func_info.arguments[1]
-			if evaluated:GetType() == type:GetType() then
-				out[func_name] = func_info
+	for func_name, func_type in pairs(meta_data.functions) do
+		if func_type.arguments then
+			if func_type.arguments[1]:GetPrimitive(meta_data):GetBasicType() == type:GetBasicType() then
+				out[func_name] = func_type
 			end
 		end
 	end
