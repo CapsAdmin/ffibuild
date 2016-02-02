@@ -5,7 +5,7 @@ local header = ffibuild.GetHeader([[
 	#include <libpurple/purple.h>
 ]], "$(pkg-config purple --cflags)")
 
--- these callbacks havebeen auto generated
+-- these callbacks have been auto generated
 header = header .. [[
 void __signal_callback__buddy_status_changed ( PurpleBuddy * , PurpleStatus * , PurpleStatus * );
 void __signal_callback__buddy_privacy_changed ( PurpleBuddy * );
@@ -261,8 +261,8 @@ do -- metatables
 		lua = lua .. "do\n"
 		lua = lua .. "\tlocal META = {\n"
 		lua = lua .. "\t\tctype = ffi.typeof(\"" .. info.declaration .. "\"),\n"
-		for friendly_name, info in pairs(info.functions) do
-			lua = lua .. "\t\t" .. ffibuild.BuildFunction(friendly_name, info.name, info, argument_translate, return_translate, meta_data, true) .. ",\n"
+		for friendly_name, func_type in pairs(info.functions) do
+			lua = lua .. "\t\t" .. ffibuild.BuildFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data, true) .. ",\n"
 		end
 		lua = lua .. "\t}\n"
 		lua = lua .. "\tMETA.__index = META\n"
@@ -342,7 +342,7 @@ do -- callbacks
 
 			lua = lua .. "callbacks[\"" .. func_name:gsub("__signal_callback__", ""):gsub("_", "-") .. "\"] = {\n"
 			lua = lua .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
-			lua = lua .. "\tdefinition = \"" .. type:GetDeclaration(true) .. "\",\n"
+			lua = lua .. "\tdefinition = \"" .. type:GetDeclaration(nil, true) .. "\",\n"
 			lua = lua .. "}\n"
 		end
 	end

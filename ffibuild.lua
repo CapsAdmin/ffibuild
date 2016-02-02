@@ -1,5 +1,149 @@
 local ffibuild = {}
 
+
+
+function ffibuild.StripHeader(header, meta_data, check_function, empty_structs)
+	local required = {}
+
+	local bottom = ""
+
+	for func_name, func_type in pairs(meta_data.functions) do
+		if not check_function or check_function(func_name, func_type) then
+			func_type:MakePrimitive(meta_data, required)
+			bottom = bottom .. func_type:GetDeclaration() .. ";\n"
+		end
+	end
+
+	local top = ""
+
+	for _, type in ipairs(required) do
+		local basic_type = type:GetBasicType()
+
+		if type:GetSubType() == "struct" then
+			top = top .. basic_type .. " " .. (empty_structs and "{}" or meta_data.structs[basic_type]) .. ";\n"
+		elseif type:GetSubType() == "union" then
+			top = top .. basic_type .. " " .. (empty_structs and "{}" or meta_data.unions[basic_type]) .. ";\n"
+		elseif type:GetSubType() == "enum" then
+			top = top .. "typedef " .. basic_type .. " " .. meta_data.enums[basic_type] .. ";\n"
+		end
+	end
+
+	if meta_data.global_enums then
+		top = meta_data.global_enums .. top
+	end
+
+	return top .. bottom
+end
+
+function ffibuild.ChangeCase(str, from, to)
+	if from == "fooBar" then
+		if to == "FooBar" then
+			return str:sub(1, 1):upper() .. str:sub(2)
+		elseif to == "foo_bar" then
+			return ffibuild.ChangeCase(str:sub(1, 1):upper() .. str:sub(2), "FooBar", "foo_bar")
+		end
+	elseif from == "FooBar" then
+		if to == "foo_bar" then
+			return str:gsub("(%l)(%u)", function(a, b) return a.."_"..b:lower() end):lower()
+		elseif to == "fooBar" then
+			return str:sub(1, 1):lower() .. str:sub(2)
+		end
+	elseif from == "foo_bar" then
+		if to == "FooBar" then
+			return ("_" .. str):gsub("_(%l)", function(s) return s:upper() end)
+		elseif to == "fooBar" then
+			return ffibuild.ChangeCase(ffibuild.ChangeCase(str, "foo_bar", "FooBar"), "FooBar", "fooBar")
+		end
+	end
+	return str
+end
+
+function ffibuild.BuildFunction(friendly_name, real_name, func_type, call_translate, return_translate, meta_data, first_argument_self, clib)
+	clib = clib or "CLIB"
+
+	local parameters, call = func_type:GetParameters(first_argument_self, function(type, name)
+		type = type:GetPrimitive(meta_data)
+
+		return
+			call_translate and
+			call_translate(type:GetDeclaration(), name, type, func_type) or
+			name
+	end)
+
+	local s = ""
+	s = s .. friendly_name .. " = function(" .. parameters .. ") "
+	s = s .. "local v = " .. clib .. "." .. real_name .. "(" .. call .. ") "
+	local return_type = func_type.return_type:GetPrimitive(meta_data) or func_type.return_type
+	local declaration = return_type:GetDeclaration()
+
+	if return_translate then
+		local ret, func = return_translate(declaration, return_type, func_type)
+
+		s = s .. (ret or "")
+
+		if func then
+			s = func(s)
+		end
+	end
+
+	s = s .. " return v "
+	s = s .. "end"
+
+	return s
+end
+
+function ffibuild.FindFunctions(meta_data, pattern, from, to)
+	local out = {}
+	for func_name, func_type in pairs(meta_data.functions) do
+		local capture = func_name:match(pattern)
+		if capture then
+			if from and to then
+				capture = ffibuild.ChangeCase(capture, from, to)
+			end
+			out[capture] = func_type
+		end
+	end
+	return out
+end
+
+
+function ffibuild.GetStructTypes(meta_data, pattern)
+	local out = {}
+
+	-- find all types that start with *pattern* and are also structs
+	for type_name, type in pairs(meta_data.typedefs) do
+		local name = type_name:match(pattern)
+		if name and type:GetSubType() == "struct" then
+			table.insert(out, {
+				name = name,
+				type = type,
+			})
+		end
+	end
+
+	-- sort them by length to avoid functions like purple_>>conversation<<_foo_bar() to conflict with purple_>>conversation_im<<_foo_bar()
+	table.sort(out, function(a, b) return #a.name > #b.name end)
+
+	return out
+end
+
+function ffibuild.GetFunctionsStartingWithType(meta_data, type)
+	local out = {}
+
+	for func_name, func_type in pairs(meta_data.functions) do
+		if func_type.arguments then
+			local evaluated = func_type.arguments[1]:GetPrimitive(meta_data) or func_type.arguments[1]
+			if evaluated:GetBasicType() == type:GetBasicType() then
+				out[func_name] = func_type
+			end
+		end
+	end
+
+	return out
+end
+
+
+
 function ffibuild.GetHeader(c_source, flags)
 	flags = flags or ""
 	local temp_name = os.tmpname()
@@ -46,29 +190,39 @@ function ffibuild.SplitHeader(header, stops)
 	return header:sub(0, stop), header:sub(stop)
 end
 
-local function create_type_template(name)
-	local BASE = {}
-	BASE.__index = BASE
-	BASE.name = name
-
-	--BASE.__tostring = function(s) return ("%s[%s]"):format(s:GetDeclaration(), name) end
-
-	function BASE:Create() return setmetatable({}, BASE) end
-	function BASE:GetDeclaration() end
-	function BASE:GetPrimitive() return self end
-	function BASE:MakePrimitive() end
-	function BASE:GetCopy() end
-	function BASE:GetBasicType() end
-
-	return BASE
-end
-
-local TYPE = create_type_template("type")
-local FUNCTION = create_type_template("function")
-local VARARG = create_type_template("var_arg")
-
 do -- type metatables
+	local metatables = {}
+
+	for _, name in ipairs({"function", "type", "var_arg"}) do
+		local META = {}
+		META.__index = META
+		META.MetaType = name
+
+		--META.__tostring = function(s) return ("%s[%s]"):format(s:GetDeclaration(), name) end
+
+		function META:GetDeclaration() end
+		function META:GetPrimitive() return self end
+		function META:MakePrimitive() end
+		function META:GetCopy() end
+		function META:GetBasicType() end
+		function META:GetSubType() return self:GetBasicType() end
+
+		metatables[name] = META
+	end
+
+	for name, meta in pairs(metatables) do
+		for other_name in pairs(metatables) do
+			meta["Is" .. ffibuild.ChangeCase(other_name, "foo_bar", "FooBar")] = function(self) return self.MetaName == name end
+		end
+	end
+
+	function ffibuild.CreateType(declaration, type, ...)
+		return setmetatable(metatables[type]:Create(declaration, ...), metatables[type])
+	end
+
 	do -- type
+		local TYPE = metatables.type
+
 		local flags = {
 			const = true,
 			volatile = true,
@@ -80,7 +234,7 @@ do -- type metatables
 			pointer = true,
 		}
 
-		local function declaration_to_tree(declaration)
+		function TYPE:Create(declaration)
 			local tree = {}
 
 			local node = tree
@@ -116,7 +270,10 @@ do -- type metatables
 				prev_node = node
 			end
 
-			return tree, node
+			return {
+				last_node = node,
+				tree = tree,
+			}
 		end
 
 		local flags = {
@@ -126,8 +283,8 @@ do -- type metatables
 			"volatile",
 		}
 
-		local function tree_to_declaration(tree)
-			local node = tree
+		function TYPE:GetDeclaration(meta_data)
+			local node = self:GetPrimitive(meta_data).tree
 
 			local declaration = {}
 
@@ -157,60 +314,19 @@ do -- type metatables
 			return self.last_node.type
 		end
 
-		function TYPE:Create(declaration)
-			local tree, last_node = declaration_to_tree(declaration)
+		function TYPE:GetSubType()
+			if self.last_node.struct then return "struct" end
+			if self.last_node.enum then return "enum" end
+			if self.last_node.union then return "union" end
 
-			return setmetatable({
-				last_node = last_node,
-				tree = tree,
-			}, TYPE)
+			return self:GetBasicType()
 		end
 
 		function TYPE:GetCopy()
-			return self:Create(tree_to_declaration(self.tree))
+			return ffibuild.CreateType(self:GetDeclaration(), "type")
 		end
 
-		function TYPE:GetDeclaration(meta_data)
-			return tree_to_declaration(self.tree)
-		end
-
-		--[[
-
-			typedef 	signed char 				foo_char;
-			typedef 	const foo_char * 			foo_string;
-			typedef 	volatile foo_string * * 	foo_bar;
-
-			foo_char 	= signed char
-			foo_string 	= const *
-			foo_bar 	= volatile * *
-
-
-			volatile (const (signed char ) * ) * *
-
-
-			signed char const * volatile * *
-
-
-
-			typedef signed char c;
-			c = char
-
-			typedef const c *cp;
-			*cp is a const c, ergo cp is a pointer to const char
-
-			typedef volatile cp **bar;
-			**bar is a volatile cp, i.e. a volatile pointer to const char
-
-			so the type of bar in my example would be "pointer to pointer to volatile pointer to const char"
-
-			if x is a pointer to pointer to volatile pointer to const char,
-			then **x is volatile and a pointer to const char,
-			i.e. volatile **x is a pointer to const char,
-			so *volatile **x is a const char, ergo   const char *volatile **x
-			so the type bar is:   typedef const char *volatile **bar
-		]]
-
-		function TYPE:GetPrimitive(meta_data, lol)
+		function TYPE:GetPrimitive(meta_data)
 			if not meta_data or not meta_data.typedefs[self:GetBasicType()] then return self end
 
 			local copy = self:GetCopy()
@@ -224,13 +340,12 @@ do -- type metatables
 				local type = type:GetCopy()
 
 				if getmetatable(type) ~= getmetatable(copy) then
-
 					for k,v in pairs(copy) do copy[k] = nil end
 					for k,v in pairs(type) do copy[k] = v end
 
 					setmetatable(copy, getmetatable(type))
 
-					return copy:GetPrimitive(meta_data) or copy
+					return copy:GetPrimitive(meta_data)
 				elseif type.tree then
 					copy.last_node.type = nil
 					for k, v in pairs(type.tree) do
@@ -248,16 +363,15 @@ do -- type metatables
 		end
 
 		function TYPE:MakePrimitive(meta_data, out)
-			local primitive = self:GetPrimitive(meta_data)
+			local new_type = self:GetPrimitive(meta_data)
 
-			if primitive:GetBasicType() ~= self:GetBasicType() then
+			if new_type and new_type ~= self then
 				for k,v in pairs(self) do self[k] = nil end
-				for k,v in pairs(primitive) do self[k] = v end
+				for k,v in pairs(new_type) do self[k] = v end
 
-				if getmetatable(primitive) ~= getmetatable(self) then
-					setmetatable(self, getmetatable(primitive))
+				if getmetatable(new_type) ~= getmetatable(self) then
+					setmetatable(self, getmetatable(new_type))
 					self:MakePrimitive(meta_data, out)
-					--TYPE:Create("gboolean"):GetPrimitive(meta_data, true)
 				end
 
 				if out then
@@ -273,6 +387,8 @@ do -- type metatables
 	end
 
 	do -- function
+		local FUNCTION = metatables["function"]
+
 		local basic_types = {
 			["char"] = true,
 			["signed char"] = true,
@@ -320,20 +436,30 @@ do -- type metatables
 			return out
 		end
 
-		local function parse_argument_line(str)
-			local out
+		function FUNCTION:Create(declaration, is_callback)
+			local return_line, func_name, arg_line, func_type
 
-			if #str > 0 then
-				out = explode(str, " , ")
-				for i, arg in ipairs(out) do
+			if is_callback then
+				return_line, func_type, func_name, arg_line = declaration:match("^(.-)%( (%*.*) ([%a%d_]+) %) (%b())$")
+			else
+				return_line, func_name, arg_line = declaration:match("(.-) ([%a%d_]+) (%b())")
+			end
+
+			arg_line = arg_line:sub(3, -3)
+
+			local arguments
+
+			if #arg_line > 0 then
+				arguments = explode(arg_line, " , ")
+				for i, arg in ipairs(arguments) do
 					local type
 
 					if arg == "..." then
-						type = VARARG:Create()
+						type = ffibuild.CreateType(arg, "var_arg")
 					elseif basic_types[arg] then
-						type = TYPE:Create(arg)
+						type = ffibuild.CreateType(arg, "type")
 					elseif arg:find("%b() %b()") then
-						type = FUNCTION:Create(arg, true)
+						type = ffibuild.CreateType(arg, "function", true)
 					else
 						local declaration, name = arg:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
 
@@ -342,36 +468,26 @@ do -- type metatables
 							name = "unknown"
 						end
 
-						type = TYPE:Create(declaration)
+						type = ffibuild.CreateType(declaration, "type")
 						type.name = name
 					end
 
-					out[i] = type
+					arguments[i] = type
 				end
 			end
 
-			return out
-		end
-
-		function FUNCTION:Create(line, is_callback)
-			local return_line, func_name, arg_line, func_type
-
-			if is_callback then
-				return_line, func_type, func_name, arg_line = line:match("^(.-)%( (%*.*) ([%a%d_]+) %) (%b())$")
-			else
-				return_line, func_name, arg_line = line:match("(.-) ([%a%d_]+) (%b())")
-			end
-
-			return setmetatable({
+			return {
 				name = func_name,
-				arguments = parse_argument_line(arg_line:sub(3, -3)),
-				return_type = TYPE:Create(return_line),
+				arguments = arguments,
+				return_type = ffibuild.CreateType(return_line, "type"),
 				callback = is_callback,
 				func_type = func_type,
-			}, FUNCTION)
+			}
 		end
 
 		function FUNCTION:GetCopy()
+			-- TODO: this doesn't work because i :Create does not handle callbacks that return callbacks
+			--return ffibuild.CreateType(self:GetDeclaration(), "function", self.callback)
 			local copy = {}
 
 			for k,v in pairs(self) do
@@ -395,26 +511,33 @@ do -- type metatables
 			return self.callback and "callback" or "function"
 		end
 
-		function FUNCTION:GetDeclaration(as_callback)
+		function FUNCTION:GetSubType()
+			return self:GetBasicType()
+		end
+
+		function FUNCTION:GetDeclaration(meta_data, as_callback)
+
 			local arg_line = {}
 
 			if self.arguments then
 				for i, arg in ipairs(self.arguments) do
-					arg_line[i] = arg:GetDeclaration()
+					arg_line[i] = arg:GetDeclaration(meta_data)
 				end
 			end
 
-			arg_line = "(" .. table.concat(arg_line, ",") .. ")"
+			arg_line = "( " .. table.concat(arg_line, " , ") .. " )"
 
 			if self.return_type.callback then
-				local ret, urn = self.return_type:GetDeclaration():match("^(.-%(%*)(.+)")
-				return ret .. self.name .. arg_line .. urn
+				local ret, urn = self.return_type:GetDeclaration():match("^(.-%( %*) (.+)")
+				local res = ret .. " " .. self.name .. " " .. arg_line .. " " .. urn
+				if res:find("PurpleFilterAccountFunc") then print(res) end
+				return res
 			end
 
 			if self.callback or as_callback == true then
-				return self.return_type:GetDeclaration() .. "(" .. (self.func_type or "*") .. ")" .. arg_line
+				return self.return_type:GetDeclaration(meta_data) .. " ( " .. (self.func_type or "*") .. " ) " .. arg_line
 			else
-				return self.return_type:GetDeclaration()  .. " " .. self.name .. arg_line
+				return self.return_type:GetDeclaration(meta_data)  .. " " .. self.name .. " " .. arg_line
 			end
 		end
 
@@ -492,13 +615,20 @@ do -- type metatables
 	end
 
 	do -- var arg
-		VARARG.type = "..."
+		local VARARG = metatables.var_arg
+
+		function VARARG:Create()
+			return {}
+		end
+
 		function VARARG:GetDeclaration()
 			return "..."
 		end
+
 		function VARARG:GetCopy()
 			return VARARG:Create()
 		end
+
 		function VARARG:GetBasicType()
 			return "var_arg"
 		end
@@ -566,7 +696,7 @@ function ffibuild.GetMetaData(header)
 
 		if line:find("^typedef") then
 			if line:find("%b() %b()") and not line:find("%b{}") then
-				local type = FUNCTION:Create(line:match("^typedef (.+) $"), true)
+				local type = ffibuild.CreateType(line:match("^typedef (.+) $"), "function", true)
 				out.typedefs[type.name] = type
 				line = nil
 			else
@@ -580,13 +710,13 @@ function ffibuild.GetMetaData(header)
 					end
 
 					local content = line:match("^([%a%d_]+ [%a%d_]+)")
-					out.typedefs[alias] = TYPE:Create(content)
+					out.typedefs[alias] = ffibuild.CreateType(content, "type")
 
 				elseif line:find("%b()") then
 					content = line:match("^typedef (.+) $")
 					alias = content:match(".- ([%a%d_]+) %b()")
 
-					out.typedefs[alias] = FUNCTION:Create(content)
+					out.typedefs[alias] = ffibuild.CreateType(content, "function")
 				else
 					if line:find("^struct") or line:find("^union") then
 						line = content
@@ -594,7 +724,7 @@ function ffibuild.GetMetaData(header)
 						line = nil
 					end
 
-					out.typedefs[alias] = TYPE:Create(content)
+					out.typedefs[alias] = ffibuild.CreateType(content, "type")
 				end
 			end
 		end
@@ -606,7 +736,7 @@ function ffibuild.GetMetaData(header)
 					line = line:sub(#"extern"+2)
 				end
 
-				local type = FUNCTION:Create(line)
+				local type = ffibuild.CreateType(line, "function")
 
 				out.functions[type.name] = type
 
@@ -634,12 +764,12 @@ function ffibuild.GetMetaData(header)
 				out[tag] = content
 			elseif line:find("^extern") then
 				if line:find("%b() %b()") then
-					local type = FUNCTION:Create(line:match("extern (.+) $"), true)
+					local type = ffibuild.CreateType(line:match("extern (.+) $"), "function", true)
 					out.variables[type.name] = type
 				else
 					local tag, name = line:match("^extern (.+) ([%a%d_]+) $")
 
-					out.variables[name] = TYPE:Create(tag)
+					out.variables[name] = ffibuild.CreateType(tag, "type")
 				end
 			elseif line:find("^static") then
 
@@ -665,142 +795,6 @@ function ffibuild.GetMetaData(header)
 		end
 
 		out.global_enums = enums
-	end
-
-	return out
-end
-
-function ffibuild.StripHeader(header, meta_data, check_function, empty_structs, global_enum_filter)
-	local required = {}
-
-	local bottom = ""
-	for func_name, func_type in pairs(meta_data.functions) do
-		if check_function(func_name, func_type) then
-			func_type:MakePrimitive(meta_data, required)
-			bottom = bottom .. func_type:GetDeclaration() .. ";\n"
-		end
-	end
-
-	local top = ""
-	for i, v in ipairs(required) do
-		local type = v:GetBasicType()
-		if type:find("^struct") then
-			top = top .. type .. " " .. (empty_structs and "{}" or meta_data.structs[type]) .. ";\n"
-		elseif type:find("^union") then
-			top = top .. type .. " " .. (empty_structs and "{}" or meta_data.unions[type]) .. ";\n"
-		elseif type:find("^enum") then
-			top = top .. "typedef " .. type .. " " .. meta_data.enums[type] .. ";\n"
-		end
-	end
-
-	if meta_data.global_enums then
-		top = meta_data.global_enums .. top
-	end
-
-	return top .. bottom
-end
-
-function ffibuild.ChangeCase(str, from, to)
-	if from == "fooBar" then
-		if to == "FooBar" then
-			return str:sub(1, 1):upper() .. str:sub(2)
-		elseif to == "foo_bar" then
-			return ffibuild.ChangeCase(str:sub(1, 1):upper() .. str:sub(2), "FooBar", "foo_bar")
-		end
-	elseif from == "FooBar" then
-		if to == "foo_bar" then
-			return str:gsub("(%l)(%u)", function(a, b) return a.."_"..b:lower() end):lower()
-		elseif to == "fooBar" then
-			return str:sub(1, 1):lower() .. str:sub(2)
-		end
-	elseif from == "foo_bar" then
-		if to == "FooBar" then
-			return ("_" .. str):gsub("_(%l)", function(s) return s:upper() end)
-		elseif to == "fooBar" then
-			return ffibuild.ChangeCase(ffibuild.ChangeCase(str, "foo_bar", "FooBar"), "FooBar", "fooBar")
-		end
-	end
-	return str
-end
-
-function ffibuild.BuildFunction(friendly_name, real_name, func_type, call_translate, return_translate, meta_data, first_argument_self, clib)
-	clib = clib or "CLIB"
-
-	local parameters, call = func_type:GetParameters(first_argument_self, function(type, name)
-		type = type:GetPrimitive(meta_data)
-
-		return
-			call_translate and
-			call_translate(type:GetDeclaration(), name, type, func_type) or
-			name
-	end)
-
-	local s = ""
-	s = s .. friendly_name .. " = function(" .. parameters .. ") "
-	s = s .. "local v = " .. clib .. "." .. real_name .. "(" .. call .. ") "
-	local return_type = func_type.return_type:GetPrimitive(meta_data)
-	local declaration = return_type:GetDeclaration()
-
-	if return_translate then
-		local ret, func = return_translate(declaration, return_type, func_type)
-
-		s = s .. (ret or "")
-
-		if func then
-			s = func(s)
-		end
-	end
-
-	s = s .. " return v "
-	s = s .. "end"
-
-	return s
-end
-
-function ffibuild.FindFunctions(meta_data, pattern, from, to)
-	local out = {}
-	for func_name, func_type in pairs(meta_data.functions) do
-		local capture = func_name:match(pattern)
-		if capture then
-			if from and to then
-				capture = ffibuild.ChangeCase(capture, from, to)
-			end
-			out[capture] = func_type
-		end
-	end
-	return out
-end
-
-
-function ffibuild.GetStructTypes(meta_data, pattern)
-	local out = {}
-
-	-- find all types that start with *pattern* and are also structs
-	for type_name, type in pairs(meta_data.typedefs) do
-		local name = type_name:match(pattern)
-		if name and type:GetBasicType():find("^struct ") then
-			table.insert(out, {
-				name = name,
-				type = type,
-			})
-		end
-	end
-
-	-- sort them by length to avoid functions like purple_>>conversation<<_foo_bar() to conflict with purple_>>conversation_im<<_foo_bar()
-	table.sort(out, function(a, b) return #a.name > #b.name end)
-
-	return out
-end
-
-function ffibuild.GetFunctionsStartingWithType(meta_data, type)
-	local out = {}
-
-	for func_name, func_type in pairs(meta_data.functions) do
-		if func_type.arguments then
-			if func_type.arguments[1]:GetPrimitive(meta_data):GetBasicType() == type:GetBasicType() then
-				out[func_name] = func_type
-			end
-		end
 	end
 
 	return out
