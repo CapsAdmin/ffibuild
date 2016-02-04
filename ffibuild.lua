@@ -1,5 +1,54 @@
 local ffibuild = {}
 
+function ffibuild.BuildGenericHeader(ffi_header, ffi_lib)
+	return
+	"local ffi = require(\"ffi\")\n" ..
+	"ffi.cdef([["..ffi_header.."]])\n" ..
+	"local CLIB = ffi.load(\""..ffi_lib.."\")\n" ..
+	"local library = {}\n"
+end
+
+function ffibuild.BuildMetaTableFunctions()
+	return[[
+local metatables = {}
+local object_cache = {}
+
+local function wrap_pointer(ptr, meta_name)
+	local id = tostring(ptr) -- sigh
+	if not object_cache[meta_name][id] then
+		object_cache[meta_name][id] = setmetatable({ptr = ptr}, metatables[meta_name])
+	end
+	return object_cache[meta_name][id]
+end
+]]
+end
+
+function ffibuild.BuildHelperFunctions()
+return [[
+local function chars_to_string(ctyp)
+	if ctyp ~= nil then
+		return ffi.string(ctyp)
+	end
+	return ""
+end
+]]
+end
+
+function ffibuild.BuildMetaTable(meta_name, declaration, functions, argument_translate, return_translate, meta_data)
+	local lua = ""
+	lua = lua .. "do\n"
+	lua = lua .. "\tlocal META = {\n"
+	lua = lua .. "\t\tctype = ffi.typeof(\"" .. declaration .. "\"),\n"
+	for friendly_name, func_type in pairs(functions) do
+		lua = lua .. "\t\t" .. ffibuild.BuildFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data, true) .. ",\n"
+	end
+	lua = lua .. "\t}\n"
+	lua = lua .. "\tMETA.__index = META\n"
+	lua = lua .. "\tmetatables." .. meta_name .. " = META\n"
+	lua = lua .. "\tobject_cache." .. meta_name .. " = setmetatable({}, {__mode = \"kv\"})\n"
+	lua = lua .. "end\n"
+	return lua
+end
 
 
 function ffibuild.StripHeader(header, meta_data, check_function, empty_structs)

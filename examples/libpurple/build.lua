@@ -110,22 +110,11 @@ local meta_data = ffibuild.GetMetaData(header)
 local top, bottom = ffibuild.SplitHeader(header, {"_Purple", "purple"})
 local header = ffibuild.StripHeader(bottom, meta_data, function(func_name) return func_name:find("^purple_") or func_name:find("^__signal_callback__") end, true)
 
-local lua = ""
+local lua = ffibuild.BuildGenericHeader(header, "purple", "purple")
+lua = lua .. ffibuild.BuildMetaTableFunctions()
+lua = lua .. ffibuild.BuildHelperFunctions()
 
-lua = lua .. "local header = [[" .. header .. "]]\n\n"
-lua = lua ..
-[[
-local ffi = require("ffi")
-ffi.cdef(header)
-local CLIB = ffi.load("purple")
-local purple = {}
-local metatables = {}
-
--- todo: cache pointers?
-local function wrap_object(ptr, meta_name)
-	return setmetatable({ptr = ptr}, metatables[meta_name])
-end
-
+lua = lua .. [[
 local function glist_to_table(l, meta_name)
 	if not metatables[meta_name] then
 		error((meta_name or "nil") .. " is not a valid meta type", 3)
@@ -135,7 +124,7 @@ local function glist_to_table(l, meta_name)
 
 	for i = 1, math.huge do
 		out[i] = ffi.cast(metatables[meta_name].ctype, l.data)
-		out[i] = wrap_object(out[i], meta_name)
+		out[i] = wrap_pointer(out[i], meta_name)
 		l = l.next
 		if l == nil then
 			break
@@ -155,13 +144,6 @@ local function table_to_glist(tbl)
 	return list
 end
 
-local function chars_to_string(ctyp)
-	if ctyp ~= nil then
-		return ffi.string(ctyp)
-	end
-	return ""
-end
-
 ffi.cdef([==[
 	void *malloc(size_t size);
 	void free(void *ptr);
@@ -172,28 +154,11 @@ local function replace_buffer(buffer, size, data)
 	local chr = ffi.C.malloc(size)
 	ffi.copy(chr, data)
 	buffer[0] = chr
-	end
-
-	local function create_boxed_table(p, wrap_in, wrap_out)
-	return setmetatable(
-		{
-			p = p
-		},
-		{
-			__newindex = function(s, k, v)
-				wrap_in(s.p, v)
-			end,
-			__index = function(s, k)
-				return wrap_out(s.p)
-			end
-		}
-	)
 end
 
-purple.wrap_object = wrap_object
-purple.metatables = metatables
-purple.P = P
-
+local function create_boxed_table(p, wrap_in, wrap_out)
+	return setmetatable({p = p}, {__newindex = function(s, k, v) wrap_in(s.p, v) end, __index = function(s, k) return wrap_out(s.p) end})
+end
 ]]
 
 local objects = {}
@@ -213,7 +178,7 @@ local function return_translate(declaration, type)
 	elseif declaration == "sturct _GList *" or declaration == "struct _GList *" then
 		return "v = glist_to_table(v, cast_type)", function(s) return s:gsub("^(.-)%)", function(s) if s:find(",") then return s .. ", cast_type)" else return s .. "cast_type)" end end) end
 	elseif objects[type:GetBasicType()] then
-		return "v = wrap_object(v, \"" .. objects[type:GetBasicType()].meta_name .. "\")"
+		return "v = wrap_pointer(v, \"" .. objects[type:GetBasicType()].meta_name .. "\")"
 	end
 end
 
@@ -258,16 +223,7 @@ do -- metatables
 	end
 
 	for _, info in pairs(objects) do
-		lua = lua .. "do\n"
-		lua = lua .. "\tlocal META = {\n"
-		lua = lua .. "\t\tctype = ffi.typeof(\"" .. info.declaration .. "\"),\n"
-		for friendly_name, func_type in pairs(info.functions) do
-			lua = lua .. "\t\t" .. ffibuild.BuildFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data, true) .. ",\n"
-		end
-		lua = lua .. "\t}\n"
-		lua = lua .. "\tMETA.__index = META\n"
-		lua = lua .. "\tmetatables." .. info.meta_name .. " = META\n"
-		lua = lua .. "end\n"
+		lua = lua .. ffibuild.BuildMetaTable(info.meta_name, info.declaration, info.functions, argument_translate, return_translate, meta_data)
 	end
 end
 
@@ -289,9 +245,9 @@ do -- libraries
 	end
 
 	for library_name, functions in pairs(libraries) do
-		lua = lua .. "purple." .. library_name .. " = {\n"
-		for friendly_name, type in pairs(functions) do
-			lua = lua .. "\t" .. ffibuild.BuildFunction(friendly_name, type.name, type, argument_translate, return_translate, meta_data) .. ",\n"
+		lua = lua .. "library." .. library_name .. " = {\n"
+		for friendly_name, func_type in pairs(functions) do
+			lua = lua .. "\t" .. ffibuild.BuildFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data) .. ",\n"
 		end
 		lua = lua .. "}\n"
 	end
@@ -319,7 +275,7 @@ do -- callbacks
 					elseif decl == "char * *" then
 						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) replace_buffer(p, #v, v) end, function(p) return ffi.string(p[0]) end)"
 					elseif objects[arg:GetBasicType()] then
-						wrap_line[i] = "wrap_object(_"..i..", \"" .. objects[arg:GetBasicType()].meta_name .. "\")"
+						wrap_line[i] = "wrap_pointer(_"..i..", \"" .. objects[arg:GetBasicType()].meta_name .. "\")"
 					else
 						wrap_line[i] = "_" .. i .. " --[["..decl.."]] "
 					end
@@ -348,20 +304,20 @@ do -- callbacks
 	end
 
 	lua = lua .. [[
-purple.signal.Connect_real = purple.signal.Connect
+library.signal.Connect_real = library.signal.Connect
 
-function purple.signal.Connect(signal, callback)
-	if not purple.handles then error("unable to find handles (use purple.set_handles(plugin_handle, conversation_handle))", 2) end
+function library.signal.Connect(signal, callback)
+	if not library.handles then error("unable to find handles (use purple.set_handles(plugin_handle, conversation_handle))", 2) end
 
 	local info = callbacks[signal]
 
 	if not info then error(signal .. " is not a valid signal!") end
 
-	return purple.signal.Connect_real(purple.handles.conversation, signal, purple.handles.plugin, ffi.cast("void(*)()", ffi.cast(info.definition, function(...)
+	return library.signal.Connect_real(library.handles.conversation, signal, library.handles.plugin, ffi.cast("void(*)()", ffi.cast(info.definition, function(...)
 		local ok, ret = pcall(info.wrap, callback, ...)
 
 		if not ok then
-			purple.notify.Message(purple.handles.plugin, "PURPLE_NOTIFY_MSG_INFO", "lua error", signal, ret, nil, nil)
+			library.notify.Message(library.handles.plugin, "PURPLE_NOTIFY_MSG_INFO", "lua error", signal, ret, nil, nil)
 			return default_value
 		end
 
@@ -369,8 +325,8 @@ function purple.signal.Connect(signal, callback)
 	end)), nil)
 end
 
-function purple.set_handles(plugin, conv)
-	purple.handles = {
+function library.set_handles(plugin, conv)
+	library.handles = {
 		plugin = ffi.cast("struct _PurplePlugin *", plugin),
 		conversation = conv,
 	}
@@ -379,7 +335,7 @@ end
 ]]
 end
 
-lua = lua .. "return purple\n"
+lua = lua .. "return library\n"
 
 if not RELOAD then
 	io.write(lua) -- write output to make file
