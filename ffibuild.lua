@@ -8,30 +8,49 @@ function ffibuild.BuildGenericHeader(ffi_header, ffi_lib)
 	"local library = {}\n"
 end
 
-function ffibuild.BuildMetaTableFunctions()
-	return[[
-local metatables = {}
-local object_cache = {}
-
-local function wrap_pointer(ptr, meta_name)
-	local id = tostring(ptr) -- sigh
-	if not object_cache[meta_name][id] then
-		object_cache[meta_name][id] = setmetatable({ptr = ptr}, metatables[meta_name])
-	end
-	return object_cache[meta_name][id]
-end
-]]
-end
-
-function ffibuild.BuildHelperFunctions()
-return [[
+ffibuild.helper_functions = {
+	chars_to_string = [[
 local function chars_to_string(ctyp)
 	if ctyp ~= nil then
 		return ffi.string(ctyp)
 	end
 	return ""
-end
-]]
+end]],
+
+	metatables = [[
+local metatables = {}
+local object_cache = {}
+
+local function wrap_pointer(ptr, meta_name)
+	-- TODO
+	-- you should be able to use cdata as key and it would use the address
+	-- but apparently that doesn't work
+	local id = tostring(ptr)
+
+	if not object_cache[meta_name] then
+		object_cache[meta_name] = setmetatable({}, {__mode = "v"})
+	end
+
+	if not object_cache[meta_name][id] then
+		object_cache[meta_name][id] = setmetatable({ptr = ptr}, metatables[meta_name])
+	end
+
+	return object_cache[meta_name][id]
+end]]
+}
+
+function ffibuild.BuildHelperFunctions(...)
+	local lua = ""
+
+	for _, which in ipairs({...}) do
+		if ffibuild.helper_functions[which] then
+			lua = lua .. "\n\n--====helper " .. which .. "====\n"
+			lua = lua .. ffibuild.helper_functions[which] .. "\n"
+			lua = lua .. "--====helper " .. which .. "====\n\n"
+		end
+	end
+
+	return lua
 end
 
 function ffibuild.BuildMetaTable(meta_name, declaration, functions, argument_translate, return_translate, meta_data)
@@ -45,7 +64,6 @@ function ffibuild.BuildMetaTable(meta_name, declaration, functions, argument_tra
 	lua = lua .. "\t}\n"
 	lua = lua .. "\tMETA.__index = META\n"
 	lua = lua .. "\tmetatables." .. meta_name .. " = META\n"
-	lua = lua .. "\tobject_cache." .. meta_name .. " = setmetatable({}, {__mode = \"kv\"})\n"
 	lua = lua .. "end\n"
 	return lua
 end

@@ -5,114 +5,12 @@ local header = ffibuild.GetHeader([[
 	#include <libpurple/purple.h>
 ]], "$(pkg-config purple --cflags)")
 
--- these callbacks have been auto generated
-header = header .. [[
-void __signal_callback__buddy_status_changed ( PurpleBuddy * , PurpleStatus * , PurpleStatus * );
-void __signal_callback__buddy_privacy_changed ( PurpleBuddy * );
-void __signal_callback__buddy_idle_changed ( PurpleBuddy * , int , int );
-void __signal_callback__buddy_signed_on ( PurpleBuddy * );
-void __signal_callback__buddy_signed_off ( PurpleBuddy * );
-void __signal_callback__buddy_got_login_time ( PurpleBuddy * );
-void __signal_callback__blist_node_added ( PurpleBlistNode * );
-void __signal_callback__blist_node_removed ( PurpleBlistNode * );
-void __signal_callback__buddy_added ( PurpleBuddy * );
-void __signal_callback__buddy_removed ( PurpleBuddy * );
-void __signal_callback__buddy_icon_changed ( PurpleBuddy * );
-void __signal_callback__update_idle (  );
-void __signal_callback__blist_node_extended_menu ( PurpleBlistNode * , GList * *  );
-void __signal_callback__blist_node_aliased ( PurpleBlistNode * , const char * );
-void __signal_callback__buddy_caps_changed ( PurpleBuddy * , int , int );
-void __signal_callback__certificate_stored ( PurpleCertificatePool * , const char * );
-void __signal_callback__certificate_deleted ( PurpleCertificatePool * , const char * );
-void __signal_callback__cipher_added ( PurpleCipher * );
-void __signal_callback__cipher_removed ( PurpleCipher * );
-void __signal_callback__cmd_added ( const char * , int , int );
-void __signal_callback__cmd_removed ( const char * );
-bool __signal_callback__writing_im_msg ( PurpleAccount * , const char * , char * * , PurpleConversation * , unsigned int );
-void __signal_callback__wrote_im_msg ( PurpleAccount * , const char * , const char * , PurpleConversation * , unsigned int );
-void __signal_callback__sent_attention ( PurpleAccount * , const char * , PurpleConversation * , unsigned int );
-void __signal_callback__got_attention ( PurpleAccount * , const char * , PurpleConversation * , unsigned int );
-void __signal_callback__sending_im_msg ( PurpleAccount * , const char * , char * * );
-void __signal_callback__sent_im_msg ( PurpleAccount * , const char * , const char * );
-bool __signal_callback__receiving_im_msg ( PurpleAccount * , char * * , char * * , PurpleConversation * , unsigned int * );
-void __signal_callback__received_im_msg ( PurpleAccount * , const char * , const char * , PurpleConversation * , unsigned int );
-void __signal_callback__blocked_im_msg ( PurpleAccount * , const char * , const char * , unsigned int , unsigned int );
-bool __signal_callback__writing_chat_msg ( PurpleAccount * , const char * , char * * , PurpleConversation * , unsigned int );
-void __signal_callback__wrote_chat_msg ( PurpleAccount * , const char * , const char * , PurpleConversation * , unsigned int );
-void __signal_callback__sending_chat_msg ( PurpleAccount * , char * * , unsigned int );
-void __signal_callback__sent_chat_msg ( PurpleAccount * , const char * , unsigned int );
-bool __signal_callback__receiving_chat_msg ( PurpleAccount * , char * * , char * * , PurpleConversation * , unsigned int * );
-void __signal_callback__received_chat_msg ( PurpleAccount * , const char * , const char * , PurpleConversation * , unsigned int );
-void __signal_callback__conversation_created ( PurpleConversation * );
-void __signal_callback__conversation_updated ( PurpleConversation * , unsigned int );
-void __signal_callback__deleting_conversation ( PurpleConversation * );
-void __signal_callback__buddy_typing ( PurpleAccount * , const char * );
-void __signal_callback__buddy_typed ( PurpleAccount * , const char * );
-void __signal_callback__buddy_typing_stopped ( PurpleAccount * , const char * );
-bool __signal_callback__chat_buddy_joining ( PurpleConversation * , const char * , unsigned int );
-void __signal_callback__chat_buddy_joined ( PurpleConversation * , const char * , unsigned int , bool );
-void __signal_callback__chat_buddy_flags ( PurpleConversation * , const char * , unsigned int , unsigned int );
-bool __signal_callback__chat_buddy_leaving ( PurpleConversation * , const char * , const char * );
-void __signal_callback__chat_buddy_left ( PurpleConversation * , const char * , const char * );
-void __signal_callback__deleting_chat_buddy ( PurpleConvChatBuddy * );
-void __signal_callback__chat_inviting_user ( PurpleConversation * , const char * , char * * );
-void __signal_callback__chat_invited_user ( PurpleConversation * , const char * , const char * );
-int __signal_callback__chat_invited ( PurpleAccount * , const char * , const char * , const char * , void * );
-void __signal_callback__chat_invite_blocked ( PurpleAccount * , const char * , const char * , const char * , GHashTable *  );
-void __signal_callback__chat_joined ( PurpleConversation * );
-void __signal_callback__chat_join_failed ( PurpleConnection * , void * );
-void __signal_callback__chat_left ( PurpleConversation * );
-void __signal_callback__chat_topic_changed ( PurpleConversation * , const char * , const char * );
-void __signal_callback__cleared_message_history ( PurpleConversation * );
-void __signal_callback__conversation_extended_menu ( PurpleConversation * , GList * *  );
-bool __signal_callback__uri_handler ( const char * , const char * , GHashTable *  );
-void __signal_callback__quitting (  );
-bool __signal_callback__dbus_method_called ( void * , void * );
-void __signal_callback__dbus_introspect ( void * * );
-void __signal_callback__file_recv_accept ( PurpleXfer * );
-void __signal_callback__file_send_accept ( PurpleXfer * );
-void __signal_callback__file_recv_start ( PurpleXfer * );
-void __signal_callback__file_send_start ( PurpleXfer * );
-void __signal_callback__file_send_cancel ( PurpleXfer * );
-void __signal_callback__file_recv_cancel ( PurpleXfer * );
-void __signal_callback__file_send_complete ( PurpleXfer * );
-void __signal_callback__file_recv_complete ( PurpleXfer * );
-void __signal_callback__file_recv_request ( PurpleXfer * );
-void __signal_callback__image_deleting ( PurpleStoredImage * );
-const char * __signal_callback__log_timestamp ( PurpleLog * , int , int64_t , bool );
-void __signal_callback__displaying_email_notification ( const char * , const char * , const char * , const char * );
-void __signal_callback__displaying_emails_notification ( void * , void * , void * , void * , unsigned int );
-void __signal_callback__displaying_userinfo ( PurpleAccount * , const char * , PurpleNotifyUserInfo * );
-void __signal_callback__plugin_load ( PurplePlugin * );
-void __signal_callback__plugin_unload ( PurplePlugin * );
-void __signal_callback__savedstatus_changed ( PurpleSavedStatus * , PurpleSavedStatus * );
-void __signal_callback__savedstatus_added ( PurpleSavedStatus * );
-void __signal_callback__savedstatus_deleted ( PurpleSavedStatus * );
-void __signal_callback__savedstatus_modified ( PurpleSavedStatus * );
-bool __signal_callback__playing_sound_event ( int , PurpleAccount * );
-void __signal_callback__account_modified ( PurpleAccount * );
-void __signal_callback__gtkblist_hiding ( PurpleBuddyList * );
-void __signal_callback__gtkblist_unhiding ( PurpleBuddyList * );
-void __signal_callback__gtkblist_created ( PurpleBuddyList * );
-void __signal_callback__drawing_tooltip ( PurpleBlistNode * , GString *  , bool );
-const char * __signal_callback__drawing_buddy ( PurpleBuddy * );
-const char * __signal_callback__conversation_timestamp ( PurpleConversation * , int , int64_t , bool );
-bool __signal_callback__displaying_im_msg ( PurpleAccount * , const char * , char * * , PurpleConversation * , int );
-void __signal_callback__displayed_im_msg ( PurpleAccount * , const char * , const char * , PurpleConversation * , int );
-bool __signal_callback__displaying_chat_msg ( PurpleAccount * , const char * , char * * , PurpleConversation * , int );
-void __signal_callback__displayed_chat_msg ( PurpleAccount * , const char * , const char * , PurpleConversation * , int );
-void __signal_callback__conversation_switched ( PurpleConversation * );
-bool __signal_callback__chat_nick_autocomplete ( PurpleConversation * );
-bool __signal_callback__chat_nick_clicked ( PurpleConversation * , const char * , unsigned int );
-]]
-
 local meta_data = ffibuild.GetMetaData(header)
 local top, bottom = ffibuild.SplitHeader(header, {"_Purple", "purple"})
-local header = ffibuild.StripHeader(bottom, meta_data, function(func_name) return func_name:find("^purple_") or func_name:find("^__signal_callback__") end, true)
+local header = ffibuild.StripHeader(bottom, meta_data, function(func_name) return func_name:find("^purple_") end, true)
 
-local lua = ffibuild.BuildGenericHeader(header, "purple", "purple")
-lua = lua .. ffibuild.BuildMetaTableFunctions()
-lua = lua .. ffibuild.BuildHelperFunctions()
+local lua = ffibuild.BuildGenericHeader(header, "purple")
+lua = lua .. ffibuild.BuildHelperFunctions("metatables", "chars_to_string")
 
 lua = lua .. [[
 local function glist_to_table(l, meta_name)
@@ -256,51 +154,51 @@ end
 do -- callbacks
 	lua = lua .. "local callbacks = {}\n"
 
-	for func_name, type in pairs(meta_data.functions) do
-		if func_name:find("__signal_callback__") then
-			local arg_line =  {}
-			local wrap_line = {}
+	local callbacks_meta_data = ffibuild.GetMetaData(dofile("callbacks.lua"))
 
-			if type.arguments then
-				for i, arg in ipairs(type.arguments) do
-					arg = arg:GetPrimitive(meta_data) or arg
-					local decl = arg:GetDeclaration()
+	for func_name, func_type in pairs(callbacks_meta_data.functions) do
+		func_type:MakePrimitive(meta_data)
 
-					if decl == "const char *" or decl == "char *" then
-						wrap_line[i] = "chars_to_string(_"..i..")"
-					elseif decl == "sturct _GList *" or decl == "struct _GList *" then
-						wrap_line[i] = "glist_to_table(_"..i..", 'void *')"
-					elseif decl == "struct GList * *"then
-						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) p[0] = table_to_glist(v) end, function(p) return glist_to_table(p[0]) end)"
-					elseif decl == "char * *" then
-						wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) replace_buffer(p, #v, v) end, function(p) return ffi.string(p[0]) end)"
-					elseif objects[arg:GetBasicType()] then
-						wrap_line[i] = "wrap_pointer(_"..i..", \"" .. objects[arg:GetBasicType()].meta_name .. "\")"
-					else
-						wrap_line[i] = "_" .. i .. " --[["..decl.."]] "
-					end
+		local arg_line =  {}
+		local wrap_line = {}
 
+		if func_type.arguments then
+			for i, arg in ipairs(func_type.arguments) do
+				local decl = arg:GetDeclaration()
 
-					arg_line[i] = "_" .. i
+				if decl == "const char *" or decl == "char *" then
+					wrap_line[i] = "chars_to_string(_"..i..")"
+				elseif decl == "sturct _GList *" or decl == "struct _GList *" then
+					wrap_line[i] = "glist_to_table(_"..i..", 'void *')"
+				elseif decl == "struct GList * *"then
+					wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) p[0] = table_to_glist(v) end, function(p) return glist_to_table(p[0]) end)"
+				elseif decl == "char * *" then
+					wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) replace_buffer(p, #v, v) end, function(p) return ffi.string(p[0]) end)"
+				elseif objects[arg:GetBasicType()] then
+					wrap_line[i] = "wrap_pointer(_"..i..", \"" .. objects[arg:GetBasicType()].meta_name .. "\")"
+				else
+					wrap_line[i] = "_" .. i .. " --[["..decl.."]] "
 				end
+
+				arg_line[i] = "_" .. i
 			end
-
-			table.insert(arg_line, 1, "callback")
-
-			arg_line = table.concat(arg_line, ", ")
-			wrap_line = table.concat(wrap_line, ", ")
-
-			local ret_line = "return ret"
-
-			if type.return_type:GetBasicType() ~= "void" then
-				ret_line = " if ret == nil then return ffi.new(\"" .. type.return_type:GetBasicType() .. "\") end " .. ret_line
-			end
-
-			lua = lua .. "callbacks[\"" .. func_name:gsub("__signal_callback__", ""):gsub("_", "-") .. "\"] = {\n"
-			lua = lua .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
-			lua = lua .. "\tdefinition = \"" .. type:GetDeclaration(nil, true) .. "\",\n"
-			lua = lua .. "}\n"
 		end
+
+		table.insert(arg_line, 1, "callback")
+
+		arg_line = table.concat(arg_line, ", ")
+		wrap_line = table.concat(wrap_line, ", ")
+
+		local ret_line = "return ret"
+
+		if func_type.return_type:GetBasicType() ~= "void" then
+			ret_line = " if ret == nil then return ffi.new(\"" .. func_type.return_type:GetBasicType() .. "\") end " .. ret_line
+		end
+
+		lua = lua .. "callbacks[\"" .. func_name:gsub("_", "-") .. "\"] = {\n"
+		lua = lua .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
+		lua = lua .. "\tdefinition = \"" .. func_type:GetDeclaration(nil, true) .. "\",\n"
+		lua = lua .. "}\n"
 	end
 
 	lua = lua .. [[
