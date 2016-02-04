@@ -4,8 +4,8 @@ PLUGIN_HEADER = libpurple.lua
 
 LUA_DIR = ../../LuaJIT
 LUA_BIN = src/luajit
-LUA_CFLAGS = src
-LUA_LIBS = src/libluajit.a
+LUA_CFLAGS = -I$(LUA_DIR)/src
+LUA_LIBS = -L$(LUA_DIR)/src -lluajit
 LUA_BUILD = build.lua
 
 CC := gcc
@@ -25,10 +25,10 @@ $(PLUGIN_HEADER): $(PLUGIN_NAME).so
 	./$(LUA_DIR)/$(LUA_BIN) $(LUA_BUILD) > $(PLUGIN_HEADER)
 
 $(PLUGIN_NAME).so: $(PLUGIN_NAME).o
-	$(CC) -shared $(CFLAGS) $(PLUGIN_NAME).o -o $(PLUGIN_NAME).so -Bstatic $(LUA_DIR)/$(LUA_LIBS) -Wl,-Bdynamic $(PURPLE_LIBS) $(PIDGIN_LIBS) $(GTK_LIBS) -Wl,--export-dynamic -Wl,-soname
+	$(CC) -shared $(PLUGIN_NAME).o -o $(PLUGIN_NAME).so -Wl,--whole-archive $(LUA_LIBS) -Wl,--no-whole-archive $(PURPLE_LIBS)
 
 $(PLUGIN_NAME).o: $(LUA_DIR)
-	$(CC) $(CFLAGS) -fPIC -c $(PLUGIN_NAME).c -o $(PLUGIN_NAME).o -I$(LUA_DIR)/$(LUA_CFLAGS) $(PURPLE_CFLAGS) $(PIDGIN_CFLAGS) $(GTK_CFLAGS) -DHAVE_CONFIG_H
+	$(CC) $(CFLAGS) -fPIC -c $(PLUGIN_NAME).c -o $(PLUGIN_NAME).o $(LUA_CFLAGS) $(PURPLE_CFLAGS) -DHAVE_CONFIG_H
 
 $(LUA_DIR):
 	cd ../../ && make
