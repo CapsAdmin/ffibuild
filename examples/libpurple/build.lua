@@ -9,6 +9,9 @@ local meta_data = ffibuild.GetMetaData(header)
 local top, bottom = ffibuild.SplitHeader(header, {"_Purple", "purple"})
 local header = ffibuild.StripHeader(bottom, meta_data, function(func_name) return func_name:find("^purple_") end, true)
 
+-- TODO: make a way to keep some structs
+header = header:gsub("struct _GList { };", "struct _GList { void * data; struct _GList * next; struct _GList * prev; };")
+
 local lua = ffibuild.BuildGenericHeader(header, "purple")
 lua = lua .. ffibuild.BuildHelperFunctions("metatables", "chars_to_string")
 
@@ -32,7 +35,7 @@ local function glist_to_table(l, meta_name)
 	return out
 end
 
-ffi.cdef("struct GList * g_list_insert(struct GList *, void *, int);\nstruct GList * g_list_alloc();")
+ffi.cdef("struct _GList * g_list_insert(struct _GList *, void *, int);\nstruct _GList * g_list_alloc();")
 
 local function table_to_glist(tbl)
 	local list = CLIB.g_list_alloc()
@@ -121,7 +124,7 @@ do -- metatables
 	end
 
 	for _, info in pairs(objects) do
-		lua = lua .. ffibuild.BuildMetaTable(info.meta_name, info.declaration, info.functions, argument_translate, return_translate, meta_data)
+		lua = lua .. ffibuild.BuildMetaTable(info.meta_name, info.declaration .. "*", info.functions, argument_translate, return_translate, meta_data)
 	end
 end
 
