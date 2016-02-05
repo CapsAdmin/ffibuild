@@ -33,8 +33,8 @@ ffi.GetMetaData returns a table structured like so
 	unions = {union _PurpleAccount = [union], ...},
 	typedefs = {gboolean = [type], gint = [type], ...},
 	variables = {[variable], ...},
-	enums = {PurpleStatusType = "enum PurpleStatusType{...}", ...},
-	global_enums = "enum {...}",
+	enums = {PurpleStatusType = {{key = "PURPLE_MEDIA_INFO_HANGUP", val = 0}, {key = "PURPLE_MEDIA_INFO_ACCEPT", val = 1}, ...}, ...},
+	global_enums = {{key = "PURPLE_NOTIFY_BUTTON_LABELED", val = 0}, {key = "PURPLE_NOTIFY_BUTTON_CONTINUE", val = 1}, ...},
 } = ffibuild.GetMetaData(header)
 ```
 
@@ -74,4 +74,4 @@ Now it's possible to build your own header using `local header = ffibuild.StripH
 
 ## todo
 Use mingw or visual studio on windows somehow.
-Structs and enums are not objects with content info but instead just strings. In the meantime it's possible to generate empty struct types.
+Structs are not objects with content info but instead just strings. In the meantime it's possible to generate empty struct types.
