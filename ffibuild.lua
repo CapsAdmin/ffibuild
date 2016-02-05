@@ -87,11 +87,17 @@ function ffibuild.StripHeader(header, meta_data, check_function, empty_structs)
 		local basic_type = type:GetBasicType()
 
 		if type:GetSubType() == "struct" then
-			top = top .. basic_type .. " " .. (empty_structs and "{}" or meta_data.structs[basic_type]) .. ";\n"
+			top = top .. basic_type .. " " .. (not empty_structs and meta_data.structs[basic_type] or "{ }") .. ";\n"
 		elseif type:GetSubType() == "union" then
-			top = top .. basic_type .. " " .. (empty_structs and "{}" or meta_data.unions[basic_type]) .. ";\n"
+			top = top .. basic_type .. " " .. (not empty_structs and meta_data.unions[basic_type] or "{ }") .. ";\n"
 		elseif type:GetSubType() == "enum" then
-			top = top .. "typedef " .. basic_type .. " " .. meta_data.enums[basic_type] .. ";\n"
+			local line = {}
+			for i, info in ipairs(meta_data.enums[basic_type]) do
+				line[i] = info.key .. " = " .. info.val
+			end
+			line = table.concat(line, ", ")
+
+			top = top .. "typedef " .. basic_type .. " { " .. line .. " };\n"
 		end
 	end
 
@@ -229,7 +235,6 @@ end
 
 function ffibuild.SplitHeader(header, stops)
 	header = header:gsub("/%*.-%*/", "")
-	header = header:gsub("#.-\n", "")
 
 	local found = {}
 
@@ -255,6 +260,126 @@ function ffibuild.SplitHeader(header, stops)
 	end
 
 	return header:sub(0, stop), header:sub(stop)
+end
+
+do -- enums
+	local function explode(str, split)
+		local out = {}
+
+		for val in (str .. split):gmatch("(.-)"..split) do
+			table.insert(out, val)
+		end
+
+		return out
+	end
+
+	-- TODO: super hacky, make it not rely on FFI
+	-- this also accidentially handles previous enum declarations
+	local lol = math.random(100000)
+	local ffi = require("ffi")
+	local function parse_bit_declaration(bit_decl, key)
+		lol = lol + 1
+		local key = "__" .. lol .. key
+		local ok, val = pcall(function() return tonumber(ffi.cast(ffi.new("enum {" .. key .. " = " .. bit_decl .. " }"), key)) end)
+		if ok then
+			return val
+		else
+			-- worst case scenario
+			local val = parse_bit_declaration(bit_decl, key)
+			if val then
+				return val
+			else
+				-- if this is the case there really needs be a method that doesn't rely on ffi
+				print(val, bit_decl, key, lol)
+			end
+		end
+	end
+
+	local function find_enum(current_meta_data, out, what)
+		for _, info in ipairs(out) do
+			if info.key == what then
+				return info.val
+			end
+		end
+
+		for _, enums in pairs(current_meta_data.global_enums) do
+			for _, info in ipairs(enums) do
+				if info.key == what then
+					return info.val
+				end
+			end
+		end
+
+		for _, enums in pairs(current_meta_data.enums) do
+			for _, info in ipairs(enums) do
+				if info.key == what then
+					return info.val
+				end
+			end
+		end
+	end
+
+	function ffibuild.ParseEnumDeclaration(declaration, current_meta_data)
+		declaration = declaration:sub(3, -3)
+
+		local real_val = 0
+		local out = {}
+
+		for i, line in ipairs(explode(declaration, " , ")) do
+			local key, val = line:match("(.+) = (.+)")
+
+			if key and val then
+				real_val = tonumber(val)
+
+				if not real_val then
+					val = val:gsub("< <", "<<")
+					val = val:gsub("> >", ">>")
+
+					local found = false
+
+					val = val:gsub("(%a[%a%d_]+)", function(what)
+						found = true
+
+						local type = current_meta_data.typedefs[what]
+
+						if type then
+							return type:GetPrimitive(current_meta_data):GetDeclaration()
+						end
+
+						local val = find_enum(current_meta_data, out, what)
+
+						if what then
+							return val
+						end
+
+						print("couldn't resolve enum: ", what)
+
+						return what
+					end)
+
+					if not found then
+						val = find_enum(current_meta_data, out, val) or val
+					end
+
+					local num = tonumber(val)
+
+					if num then
+						real_val = num
+					else
+						real_val = parse_bit_declaration(val, key) or -1337
+					end
+				end
+			else
+				key = line
+			end
+
+			out[i] = {key = key, val = real_val}
+
+			real_val = real_val + 1
+		end
+
+		return out
+	end
 end
 
 do -- type metatables
@@ -597,7 +722,7 @@ do -- type metatables
 			if self.return_type.callback then
 				local ret, urn = self.return_type:GetDeclaration():match("^(.-%( %*) (.+)")
 				local res = ret .. " " .. self.name .. " " .. arg_line .. " " .. urn
-				if res:find("PurpleFilterAccountFunc") then print(res) end
+
 				return res
 			end
 
@@ -715,6 +840,10 @@ function ffibuild.GetMetaData(header)
 	}
 
 	do -- cleanup header
+		-- process all single quote strings
+		header = header:gsub("('%S+')", function(val) return assert(loadstring("return (" .. val .. "):byte()"))() end)
+		header = header:gsub("' '", string.byte(" "))
+
 		-- this assumes the header has been preprocessed with gcc -E -P
 		header = " " .. header
 
@@ -725,7 +854,7 @@ function ffibuild.GetMetaData(header)
 		header = header:gsub("#.-\n", "")
 
 		 -- normalize everything to have equal spacing even between punctation
-		header = header:gsub("([*%(%){}&%[%],;])", " %1 ")
+		header = header:gsub("([*%(%){}&%[%],;&|<>])", " %1 ")
 		header = header:gsub("%s+", " ")
 
 		-- insert a newline after ;
@@ -751,6 +880,9 @@ function ffibuild.GetMetaData(header)
 		-- remove inline functions
 		header = header:gsub(" static __inline.-%b().-%b{}", "")
 		header = header:gsub(" static inline.-%b().-%b{}", "")
+
+		header = header:gsub(" extern __inline.-%b().-%b{}", "")
+		header = header:gsub(" extern inline.-%b().-%b{}", "")
 
 		-- int foo(void); >> int foo();
 		header = header:gsub(" %( void %) ", " ( ) ")
@@ -811,10 +943,11 @@ function ffibuild.GetMetaData(header)
 				local tag, content = line:match("(enum [%a%d_]+) ({.+})")
 
 				if tag then
-					out.enums[tag] = content
+					out.enums[tag] = ffibuild.ParseEnumDeclaration(content, out)
 				else
+					content = line:match("enum ({.+})")
 					-- no type name = global enum
-					table.insert(out.global_enums, line:match("enum ({.+})"))
+					table.insert(out.global_enums, ffibuild.ParseEnumDeclaration(content, out))
 				end
 			elseif line:find("^struct") or line:find("^union") then
 				local keyword = line:match("^([%a%d_]+)")
@@ -825,7 +958,7 @@ function ffibuild.GetMetaData(header)
 				if not tag then
 					-- just a forward declaration or an opaque struct
 					tag = line:match("("..keyword.." [%a%d_]+)")
-					content = "{}"
+					content = "{ }"
 				end
 
 				out[tag] = content
@@ -847,18 +980,24 @@ function ffibuild.GetMetaData(header)
 	end
 
 	do -- global enums
-		local enums
+		local global_enums
 
 		if #out.global_enums > 0 then
-			enums = "enum {\n"
-			for i, v in ipairs(out.global_enums) do
-				enums = enums .. v:match("{( .+ )}")
-				if i ~= #out.global_enums then
-					enums = enums .. ","
+			global_enums = "enum {\n"
+			for i, enums in ipairs(out.global_enums) do
+
+				local line = {}
+				for i, info in ipairs(enums) do
+					line[i] = info.key .. " = " .. info.val
 				end
-				enums = enums .. "\n"
+				line = table.concat(line, ",")
+
+				if i ~= #out.global_enums then
+					global_enums = line .. ","
+				end
+				global_enums = global_enums .. "\n"
 			end
-			enums = enums  .. "};\n"
+			global_enums = global_enums  .. "};\n"
 		end
 
 		out.global_enums = enums
