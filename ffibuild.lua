@@ -1,11 +1,50 @@
+if RELOAD then
+	_G.RELOAD = nil
+	include("/media/caps/ssd_840_120gb/ffibuild/ffibuild/examples/sdl/build.lua")
+	return
+end
+
 local ffibuild = {}
 
-function ffibuild.BuildGenericHeader(ffi_header, ffi_lib)
-	return
+function ffibuild.OutputAndValidate(lua, header)
+	if not RELOAD then
+		-- check if this wokrs if possible
+		if jit and header then
+			local ok, err = pcall(function()
+				require("ffi").cdef(header)
+			end)
+			if not ok then
+				print(err)
+				local line = tonumber(err:match("line (%d+)"))
+				local i = 1
+				for s in header:gmatch("(.-)\n") do
+					if line > i - 3 and line < i + 3 then
+						print(i .. ": " .. s)
+					end
+					i = i + 1
+				end
+				return
+			end
+		end
+
+		assert(loadstring(lua))
+
+		io.write(lua) -- write output to make file
+	end
+end
+
+function ffibuild.BuildGenericLua(ffi_header, ffi_lib, ...)
+	local lua =
 	"local ffi = require(\"ffi\")\n" ..
 	"ffi.cdef([["..ffi_header.."]])\n" ..
 	"local CLIB = ffi.load(\""..ffi_lib.."\")\n" ..
 	"local library = {}\n"
+
+	if ... then
+		lua = lua .. ffibuild.BuildHelperFunctions(...)
+	end
+
+	return lua
 end
 
 ffibuild.helper_functions = {
@@ -69,40 +108,77 @@ function ffibuild.BuildMetaTable(meta_name, declaration, functions, argument_tra
 end
 
 
-function ffibuild.StripHeader(header, meta_data, check_function, empty_structs)
+function ffibuild.BuildHeader(meta_data, check_function, check_enums, empty_structs)
 	local required = {}
+	local done = {}
 
 	local bottom = ""
 
 	for func_name, func_type in pairs(meta_data.functions) do
 		if not check_function or check_function(func_name, func_type) then
-			func_type:MakePrimitive(meta_data, required)
-			bottom = bottom .. func_type:GetDeclaration() .. ";\n"
+			func_type:MakePrimitive(meta_data)
+			func_type:FetchRequired(meta_data, required, done)
+			bottom = bottom .. func_type:GetDeclaration(meta_data) .. ";\n"
 		end
 	end
 
 	local top = ""
 
+	if #meta_data.global_enums > 0 then
+
+		local str = {}
+		for i, enums in ipairs(meta_data.global_enums) do
+
+			local line = {}
+			for i, info in ipairs(enums) do
+				if not check_enums or check_enums(info.key, info) then
+					line[i] = info.key .. " = " .. info.val
+				end
+			end
+			if #line > 0 then
+				line = table.concat(line, ", ")
+
+				table.insert(str, line)
+			end
+		end
+		top = top .. "enum {\n" .. table.concat(str, ",\n") .. "\n};\n"
+	end
+
+	for _, type in ipairs(required) do
+		if type:GetSubType() == "enum" then
+			local basic_type = type:GetBasicType()
+
+			local line = {}
+			for i, info in ipairs(meta_data.enums[basic_type]) do
+				if not check_enums or check_enums(info.key, info) then
+					line[i] = info.key .. " = " .. info.val
+				end
+			end
+
+			if #line > 0 then
+				line = table.concat(line, ", ")
+
+				top = top .. "typedef " .. basic_type .. " { " .. line .. " };\n"
+			end
+		end
+	end
+
 	for _, type in ipairs(required) do
 		local basic_type = type:GetBasicType()
 
 		if type:GetSubType() == "struct" then
-			top = top .. basic_type .. " " .. (not empty_structs and meta_data.structs[basic_type] or "{ }") .. ";\n"
-		elseif type:GetSubType() == "union" then
-			top = top .. basic_type .. " " .. (not empty_structs and meta_data.unions[basic_type] or "{ }") .. ";\n"
-		elseif type:GetSubType() == "enum" then
-			local line = {}
-			for i, info in ipairs(meta_data.enums[basic_type]) do
-				line[i] = info.key .. " = " .. info.val
+			if not empty_structs and meta_data.structs[basic_type] then
+				top = top .. basic_type .. " " .. meta_data.structs[basic_type]:GetPrimitive(meta_data):GetDeclaration(meta_data) .. ";\n"
+			else
+				top = top .. basic_type .. " { };\n"
 			end
-			line = table.concat(line, ", ")
-
-			top = top .. "typedef " .. basic_type .. " { " .. line .. " };\n"
+		elseif type:GetSubType() == "union" then
+			if not empty_structs and meta_data.unions[basic_type] then
+				top = top .. basic_type .. " " .. meta_data.unions[basic_type]:GetPrimitive(meta_data):GetDeclaration(meta_data) .. ";\n"
+			else
+				top = top .. basic_type .. " { };\n"
+			end
 		end
-	end
-
-	if meta_data.global_enums then
-		top = meta_data.global_enums .. top
 	end
 
 	return top .. bottom
@@ -134,22 +210,26 @@ end
 function ffibuild.BuildFunction(friendly_name, real_name, func_type, call_translate, return_translate, meta_data, first_argument_self, clib)
 	clib = clib or "CLIB"
 
-	local parameters, call = func_type:GetParameters(first_argument_self, function(type, name)
-		type = type:GetPrimitive(meta_data)
-
-		return
-			call_translate and
-			call_translate(type:GetDeclaration(), name, type, func_type) or
-			name
-	end)
-
 	local s = ""
-	s = s .. friendly_name .. " = function(" .. parameters .. ") "
-	s = s .. "local v = " .. clib .. "." .. real_name .. "(" .. call .. ") "
-	local return_type = func_type.return_type:GetPrimitive(meta_data) or func_type.return_type
-	local declaration = return_type:GetDeclaration()
+
+	if call_translate or return_translate then
+		local parameters, call = func_type:GetParameters(first_argument_self, call_translate and function(type, name)
+			type = type:GetPrimitive(meta_data)
+
+			return	call_translate(type:GetDeclaration(), name, type, func_type) or name
+		end)
+
+
+		s = s .. friendly_name .. " = function(" .. parameters .. ") "
+		s = s .. "local v = " .. clib .. "." .. real_name .. "(" .. call .. ") "
+	else
+		s = s .. friendly_name .. " = " .. clib .. "." .. real_name
+	end
 
 	if return_translate then
+		local return_type = func_type.return_type:GetPrimitive(meta_data) or func_type.return_type
+		local declaration = return_type:GetDeclaration()
+
 		local ret, func = return_translate(declaration, return_type, func_type)
 
 		s = s .. (ret or "")
@@ -159,8 +239,10 @@ function ffibuild.BuildFunction(friendly_name, real_name, func_type, call_transl
 		end
 	end
 
-	s = s .. " return v "
-	s = s .. "end"
+	if call_translate or return_translate then
+		s = s .. " return v "
+		s = s .. "end"
+	end
 
 	return s
 end
@@ -263,23 +345,13 @@ function ffibuild.SplitHeader(header, stops)
 end
 
 do -- enums
-	local function explode(str, split)
-		local out = {}
-
-		for val in (str .. split):gmatch("(.-)"..split) do
-			table.insert(out, val)
-		end
-
-		return out
-	end
-
 	-- TODO: super hacky, make it not rely on FFI
 	-- this also accidentially handles previous enum declarations
 	local lol = math.random(100000)
 	local ffi = require("ffi")
-	local function parse_bit_declaration(bit_decl, key)
+	local function parse_bit_declaration(bit_decl, enum_name)
 		lol = lol + 1
-		local key = "__" .. lol .. key
+		local key = "__" .. lol .. enum_name
 		local ok, val = pcall(function() return tonumber(ffi.cast(ffi.new("enum {" .. key .. " = " .. bit_decl .. " }"), key)) end)
 		if ok then
 			return val
@@ -325,7 +397,7 @@ do -- enums
 		local real_val = 0
 		local out = {}
 
-		for i, line in ipairs(explode(declaration, " , ")) do
+		for line in (declaration .. " , "):gmatch("(.-) , ") do
 			local key, val = line:match("(.+) = (.+)")
 
 			if key and val then
@@ -373,7 +445,7 @@ do -- enums
 				key = line
 			end
 
-			out[i] = {key = key, val = real_val}
+			table.insert(out, {key = key, val = real_val})
 
 			real_val = real_val + 1
 		end
@@ -385,7 +457,7 @@ end
 do -- type metatables
 	local metatables = {}
 
-	for _, name in ipairs({"function", "type", "var_arg"}) do
+	for _, name in ipairs({"function", "struct", "type", "var_arg"}) do
 		local META = {}
 		META.__index = META
 		META.MetaType = name
@@ -398,13 +470,14 @@ do -- type metatables
 		function META:GetCopy() end
 		function META:GetBasicType() end
 		function META:GetSubType() return self:GetBasicType() end
+		function META:FetchRequired(meta_data, out, temp) temp = temp or {} table.insert(out, 1, self) end
 
 		metatables[name] = META
 	end
 
 	for name, meta in pairs(metatables) do
 		for other_name in pairs(metatables) do
-			meta["Is" .. ffibuild.ChangeCase(other_name, "foo_bar", "FooBar")] = function(self) return self.MetaName == name end
+			meta["Is" .. ffibuild.ChangeCase(other_name, "foo_bar", "FooBar")] = function(self) return self.MetaType == name end
 		end
 	end
 
@@ -475,14 +548,20 @@ do -- type metatables
 			"volatile",
 		}
 
-		function TYPE:GetDeclaration(meta_data)
-			local node = self:GetPrimitive(meta_data).tree
+		function TYPE:GetDeclaration(meta_data, type_replace, ...)
+			local primitive = self--:GetPrimitive(meta_data)
+
+			if not primitive.tree then
+				return primitive:GetDeclaration(meta_data, type_replace, ...)
+			end
+
+			local node = primitive.tree
 
 			local declaration = {}
 
 			while true do
 				if node.type then
-					table.insert(declaration, node.type:reverse())
+					table.insert(declaration, (type_replace or node.type):reverse())
 				end
 
 				for _, flag in ipairs(flags) do
@@ -515,13 +594,22 @@ do -- type metatables
 		end
 
 		function TYPE:GetCopy()
-			return ffibuild.CreateType(self:GetDeclaration(), "type")
+			local copy = ffibuild.CreateType(self:GetDeclaration(), "type")
+
+			for k,v in pairs(self) do
+				if type(v) ~= "table" then
+					copy[k] = v
+				end
+			end
+
+			return copy
 		end
 
 		function TYPE:GetPrimitive(meta_data)
-			if not meta_data or not meta_data.typedefs[self:GetBasicType()] then return self end
+			local copy = self--:GetCopy()
 
-			local copy = self:GetCopy()
+			if not meta_data or not meta_data.typedefs[self:GetBasicType()] then return copy end
+
 			local type = copy
 
 			for i = 1, 10 do
@@ -529,11 +617,13 @@ do -- type metatables
 
 				if not type then break end
 
-				local type = type:GetCopy()
+				local type = type:GetCopy(meta_data)
 
 				if getmetatable(type) ~= getmetatable(copy) then
+					local name = copy.name
 					for k,v in pairs(copy) do copy[k] = nil end
 					for k,v in pairs(type) do copy[k] = v end
+					copy.name = name
 
 					setmetatable(copy, getmetatable(type))
 
@@ -554,7 +644,7 @@ do -- type metatables
 			return copy
 		end
 
-		function TYPE:MakePrimitive(meta_data, out)
+		function TYPE:MakePrimitive(meta_data)
 			local new_type = self:GetPrimitive(meta_data)
 
 			if new_type and new_type ~= self then
@@ -563,16 +653,45 @@ do -- type metatables
 
 				if getmetatable(new_type) ~= getmetatable(self) then
 					setmetatable(self, getmetatable(new_type))
-					self:MakePrimitive(meta_data, out)
+					self:MakePrimitive(meta_data)
 				end
 
-				if out then
-					for i, v in ipairs(out) do
-						if v:GetBasicType() == self:GetBasicType() then
-							return
-						end
+				if meta_data then
+					local basic_type = self:GetBasicType()
+					if meta_data.structs[basic_type] then
+						meta_data.structs[basic_type]:MakePrimitive(meta_data)
+					elseif meta_data.unions[basic_type] then
+						meta_data.unions[basic_type]:MakePrimitive(meta_data)
 					end
-					table.insert(out, 1, self)
+				end
+			end
+		end
+
+		function TYPE:FetchRequired(meta_data, out, temp)
+			temp = temp or {}
+
+			local primitive = self:GetPrimitive(meta_data)
+			local basic_type = primitive:GetBasicType()
+
+			if temp[basic_type] then
+				for i,v in ipairs(out) do
+					if v:GetBasicType() == basic_type then
+						table.remove(out, i)
+						table.insert(out, 1, v)
+						return
+					end
+				end
+			else
+				table.insert(out, 1, primitive)
+			end
+
+			temp[basic_type] = true
+
+			if meta_data then
+				if meta_data.structs[basic_type] then
+					meta_data.structs[basic_type]:FetchRequired(meta_data, out, temp)
+				elseif meta_data.unions[basic_type] then
+					meta_data.unions[basic_type]:FetchRequired(meta_data, out, temp)
 				end
 			end
 		end
@@ -633,6 +752,9 @@ do -- type metatables
 
 			if is_callback then
 				return_line, func_type, func_name, arg_line = declaration:match("^(.-)%( (%*.*) ([%a%d_]+) %) (%b())$")
+				if not return_line then
+					return_line, func_type, func_name, arg_line = declaration:match("^(.-)%( %( (%*.*) ([%a%d_]+) %) (%b()) %)$")
+				end
 			else
 				return_line, func_name, arg_line = declaration:match("(.-) ([%a%d_]+) (%b())")
 			end
@@ -699,6 +821,12 @@ do -- type metatables
 			return setmetatable(copy, FUNCTION)
 		end
 
+		function FUNCTION:GetPrimitive(meta_data)
+			local copy = self:GetCopy()
+			copy:MakePrimitive(meta_data)
+			return copy
+		end
+
 		function FUNCTION:GetBasicType()
 			return self.callback and "callback" or "function"
 		end
@@ -707,7 +835,7 @@ do -- type metatables
 			return self:GetBasicType()
 		end
 
-		function FUNCTION:GetDeclaration(meta_data, as_callback)
+		function FUNCTION:GetDeclaration(meta_data, as_callback, name)
 
 			local arg_line = {}
 
@@ -727,17 +855,21 @@ do -- type metatables
 			end
 
 			if self.callback or as_callback == true then
-				return self.return_type:GetDeclaration(meta_data) .. " ( " .. (self.func_type or "*") .. " ) " .. arg_line
+				if name then
+					return self.return_type:GetDeclaration(meta_data) .. " ( " .. (self.func_type or "* ") .. name .. " ) " .. arg_line
+				else
+					return self.return_type:GetDeclaration(meta_data) .. " ( " .. (self.func_type or "*") .. " ) " .. arg_line
+				end
 			else
 				return self.return_type:GetDeclaration(meta_data)  .. " " .. self.name .. " " .. arg_line
 			end
 		end
 
-		function FUNCTION:MakePrimitive(...)
-			self.return_type:MakePrimitive(...)
+		function FUNCTION:MakePrimitive(meta_data)
+			self.return_type:MakePrimitive(meta_data)
 			if self.arguments then
 				for i, arg in ipairs(self.arguments) do
-					arg:MakePrimitive(...)
+					arg:MakePrimitive(meta_data)
 				end
 			end
 		end
@@ -795,7 +927,7 @@ do -- type metatables
 
 				table.insert(parameters, name)
 
-				local res = check(arg, name)
+				local res = check and check(arg, name) or name
 
 				if res then
 					table.insert(call, res)
@@ -803,6 +935,158 @@ do -- type metatables
 			end
 
 			return table.concat(parameters, ", "), table.concat(call, ", ")
+		end
+
+		function FUNCTION:FetchRequired(meta_data, out, temp)
+			temp = temp or {}
+
+			self.return_type:FetchRequired(meta_data, out, temp)
+
+			if self.arguments then
+				for i, arg in ipairs(self.arguments) do
+					arg:FetchRequired(meta_data, out, temp)
+				end
+			end
+		end
+	end
+
+	do -- struct
+		local STRUCT = metatables["struct"]
+
+		local function explode(str, split)
+
+			local temp = {}
+			str = str:gsub("(%b{})", function(str) table.insert(temp, str) return "___TEMP___" end)
+
+			local out = {}
+
+			for val in str:gmatch("(.-)"..split) do
+				if val:find("___TEMP___", nil, true) then val = val:gsub("___TEMP___", function() return table.remove(temp, 1) end) end
+				table.insert(out, val)
+			end
+
+			return out
+		end
+
+		function STRUCT:Create(declaration, is_union, meta_data)
+			declaration = declaration:sub(3, -2)
+
+			local out = {}
+
+			for i, line in ipairs(explode(declaration, " ; ")) do
+				if line:find("^enum") then
+					print(line)
+				elseif line:find("^struct") or line:find("^union") then
+					local keyword = line:match("^([%a%d_]+)")
+
+					if line:find("%b{}") then
+						local tag, content, name = line:match("^(" .. keyword .. " [%a%d_]+) ({.+}) (.+)")
+						if not tag then
+							content, name = line:match("^" .. keyword .. " ({.+}) (.+)")
+						end
+
+						if not content then
+							content = line:match("^" .. keyword .. " ({.+})$")
+							name = ""
+							tag = ""
+						end
+
+						local type = ffibuild.CreateType(content, "struct", keyword == "union")
+						type.name = name
+						type.tag = tag
+
+						table.insert(out, type)
+
+						if meta_data and tag then
+							(keyword == "struct" and meta_data.structs or meta_data.unions)[tag] = type
+						end
+					else
+						local declaration, name = line:match("^(" .. keyword .. " [%a%d%s_%*]-) ([%a%d_]-)$")
+
+						local type = ffibuild.CreateType(declaration, "type")
+						type.name = name
+
+						table.insert(out, type)
+					end
+				elseif line:find("%b() %b()") then
+					table.insert(out, ffibuild.CreateType(line, "function", true))
+				elseif line:find(" , ") then
+					local declaration, names = line:match("([%a%d_]+) (.+)")
+					for name in (names .. " , "):gmatch("(.-) , ") do
+						local type = ffibuild.CreateType(declaration, "type")
+						type.name = name
+						table.insert(out, type)
+					end
+				elseif line:find(":") then
+					local declaration, name = line:match("^([%a%d%s_%*]-) ([%a%d_:]-)$")
+				else
+					local declaration, name = line:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
+
+					local type = ffibuild.CreateType(declaration, "type")
+					type.name = name
+
+					table.insert(out, type)
+				end
+			end
+
+			return {
+				data = out,
+				struct = not is_union,
+			}
+		end
+
+		function STRUCT:GetCopy()
+			local copy = {data = {}, struct = self.struct}
+			for i,v in ipairs(self.data) do
+				copy.data[i] = v:GetCopy()
+				copy.data[i].name = v.name
+			end
+			return setmetatable(copy, STRUCT)
+		end
+
+		function STRUCT:GetBasicType()
+			return self.struct and "struct" or "union"
+		end
+
+		function STRUCT:GetSubType()
+			return self:GetBasicType()
+		end
+
+		function STRUCT:GetPrimitive(meta_data)
+			local copy = self:GetCopy()
+			copy:MakePrimitive(meta_data)
+			return copy
+		end
+
+		function STRUCT:GetDeclaration(meta_data)
+
+			local str = " { "
+			for _, type in ipairs(self.data) do
+				if type.MetaType == "function" then
+					str = str .. type:GetDeclaration(meta_data, true, type.name) .. " ; "
+				elseif type.MetaType == "struct" then
+					str = str .. type:GetBasicType() .. " " ..type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
+				else
+					str = str .. type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
+				end
+			end
+			str = str .. " }"
+
+			return str
+		end
+
+		function STRUCT:MakePrimitive(meta_data)
+			for _, type in ipairs(self.data) do
+				type:MakePrimitive(meta_data)
+			end
+		end
+
+		function STRUCT:FetchRequired(meta_data, out, temp)
+			temp = temp or {}
+
+			for _, type in ipairs(self.data) do
+				type:FetchRequired(meta_data, out, temp)
+			end
 		end
 	end
 
@@ -892,7 +1176,6 @@ function ffibuild.GetMetaData(header)
 	end
 
 	for line in header:gmatch(" (.-);\n") do
-
 		if line:find("^typedef") then
 			if line:find("%b() %b()") and not line:find("%b{}") then
 				local type = ffibuild.CreateType(line:match("^typedef (.+) $"), "function", true)
@@ -903,7 +1186,7 @@ function ffibuild.GetMetaData(header)
 
 				if content:find("%b{}") then
 					if content:find("^[%a%d_]+ [%a%d_]+ ({.+})") then
-						line = content
+						line = content:gsub("^(.-{.+})(.-)$", function(a, b) alias = alias .. b return a end)
 					else
 						line = content:gsub("^([%a%d_]+)", function(start) return start .. " " .. alias end)
 					end
@@ -951,9 +1234,8 @@ function ffibuild.GetMetaData(header)
 				end
 			elseif line:find("^struct") or line:find("^union") then
 				local keyword = line:match("^([%a%d_]+)")
-				local out = keyword == "struct" and out.structs or out.unions
 
-				local tag, content = line:match("("..keyword.." [%a%d_]+) ({.+)") -- some structs can end with "*"
+				local tag, content = line:match("("..keyword.." [%a%d_]+) ({.+})")
 
 				if not tag then
 					-- just a forward declaration or an opaque struct
@@ -961,7 +1243,8 @@ function ffibuild.GetMetaData(header)
 					content = "{ }"
 				end
 
-				out[tag] = content
+				local tbl = keyword == "struct" and out.structs or out.unions
+				tbl[tag] = ffibuild.CreateType(content, "struct", keyword == "union", out)
 			elseif line:find("^extern") then
 				if line:find("%b() %b()") then
 					local type = ffibuild.CreateType(line:match("extern (.+) $"), "function", true)
@@ -977,30 +1260,6 @@ function ffibuild.GetMetaData(header)
 				error(line, "?")
 			end
 		end
-	end
-
-	do -- global enums
-		local global_enums
-
-		if #out.global_enums > 0 then
-			global_enums = "enum {\n"
-			for i, enums in ipairs(out.global_enums) do
-
-				local line = {}
-				for i, info in ipairs(enums) do
-					line[i] = info.key .. " = " .. info.val
-				end
-				line = table.concat(line, ",")
-
-				if i ~= #out.global_enums then
-					global_enums = line .. ","
-				end
-				global_enums = global_enums .. "\n"
-			end
-			global_enums = global_enums  .. "};\n"
-		end
-
-		out.global_enums = enums
 	end
 
 	return out

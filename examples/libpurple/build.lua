@@ -7,13 +7,12 @@ local header = ffibuild.GetHeader([[
 
 local meta_data = ffibuild.GetMetaData(header)
 local top, bottom = ffibuild.SplitHeader(header, {"_Purple", "purple"})
-local header = ffibuild.StripHeader(bottom, meta_data, function(func_name) return func_name:find("^purple_") end, true)
+local header = ffibuild.BuildHeader(meta_data, function(func_name) return func_name:find("^purple_") end, nil, true)
 
 -- TODO: make a way to keep some structs
 header = header:gsub("struct _GList { };", "struct _GList { void * data; struct _GList * next; struct _GList * prev; };")
 
-local lua = ffibuild.BuildGenericHeader(header, "purple")
-lua = lua .. ffibuild.BuildHelperFunctions("metatables", "chars_to_string")
+local lua = ffibuild.BuildGenericLua(header, "purple", "metatables", "chars_to_string")
 
 lua = lua .. [[
 local function glist_to_table(l, meta_name)
@@ -238,13 +237,4 @@ end
 
 lua = lua .. "return library\n"
 
-if not RELOAD then
-	io.write(lua) -- write output to make file
-
-	-- check if this wokrs if possible
-	if jit then
-		require("ffi").cdef(header)
-	end
-
-	assert(loadstring(lua))
-end
+ffibuild.OutputAndValidate(lua, header)
