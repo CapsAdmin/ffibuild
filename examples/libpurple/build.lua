@@ -1,13 +1,13 @@
 local ffibuild = dofile("../../ffibuild.lua")
 
-local header = ffibuild.GetHeader([[
+local header = ffibuild.BuildCHeader([[
 	#define PURPLE_PLUGINS
 	#include <libpurple/purple.h>
 ]], "$(pkg-config purple --cflags)")
 
 local meta_data = ffibuild.GetMetaData(header)
 local top, bottom = ffibuild.SplitHeader(header, {"_Purple", "purple"})
-local header = ffibuild.BuildHeader(meta_data, function(func_name) return func_name:find("^purple_") end, nil, true)
+local header = ffibuild.BuildMinimalHeader(meta_data, function(func_name) return func_name:find("^purple_") end, function(name) return name:find("PURPLE_") end, true)
 
 -- TODO: make a way to keep some structs
 header = header:gsub("struct _GList { };", "struct _GList { void * data; struct _GList * next; struct _GList * prev; };")
@@ -94,13 +94,13 @@ do -- metatables
 		saved_status = {"savedstatus"},
 	}
 
-	for _, info in ipairs(ffibuild.GetStructTypes(meta_data, "^Purple(.+)")) do
+	for _, info in ipairs(meta_data:GetStructTypes("^Purple(.+)")) do
 		local basic_type = info.type:GetBasicType()
 		objects[basic_type] = {meta_name = info.name, declaration = info.type:GetDeclaration(), functions = {}}
 
 		local prefix = ffibuild.ChangeCase(basic_type:match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
 
-		for func_name, func_info in pairs(ffibuild.GetFunctionsStartingWithType(meta_data, info.type)) do
+		for func_name, func_info in pairs(meta_data:GetFunctionsStartingWithType(info.type)) do
 			local friendly = func_name:match("purple_" .. prefix .. "_(.+)")
 
 			if not friendly and prefix_translate[prefix] then
@@ -123,7 +123,7 @@ do -- metatables
 	end
 
 	for _, info in pairs(objects) do
-		lua = lua .. ffibuild.BuildMetaTable(info.meta_name, info.declaration .. "*", info.functions, argument_translate, return_translate, meta_data)
+		lua = lua .. ffibuild.BuildLuaMetaTable(info.meta_name, info.declaration .. "*", info.functions, argument_translate, return_translate, meta_data)
 	end
 end
 
@@ -147,7 +147,7 @@ do -- libraries
 	for library_name, functions in pairs(libraries) do
 		lua = lua .. "library." .. library_name .. " = {\n"
 		for friendly_name, func_type in pairs(functions) do
-			lua = lua .. "\t" .. ffibuild.BuildFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data) .. ",\n"
+			lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data) .. ",\n"
 		end
 		lua = lua .. "}\n"
 	end
