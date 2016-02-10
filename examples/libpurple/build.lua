@@ -6,7 +6,7 @@ local header = ffibuild.BuildCHeader([[
 ]], "$(pkg-config purple --cflags)")
 
 local meta_data = ffibuild.GetMetaData(header)
-local top, bottom = ffibuild.SplitHeader(header, {"_Purple", "purple"})
+local top, bottom = ffibuild.SplitHeader(header, "_Purple", "purple")
 local header = ffibuild.BuildMinimalHeader(meta_data, function(func_name) return func_name:find("^purple_") end, function(name) return name:find("PURPLE_") end, true)
 
 -- TODO: make a way to keep some structs

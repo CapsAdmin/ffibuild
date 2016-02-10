@@ -16,12 +16,12 @@ function ffibuild.BuildCHeader(c_source, flags)
 	return header
 end
 
-function ffibuild.SplitHeader(header, stops)
+function ffibuild.SplitHeader(header, ...)
 	header = header:gsub("/%*.-%*/", "")
 
 	local found = {}
 
-	for _, what in pairs(stops) do
+	for _, what in ipairs({...}) do
 		local _, stop_pos = header:find(".-" .. what)
 
 		if stop_pos then
@@ -1050,7 +1050,7 @@ do -- type metatables
 	end
 end
 
-function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enums, empty_structs)
+function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enum, empty_structs)
 	local required = {}
 	local done = {}
 
@@ -1069,7 +1069,7 @@ function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enums, emp
 	-- global enums
 	if #meta_data.global_enums > 0 then
 		for _, enums in ipairs(meta_data.global_enums) do
-			local declaration = enums:GetDeclaration(check_enums)
+			local declaration = enums:GetDeclaration(check_enum)
 			if declaration then
 				top = top .. declaration .. "\n"
 			end
@@ -1081,7 +1081,7 @@ function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enums, emp
 		if type:GetSubType() == "enum" then
 			local enums = meta_data.enums[type:GetBasicType()]
 
-			local declaration = enums:GetDeclaration(check_enums)
+			local declaration = enums:GetDeclaration(check_enum)
 			if declaration then
 				top = top .. declaration .. "\n"
 			end
