@@ -70,7 +70,7 @@ You can use `local top_header, bottom_header = ffibuild.SplitHeader(header, "_Pu
 
 You can then call `local meta_data = ffibuild.GetMetaData(bottom_header)` to get libpurple specific info only and then evaluate types with `local meta_data_internal = ffibuild.GetMetaData(top_header)`
 
-Now it's possible to build your own header using `local header = ffibuild.StripHeader(bottom_header, meta_data_internal, <check_function, empty_structs>)` or `type:GetPrimitive(meta_data)` along with `type:GetDeclaration()`
+Now it's possible to build your own header using `local header = ffibuild.BuildHeader(meta_data_internal, <check_function, check_enums, empty_structs>)` or `type:GetPrimitive(meta_data)` along with `type:GetDeclaration()`
 
 ## todo
 Use mingw or visual studio on windows somehow.
