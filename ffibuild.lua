@@ -1,3 +1,10 @@
+if RELOAD then
+	_G.RELOAD = nil
+	--include("/media/caps/ssd_840_120gb/ffibuild/ffibuild/examples/sdl/build.lua")
+	include("/media/caps/ssd_840_120gb/ffibuild/ffibuild/examples/libpurple/build.lua")
+	return
+end
+
 local ffibuild = {}
 
 function ffibuild.BuildCHeader(c_source, flags)
@@ -58,12 +65,12 @@ function ffibuild.GetMetaData(header)
 	}
 
 	do -- cleanup header
+		-- this assumes the header has been preprocessed with gcc -E -P
+		header = " " .. header
+
 		-- process all single quote strings
 		header = header:gsub("('%S+')", function(val) return assert(loadstring("return (" .. val .. "):byte()"))() end)
 		header = header:gsub("' '", string.byte(" "))
-
-		-- this assumes the header has been preprocessed with gcc -E -P
-		header = " " .. header
 
 		-- remove comments
 		header = header:gsub("/%*.-%*/", "")
@@ -105,57 +112,67 @@ function ffibuild.GetMetaData(header)
 		-- int foo(void); >> int foo();
 		header = header:gsub(" %( void %) ", " ( ) ")
 
-		-- foo bar[] > foo *bar
+		-- foo bar[?] > foo *bar
 		header = header:gsub(" ([%a%d_]+) %b[] ", " * %1 ")
 	end
 
+	local function is_function(str) return str:find("^.+%b() $") end
+	local function is_function_pointer(str) return str:find("^.-%(.-%*.-%).-%b() $") end
+
 	for line in header:gmatch(" (.-);\n") do
+
+		local extern
+		local typedef
+
 		if line:find("^typedef") then
-			if line:find("%b() %b()") and not line:find("%b{}") then
-				local type = ffibuild.CreateType("function", line:match("^typedef (.+) $"), true)
+			typedef = true
+			line = line:match("^typedef (.+)")
+
+			if is_function_pointer(line) then
+				local type = ffibuild.CreateType("function", line:sub(0, -2), true)
 				meta_data.typedefs[type.name] = type
 				line = nil
+			elseif is_function(line) then
+				local alias = line:match(".- ([%a%d_]+) %b()")
+				meta_data.typedefs[alias] = ffibuild.CreateType("function", line:sub(0, -2))
 			else
-				local content, alias = line:match("^typedef (.+) ([%a%d_]+)")
+				local content, alias = line:match("^(.+) ([%a%d_]+)")
 
-				if content:find("%b{}") then
-					if content:find("^[%a%d_]+ [%a%d_]+ ({.+})") then
-						line = content:gsub("^(.-{.+})(.-)$", function(a, b) alias = alias .. b return a end)
-					else
-						line = content:gsub("^([%a%d_]+)", function(start) return start .. " " .. alias end)
+				if content:find("^struct ") or content:find("^union ") or content:find("^enum ") then
+					local tag, found = content:gsub(" %b{}", "")
+
+					if not tag:find("%s") then
+						tag = tag .. " " .. alias
+						content = content:gsub("^(%l+ )", tag .. " ")
 					end
 
-					local content = line:match("^([%a%d_]+ [%a%d_]+)")
-					meta_data.typedefs[alias] = ffibuild.CreateType("type", content)
+					meta_data.typedefs[alias] = ffibuild.CreateType("type", tag)
 
-				elseif line:find("%b()") then
-					content = line:match("^typedef (.+) $")
-					alias = content:match(".- ([%a%d_]+) %b()")
-
-					meta_data.typedefs[alias] = ffibuild.CreateType("function", content)
-				else
-					if line:find("^struct") or line:find("^union") then
-						line = content
-					else
+					if found == 0 then
 						line = nil
+					else
+						line = content
 					end
-
+				else
 					meta_data.typedefs[alias] = ffibuild.CreateType("type", content)
+
+					line = nil
 				end
 			end
+		elseif line:find("^extern") then
+			extern = true
+			line = line:match("^extern (.+)")
+		elseif line:find("^static") then
+			print(line)
 		end
 
 		if line then
-			if line:find("^[%a%d%s_]+.-[%a%d_]+ %b() $") then
-				-- uh
-				if line:find("^extern") then
-					line = line:sub(#"extern"+2)
-				end
-
-				local type = ffibuild.CreateType("function", line)
-
+			if is_function_pointer(line) then
+				local type = ffibuild.CreateType("function", line:sub(0, -2), true)
 				meta_data.functions[type.name] = type
-
+			elseif is_function(line) then
+				local type = ffibuild.CreateType("function", line:sub(0, -2))
+				meta_data.functions[type.name] = type
 			elseif line:find("^enum") then
 				local tag, content = line:match("(enum [%a%d_]+) ({.+})")
 
@@ -170,6 +187,7 @@ function ffibuild.GetMetaData(header)
 			elseif line:find("^struct") or line:find("^union") then
 				local keyword = line:match("^([%a%d_]+)")
 
+
 				local tag, content = line:match("("..keyword.." [%a%d_]+) ({.+})")
 
 				if not tag then
@@ -180,19 +198,9 @@ function ffibuild.GetMetaData(header)
 
 				local tbl = keyword == "struct" and meta_data.structs or meta_data.unions
 				tbl[tag] = ffibuild.CreateType("struct", content, keyword == "union", meta_data)
-			elseif line:find("^extern") then
-				if line:find("%b() %b()") then
-					local type = ffibuild.CreateType("function", line:match("extern (.+) $"), true)
-					meta_data.variables[type.name] = type
-				else
-					local tag, name = line:match("^extern (.+) ([%a%d_]+) $")
-
-					meta_data.variables[name] = ffibuild.CreateType("type", tag)
-				end
-			elseif line:find("^static") then
-
-			else
-				error(line, "?")
+			elseif extern then
+				local tag, name = line:match("^(.+) ([%a%d_]+) $")
+				meta_data.variables[name] = ffibuild.CreateType("type", tag)
 			end
 		end
 	end
@@ -300,26 +308,41 @@ do -- type metatables
 	do -- enums
 		local ENUMS = metatables.enums
 
-		-- TODO: super hacky, make it not rely on FFI
-		-- this also accidentially handles previous enum declarations
-		local lol = math.random(100000)
-		local ffi = require("ffi")
-		local function parse_bit_declaration(bit_decl, enum_name)
-			lol = lol + 1
-			local key = "__" .. lol .. enum_name
-			local ok, val = pcall(function() return tonumber(ffi.cast(ffi.new("enum {" .. key .. " = " .. bit_decl .. " }"), key)) end)
-			if ok then
-				return val
-			else
-				-- worst case scenario
-				local val = parse_bit_declaration(bit_decl, key)
-				if val then
-					return val
-				else
-					-- if this is the case there really needs be a method that doesn't rely on ffi
-					print(val, bit_decl, key, lol)
-				end
+		local operators = {}
+
+		local LR = function(operator, name)
+			local func = bit[name]
+			operators[operator] = setmetatable({find = operator:gsub("(.)", "%%%1"), replace = "%%_O['"..operator.."']%%"}, {__mod = function(a) return setmetatable({}, {__mod = function(_,b) return func(a, b) end}) end})
+		end
+
+		local L = function(operator, name)
+			local func = bit[name]
+			operators[operator] = setmetatable({find = operator:gsub("(.)", "%%%1"), replace = "_O['"..operator.."']"}, {__call = function(_, a) return func(a) end})
+		end
+
+		LR("&", "band")
+		LR("|", "bor")
+		LR("^", "bxor")
+		LR("<<", "lshift")
+		LR(">>", "rshift")
+		L("~", "bnot")
+
+		local function parse_bit_declaration(expression)
+			expression = expression:gsub("([%d%.xabcdefABCDEF]+)", "(%1)")
+
+			for operator, info in pairs(operators) do
+				expression = expression:gsub(info.find, info.replace)
 			end
+
+			local func, err = loadstring("local _O = ... return " .. expression)
+			if func then
+				local ok, msg = pcall(func, operators)
+				if ok then
+					return msg
+				end
+				error("unable to run '"..expression.."' : " .. msg)
+			end
+			error("unable to parse '"..expression.."': " .. err)
 		end
 
 		local function find_enum(current_meta_data, out, what)
@@ -329,16 +352,16 @@ do -- type metatables
 				end
 			end
 
-			for _, enums in pairs(current_meta_data.global_enums) do
-				for _, info in ipairs(enums) do
+			for _, info in pairs(current_meta_data.global_enums) do
+				for _, info in ipairs(info.enums) do
 					if info.key == what then
 						return info.val
 					end
 				end
 			end
 
-			for _, enums in pairs(current_meta_data.enums) do
-				for _, info in ipairs(enums) do
+			for _, info in pairs(current_meta_data.enums) do
+				for _, info in ipairs(info.enums) do
 					if info.key == what then
 						return info.val
 					end
@@ -349,60 +372,68 @@ do -- type metatables
 		function ENUMS:Create(declaration, current_meta_data)
 			declaration = declaration:sub(3, -3)
 
-			local real_val = 0
+			local num = 0
 			local enums = {}
 
 			for line in (declaration .. " , "):gmatch("(.-) , ") do
 				local key, val = line:match("(.+) = (.+)")
 
 				if key and val then
-					real_val = tonumber(val)
+					num = tonumber(val)
 
-					if not real_val then
-						val = val:gsub("< <", "<<")
-						val = val:gsub("> >", ">>")
+					if not num then
+						val = val:gsub("> >", ">>"):gsub("< <", "<<")
 
-						local found = false
+						do
+							local test, found = val:gsub("(%a[%a%d_]+)", function(what)
+								local val = find_enum(current_meta_data, enums, what)
 
-						val = val:gsub("(%a[%a%d_]+)", function(what)
-							found = true
+								if val then
+									found = true
+									return val
+								end
 
-							local type = current_meta_data.typedefs[what]
+								-- don't bother with type casting
+								local type = current_meta_data.typedefs[what]
 
-							if type then
-								return type:GetPrimitive(current_meta_data):GetDeclaration()
+								if type then
+									return "_REMOVE_ME_"
+								end
+							end)
+
+							-- remove all typecasts
+							if test:find("_REMOVE_ME_") then
+								test = test:gsub("%( _REMOVE_ME_ %) ", "")
 							end
 
-							local val = find_enum(current_meta_data, enums, what)
+							if found > 0 then
+								val = test
+							else
+								val = find_enum(current_meta_data, enums, val) or val
 
-							if what then
-								return val
+								local test = tonumber(val)
+
+								if test then
+									num = test
+								end
 							end
-
-							print("couldn't resolve enum: ", what)
-
-							return what
-						end)
-
-						if not found then
-							val = find_enum(current_meta_data, enums, val) or val
 						end
+					end
 
-						local num = tonumber(val)
+					if not num then
+						num = parse_bit_declaration(val)
+					end
 
-						if num then
-							real_val = num
-						else
-							real_val = parse_bit_declaration(val, key) or -1337
-						end
+					if not num then
+						error("unable to parse enum:\n\t" .. val)
 					end
 				else
 					key = line
 				end
 
-				table.insert(enums, {key = key, val = real_val})
+				table.insert(enums, {key = key, val = num})
 
-				real_val = real_val + 1
+				num = num + 1
 			end
 
 			return {enums = enums}
@@ -458,7 +489,7 @@ do -- type metatables
 			local prev_token
 			local prev_node
 
-			for token in (declaration:reverse() .. " "):gmatch("(%S+) ") do
+			for token in declaration:reverse():gmatch("(%S+) ?") do
 				token = token:reverse()
 
 				if token == "*" then
