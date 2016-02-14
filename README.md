@@ -43,9 +43,8 @@ Where [???] represents a type object.
 ## types
 ```lua
 string = type:GetDeclaration() -- Gets the declaration for the type such as "const char *", "void (*)(int, char)", "enums {FOO=1,BAR=2}", etc
-string = type:GetBasicType() -- Gets the basic type such as if type:GetDeclaration() would return "const char *" type:GetbasicType() would return "char"
+string = type:GetBasicType(meta_data) -- Gets the basic type such as if type:GetDeclaration() would return "const char *" type:GetbasicType() would return "char"
 [type] = type:GetPrimitive(meta_data) -- Attempts to get the primitive type using meta_data. It returns itself otherwise.
-type:MakePrimitive(meta_data) -- Essentially type:GetPrimitive() except it transforms itself if successful.
 ```
 
 ## functions

@@ -159,14 +159,12 @@ do -- callbacks
 	local callbacks_meta_data = ffibuild.GetMetaData(dofile("callbacks.lua"))
 
 	for func_name, func_type in pairs(callbacks_meta_data.functions) do
-		func_type:MakePrimitive(meta_data)
-
 		local arg_line =  {}
 		local wrap_line = {}
 
 		if func_type.arguments then
 			for i, arg in ipairs(func_type.arguments) do
-				local decl = arg:GetDeclaration()
+				local decl = arg:GetDeclaration(meta_data)
 
 				if decl == "const char *" or decl == "char *" then
 					wrap_line[i] = "chars_to_string(_"..i..")"
@@ -199,7 +197,7 @@ do -- callbacks
 
 		lua = lua .. "callbacks[\"" .. func_name:gsub("_", "-") .. "\"] = {\n"
 		lua = lua .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
-		lua = lua .. "\tdefinition = \"" .. func_type:GetDeclaration(nil, true) .. "\",\n"
+		lua = lua .. "\tdefinition = \"" .. func_type:GetDeclaration(meta_data, true) .. "\",\n"
 		lua = lua .. "}\n"
 	end
 

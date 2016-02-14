@@ -290,9 +290,8 @@ do -- type metatables
 
 		--META.__tostring = function(s) return ("%s[%s]"):format(s:GetDeclaration(), name) end
 
-		function META:GetDeclaration() end
+		function META:GetDeclaration(meta_data, ...) end
 		function META:GetPrimitive() return self end
-		function META:MakePrimitive() end
 		function META:GetCopy() end
 		function META:GetBasicType() end
 		function META:GetSubType() return self:GetBasicType() end
@@ -441,7 +440,7 @@ do -- type metatables
 
 		function ENUMS:GetCopy() return self end
 
-		function ENUMS:GetDeclaration(check_enums)
+		function ENUMS:GetDeclaration(meta_data, check_enums)
 
 			local str = {}
 
@@ -524,7 +523,11 @@ do -- type metatables
 		end
 
 		function TYPE:GetDeclaration(meta_data, type_replace, ...)
-			local node = self.tree
+			local type = self:GetPrimitive(meta_data)
+
+			if not type.tree then return type:GetDeclaration(meta_data) end
+
+			local node = type.tree
 
 			local declaration = {}
 
@@ -550,7 +553,8 @@ do -- type metatables
 			return table.concat(declaration, " "):reverse()
 		end
 
-		function TYPE:GetBasicType()
+		function TYPE:GetBasicType(meta_data)
+			if meta_data then return self:GetPrimitive(meta_data):GetBasicType() end
 			return self.last_node.type
 		end
 
@@ -610,29 +614,6 @@ do -- type metatables
 			end
 
 			return copy
-		end
-
-		function TYPE:MakePrimitive(meta_data)
-			local new_type = self:GetPrimitive(meta_data)
-
-			if new_type and new_type ~= self then
-				for k in pairs(self) do self[k] = nil end
-				for k,v in pairs(new_type) do self[k] = v end
-
-				if getmetatable(new_type) ~= getmetatable(self) then
-					setmetatable(self, getmetatable(new_type))
-					self:MakePrimitive(meta_data)
-				end
-
-				if meta_data then
-					local basic_type = self:GetBasicType()
-					if meta_data.structs[basic_type] then
-						meta_data.structs[basic_type]:MakePrimitive(meta_data)
-					elseif meta_data.unions[basic_type] then
-						meta_data.unions[basic_type]:MakePrimitive(meta_data)
-					end
-				end
-			end
 		end
 
 		function TYPE:FetchRequired(meta_data, out, temp)
@@ -791,7 +772,7 @@ do -- type metatables
 
 		function FUNCTION:GetPrimitive(meta_data)
 			local copy = self:GetCopy()
-			copy:MakePrimitive(meta_data)
+
 			return copy
 		end
 
@@ -816,7 +797,7 @@ do -- type metatables
 			arg_line = "( " .. table.concat(arg_line, " , ") .. " )"
 
 			if self.return_type.callback then
-				local ret, urn = self.return_type:GetDeclaration():match("^(.-%( %*) (.+)")
+				local ret, urn = self.return_type:GetDeclaration(meta_data):match("^(.-%( %*) (.+)")
 				local res = ret .. " " .. self.name .. " " .. arg_line .. " " .. urn
 
 				return res
@@ -830,15 +811,6 @@ do -- type metatables
 				end
 			else
 				return self.return_type:GetDeclaration(meta_data)  .. " " .. self.name .. " " .. arg_line
-			end
-		end
-
-		function FUNCTION:MakePrimitive(meta_data)
-			self.return_type:MakePrimitive(meta_data)
-			if self.arguments then
-				for _, arg in ipairs(self.arguments) do
-					arg:MakePrimitive(meta_data)
-				end
 			end
 		end
 
@@ -1024,7 +996,7 @@ do -- type metatables
 
 		function STRUCT:GetPrimitive(meta_data)
 			local copy = self:GetCopy()
-			copy:MakePrimitive(meta_data)
+
 			return copy
 		end
 
@@ -1043,12 +1015,6 @@ do -- type metatables
 			str = str .. " }"
 
 			return str
-		end
-
-		function STRUCT:MakePrimitive(meta_data)
-			for _, type in ipairs(self.data) do
-				type:MakePrimitive(meta_data)
-			end
 		end
 
 		function STRUCT:FetchRequired(meta_data, out, temp)
@@ -1089,7 +1055,6 @@ function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enum, empt
 
 	for func_name, func_type in pairs(meta_data.functions) do
 		if not check_function or check_function(func_name, func_type) then
-			func_type:MakePrimitive(meta_data)
 			func_type:FetchRequired(meta_data, required, done)
 			bottom = bottom .. func_type:GetDeclaration(meta_data) .. ";\n"
 		end
@@ -1100,7 +1065,7 @@ function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enum, empt
 	-- global enums
 	if #meta_data.global_enums > 0 then
 		for _, enums in ipairs(meta_data.global_enums) do
-			local declaration = enums:GetDeclaration(check_enum)
+			local declaration = enums:GetDeclaration(meta_data, check_enum)
 			if declaration then
 				top = top .. declaration .. "\n"
 			end
@@ -1110,9 +1075,9 @@ function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enum, empt
 	-- typedef enums
 	for _, type in ipairs(required) do
 		if type:GetSubType() == "enum" then
-			local enums = meta_data.enums[type:GetBasicType()]
+			local enums = meta_data.enums[type:GetBasicType(meta_data)]
 
-			local declaration = enums:GetDeclaration(check_enum)
+			local declaration = enums:GetDeclaration(meta_data, check_enum)
 			if declaration then
 				top = top .. declaration .. "\n"
 			end
@@ -1121,7 +1086,7 @@ function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enum, empt
 
 	-- structs and unions
 	for _, type in ipairs(required) do
-		local basic_type = type:GetBasicType()
+		local basic_type = type:GetBasicType(meta_data)
 
 		if type:GetSubType() == "struct" then
 			if not empty_structs and meta_data.structs[basic_type] then
@@ -1219,7 +1184,7 @@ do -- lua helper functions
 			local parameters, call = func_type:GetParameters(first_argument_self, call_translate and function(type, name)
 				type = type:GetPrimitive(meta_data)
 
-				return	call_translate(type:GetDeclaration(), name, type, func_type) or name
+				return	call_translate(type:GetDeclaration(meta_data), name, type, func_type) or name
 			end)
 
 
@@ -1231,7 +1196,7 @@ do -- lua helper functions
 
 		if return_translate then
 			local return_type = func_type.return_type:GetPrimitive(meta_data) or func_type.return_type
-			local declaration = return_type:GetDeclaration()
+			local declaration = return_type:GetDeclaration(meta_data)
 
 			local ret, func = return_translate(declaration, return_type, func_type)
 
