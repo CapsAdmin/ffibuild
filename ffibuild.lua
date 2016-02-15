@@ -149,16 +149,7 @@ function ffibuild.GetMetaData(header)
 
 					meta_data.typedefs[alias] = create_type("type", tag)
 
-					if found == 0 then
-						if content:find("^struct ") then
-							meta_data.structs[tag] = create_type("struct", "{ }", false)
-						elseif content:find("^union ") then
-							meta_data.unions[tag] = create_type("struct", "{ }", true)
-						end
-						line = nil
-					else
-						line = content
-					end
+					line = content
 				else
 					meta_data.typedefs[alias] = create_type("type", content)
 
@@ -278,11 +269,22 @@ function ffibuild.GetMetaData(header)
 
 		-- global enums
 		if #self.global_enums > 0 then
-			for _, enums in ipairs(self.global_enums) do
-				local declaration = enums:GetDeclaration(self, check_enum)
-				if declaration then
-					top = top .. declaration .. "\n"
+			local str = {}
+
+			for i, enums in ipairs(self.global_enums) do
+				local line = {}
+
+				for _, v in ipairs(enums:FetchEnums(check_enum)) do
+					table.insert(line, v)
 				end
+
+				if #line > 0 then
+					table.insert(str, table.concat(line, ",") .. ",")
+				end
+			end
+
+			if #str > 0 then
+				top = top .. "enum {" .. table.concat(str, "\n") .. "};"
 			end
 		end
 
@@ -413,12 +415,14 @@ do -- type metatables
 		LR(">>", "rshift")
 		L("~", "bnot")
 
-		local function parse_bit_declaration(expression)
+		local function parse_bit_declaration(expression, original_expression)
 			expression = expression:gsub("([%d%.xabcdefABCDEF]+)", "(%1)")
 
 			for operator, info in pairs(operators) do
 				expression = expression:gsub(info.find, info.replace)
 			end
+
+			expression = expression:gsub("%?", " ~= 0 and "):gsub(":", " or ")
 
 			local func, err = loadstring("local _O = ... return " .. expression)
 			if func then
@@ -426,9 +430,9 @@ do -- type metatables
 				if ok then
 					return msg
 				end
-				error("unable to run '"..expression.."' : " .. msg)
+				error(original_expression .. "\n\nunable to run '"..expression.."' : " .. msg)
 			end
-			error("unable to parse '"..expression.."': " .. err)
+			error(original_expression .. "\n\nunable to parse '"..expression.."': " .. err)
 		end
 
 		local function find_enum(current_meta_data, out, what)
@@ -507,7 +511,7 @@ do -- type metatables
 					end
 
 					if not num then
-						num = parse_bit_declaration(val)
+						num = parse_bit_declaration(val, declaration)
 					end
 
 					if not num then
@@ -546,6 +550,16 @@ do -- type metatables
 			else
 				return "enum {\n" .. str .. "\n};"
 			end
+		end
+
+		function ENUMS:FetchEnums(check_enums)
+			local out = {}
+			for i, info in ipairs(self.enums) do
+				if check_enums(info.key, info) then
+					table.insert(out, info.key .. " = " .. info.val)
+				end
+			end
+			return out
 		end
 
 		function ENUMS:GetBasicType()

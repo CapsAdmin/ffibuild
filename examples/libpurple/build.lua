@@ -3,7 +3,7 @@ local ffibuild = dofile("../../ffibuild.lua")
 local header = ffibuild.BuildCHeader([[
 	#define PURPLE_PLUGINS
 	#include <libpurple/purple.h>
-]], "$(pkg-config purple --cflags)")
+]], "$(pkg-config --cflags purple)")
 
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^purple_") end, function(name) return name:find("PURPLE_") or name:find("XMLNODE_") end, true)
