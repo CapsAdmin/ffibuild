@@ -230,8 +230,8 @@ function ffibuild.GetMetaData(header)
 
 		for func_name, func_type in pairs(self.functions) do
 			if func_type.arguments then
-				local evaluated = func_type.arguments[1]:GetPrimitive(self) or func_type.arguments[1]
-				if evaluated:GetBasicType() == type:GetBasicType() then
+				local evaluated = func_type.arguments[1]
+				if evaluated:GetBasicType(self) == type:GetBasicType(self) then
 					out[func_name] = func_type
 				end
 			end
@@ -291,7 +291,6 @@ do -- type metatables
 		--META.__tostring = function(s) return ("%s[%s]"):format(s:GetDeclaration(), name) end
 
 		function META:GetDeclaration(meta_data, ...) end
-		function META:GetPrimitive() return self end
 		function META:GetCopy() end
 		function META:GetBasicType() end
 		function META:GetSubType() return self:GetBasicType() end
@@ -599,7 +598,7 @@ do -- type metatables
 
 					setmetatable(copy, getmetatable(type))
 
-					return copy:GetPrimitive(meta_data)
+					return copy
 				elseif type.tree then
 					copy.last_node.type = nil
 					for k, v in pairs(type.tree) do
@@ -768,12 +767,6 @@ do -- type metatables
 			end
 
 			return setmetatable(copy, FUNCTION)
-		end
-
-		function FUNCTION:GetPrimitive(meta_data)
-			local copy = self:GetCopy()
-
-			return copy
 		end
 
 		function FUNCTION:GetBasicType()
@@ -994,12 +987,6 @@ do -- type metatables
 			return self:GetBasicType()
 		end
 
-		function STRUCT:GetPrimitive(meta_data)
-			local copy = self:GetCopy()
-
-			return copy
-		end
-
 		function STRUCT:GetDeclaration(meta_data)
 
 			local str = " { "
@@ -1090,13 +1077,13 @@ function ffibuild.BuildMinimalHeader(meta_data, check_function, check_enum, empt
 
 		if type:GetSubType() == "struct" then
 			if not empty_structs and meta_data.structs[basic_type] then
-				top = top .. basic_type .. " " .. meta_data.structs[basic_type]:GetPrimitive(meta_data):GetDeclaration(meta_data) .. ";\n"
+				top = top .. basic_type .. " " .. meta_data.structs[basic_type]:GetDeclaration(meta_data) .. ";\n"
 			else
 				top = top .. basic_type .. " { };\n"
 			end
 		elseif type:GetSubType() == "union" then
 			if not empty_structs and meta_data.unions[basic_type] then
-				top = top .. basic_type .. " " .. meta_data.unions[basic_type]:GetPrimitive(meta_data):GetDeclaration(meta_data) .. ";\n"
+				top = top .. basic_type .. " " .. meta_data.unions[basic_type]:GetDeclaration(meta_data) .. ";\n"
 			else
 				top = top .. basic_type .. " { };\n"
 			end
@@ -1182,8 +1169,6 @@ do -- lua helper functions
 
 		if call_translate or return_translate then
 			local parameters, call = func_type:GetParameters(first_argument_self, call_translate and function(type, name)
-				type = type:GetPrimitive(meta_data)
-
 				return	call_translate(type:GetDeclaration(meta_data), name, type, func_type) or name
 			end)
 
@@ -1195,7 +1180,7 @@ do -- lua helper functions
 		end
 
 		if return_translate then
-			local return_type = func_type.return_type:GetPrimitive(meta_data) or func_type.return_type
+			local return_type = func_type.return_type
 			local declaration = return_type:GetDeclaration(meta_data)
 
 			local ret, func = return_translate(declaration, return_type, func_type)
