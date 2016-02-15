@@ -6,11 +6,7 @@ local header = ffibuild.BuildCHeader([[
 ]], "$(pkg-config purple --cflags)")
 
 local meta_data = ffibuild.GetMetaData(header)
-local top, bottom = ffibuild.SplitHeader(header, "_Purple", "purple")
-local header = ffibuild.BuildMinimalHeader(meta_data, function(func_name) return func_name:find("^purple_") end, function(name) return name:find("PURPLE_") end, true)
-
--- TODO: make a way to keep some structs
-header = header:gsub("struct _GList { };", "struct _GList { void * data; struct _GList * next; struct _GList * prev; };")
+local header = meta_data:BuildMinimalHeader(function(name) return name:find("^purple_") end, function(name) return name:find("PURPLE_") or name:find("XMLNODE_") end, true)
 
 local lua = ffibuild.BuildGenericLua(header, "purple", "metatables", "chars_to_string")
 
@@ -67,7 +63,7 @@ local libraries = {}
 local function argument_translate(declaration, name, type)
 	if declaration == "sturct _GList *" or declaration == "struct _GList *" then
 		return "table_to_glist(" .. name .. ")"
-	elseif objects[type:GetBasicType()] then
+	elseif objects[type:GetBasicType(meta_data)] then
 		return name .. ".ptr"
 	end
 end
@@ -77,8 +73,8 @@ local function return_translate(declaration, type)
 		return "v = chars_to_string(v)"
 	elseif declaration == "sturct _GList *" or declaration == "struct _GList *" then
 		return "v = glist_to_table(v, cast_type)", function(s) return s:gsub("^(.-)%)", function(s) if s:find(",") then return s .. ", cast_type)" else return s .. "cast_type)" end end) end
-	elseif objects[type:GetBasicType()] then
-		return "v = wrap_pointer(v, \"" .. objects[type:GetBasicType()].meta_name .. "\")"
+	elseif objects[type:GetBasicType(meta_data)] then
+		return "v = wrap_pointer(v, \"" .. objects[type:GetBasicType(meta_data)].meta_name .. "\")"
 	end
 end
 
@@ -95,7 +91,7 @@ do -- metatables
 	}
 
 	for _, info in ipairs(meta_data:GetStructTypes("^Purple(.+)")) do
-		local basic_type = info.type:GetBasicType()
+		local basic_type = info.type:GetBasicType(meta_data)
 		objects[basic_type] = {meta_name = info.name, declaration = info.type:GetDeclaration(), functions = {}}
 
 		local prefix = ffibuild.ChangeCase(basic_type:match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
@@ -174,8 +170,8 @@ do -- callbacks
 					wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) p[0] = table_to_glist(v) end, function(p) return glist_to_table(p[0]) end)"
 				elseif decl == "char * *" then
 					wrap_line[i] = "create_boxed_table(_"..i..", function(p, v) replace_buffer(p, #v, v) end, function(p) return ffi.string(p[0]) end)"
-				elseif objects[arg:GetBasicType()] then
-					wrap_line[i] = "wrap_pointer(_"..i..", \"" .. objects[arg:GetBasicType()].meta_name .. "\")"
+				elseif objects[arg:GetBasicType(meta_data)] then
+					wrap_line[i] = "wrap_pointer(_"..i..", \"" .. objects[arg:GetBasicType(meta_data)].meta_name .. "\")"
 				else
 					wrap_line[i] = "_" .. i .. " --[["..decl.."]] "
 				end
@@ -191,8 +187,8 @@ do -- callbacks
 
 		local ret_line = "return ret"
 
-		if func_type.return_type:GetBasicType() ~= "void" then
-			ret_line = " if ret == nil then return ffi.new(\"" .. func_type.return_type:GetBasicType() .. "\") end " .. ret_line
+		if func_type.return_type:GetBasicType(meta_data) ~= "void" then
+			ret_line = " if ret == nil then return ffi.new(\"" .. func_type.return_type:GetBasicType(meta_data) .. "\") end " .. ret_line
 		end
 
 		lua = lua .. "callbacks[\"" .. func_name:gsub("_", "-") .. "\"] = {\n"
@@ -215,7 +211,7 @@ function library.signal.Connect(signal, callback)
 		local ok, ret = pcall(info.wrap, callback, ...)
 
 		if not ok then
-			library.notify.Message(library.handles.plugin, "PURPLE_NOTIFY_MSG_INFO", "lua error", signal, ret, nil, nil)
+			library.notify.Message(library.handles.plugin, "notify_msg_info", "lua error", signal, ret, nil, nil)
 			return default_value
 		end
 

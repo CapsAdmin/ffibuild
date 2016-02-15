@@ -40,11 +40,22 @@ ffi.GetMetaData returns a table structured like so
 
 Where [???] represents a type object.
 
+the returned meta_data also has some functions.
+
+```lua
+meta_data:GetStructTypes(pattern) -- returns a table with all structs whose tag matches the pattern
+meta_data:FindFunctions(pattern, from, to) -- returns a table with all functions whose name matches the pattern. from and to is just a shortcut for ffibuild.ChangeCase(str, from, to)
+meta_data:GetFunctionsStartingWithType(type) -- returns a table with all functions that starts with the type (useful for object functions)
+meta_data:BuildMinimalHeader(check_function, check_enum, keep_structs) -- returns a minimal header where check function and enum are used as filters and keep_structs make it so structs are not empty (which might not be useful)
+```
+
+
 ## types
 ```lua
-string = type:GetDeclaration() -- Gets the declaration for the type such as "const char *", "void (*)(int, char)", "enums {FOO=1,BAR=2}", etc
+-- all functions that take meta_data will attempt to get the most primitive type or declaration
+string = type:GetDeclaration(meta_data) -- Gets the declaration for the type such as "const char *", "void (*)(int, char)", "enums {FOO=1,BAR=2}", etc
 string = type:GetBasicType(meta_data) -- Gets the basic type such as if type:GetDeclaration() would return "const char *" type:GetbasicType() would return "char"
-[type] = type:GetPrimitive(meta_data) -- Attempts to get the primitive type using meta_data. It returns itself otherwise.
+[type] = type:GetPrimitive(meta_data) -- Attempts to get the primitive type.
 ```
 
 ## functions
@@ -63,14 +74,13 @@ func_type.return_type -- the return argument type
 
 ## trimming the header and evaluating types
 
-In the first example you would get glib functions exported as well since purple uses them internally. This is generally not wanted but there are tools in ffibuild to handle this.
+In the first example you would get glib functions exported as well since purple uses them internally. This is generally not wanted but you can use `meta_data_internal:BuildMinimalHeader(check_function, check_enum, keep_structs)` where check_function would be a function to find c functions. Based on the functions you need it will return a stripped down header based on the function arguments.
 
-You can use `local top_header, bottom_header = ffibuild.SplitHeader(header, "_Purple")` which would find the first instance of _Purple and split the header by closest statement where `top_header` in this case is linux and glib internal functions and `bottom_header` is libpurple only.
+```lua
+    local header = meta_data:BuildMinimalHeader(function(name) return name:find("^purple_") end, function(name) return name:find("PURPLE_") end, true)
+```
 
-You can then call `local meta_data = ffibuild.GetMetaData(bottom_header)` to get libpurple specific meta data only and then evaluate types with `local meta_data_internal = ffibuild.GetMetaData(top_header)` to get the actual type.
-
-Now it's possible to build your own header using `local header = ffibuild.BuildMinimalHeader(meta_data_internal, <check_function, check_enum, empty_structs>)` or `type:GetPrimitive(meta_data)` along with `type:GetDeclaration()`
+This would return a header with all functions that start with purple_ and the required structs, unions and enums based on what those functions need. The check enum function will just remove any global or typedef enum that don't start with PURPLE_
 
 ## todo
 Use mingw or visual studio on windows somehow.
-Structs sort of work but the way I figure out what structs to include based on function arguments don't. However empty structs will work fine in the meantime.
