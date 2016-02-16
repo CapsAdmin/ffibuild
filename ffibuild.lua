@@ -475,6 +475,9 @@ do -- type metatables
 						val = val:gsub("> >", ">>"):gsub("< <", "<<")
 
 						do
+							-- kind of hacky but removes "( unsigned long )" and the like which have space
+							val = val:gsub("(%([%s%l]-%))", "")
+
 							local test, found = val:gsub("(%a[%a%d_]+)", function(what)
 								local val = find_enum(current_meta_data, enums, what)
 
