@@ -45,6 +45,17 @@ function ffibuild.SplitHeader(header, ...)
 	return header:sub(0, stop), header:sub(stop)
 end
 
+
+local function match_type_declaration(str)
+	local declaration, name, array_size = str:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
+
+	if not declaration then
+		declaration, name, array_size = str:match("^([%a%d%s_%*]-) ([%a%d_]-) %[(.-)%]$")
+	end
+
+	return declaration, name, array_size
+end
+
 function ffibuild.GetMetaData(header)
 
 	local meta_data = {
@@ -92,6 +103,8 @@ function ffibuild.GetMetaData(header)
 		header = header:gsub("__restrict__ ", "")
 		header = header:gsub("__restrict", "")
 
+		header = header:gsub("__max_align_..", "")
+
 		-- remove volatile
 		header = header:gsub(" volatile ", " ")
 
@@ -104,9 +117,6 @@ function ffibuild.GetMetaData(header)
 
 		-- int foo(void); >> int foo();
 		header = header:gsub(" %( void %) ", " ( ) ")
-
-		-- foo bar[?] > foo *bar
-		header = header:gsub(" ([%a%d_]+) %b[] ", " * %1 ")
 	end
 
 	local function is_function(str) return str:find("^.+%b() $") end
@@ -179,6 +189,7 @@ function ffibuild.GetMetaData(header)
 				else
 					content = line:match("enum ({.+})")
 					-- no type name = global enum
+
 					table.insert(meta_data.global_enums, create_type("enums", content, meta_data))
 				end
 			elseif line:find("^struct") or line:find("^union") then
@@ -196,8 +207,9 @@ function ffibuild.GetMetaData(header)
 				local tbl = keyword == "struct" and meta_data.structs or meta_data.unions
 				tbl[tag] = create_type("struct", content, keyword == "union", meta_data)
 			elseif extern then
-				local tag, name = line:match("^(.+) ([%a%d_]+) $")
-				meta_data.variables[name] = create_type("type", tag)
+				local declaration, name, array_size = match_type_declaration(line:sub(0, -2))
+
+				meta_data.variables[name] = create_type("type", declaration, array_size)
 			end
 		end
 
@@ -584,7 +596,7 @@ do -- type metatables
 			pointer = true,
 		}
 
-		function TYPE:Create(declaration)
+		function TYPE:Create(declaration, array_size)
 			local tree = {}
 
 			local node = tree
@@ -623,6 +635,7 @@ do -- type metatables
 			return {
 				last_node = node,
 				tree = tree,
+				array_size = array_size,
 			}
 		end
 
@@ -652,6 +665,10 @@ do -- type metatables
 				else
 					break
 				end
+			end
+
+			if self.array_size then
+				table.insert(declaration, 1, ("[ "..self.array_size.." ]"):reverse())
 			end
 
 			return table.concat(declaration, " "):reverse()
@@ -1028,9 +1045,9 @@ do -- type metatables
 							(keyword == "struct" and meta_data.structs or meta_data.unions)[tag] = type
 						end
 					else
-						local declaration, name = line:match("^(" .. keyword .. " [%a%d%s_%*]-) ([%a%d_]-)$")
-
-						local type = ffibuild.CreateType("type", declaration)
+						local declaration, name, array_size = match_type_declaration(line:match("^" .. keyword .. " (.+)"))
+						declaration = keyword .. " " .. declaration
+						local type = ffibuild.CreateType("type", declaration, array_size)
 						type.name = name
 
 						table.insert(out, type)
@@ -1049,9 +1066,9 @@ do -- type metatables
 
 
 				else
-					local declaration, name = line:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
+					local declaration, name, array_size = match_type_declaration(line)
 
-					local type = ffibuild.CreateType("type", declaration)
+					local type = ffibuild.CreateType("type", declaration, array_size)
 					type.name = name
 
 					table.insert(out, type)
@@ -1081,6 +1098,7 @@ do -- type metatables
 			return self:GetBasicType()
 		end
 
+		--TODO
 		function STRUCT:GetDeclaration(meta_data)
 
 			local str = " { "
@@ -1090,6 +1108,8 @@ do -- type metatables
 					str = str .. type:GetDeclaration(meta_data, true, type.name) .. " ; "
 				elseif type.MetaType == "struct" then
 					str = str .. type:GetBasicType() .. " " ..type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
+				elseif type.array_size then
+					str = str .. type:GetDeclaration(meta_data):gsub("%[", type.name .. "[") .. " ; "
 				else
 					str = str .. type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
 				end

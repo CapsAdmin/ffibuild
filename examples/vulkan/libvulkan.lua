@@ -561,10 +561,13 @@ library.util.LoadInstanceProcAddr = function(...) load(CLIB.vkGetInstanceProcAdd
 library.util.LoadDeviceProcAddr = function(...) load(CLIB.vkGetDeviceProcAddr, ...) end
 function library.GetInstanceLayerProperties()
 	local count = ffi.new("uint32_t[1]")
-	local array = ffi.new("struct VkLayerProperties [128]")
+	CLIB.vkEnumerateInstanceLayerProperties(count, nil)
+	if count[0] == 0 then return end
+
+	local array = ffi.new("struct VkLayerProperties [?]", count[0])
 	local status = CLIB.vkEnumerateInstanceLayerProperties(count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -573,14 +576,18 @@ function library.GetInstanceLayerProperties()
 
 		return out
 	end
+
 	return nil, status
 end
 function library.GetPhysicalDevices(instance)
 	local count = ffi.new("uint32_t[1]")
-	local array = ffi.new("struct VkPhysicalDevice_T * [128]")
+	CLIB.vkEnumeratePhysicalDevices(count, nil)
+	if count[0] == 0 then return end
+
+	local array = ffi.new("struct VkPhysicalDevice_T * [?]", count[0])
 	local status = CLIB.vkEnumeratePhysicalDevices(instance, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -589,14 +596,18 @@ function library.GetPhysicalDevices(instance)
 
 		return out
 	end
+
 	return nil, status
 end
 function library.GetInstanceExtensionProperties(pLayerName)
 	local count = ffi.new("uint32_t[1]")
-	local array = ffi.new("struct VkExtensionProperties [128]")
+	CLIB.vkEnumerateInstanceExtensionProperties(count, nil)
+	if count[0] == 0 then return end
+
+	local array = ffi.new("struct VkExtensionProperties [?]", count[0])
 	local status = CLIB.vkEnumerateInstanceExtensionProperties(pLayerName, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -605,14 +616,18 @@ function library.GetInstanceExtensionProperties(pLayerName)
 
 		return out
 	end
+
 	return nil, status
 end
 function library.GetDeviceLayerProperties(physicalDevice)
 	local count = ffi.new("uint32_t[1]")
-	local array = ffi.new("struct VkLayerProperties [128]")
+	CLIB.vkEnumerateDeviceLayerProperties(count, nil)
+	if count[0] == 0 then return end
+
+	local array = ffi.new("struct VkLayerProperties [?]", count[0])
 	local status = CLIB.vkEnumerateDeviceLayerProperties(physicalDevice, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -621,14 +636,18 @@ function library.GetDeviceLayerProperties(physicalDevice)
 
 		return out
 	end
+
 	return nil, status
 end
 function library.GetDeviceExtensionProperties(physicalDevice, pLayerName)
 	local count = ffi.new("uint32_t[1]")
-	local array = ffi.new("struct VkExtensionProperties [128]")
+	CLIB.vkEnumerateDeviceExtensionProperties(count, nil)
+	if count[0] == 0 then return end
+
+	local array = ffi.new("struct VkExtensionProperties [?]", count[0])
 	local status = CLIB.vkEnumerateDeviceExtensionProperties(physicalDevice, pLayerName, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -637,6 +656,7 @@ function library.GetDeviceExtensionProperties(physicalDevice, pLayerName)
 
 		return out
 	end
+
 	return nil, status
 end
 function library.GetBufferMemoryRequirements(device, buffer)
@@ -648,7 +668,7 @@ function library.GetPipelineCacheData(device, pipelineCache, pDataSize)
 	local box = ffi.new("void [1]")
 	local status = CLIB.vkGetPipelineCacheData(device, pipelineCache, pDataSize, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -677,7 +697,7 @@ function library.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex)
 	local array = ffi.new("struct VkDisplayKHR_T * [256]")
 	local status = CLIB.vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -706,7 +726,7 @@ function library.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface)
 	local array = ffi.new("struct VkSurfaceFormatKHR [256]")
 	local status = CLIB.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -726,7 +746,7 @@ function library.GetFenceStatus(device)
 	local box = ffi.new("struct VkFence_T [1]")
 	local status = CLIB.vkGetFenceStatus(device, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -736,7 +756,7 @@ function library.GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface
 	local box = ffi.new("struct VkSurfaceCapabilitiesKHR [1]")
 	local status = CLIB.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -746,7 +766,7 @@ function library.GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyI
 	local box = ffi.new("unsigned int [1]")
 	local status = CLIB.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -761,7 +781,7 @@ function library.GetPhysicalDeviceImageFormatProperties(physicalDevice, format, 
 	local box = ffi.new("struct VkImageFormatProperties [1]")
 	local status = CLIB.vkGetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -776,7 +796,7 @@ function library.GetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex
 	local box = ffi.new("struct VkDisplayPlaneCapabilitiesKHR [1]")
 	local status = CLIB.vkGetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -804,7 +824,7 @@ function library.GetEventStatus(device)
 	local box = ffi.new("struct VkEvent_T [1]")
 	local status = CLIB.vkGetEventStatus(device, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -815,7 +835,7 @@ function library.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice)
 	local array = ffi.new("struct VkDisplayPlanePropertiesKHR [256]")
 	local status = CLIB.vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -836,7 +856,7 @@ function library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice)
 	local array = ffi.new("struct VkDisplayPropertiesKHR [256]")
 	local status = CLIB.vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -852,7 +872,7 @@ function library.GetSwapchainImagesKHR(device, swapchain)
 	local array = ffi.new("struct VkImage_T * [256]")
 	local status = CLIB.vkGetSwapchainImagesKHR(device, swapchain, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -868,7 +888,7 @@ function library.GetDisplayModePropertiesKHR(physicalDevice, display)
 	local array = ffi.new("struct VkDisplayModePropertiesKHR [256]")
 	local status = CLIB.vkGetDisplayModePropertiesKHR(physicalDevice, display, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -884,7 +904,7 @@ function library.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface
 	local array = ffi.new("enum VkPresentModeKHR [256]")
 	local status = CLIB.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -914,7 +934,7 @@ function library.CreateBufferView(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkBufferView_T * [1]")
 	local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -924,7 +944,7 @@ function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount,
 	local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -934,7 +954,7 @@ function library.CreateShaderModule(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkShaderModule_T * [1]")
 	local status = CLIB.vkCreateShaderModule(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -944,7 +964,7 @@ function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkFramebuffer_T * [1]")
 	local status = CLIB.vkCreateFramebuffer(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -954,7 +974,7 @@ function library.CreateComputePipelines(device, pipelineCache, createInfoCount, 
 	local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -964,7 +984,7 @@ function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkDescriptorSetLayout_T * [1]")
 	local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -974,7 +994,7 @@ function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkDescriptorPool_T * [1]")
 	local status = CLIB.vkCreateDescriptorPool(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -984,7 +1004,7 @@ function library.CreateBuffer(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkBuffer_T * [1]")
 	local status = CLIB.vkCreateBuffer(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -994,7 +1014,7 @@ function library.CreateSemaphore(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkSemaphore_T * [1]")
 	local status = CLIB.vkCreateSemaphore(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1004,7 +1024,7 @@ function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkPipelineCache_T * [1]")
 	local status = CLIB.vkCreatePipelineCache(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1014,7 +1034,7 @@ function library.CreateImageView(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkImageView_T * [1]")
 	local status = CLIB.vkCreateImageView(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1024,7 +1044,7 @@ function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkDevice_T * [1]")
 	local status = CLIB.vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1034,7 +1054,7 @@ function library.CreateInstance(pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkInstance_T * [1]")
 	local status = CLIB.vkCreateInstance(pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1044,7 +1064,7 @@ function library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkDebugReportCallbackEXT_T * [1]")
 	local status = CLIB.vkCreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1054,7 +1074,7 @@ function library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos,
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
 	local status = CLIB.vkCreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1064,7 +1084,7 @@ function library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkSurfaceKHR_T * [1]")
 	local status = CLIB.vkCreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1074,7 +1094,7 @@ function library.CreateImage(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkImage_T * [1]")
 	local status = CLIB.vkCreateImage(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1084,7 +1104,7 @@ function library.CreateSwapchainKHR(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
 	local status = CLIB.vkCreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1094,7 +1114,7 @@ function library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAll
 	local box = ffi.new("struct VkDisplayModeKHR_T * [1]")
 	local status = CLIB.vkCreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1104,7 +1124,7 @@ function library.CreateFence(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkFence_T * [1]")
 	local status = CLIB.vkCreateFence(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1114,7 +1134,7 @@ function library.CreateRenderPass(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkRenderPass_T * [1]")
 	local status = CLIB.vkCreateRenderPass(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1124,7 +1144,7 @@ function library.CreateQueryPool(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkQueryPool_T * [1]")
 	local status = CLIB.vkCreateQueryPool(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1134,7 +1154,7 @@ function library.CreateSampler(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkSampler_T * [1]")
 	local status = CLIB.vkCreateSampler(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1144,7 +1164,7 @@ function library.CreateCommandPool(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkCommandPool_T * [1]")
 	local status = CLIB.vkCreateCommandPool(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1154,7 +1174,7 @@ function library.CreateEvent(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkEvent_T * [1]")
 	local status = CLIB.vkCreateEvent(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -1164,60 +1184,60 @@ function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 	local box = ffi.new("struct VkPipelineLayout_T * [1]")
 	local status = CLIB.vkCreatePipelineLayout(device, pCreateInfo, pAllocator, box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
 	return nil, status
 end
 library.structs = {}
-function library.structs.ApplicationInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO" return ffi.new("struct VkApplicationInfo", tbl) end
-function library.structs.InstanceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO" return ffi.new("struct VkInstanceCreateInfo", tbl) end
-function library.structs.DeviceQueueCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO" return ffi.new("struct VkDeviceQueueCreateInfo", tbl) end
-function library.structs.DeviceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO" return ffi.new("struct VkDeviceCreateInfo", tbl) end
-function library.structs.SubmitInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SUBMIT_INFO" return ffi.new("struct VkSubmitInfo", tbl) end
-function library.structs.MemoryAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO" return ffi.new("struct VkMemoryAllocateInfo", tbl) end
-function library.structs.MappedMemoryRange(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE" return ffi.new("struct VkMappedMemoryRange", tbl) end
-function library.structs.BindSparseInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BIND_SPARSE_INFO" return ffi.new("struct VkBindSparseInfo", tbl) end
-function library.structs.FenceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO" return ffi.new("struct VkFenceCreateInfo", tbl) end
-function library.structs.SemaphoreCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO" return ffi.new("struct VkSemaphoreCreateInfo", tbl) end
-function library.structs.EventCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_EVENT_CREATE_INFO" return ffi.new("struct VkEventCreateInfo", tbl) end
-function library.structs.QueryPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO" return ffi.new("struct VkQueryPoolCreateInfo", tbl) end
-function library.structs.BufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO" return ffi.new("struct VkBufferCreateInfo", tbl) end
-function library.structs.BufferViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO" return ffi.new("struct VkBufferViewCreateInfo", tbl) end
-function library.structs.ImageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO" return ffi.new("struct VkImageCreateInfo", tbl) end
-function library.structs.ImageViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO" return ffi.new("struct VkImageViewCreateInfo", tbl) end
-function library.structs.ShaderModuleCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO" return ffi.new("struct VkShaderModuleCreateInfo", tbl) end
-function library.structs.PipelineCacheCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO" return ffi.new("struct VkPipelineCacheCreateInfo", tbl) end
-function library.structs.PipelineShaderStageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO" return ffi.new("struct VkPipelineShaderStageCreateInfo", tbl) end
-function library.structs.PipelineVertexInputStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineVertexInputStateCreateInfo", tbl) end
-function library.structs.PipelineInputAssemblyStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO" return ffi.new("struct VkPipelineInputAssemblyStateCreateInfo", tbl) end
-function library.structs.PipelineTessellationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineTessellationStateCreateInfo", tbl) end
-function library.structs.PipelineViewportStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineViewportStateCreateInfo", tbl) end
-function library.structs.PipelineRasterizationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineRasterizationStateCreateInfo", tbl) end
-function library.structs.PipelineMultisampleStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO" return ffi.new("struct VkPipelineMultisampleStateCreateInfo", tbl) end
-function library.structs.PipelineDepthStencilStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDepthStencilStateCreateInfo", tbl) end
-function library.structs.PipelineColorBlendStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO" return ffi.new("struct VkPipelineColorBlendStateCreateInfo", tbl) end
-function library.structs.PipelineDynamicStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDynamicStateCreateInfo", tbl) end
-function library.structs.GraphicsPipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO" return ffi.new("struct VkGraphicsPipelineCreateInfo", tbl) end
-function library.structs.ComputePipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO" return ffi.new("struct VkComputePipelineCreateInfo", tbl) end
-function library.structs.PipelineLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO" return ffi.new("struct VkPipelineLayoutCreateInfo", tbl) end
-function library.structs.SamplerCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO" return ffi.new("struct VkSamplerCreateInfo", tbl) end
-function library.structs.DescriptorSetLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO" return ffi.new("struct VkDescriptorSetLayoutCreateInfo", tbl) end
-function library.structs.DescriptorPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO" return ffi.new("struct VkDescriptorPoolCreateInfo", tbl) end
-function library.structs.DescriptorSetAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO" return ffi.new("struct VkDescriptorSetAllocateInfo", tbl) end
-function library.structs.WriteDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET" return ffi.new("struct VkWriteDescriptorSet", tbl) end
-function library.structs.CopyDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET" return ffi.new("struct VkCopyDescriptorSet", tbl) end
-function library.structs.FramebufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO" return ffi.new("struct VkFramebufferCreateInfo", tbl) end
-function library.structs.RenderPassCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO" return ffi.new("struct VkRenderPassCreateInfo", tbl) end
-function library.structs.CommandPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO" return ffi.new("struct VkCommandPoolCreateInfo", tbl) end
-function library.structs.CommandBufferAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO" return ffi.new("struct VkCommandBufferAllocateInfo", tbl) end
-function library.structs.CommandBufferInheritanceInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO" return ffi.new("struct VkCommandBufferInheritanceInfo", tbl) end
-function library.structs.CommandBufferBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO" return ffi.new("struct VkCommandBufferBeginInfo", tbl) end
-function library.structs.RenderPassBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO" return ffi.new("struct VkRenderPassBeginInfo", tbl) end
-function library.structs.BufferMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER" return ffi.new("struct VkBufferMemoryBarrier", tbl) end
-function library.structs.ImageMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER" return ffi.new("struct VkImageMemoryBarrier", tbl) end
-function library.structs.MemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER" return ffi.new("struct VkMemoryBarrier", tbl) end
+function library.structs.ApplicationInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO" tbl.pNext = 0 return ffi.new("struct VkApplicationInfo", tbl) end
+function library.structs.InstanceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkInstanceCreateInfo", tbl) end
+function library.structs.DeviceQueueCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkDeviceQueueCreateInfo", tbl) end
+function library.structs.DeviceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkDeviceCreateInfo", tbl) end
+function library.structs.SubmitInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SUBMIT_INFO" tbl.pNext = 0 return ffi.new("struct VkSubmitInfo", tbl) end
+function library.structs.MemoryAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO" tbl.pNext = 0 return ffi.new("struct VkMemoryAllocateInfo", tbl) end
+function library.structs.MappedMemoryRange(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE" tbl.pNext = 0 return ffi.new("struct VkMappedMemoryRange", tbl) end
+function library.structs.BindSparseInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BIND_SPARSE_INFO" tbl.pNext = 0 return ffi.new("struct VkBindSparseInfo", tbl) end
+function library.structs.FenceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkFenceCreateInfo", tbl) end
+function library.structs.SemaphoreCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkSemaphoreCreateInfo", tbl) end
+function library.structs.EventCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_EVENT_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkEventCreateInfo", tbl) end
+function library.structs.QueryPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkQueryPoolCreateInfo", tbl) end
+function library.structs.BufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkBufferCreateInfo", tbl) end
+function library.structs.BufferViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkBufferViewCreateInfo", tbl) end
+function library.structs.ImageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkImageCreateInfo", tbl) end
+function library.structs.ImageViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkImageViewCreateInfo", tbl) end
+function library.structs.ShaderModuleCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkShaderModuleCreateInfo", tbl) end
+function library.structs.PipelineCacheCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineCacheCreateInfo", tbl) end
+function library.structs.PipelineShaderStageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineShaderStageCreateInfo", tbl) end
+function library.structs.PipelineVertexInputStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineVertexInputStateCreateInfo", tbl) end
+function library.structs.PipelineInputAssemblyStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineInputAssemblyStateCreateInfo", tbl) end
+function library.structs.PipelineTessellationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineTessellationStateCreateInfo", tbl) end
+function library.structs.PipelineViewportStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineViewportStateCreateInfo", tbl) end
+function library.structs.PipelineRasterizationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineRasterizationStateCreateInfo", tbl) end
+function library.structs.PipelineMultisampleStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineMultisampleStateCreateInfo", tbl) end
+function library.structs.PipelineDepthStencilStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineDepthStencilStateCreateInfo", tbl) end
+function library.structs.PipelineColorBlendStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineColorBlendStateCreateInfo", tbl) end
+function library.structs.PipelineDynamicStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineDynamicStateCreateInfo", tbl) end
+function library.structs.GraphicsPipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkGraphicsPipelineCreateInfo", tbl) end
+function library.structs.ComputePipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkComputePipelineCreateInfo", tbl) end
+function library.structs.PipelineLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkPipelineLayoutCreateInfo", tbl) end
+function library.structs.SamplerCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkSamplerCreateInfo", tbl) end
+function library.structs.DescriptorSetLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkDescriptorSetLayoutCreateInfo", tbl) end
+function library.structs.DescriptorPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkDescriptorPoolCreateInfo", tbl) end
+function library.structs.DescriptorSetAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO" tbl.pNext = 0 return ffi.new("struct VkDescriptorSetAllocateInfo", tbl) end
+function library.structs.WriteDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET" tbl.pNext = 0 return ffi.new("struct VkWriteDescriptorSet", tbl) end
+function library.structs.CopyDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET" tbl.pNext = 0 return ffi.new("struct VkCopyDescriptorSet", tbl) end
+function library.structs.FramebufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkFramebufferCreateInfo", tbl) end
+function library.structs.RenderPassCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkRenderPassCreateInfo", tbl) end
+function library.structs.CommandPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO" tbl.pNext = 0 return ffi.new("struct VkCommandPoolCreateInfo", tbl) end
+function library.structs.CommandBufferAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO" tbl.pNext = 0 return ffi.new("struct VkCommandBufferAllocateInfo", tbl) end
+function library.structs.CommandBufferInheritanceInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO" tbl.pNext = 0 return ffi.new("struct VkCommandBufferInheritanceInfo", tbl) end
+function library.structs.CommandBufferBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO" tbl.pNext = 0 return ffi.new("struct VkCommandBufferBeginInfo", tbl) end
+function library.structs.RenderPassBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO" tbl.pNext = 0 return ffi.new("struct VkRenderPassBeginInfo", tbl) end
+function library.structs.BufferMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER" tbl.pNext = 0 return ffi.new("struct VkBufferMemoryBarrier", tbl) end
+function library.structs.ImageMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER" tbl.pNext = 0 return ffi.new("struct VkImageMemoryBarrier", tbl) end
+function library.structs.MemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER" tbl.pNext = 0 return ffi.new("struct VkMemoryBarrier", tbl) end
 function library.structs.LoaderInstanceCreateInfo(tbl) return ffi.new("struct VkLoaderInstanceCreateInfo", tbl) end
 function library.structs.LoaderDeviceCreateInfo(tbl) return ffi.new("struct VkLoaderDeviceCreateInfo", tbl) end
 function library.structs.BeginRange(tbl) return ffi.new("struct VkBeginRange", tbl) end

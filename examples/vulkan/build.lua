@@ -97,10 +97,13 @@ do -- enumerate helpers so you don't have to make boxed count and array values
 
 			lua = lua .. [[function library.Get]] .. friendly .. [[(]] .. parameters .. [[)
 	local count = ffi.new("uint32_t[1]")
-	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[128]") .. [[")
+	CLIB.]]..func_name..[[(count, nil)
+	if count[0] == 0 then return end
+
+	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[?]") .. [[", count[0])
 	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -109,6 +112,7 @@ do -- enumerate helpers so you don't have to make boxed count and array values
 
 		return out
 	end
+
 	return nil, status
 end
 ]]
@@ -140,7 +144,7 @@ lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
 lua = lua .. [[
 	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		local out = {}
 
 		for i = 0, count[0] - 1 do
@@ -179,7 +183,7 @@ lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
 lua = lua .. [[
 	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -212,7 +216,7 @@ do -- *Create helpers so you don't have to make a boxed value
 	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
 	local status = CLIB.]]..func_name..[[(]]..call..[[box)
 
-	if status == 0 then
+	if status == "VK_SUCCESS" then
 		return box[0]
 	end
 
@@ -234,7 +238,7 @@ do -- struct creation helpers
 			local struct = meta_data.structs["struct Vk" .. friendly]
 
 			if struct then
-				lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+				lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" tbl.pNext = 0 return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
 			else
 				lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
 			end
