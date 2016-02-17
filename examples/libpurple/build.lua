@@ -92,7 +92,7 @@ do -- metatables
 
 	for _, info in ipairs(meta_data:GetStructTypes("^Purple(.+)")) do
 		local basic_type = info.type:GetBasicType(meta_data)
-		objects[basic_type] = {meta_name = info.name, declaration = info.type:GetDeclaration(), functions = {}}
+		objects[basic_type] = {meta_name = info.name, declaration = info.type:GetDeclaration(meta_data), functions = {}}
 
 		local prefix = ffibuild.ChangeCase(basic_type:match("^struct[%s_]-Purple(.+)"), "FooBar", "foo_bar")
 
@@ -119,7 +119,7 @@ do -- metatables
 	end
 
 	for _, info in pairs(objects) do
-		lua = lua .. ffibuild.BuildLuaMetaTable(info.meta_name, info.declaration .. "*", info.functions, argument_translate, return_translate, meta_data)
+		lua = lua .. ffibuild.BuildLuaMetaTable(info.meta_name, info.declaration, info.functions, argument_translate, return_translate, meta_data)
 	end
 end
 

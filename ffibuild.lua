@@ -925,8 +925,10 @@ do -- type metatables
 			["while"] = true,
 		}
 
-		function FUNCTION:GetParameters(meta, check)
+		function FUNCTION:GetParameters(meta, check, max_arguments)
 			if not self.arguments then return "", "" end
+
+			if max_arguments < 0 then max_arguments = #self.arguments + max_arguments end
 
 			local done = {}
 
@@ -934,6 +936,8 @@ do -- type metatables
 			local call = {}
 
 			for i, arg in ipairs(self.arguments) do
+				if max_arguments and i > max_arguments then break end
+
 				local name = arg.name or "_" .. i
 
 				if keywords[name] then
@@ -1155,7 +1159,17 @@ do -- lua helper functions
 		end
 
 		return object_cache[meta_name][id]
-	end]]
+	end]],
+		safe_clib_index = [[
+		function SAFE_INDEX(clib)
+			return setmetatable({}, {__index = function(_, k)
+				local ok, val = pcall(function() return clib[k] end)
+				if ok then
+					return val
+				end
+			end})
+		end
+	]],
 	}
 
 	function ffibuild.BuildGenericLua(ffi_header, ffi_lib, ...)
@@ -1179,17 +1193,27 @@ do -- lua helper functions
 		return lua
 	end
 
-	function ffibuild.BuildLuaMetaTable(meta_name, declaration, functions, argument_translate, return_translate, meta_data)
+	function ffibuild.BuildLuaMetaTable(meta_name, declaration, functions, argument_translate, return_translate, meta_data, clib, ffi_metatype)
 		local lua = ""
 		lua = lua .. "do\n"
 		lua = lua .. "\tlocal META = {\n"
-		lua = lua .. "\t\tctype = ffi.typeof(\"" .. declaration .. "\"),\n"
+		if not ffi_metatype then
+			lua = lua .. "\t\tctype = ffi.typeof(\"" .. declaration .. "\"),\n"
+		end
 		for friendly_name, func_type in pairs(functions) do
-			lua = lua .. "\t\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data, true) .. ",\n"
+			if type(func_type) == "string" then
+				lua = lua .. "\t\t" .. friendly_name .. " = " .. func_type .. ",\n"
+			else
+				lua = lua .. "\t\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data, true, clib) .. ",\n"
+			end
 		end
 		lua = lua .. "\t}\n"
 		lua = lua .. "\tMETA.__index = META\n"
-		lua = lua .. "\tmetatables." .. meta_name .. " = META\n"
+		if ffi_metatype then
+			lua = lua .. "\tffi.metatype(\"" .. declaration .. "\", META)\n"
+		else
+			lua = lua .. "\tmetatables." .. meta_name .. " = META\n"
+		end
 		lua = lua .. "end\n"
 		return lua
 	end

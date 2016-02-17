@@ -347,164 +347,991 @@ void vkCmdSetViewport(struct VkCommandBuffer_T*,unsigned int,unsigned int,const 
 ]])
 local CLIB = ffi.load("vulkan")
 local library = {}
+
+
+--====helper safe_clib_index====
+		function SAFE_INDEX(clib)
+			return setmetatable({}, {__index = function(_, k)
+				local ok, val = pcall(function() return clib[k] end)
+				if ok then
+					return val
+				end
+			end})
+		end
+	
+--====helper safe_clib_index====
+
+
+
+--====helper metatables====
+	local metatables = {}
+	local object_cache = {}
+
+	local function wrap_pointer(ptr, meta_name)
+		-- TODO
+		-- you should be able to use cdata as key and it would use the address
+		-- but apparently that doesn't work
+		local id = tostring(ptr)
+
+		if not object_cache[meta_name] then
+			object_cache[meta_name] = setmetatable({}, {__mode = "v"})
+		end
+
+		if not object_cache[meta_name][id] then
+			object_cache[meta_name][id] = setmetatable({ptr = ptr}, metatables[meta_name])
+		end
+
+		return object_cache[meta_name][id]
+	end
+--====helper metatables====
+
 library = {
-	GetBufferMemoryRequirements = CLIB.vkGetBufferMemoryRequirements,
-	DeviceWaitIdle = CLIB.vkDeviceWaitIdle,
-	CreateBufferView = CLIB.vkCreateBufferView,
-	CmdCopyImageToBuffer = CLIB.vkCmdCopyImageToBuffer,
-	CmdResolveImage = CLIB.vkCmdResolveImage,
-	CreateGraphicsPipelines = CLIB.vkCreateGraphicsPipelines,
-	CmdSetStencilCompareMask = CLIB.vkCmdSetStencilCompareMask,
-	GetPipelineCacheData = CLIB.vkGetPipelineCacheData,
-	GetRenderAreaGranularity = CLIB.vkGetRenderAreaGranularity,
-	DestroyInstance = CLIB.vkDestroyInstance,
-	EnumerateInstanceLayerProperties = CLIB.vkEnumerateInstanceLayerProperties,
-	ResetEvent = CLIB.vkResetEvent,
-	GetPhysicalDeviceQueueFamilyProperties = CLIB.vkGetPhysicalDeviceQueueFamilyProperties,
-	QueueWaitIdle = CLIB.vkQueueWaitIdle,
-	EnumeratePhysicalDevices = CLIB.vkEnumeratePhysicalDevices,
-	CmdWriteTimestamp = CLIB.vkCmdWriteTimestamp,
-	CreateShaderModule = CLIB.vkCreateShaderModule,
-	DestroySurfaceKHR = CLIB.vkDestroySurfaceKHR,
-	CmdCopyQueryPoolResults = CLIB.vkCmdCopyQueryPoolResults,
-	MergePipelineCaches = CLIB.vkMergePipelineCaches,
-	CmdSetStencilWriteMask = CLIB.vkCmdSetStencilWriteMask,
-	CreateFramebuffer = CLIB.vkCreateFramebuffer,
-	CmdResetEvent = CLIB.vkCmdResetEvent,
-	BindBufferMemory = CLIB.vkBindBufferMemory,
-	CmdSetEvent = CLIB.vkCmdSetEvent,
-	CmdBindDescriptorSets = CLIB.vkCmdBindDescriptorSets,
-	EnumerateInstanceExtensionProperties = CLIB.vkEnumerateInstanceExtensionProperties,
-	CmdSetDepthBounds = CLIB.vkCmdSetDepthBounds,
-	CmdDispatchIndirect = CLIB.vkCmdDispatchIndirect,
-	DestroyEvent = CLIB.vkDestroyEvent,
-	CmdNextSubpass = CLIB.vkCmdNextSubpass,
-	CmdCopyBuffer = CLIB.vkCmdCopyBuffer,
-	GetDisplayPlaneSupportedDisplaysKHR = CLIB.vkGetDisplayPlaneSupportedDisplaysKHR,
-	DestroyBuffer = CLIB.vkDestroyBuffer,
-	CmdCopyImage = CLIB.vkCmdCopyImage,
-	GetPhysicalDeviceSparseImageFormatProperties = CLIB.vkGetPhysicalDeviceSparseImageFormatProperties,
-	CreateComputePipelines = CLIB.vkCreateComputePipelines,
-	CreateDescriptorSetLayout = CLIB.vkCreateDescriptorSetLayout,
-	AllocateCommandBuffers = CLIB.vkAllocateCommandBuffers,
-	GetPhysicalDeviceSurfaceFormatsKHR = CLIB.vkGetPhysicalDeviceSurfaceFormatsKHR,
-	DestroyQueryPool = CLIB.vkDestroyQueryPool,
-	CreateDescriptorPool = CLIB.vkCreateDescriptorPool,
-	GetImageSubresourceLayout = CLIB.vkGetImageSubresourceLayout,
-	CmdUpdateBuffer = CLIB.vkCmdUpdateBuffer,
-	CmdSetStencilReference = CLIB.vkCmdSetStencilReference,
-	CreateBuffer = CLIB.vkCreateBuffer,
-	FreeCommandBuffers = CLIB.vkFreeCommandBuffers,
-	DestroyDebugReportCallbackEXT = CLIB.vkDestroyDebugReportCallbackEXT,
-	GetFenceStatus = CLIB.vkGetFenceStatus,
-	CmdBeginQuery = CLIB.vkCmdBeginQuery,
-	GetPhysicalDeviceSurfaceCapabilitiesKHR = CLIB.vkGetPhysicalDeviceSurfaceCapabilitiesKHR,
-	DestroyPipeline = CLIB.vkDestroyPipeline,
-	QueueSubmit = CLIB.vkQueueSubmit,
-	CmdBlitImage = CLIB.vkCmdBlitImage,
-	CmdDrawIndexedIndirect = CLIB.vkCmdDrawIndexedIndirect,
-	CmdSetDepthBias = CLIB.vkCmdSetDepthBias,
-	GetPhysicalDeviceSurfaceSupportKHR = CLIB.vkGetPhysicalDeviceSurfaceSupportKHR,
-	CreateSemaphore = CLIB.vkCreateSemaphore,
-	DestroyShaderModule = CLIB.vkDestroyShaderModule,
-	CreatePipelineCache = CLIB.vkCreatePipelineCache,
-	CreateImageView = CLIB.vkCreateImageView,
-	GetPhysicalDeviceFeatures = CLIB.vkGetPhysicalDeviceFeatures,
-	DestroyPipelineLayout = CLIB.vkDestroyPipelineLayout,
-	DestroySampler = CLIB.vkDestroySampler,
-	FreeMemory = CLIB.vkFreeMemory,
-	GetPhysicalDeviceImageFormatProperties = CLIB.vkGetPhysicalDeviceImageFormatProperties,
-	MapMemory = CLIB.vkMapMemory,
-	DestroyFramebuffer = CLIB.vkDestroyFramebuffer,
-	GetDeviceMemoryCommitment = CLIB.vkGetDeviceMemoryCommitment,
-	CmdCopyBufferToImage = CLIB.vkCmdCopyBufferToImage,
-	CmdBindVertexBuffers = CLIB.vkCmdBindVertexBuffers,
-	DestroyCommandPool = CLIB.vkDestroyCommandPool,
-	InvalidateMappedMemoryRanges = CLIB.vkInvalidateMappedMemoryRanges,
-	GetDisplayPlaneCapabilitiesKHR = CLIB.vkGetDisplayPlaneCapabilitiesKHR,
-	CmdBindPipeline = CLIB.vkCmdBindPipeline,
-	DestroyBufferView = CLIB.vkDestroyBufferView,
-	GetImageSparseMemoryRequirements = CLIB.vkGetImageSparseMemoryRequirements,
-	DestroyImageView = CLIB.vkDestroyImageView,
-	ResetCommandBuffer = CLIB.vkResetCommandBuffer,
-	CmdDrawIndirect = CLIB.vkCmdDrawIndirect,
-	GetInstanceProcAddr = CLIB.vkGetInstanceProcAddr,
-	GetImageMemoryRequirements = CLIB.vkGetImageMemoryRequirements,
-	SetEvent = CLIB.vkSetEvent,
-	GetEventStatus = CLIB.vkGetEventStatus,
-	CreateDevice = CLIB.vkCreateDevice,
-	CreateInstance = CLIB.vkCreateInstance,
-	CmdClearDepthStencilImage = CLIB.vkCmdClearDepthStencilImage,
-	BeginCommandBuffer = CLIB.vkBeginCommandBuffer,
-	CmdDrawIndexed = CLIB.vkCmdDrawIndexed,
-	DebugReportMessageEXT = CLIB.vkDebugReportMessageEXT,
-	GetPhysicalDeviceDisplayPlanePropertiesKHR = CLIB.vkGetPhysicalDeviceDisplayPlanePropertiesKHR,
-	CmdFillBuffer = CLIB.vkCmdFillBuffer,
-	CreateDebugReportCallbackEXT = CLIB.vkCreateDebugReportCallbackEXT,
-	GetDeviceQueue = CLIB.vkGetDeviceQueue,
-	CreateSharedSwapchainsKHR = CLIB.vkCreateSharedSwapchainsKHR,
-	CreateDisplayPlaneSurfaceKHR = CLIB.vkCreateDisplayPlaneSurfaceKHR,
-	CmdWaitEvents = CLIB.vkCmdWaitEvents,
-	CmdEndRenderPass = CLIB.vkCmdEndRenderPass,
-	DestroySwapchainKHR = CLIB.vkDestroySwapchainKHR,
-	GetPhysicalDeviceDisplayPropertiesKHR = CLIB.vkGetPhysicalDeviceDisplayPropertiesKHR,
-	QueuePresentKHR = CLIB.vkQueuePresentKHR,
-	AcquireNextImageKHR = CLIB.vkAcquireNextImageKHR,
-	DestroyFence = CLIB.vkDestroyFence,
-	GetSwapchainImagesKHR = CLIB.vkGetSwapchainImagesKHR,
-	CreateImage = CLIB.vkCreateImage,
-	GetDisplayModePropertiesKHR = CLIB.vkGetDisplayModePropertiesKHR,
-	CreateSwapchainKHR = CLIB.vkCreateSwapchainKHR,
-	GetPhysicalDeviceSurfacePresentModesKHR = CLIB.vkGetPhysicalDeviceSurfacePresentModesKHR,
-	AllocateMemory = CLIB.vkAllocateMemory,
-	CmdClearColorImage = CLIB.vkCmdClearColorImage,
-	CmdExecuteCommands = CLIB.vkCmdExecuteCommands,
-	CreateDisplayModeKHR = CLIB.vkCreateDisplayModeKHR,
-	CmdBeginRenderPass = CLIB.vkCmdBeginRenderPass,
-	CmdClearAttachments = CLIB.vkCmdClearAttachments,
-	CmdPushConstants = CLIB.vkCmdPushConstants,
-	CmdResetQueryPool = CLIB.vkCmdResetQueryPool,
-	CmdEndQuery = CLIB.vkCmdEndQuery,
-	CreateFence = CLIB.vkCreateFence,
-	CmdBindIndexBuffer = CLIB.vkCmdBindIndexBuffer,
-	EndCommandBuffer = CLIB.vkEndCommandBuffer,
-	CreateRenderPass = CLIB.vkCreateRenderPass,
-	DestroyImage = CLIB.vkDestroyImage,
-	DestroySemaphore = CLIB.vkDestroySemaphore,
-	CmdSetBlendConstants = CLIB.vkCmdSetBlendConstants,
-	EnumerateDeviceLayerProperties = CLIB.vkEnumerateDeviceLayerProperties,
-	DestroyPipelineCache = CLIB.vkDestroyPipelineCache,
-	GetDeviceProcAddr = CLIB.vkGetDeviceProcAddr,
-	BindImageMemory = CLIB.vkBindImageMemory,
-	DestroyRenderPass = CLIB.vkDestroyRenderPass,
-	UnmapMemory = CLIB.vkUnmapMemory,
-	DestroyDescriptorPool = CLIB.vkDestroyDescriptorPool,
-	EnumerateDeviceExtensionProperties = CLIB.vkEnumerateDeviceExtensionProperties,
-	GetPhysicalDeviceProperties = CLIB.vkGetPhysicalDeviceProperties,
-	CreateQueryPool = CLIB.vkCreateQueryPool,
-	CmdDispatch = CLIB.vkCmdDispatch,
-	GetPhysicalDeviceFormatProperties = CLIB.vkGetPhysicalDeviceFormatProperties,
-	ResetDescriptorPool = CLIB.vkResetDescriptorPool,
-	WaitForFences = CLIB.vkWaitForFences,
-	CmdSetLineWidth = CLIB.vkCmdSetLineWidth,
-	ResetFences = CLIB.vkResetFences,
-	CreateSampler = CLIB.vkCreateSampler,
-	DestroyDescriptorSetLayout = CLIB.vkDestroyDescriptorSetLayout,
-	FlushMappedMemoryRanges = CLIB.vkFlushMappedMemoryRanges,
-	DestroyDevice = CLIB.vkDestroyDevice,
-	FreeDescriptorSets = CLIB.vkFreeDescriptorSets,
-	CmdDraw = CLIB.vkCmdDraw,
-	CreateCommandPool = CLIB.vkCreateCommandPool,
-	CreateEvent = CLIB.vkCreateEvent,
-	GetPhysicalDeviceMemoryProperties = CLIB.vkGetPhysicalDeviceMemoryProperties,
-	AllocateDescriptorSets = CLIB.vkAllocateDescriptorSets,
-	CmdSetScissor = CLIB.vkCmdSetScissor,
-	CreatePipelineLayout = CLIB.vkCreatePipelineLayout,
-	QueueBindSparse = CLIB.vkQueueBindSparse,
-	UpdateDescriptorSets = CLIB.vkUpdateDescriptorSets,
-	GetQueryPoolResults = CLIB.vkGetQueryPoolResults,
-	CmdPipelineBarrier = CLIB.vkCmdPipelineBarrier,
-	ResetCommandPool = CLIB.vkResetCommandPool,
-	CmdSetViewport = CLIB.vkCmdSetViewport,
+	GetBufferMemoryRequirements = SAFE_INDEX(CLIB).vkGetBufferMemoryRequirements,
+	DeviceWaitIdle = SAFE_INDEX(CLIB).vkDeviceWaitIdle,
+	CreateBufferView = SAFE_INDEX(CLIB).vkCreateBufferView,
+	CmdCopyImageToBuffer = SAFE_INDEX(CLIB).vkCmdCopyImageToBuffer,
+	CmdResolveImage = SAFE_INDEX(CLIB).vkCmdResolveImage,
+	CreateGraphicsPipelines = SAFE_INDEX(CLIB).vkCreateGraphicsPipelines,
+	CmdSetStencilCompareMask = SAFE_INDEX(CLIB).vkCmdSetStencilCompareMask,
+	GetPipelineCacheData = SAFE_INDEX(CLIB).vkGetPipelineCacheData,
+	GetRenderAreaGranularity = SAFE_INDEX(CLIB).vkGetRenderAreaGranularity,
+	DestroyInstance = SAFE_INDEX(CLIB).vkDestroyInstance,
+	EnumerateInstanceLayerProperties = SAFE_INDEX(CLIB).vkEnumerateInstanceLayerProperties,
+	ResetEvent = SAFE_INDEX(CLIB).vkResetEvent,
+	GetPhysicalDeviceQueueFamilyProperties = SAFE_INDEX(CLIB).vkGetPhysicalDeviceQueueFamilyProperties,
+	QueueWaitIdle = SAFE_INDEX(CLIB).vkQueueWaitIdle,
+	EnumeratePhysicalDevices = SAFE_INDEX(CLIB).vkEnumeratePhysicalDevices,
+	CmdWriteTimestamp = SAFE_INDEX(CLIB).vkCmdWriteTimestamp,
+	CreateShaderModule = SAFE_INDEX(CLIB).vkCreateShaderModule,
+	DestroySurfaceKHR = SAFE_INDEX(CLIB).vkDestroySurfaceKHR,
+	CmdCopyQueryPoolResults = SAFE_INDEX(CLIB).vkCmdCopyQueryPoolResults,
+	MergePipelineCaches = SAFE_INDEX(CLIB).vkMergePipelineCaches,
+	CmdSetStencilWriteMask = SAFE_INDEX(CLIB).vkCmdSetStencilWriteMask,
+	CreateFramebuffer = SAFE_INDEX(CLIB).vkCreateFramebuffer,
+	CmdResetEvent = SAFE_INDEX(CLIB).vkCmdResetEvent,
+	BindBufferMemory = SAFE_INDEX(CLIB).vkBindBufferMemory,
+	CmdSetEvent = SAFE_INDEX(CLIB).vkCmdSetEvent,
+	CmdBindDescriptorSets = SAFE_INDEX(CLIB).vkCmdBindDescriptorSets,
+	EnumerateInstanceExtensionProperties = SAFE_INDEX(CLIB).vkEnumerateInstanceExtensionProperties,
+	CmdSetDepthBounds = SAFE_INDEX(CLIB).vkCmdSetDepthBounds,
+	CmdDispatchIndirect = SAFE_INDEX(CLIB).vkCmdDispatchIndirect,
+	DestroyEvent = SAFE_INDEX(CLIB).vkDestroyEvent,
+	CmdNextSubpass = SAFE_INDEX(CLIB).vkCmdNextSubpass,
+	CmdCopyBuffer = SAFE_INDEX(CLIB).vkCmdCopyBuffer,
+	GetDisplayPlaneSupportedDisplaysKHR = SAFE_INDEX(CLIB).vkGetDisplayPlaneSupportedDisplaysKHR,
+	DestroyBuffer = SAFE_INDEX(CLIB).vkDestroyBuffer,
+	CmdCopyImage = SAFE_INDEX(CLIB).vkCmdCopyImage,
+	GetPhysicalDeviceSparseImageFormatProperties = SAFE_INDEX(CLIB).vkGetPhysicalDeviceSparseImageFormatProperties,
+	CreateComputePipelines = SAFE_INDEX(CLIB).vkCreateComputePipelines,
+	CreateDescriptorSetLayout = SAFE_INDEX(CLIB).vkCreateDescriptorSetLayout,
+	AllocateCommandBuffers = SAFE_INDEX(CLIB).vkAllocateCommandBuffers,
+	GetPhysicalDeviceSurfaceFormatsKHR = SAFE_INDEX(CLIB).vkGetPhysicalDeviceSurfaceFormatsKHR,
+	DestroyQueryPool = SAFE_INDEX(CLIB).vkDestroyQueryPool,
+	CreateDescriptorPool = SAFE_INDEX(CLIB).vkCreateDescriptorPool,
+	GetImageSubresourceLayout = SAFE_INDEX(CLIB).vkGetImageSubresourceLayout,
+	CmdUpdateBuffer = SAFE_INDEX(CLIB).vkCmdUpdateBuffer,
+	CmdSetStencilReference = SAFE_INDEX(CLIB).vkCmdSetStencilReference,
+	CreateBuffer = SAFE_INDEX(CLIB).vkCreateBuffer,
+	FreeCommandBuffers = SAFE_INDEX(CLIB).vkFreeCommandBuffers,
+	DestroyDebugReportCallbackEXT = SAFE_INDEX(CLIB).vkDestroyDebugReportCallbackEXT,
+	GetFenceStatus = SAFE_INDEX(CLIB).vkGetFenceStatus,
+	CmdBeginQuery = SAFE_INDEX(CLIB).vkCmdBeginQuery,
+	GetPhysicalDeviceSurfaceCapabilitiesKHR = SAFE_INDEX(CLIB).vkGetPhysicalDeviceSurfaceCapabilitiesKHR,
+	DestroyPipeline = SAFE_INDEX(CLIB).vkDestroyPipeline,
+	QueueSubmit = SAFE_INDEX(CLIB).vkQueueSubmit,
+	CmdBlitImage = SAFE_INDEX(CLIB).vkCmdBlitImage,
+	CmdDrawIndexedIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndexedIndirect,
+	CmdSetDepthBias = SAFE_INDEX(CLIB).vkCmdSetDepthBias,
+	GetPhysicalDeviceSurfaceSupportKHR = SAFE_INDEX(CLIB).vkGetPhysicalDeviceSurfaceSupportKHR,
+	CreateSemaphore = SAFE_INDEX(CLIB).vkCreateSemaphore,
+	DestroyShaderModule = SAFE_INDEX(CLIB).vkDestroyShaderModule,
+	CreatePipelineCache = SAFE_INDEX(CLIB).vkCreatePipelineCache,
+	CreateImageView = SAFE_INDEX(CLIB).vkCreateImageView,
+	GetPhysicalDeviceFeatures = SAFE_INDEX(CLIB).vkGetPhysicalDeviceFeatures,
+	DestroyPipelineLayout = SAFE_INDEX(CLIB).vkDestroyPipelineLayout,
+	DestroySampler = SAFE_INDEX(CLIB).vkDestroySampler,
+	FreeMemory = SAFE_INDEX(CLIB).vkFreeMemory,
+	GetPhysicalDeviceImageFormatProperties = SAFE_INDEX(CLIB).vkGetPhysicalDeviceImageFormatProperties,
+	MapMemory = SAFE_INDEX(CLIB).vkMapMemory,
+	DestroyFramebuffer = SAFE_INDEX(CLIB).vkDestroyFramebuffer,
+	GetDeviceMemoryCommitment = SAFE_INDEX(CLIB).vkGetDeviceMemoryCommitment,
+	CmdCopyBufferToImage = SAFE_INDEX(CLIB).vkCmdCopyBufferToImage,
+	CmdBindVertexBuffers = SAFE_INDEX(CLIB).vkCmdBindVertexBuffers,
+	DestroyCommandPool = SAFE_INDEX(CLIB).vkDestroyCommandPool,
+	InvalidateMappedMemoryRanges = SAFE_INDEX(CLIB).vkInvalidateMappedMemoryRanges,
+	GetDisplayPlaneCapabilitiesKHR = SAFE_INDEX(CLIB).vkGetDisplayPlaneCapabilitiesKHR,
+	CmdBindPipeline = SAFE_INDEX(CLIB).vkCmdBindPipeline,
+	DestroyBufferView = SAFE_INDEX(CLIB).vkDestroyBufferView,
+	GetImageSparseMemoryRequirements = SAFE_INDEX(CLIB).vkGetImageSparseMemoryRequirements,
+	DestroyImageView = SAFE_INDEX(CLIB).vkDestroyImageView,
+	ResetCommandBuffer = SAFE_INDEX(CLIB).vkResetCommandBuffer,
+	CmdDrawIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndirect,
+	GetInstanceProcAddr = SAFE_INDEX(CLIB).vkGetInstanceProcAddr,
+	GetImageMemoryRequirements = SAFE_INDEX(CLIB).vkGetImageMemoryRequirements,
+	SetEvent = SAFE_INDEX(CLIB).vkSetEvent,
+	GetEventStatus = SAFE_INDEX(CLIB).vkGetEventStatus,
+	CreateDevice = SAFE_INDEX(CLIB).vkCreateDevice,
+	CreateInstance = SAFE_INDEX(CLIB).vkCreateInstance,
+	CmdClearDepthStencilImage = SAFE_INDEX(CLIB).vkCmdClearDepthStencilImage,
+	BeginCommandBuffer = SAFE_INDEX(CLIB).vkBeginCommandBuffer,
+	CmdDrawIndexed = SAFE_INDEX(CLIB).vkCmdDrawIndexed,
+	DebugReportMessageEXT = SAFE_INDEX(CLIB).vkDebugReportMessageEXT,
+	GetPhysicalDeviceDisplayPlanePropertiesKHR = SAFE_INDEX(CLIB).vkGetPhysicalDeviceDisplayPlanePropertiesKHR,
+	CmdFillBuffer = SAFE_INDEX(CLIB).vkCmdFillBuffer,
+	CreateDebugReportCallbackEXT = SAFE_INDEX(CLIB).vkCreateDebugReportCallbackEXT,
+	GetDeviceQueue = SAFE_INDEX(CLIB).vkGetDeviceQueue,
+	CreateSharedSwapchainsKHR = SAFE_INDEX(CLIB).vkCreateSharedSwapchainsKHR,
+	CreateDisplayPlaneSurfaceKHR = SAFE_INDEX(CLIB).vkCreateDisplayPlaneSurfaceKHR,
+	CmdWaitEvents = SAFE_INDEX(CLIB).vkCmdWaitEvents,
+	CmdEndRenderPass = SAFE_INDEX(CLIB).vkCmdEndRenderPass,
+	DestroySwapchainKHR = SAFE_INDEX(CLIB).vkDestroySwapchainKHR,
+	GetPhysicalDeviceDisplayPropertiesKHR = SAFE_INDEX(CLIB).vkGetPhysicalDeviceDisplayPropertiesKHR,
+	QueuePresentKHR = SAFE_INDEX(CLIB).vkQueuePresentKHR,
+	AcquireNextImageKHR = SAFE_INDEX(CLIB).vkAcquireNextImageKHR,
+	DestroyFence = SAFE_INDEX(CLIB).vkDestroyFence,
+	GetSwapchainImagesKHR = SAFE_INDEX(CLIB).vkGetSwapchainImagesKHR,
+	CreateImage = SAFE_INDEX(CLIB).vkCreateImage,
+	GetDisplayModePropertiesKHR = SAFE_INDEX(CLIB).vkGetDisplayModePropertiesKHR,
+	CreateSwapchainKHR = SAFE_INDEX(CLIB).vkCreateSwapchainKHR,
+	GetPhysicalDeviceSurfacePresentModesKHR = SAFE_INDEX(CLIB).vkGetPhysicalDeviceSurfacePresentModesKHR,
+	AllocateMemory = SAFE_INDEX(CLIB).vkAllocateMemory,
+	CmdClearColorImage = SAFE_INDEX(CLIB).vkCmdClearColorImage,
+	CmdExecuteCommands = SAFE_INDEX(CLIB).vkCmdExecuteCommands,
+	CreateDisplayModeKHR = SAFE_INDEX(CLIB).vkCreateDisplayModeKHR,
+	CmdBeginRenderPass = SAFE_INDEX(CLIB).vkCmdBeginRenderPass,
+	CmdClearAttachments = SAFE_INDEX(CLIB).vkCmdClearAttachments,
+	CmdPushConstants = SAFE_INDEX(CLIB).vkCmdPushConstants,
+	CmdResetQueryPool = SAFE_INDEX(CLIB).vkCmdResetQueryPool,
+	CmdEndQuery = SAFE_INDEX(CLIB).vkCmdEndQuery,
+	CreateFence = SAFE_INDEX(CLIB).vkCreateFence,
+	CmdBindIndexBuffer = SAFE_INDEX(CLIB).vkCmdBindIndexBuffer,
+	EndCommandBuffer = SAFE_INDEX(CLIB).vkEndCommandBuffer,
+	CreateRenderPass = SAFE_INDEX(CLIB).vkCreateRenderPass,
+	DestroyImage = SAFE_INDEX(CLIB).vkDestroyImage,
+	DestroySemaphore = SAFE_INDEX(CLIB).vkDestroySemaphore,
+	CmdSetBlendConstants = SAFE_INDEX(CLIB).vkCmdSetBlendConstants,
+	EnumerateDeviceLayerProperties = SAFE_INDEX(CLIB).vkEnumerateDeviceLayerProperties,
+	DestroyPipelineCache = SAFE_INDEX(CLIB).vkDestroyPipelineCache,
+	GetDeviceProcAddr = SAFE_INDEX(CLIB).vkGetDeviceProcAddr,
+	BindImageMemory = SAFE_INDEX(CLIB).vkBindImageMemory,
+	DestroyRenderPass = SAFE_INDEX(CLIB).vkDestroyRenderPass,
+	UnmapMemory = SAFE_INDEX(CLIB).vkUnmapMemory,
+	DestroyDescriptorPool = SAFE_INDEX(CLIB).vkDestroyDescriptorPool,
+	EnumerateDeviceExtensionProperties = SAFE_INDEX(CLIB).vkEnumerateDeviceExtensionProperties,
+	GetPhysicalDeviceProperties = SAFE_INDEX(CLIB).vkGetPhysicalDeviceProperties,
+	CreateQueryPool = SAFE_INDEX(CLIB).vkCreateQueryPool,
+	CmdDispatch = SAFE_INDEX(CLIB).vkCmdDispatch,
+	GetPhysicalDeviceFormatProperties = SAFE_INDEX(CLIB).vkGetPhysicalDeviceFormatProperties,
+	ResetDescriptorPool = SAFE_INDEX(CLIB).vkResetDescriptorPool,
+	WaitForFences = SAFE_INDEX(CLIB).vkWaitForFences,
+	CmdSetLineWidth = SAFE_INDEX(CLIB).vkCmdSetLineWidth,
+	ResetFences = SAFE_INDEX(CLIB).vkResetFences,
+	CreateSampler = SAFE_INDEX(CLIB).vkCreateSampler,
+	DestroyDescriptorSetLayout = SAFE_INDEX(CLIB).vkDestroyDescriptorSetLayout,
+	FlushMappedMemoryRanges = SAFE_INDEX(CLIB).vkFlushMappedMemoryRanges,
+	DestroyDevice = SAFE_INDEX(CLIB).vkDestroyDevice,
+	FreeDescriptorSets = SAFE_INDEX(CLIB).vkFreeDescriptorSets,
+	CmdDraw = SAFE_INDEX(CLIB).vkCmdDraw,
+	CreateCommandPool = SAFE_INDEX(CLIB).vkCreateCommandPool,
+	CreateEvent = SAFE_INDEX(CLIB).vkCreateEvent,
+	GetPhysicalDeviceMemoryProperties = SAFE_INDEX(CLIB).vkGetPhysicalDeviceMemoryProperties,
+	AllocateDescriptorSets = SAFE_INDEX(CLIB).vkAllocateDescriptorSets,
+	CmdSetScissor = SAFE_INDEX(CLIB).vkCmdSetScissor,
+	CreatePipelineLayout = SAFE_INDEX(CLIB).vkCreatePipelineLayout,
+	QueueBindSparse = SAFE_INDEX(CLIB).vkQueueBindSparse,
+	UpdateDescriptorSets = SAFE_INDEX(CLIB).vkUpdateDescriptorSets,
+	GetQueryPoolResults = SAFE_INDEX(CLIB).vkGetQueryPoolResults,
+	CmdPipelineBarrier = SAFE_INDEX(CLIB).vkCmdPipelineBarrier,
+	ResetCommandPool = SAFE_INDEX(CLIB).vkResetCommandPool,
+	CmdSetViewport = SAFE_INDEX(CLIB).vkCmdSetViewport,
 }
+library.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end
+function library.StringList(tbl)
+	return ffi.new("const char * const ["..#tbl.."]", tbl), #tbl
+end
+function library.GetInstanceLayerProperties()
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkLayerProperties [128]")
+	local status = CLIB.vkEnumerateInstanceLayerProperties(count, array)
+	local out = {}
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
+	end
+
+	if status == 0 then
+		return out
+	end
+	return nil, status
+end
+function library.GetPhysicalDevices(instance)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkPhysicalDevice_T * [128]")
+	local status = CLIB.vkEnumeratePhysicalDevices(instance, count, array)
+	local out = {}
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
+	end
+
+	if status == 0 then
+		return out
+	end
+	return nil, status
+end
+function library.GetInstanceExtensionProperties(pLayerName)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkExtensionProperties [128]")
+	local status = CLIB.vkEnumerateInstanceExtensionProperties(pLayerName, count, array)
+	local out = {}
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
+	end
+
+	if status == 0 then
+		return out
+	end
+	return nil, status
+end
+function library.GetDeviceLayerProperties(physicalDevice)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkLayerProperties [128]")
+	local status = CLIB.vkEnumerateDeviceLayerProperties(physicalDevice, count, array)
+	local out = {}
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
+	end
+
+	if status == 0 then
+		return out
+	end
+	return nil, status
+end
+function library.GetDeviceExtensionProperties(physicalDevice, pLayerName)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkExtensionProperties [128]")
+	local status = CLIB.vkEnumerateDeviceExtensionProperties(physicalDevice, pLayerName, count, array)
+	local out = {}
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
+	end
+
+	if status == 0 then
+		return out
+	end
+	return nil, status
+end
+function library.GetBufferMemoryRequirements(device, buffer)
+	local box = ffi.new("struct VkMemoryRequirements [1]")
+	CLIB.vkGetBufferMemoryRequirements(device, buffer, box)
+	return box[0]
+end
+function library.GetPipelineCacheData(device, pipelineCache, pDataSize)
+	local box = ffi.new("void [1]")
+	local status = CLIB.vkGetPipelineCacheData(device, pipelineCache, pDataSize, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetRenderAreaGranularity(device, renderPass)
+	local box = ffi.new("struct VkExtent2D [1]")
+	CLIB.vkGetRenderAreaGranularity(device, renderPass, box)
+	return box[0]
+end
+function library.GetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyPropertyCount)
+	local box = ffi.new("struct VkQueueFamilyProperties [1]")
+	CLIB.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyPropertyCount, box)
+	return box[0]
+end
+function library.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, pDisplayCount)
+	local box = ffi.new("struct VkDisplayKHR_T * [1]")
+	local status = CLIB.vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, pDisplayCount, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetPhysicalDeviceSparseImageFormatProperties(physicalDevice, format, type, samples, usage, tiling, pPropertyCount)
+	local box = ffi.new("struct VkSparseImageFormatProperties [1]")
+	CLIB.vkGetPhysicalDeviceSparseImageFormatProperties(physicalDevice, format, type, samples, usage, tiling, pPropertyCount, box)
+	return box[0]
+end
+function library.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pSurfaceFormatCount)
+	local box = ffi.new("struct VkSurfaceFormatKHR [1]")
+	local status = CLIB.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pSurfaceFormatCount, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetImageSubresourceLayout(device, image, pSubresource)
+	local box = ffi.new("struct VkSubresourceLayout [1]")
+	CLIB.vkGetImageSubresourceLayout(device, image, pSubresource, box)
+	return box[0]
+end
+function library.GetFenceStatus(device)
+	local box = ffi.new("struct VkFence_T [1]")
+	local status = CLIB.vkGetFenceStatus(device, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface)
+	local box = ffi.new("struct VkSurfaceCapabilitiesKHR [1]")
+	local status = CLIB.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface)
+	local box = ffi.new("unsigned int [1]")
+	local status = CLIB.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetPhysicalDeviceFeatures(physicalDevice)
+	local box = ffi.new("struct VkPhysicalDeviceFeatures [1]")
+	CLIB.vkGetPhysicalDeviceFeatures(physicalDevice, box)
+	return box[0]
+end
+function library.GetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags)
+	local box = ffi.new("struct VkImageFormatProperties [1]")
+	local status = CLIB.vkGetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetDeviceMemoryCommitment(device, memory)
+	local box = ffi.new("unsigned long [1]")
+	CLIB.vkGetDeviceMemoryCommitment(device, memory, box)
+	return box[0]
+end
+function library.GetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex)
+	local box = ffi.new("struct VkDisplayPlaneCapabilitiesKHR [1]")
+	local status = CLIB.vkGetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetImageSparseMemoryRequirements(device, image, pSparseMemoryRequirementCount)
+	local box = ffi.new("struct VkSparseImageMemoryRequirements [1]")
+	CLIB.vkGetImageSparseMemoryRequirements(device, image, pSparseMemoryRequirementCount, box)
+	return box[0]
+end
+function library.GetImageMemoryRequirements(device, image)
+	local box = ffi.new("struct VkMemoryRequirements [1]")
+	CLIB.vkGetImageMemoryRequirements(device, image, box)
+	return box[0]
+end
+function library.GetEventStatus(device)
+	local box = ffi.new("struct VkEvent_T [1]")
+	local status = CLIB.vkGetEventStatus(device, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, pPropertyCount)
+	local box = ffi.new("struct VkDisplayPlanePropertiesKHR [1]")
+	local status = CLIB.vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, pPropertyCount, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetDeviceQueue(device, queueFamilyIndex, queueIndex)
+	local box = ffi.new("struct VkQueue_T * [1]")
+	CLIB.vkGetDeviceQueue(device, queueFamilyIndex, queueIndex, box)
+	return box[0]
+end
+function library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, pPropertyCount)
+	local box = ffi.new("struct VkDisplayPropertiesKHR [1]")
+	local status = CLIB.vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, pPropertyCount, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount)
+	local box = ffi.new("struct VkImage_T * [1]")
+	local status = CLIB.vkGetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetDisplayModePropertiesKHR(physicalDevice, display, pPropertyCount)
+	local box = ffi.new("struct VkDisplayModePropertiesKHR [1]")
+	local status = CLIB.vkGetDisplayModePropertiesKHR(physicalDevice, display, pPropertyCount, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, pPresentModeCount)
+	local box = ffi.new("enum VkPresentModeKHR [1]")
+	local status = CLIB.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, pPresentModeCount, box)
+
+	if status == 0 then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.GetPhysicalDeviceProperties(physicalDevice)
+	local box = ffi.new("struct VkPhysicalDeviceProperties [1]")
+	CLIB.vkGetPhysicalDeviceProperties(physicalDevice, box)
+	return box[0]
+end
+function library.GetPhysicalDeviceFormatProperties(physicalDevice, format)
+	local box = ffi.new("struct VkFormatProperties [1]")
+	CLIB.vkGetPhysicalDeviceFormatProperties(physicalDevice, format, box)
+	return box[0]
+end
+function library.GetPhysicalDeviceMemoryProperties(physicalDevice)
+	local box = ffi.new("struct VkPhysicalDeviceMemoryProperties [1]")
+	CLIB.vkGetPhysicalDeviceMemoryProperties(physicalDevice, box)
+	return box[0]
+end
+do
+	local META = {
+		DestroySurface = SAFE_INDEX(CLIB).vkDestroySurfaceKHR,
+		DebugReportMessage = SAFE_INDEX(CLIB).vkDebugReportMessageEXT,
+		CreateDisplayPlaneSurface = SAFE_INDEX(CLIB).vkCreateDisplayPlaneSurfaceKHR,
+		Destroy = SAFE_INDEX(CLIB).vkDestroyInstance,
+		GetPhysicalDevices = library.GetPhysicalDevices,
+		GetProcAddr = SAFE_INDEX(CLIB).vkGetInstanceProcAddr,
+		CreateDebugReportCallback = SAFE_INDEX(CLIB).vkCreateDebugReportCallbackEXT,
+		DestroyDebugReportCallback = SAFE_INDEX(CLIB).vkDestroyDebugReportCallbackEXT,
+	}
+	META.__index = META
+	ffi.metatype("struct VkInstance_T", META)
+end
+do
+	local META = {
+		BindIndexBuffer = SAFE_INDEX(CLIB).vkCmdBindIndexBuffer,
+		CopyBufferToImage = SAFE_INDEX(CLIB).vkCmdCopyBufferToImage,
+		DrawIndexedIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndexedIndirect,
+		SetBlendConstants = SAFE_INDEX(CLIB).vkCmdSetBlendConstants,
+		CopyBuffer = SAFE_INDEX(CLIB).vkCmdCopyBuffer,
+		BindPipeline = SAFE_INDEX(CLIB).vkCmdBindPipeline,
+		SetLineWidth = SAFE_INDEX(CLIB).vkCmdSetLineWidth,
+		PushConstants = SAFE_INDEX(CLIB).vkCmdPushConstants,
+		DispatchIndirect = SAFE_INDEX(CLIB).vkCmdDispatchIndirect,
+		ClearColorImage = SAFE_INDEX(CLIB).vkCmdClearColorImage,
+		ResolveImage = SAFE_INDEX(CLIB).vkCmdResolveImage,
+		WriteTimestamp = SAFE_INDEX(CLIB).vkCmdWriteTimestamp,
+		SetStencilReference = SAFE_INDEX(CLIB).vkCmdSetStencilReference,
+		DrawIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndirect,
+		SetViewport = SAFE_INDEX(CLIB).vkCmdSetViewport,
+		End = SAFE_INDEX(CLIB).vkEndCommandBuffer,
+		ClearAttachments = SAFE_INDEX(CLIB).vkCmdClearAttachments,
+		SetDepthBias = SAFE_INDEX(CLIB).vkCmdSetDepthBias,
+		WaitEvents = SAFE_INDEX(CLIB).vkCmdWaitEvents,
+		BindVertexBuffers = SAFE_INDEX(CLIB).vkCmdBindVertexBuffers,
+		Reset = SAFE_INDEX(CLIB).vkResetCommandBuffer,
+		Dispatch = SAFE_INDEX(CLIB).vkCmdDispatch,
+		CopyQueryPoolResults = SAFE_INDEX(CLIB).vkCmdCopyQueryPoolResults,
+		SetEvent = SAFE_INDEX(CLIB).vkCmdSetEvent,
+		SetScissor = SAFE_INDEX(CLIB).vkCmdSetScissor,
+		FillBuffer = SAFE_INDEX(CLIB).vkCmdFillBuffer,
+		BlitImage = SAFE_INDEX(CLIB).vkCmdBlitImage,
+		BindDescriptorSets = SAFE_INDEX(CLIB).vkCmdBindDescriptorSets,
+		SetDepthBounds = SAFE_INDEX(CLIB).vkCmdSetDepthBounds,
+		EndQuery = SAFE_INDEX(CLIB).vkCmdEndQuery,
+		ResetEvent = SAFE_INDEX(CLIB).vkCmdResetEvent,
+		ResetQueryPool = SAFE_INDEX(CLIB).vkCmdResetQueryPool,
+		CopyImageToBuffer = SAFE_INDEX(CLIB).vkCmdCopyImageToBuffer,
+		ClearDepthStencilImage = SAFE_INDEX(CLIB).vkCmdClearDepthStencilImage,
+		Draw = SAFE_INDEX(CLIB).vkCmdDraw,
+		SetStencilWriteMask = SAFE_INDEX(CLIB).vkCmdSetStencilWriteMask,
+		DrawIndexed = SAFE_INDEX(CLIB).vkCmdDrawIndexed,
+		SetStencilCompareMask = SAFE_INDEX(CLIB).vkCmdSetStencilCompareMask,
+		ExecuteCommands = SAFE_INDEX(CLIB).vkCmdExecuteCommands,
+		NextSubpass = SAFE_INDEX(CLIB).vkCmdNextSubpass,
+		EndRenderPass = SAFE_INDEX(CLIB).vkCmdEndRenderPass,
+		CopyImage = SAFE_INDEX(CLIB).vkCmdCopyImage,
+		UpdateBuffer = SAFE_INDEX(CLIB).vkCmdUpdateBuffer,
+		BeginRenderPass = SAFE_INDEX(CLIB).vkCmdBeginRenderPass,
+		BeginQuery = SAFE_INDEX(CLIB).vkCmdBeginQuery,
+		PipelineBarrier = SAFE_INDEX(CLIB).vkCmdPipelineBarrier,
+		Begin = SAFE_INDEX(CLIB).vkBeginCommandBuffer,
+	}
+	META.__index = META
+	ffi.metatype("struct VkCommandBuffer_T", META)
+end
+do
+	local META = {
+		CreateBufferView = SAFE_INDEX(CLIB).vkCreateBufferView,
+		DestroySemaphore = SAFE_INDEX(CLIB).vkDestroySemaphore,
+		CreateFramebuffer = SAFE_INDEX(CLIB).vkCreateFramebuffer,
+		DestroyPipelineLayout = SAFE_INDEX(CLIB).vkDestroyPipelineLayout,
+		GetEventStatus = library.GetEventStatus,
+		GetQueue = library.GetDeviceQueue,
+		GetFenceStatus = library.GetFenceStatus,
+		DestroyDescriptorPool = SAFE_INDEX(CLIB).vkDestroyDescriptorPool,
+		GetPipelineCacheData = library.GetPipelineCacheData,
+		GetQueryPoolResults = SAFE_INDEX(CLIB).vkGetQueryPoolResults,
+		DestroyImageView = SAFE_INDEX(CLIB).vkDestroyImageView,
+		WaitIdle = SAFE_INDEX(CLIB).vkDeviceWaitIdle,
+		CreateDescriptorSetLayout = SAFE_INDEX(CLIB).vkCreateDescriptorSetLayout,
+		DestroyCommandPool = SAFE_INDEX(CLIB).vkDestroyCommandPool,
+		CreateFence = SAFE_INDEX(CLIB).vkCreateFence,
+		DestroyFence = SAFE_INDEX(CLIB).vkDestroyFence,
+		WaitForFences = SAFE_INDEX(CLIB).vkWaitForFences,
+		CreateSwapchain = SAFE_INDEX(CLIB).vkCreateSwapchainKHR,
+		CreateImage = SAFE_INDEX(CLIB).vkCreateImage,
+		GetBufferMemoryRequirements = library.GetBufferMemoryRequirements,
+		CreatePipelineLayout = SAFE_INDEX(CLIB).vkCreatePipelineLayout,
+		BindImageMemory = SAFE_INDEX(CLIB).vkBindImageMemory,
+		UnmapMemory = SAFE_INDEX(CLIB).vkUnmapMemory,
+		Destroy = SAFE_INDEX(CLIB).vkDestroyDevice,
+		DestroyShaderModule = SAFE_INDEX(CLIB).vkDestroyShaderModule,
+		CreateSampler = SAFE_INDEX(CLIB).vkCreateSampler,
+		FreeDescriptorSets = SAFE_INDEX(CLIB).vkFreeDescriptorSets,
+		CreateQueryPool = SAFE_INDEX(CLIB).vkCreateQueryPool,
+		DestroySampler = SAFE_INDEX(CLIB).vkDestroySampler,
+		CreateCommandPool = SAFE_INDEX(CLIB).vkCreateCommandPool,
+		ResetCommandPool = SAFE_INDEX(CLIB).vkResetCommandPool,
+		GetImageMemoryRequirements = library.GetImageMemoryRequirements,
+		ResetDescriptorPool = SAFE_INDEX(CLIB).vkResetDescriptorPool,
+		GetProcAddr = SAFE_INDEX(CLIB).vkGetDeviceProcAddr,
+		CreateImageView = SAFE_INDEX(CLIB).vkCreateImageView,
+		CreateDescriptorPool = SAFE_INDEX(CLIB).vkCreateDescriptorPool,
+		DestroyFramebuffer = SAFE_INDEX(CLIB).vkDestroyFramebuffer,
+		DestroyPipeline = SAFE_INDEX(CLIB).vkDestroyPipeline,
+		AllocateMemory = SAFE_INDEX(CLIB).vkAllocateMemory,
+		FreeCommandBuffers = SAFE_INDEX(CLIB).vkFreeCommandBuffers,
+		ResetEvent = SAFE_INDEX(CLIB).vkResetEvent,
+		GetImageSparseMemoryRequirements = library.GetImageSparseMemoryRequirements,
+		ResetFences = SAFE_INDEX(CLIB).vkResetFences,
+		FreeMemory = SAFE_INDEX(CLIB).vkFreeMemory,
+		DestroyImage = SAFE_INDEX(CLIB).vkDestroyImage,
+		FlushMappedMemoryRanges = SAFE_INDEX(CLIB).vkFlushMappedMemoryRanges,
+		UpdateDescriptorSets = SAFE_INDEX(CLIB).vkUpdateDescriptorSets,
+		CreateBuffer = SAFE_INDEX(CLIB).vkCreateBuffer,
+		DestroyPipelineCache = SAFE_INDEX(CLIB).vkDestroyPipelineCache,
+		CreateComputePipelines = SAFE_INDEX(CLIB).vkCreateComputePipelines,
+		AcquireNextImage = SAFE_INDEX(CLIB).vkAcquireNextImageKHR,
+		GetMemoryCommitment = library.GetDeviceMemoryCommitment,
+		SetEvent = SAFE_INDEX(CLIB).vkSetEvent,
+		BindBufferMemory = SAFE_INDEX(CLIB).vkBindBufferMemory,
+		MergePipelineCaches = SAFE_INDEX(CLIB).vkMergePipelineCaches,
+		DestroyEvent = SAFE_INDEX(CLIB).vkDestroyEvent,
+		GetSwapchainImages = library.GetSwapchainImagesKHR,
+		DestroyQueryPool = SAFE_INDEX(CLIB).vkDestroyQueryPool,
+		CreateRenderPass = SAFE_INDEX(CLIB).vkCreateRenderPass,
+		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
+		CreateEvent = SAFE_INDEX(CLIB).vkCreateEvent,
+		DestroyBuffer = SAFE_INDEX(CLIB).vkDestroyBuffer,
+		DestroyDescriptorSetLayout = SAFE_INDEX(CLIB).vkDestroyDescriptorSetLayout,
+		InvalidateMappedMemoryRanges = SAFE_INDEX(CLIB).vkInvalidateMappedMemoryRanges,
+		CreateSemaphore = SAFE_INDEX(CLIB).vkCreateSemaphore,
+		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
+		CreateGraphicsPipelines = SAFE_INDEX(CLIB).vkCreateGraphicsPipelines,
+		AllocateDescriptorSets = SAFE_INDEX(CLIB).vkAllocateDescriptorSets,
+		CreatePipelineCache = SAFE_INDEX(CLIB).vkCreatePipelineCache,
+		DestroyBufferView = SAFE_INDEX(CLIB).vkDestroyBufferView,
+		MapMemory = SAFE_INDEX(CLIB).vkMapMemory,
+		DestroyRenderPass = SAFE_INDEX(CLIB).vkDestroyRenderPass,
+		AllocateCommandBuffers = SAFE_INDEX(CLIB).vkAllocateCommandBuffers,
+		CreateSharedSwapchains = SAFE_INDEX(CLIB).vkCreateSharedSwapchainsKHR,
+		CreateShaderModule = SAFE_INDEX(CLIB).vkCreateShaderModule,
+		DestroySwapchain = SAFE_INDEX(CLIB).vkDestroySwapchainKHR,
+	}
+	META.__index = META
+	ffi.metatype("struct VkDevice_T", META)
+end
+do
+	local META = {
+		Present = SAFE_INDEX(CLIB).vkQueuePresentKHR,
+		WaitIdle = SAFE_INDEX(CLIB).vkQueueWaitIdle,
+		BindSparse = SAFE_INDEX(CLIB).vkQueueBindSparse,
+		Submit = SAFE_INDEX(CLIB).vkQueueSubmit,
+	}
+	META.__index = META
+	ffi.metatype("struct VkQueue_T", META)
+end
+do
+	local META = {
+		GetDisplayPlaneProperties = library.GetPhysicalDeviceDisplayPlanePropertiesKHR,
+		GetQueueFamilyProperties = library.GetPhysicalDeviceQueueFamilyProperties,
+		GetSurfaceCapabilities = library.GetPhysicalDeviceSurfaceCapabilitiesKHR,
+		GetSurfacePresentModes = library.GetPhysicalDeviceSurfacePresentModesKHR,
+		GetDeviceExtensionProperties = library.GetDeviceExtensionProperties,
+		GetDisplayPlaneSupportedDisplays = library.GetDisplayPlaneSupportedDisplaysKHR,
+		GetMemoryProperties = library.GetPhysicalDeviceMemoryProperties,
+		GetDisplayProperties = library.GetPhysicalDeviceDisplayPropertiesKHR,
+		CreateDisplayMode = SAFE_INDEX(CLIB).vkCreateDisplayModeKHR,
+		GetFormatProperties = library.GetPhysicalDeviceFormatProperties,
+		GetSparseImageFormatProperties = library.GetPhysicalDeviceSparseImageFormatProperties,
+		CreateDevice = SAFE_INDEX(CLIB).vkCreateDevice,
+		GetDisplayModeProperties = library.GetDisplayModePropertiesKHR,
+		GetProperties = library.GetPhysicalDeviceProperties,
+		GetFeatures = library.GetPhysicalDeviceFeatures,
+		GetImageFormatProperties = library.GetPhysicalDeviceImageFormatProperties,
+		GetSurfaceFormats = library.GetPhysicalDeviceSurfaceFormatsKHR,
+		GetSurfaceSupport = library.GetPhysicalDeviceSurfaceSupportKHR,
+		GetDisplayPlaneCapabilities = library.GetDisplayPlaneCapabilitiesKHR,
+		GetDeviceLayerProperties = library.GetDeviceLayerProperties,
+	}
+	META.__index = META
+	ffi.metatype("struct VkPhysicalDevice_T", META)
+end
+function library.ApplicationInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO" return ffi.new("struct VkApplicationInfo", tbl) end
+function library.InstanceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO" return ffi.new("struct VkInstanceCreateInfo", tbl) end
+function library.DeviceQueueCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO" return ffi.new("struct VkDeviceQueueCreateInfo", tbl) end
+function library.DeviceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO" return ffi.new("struct VkDeviceCreateInfo", tbl) end
+function library.SubmitInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SUBMIT_INFO" return ffi.new("struct VkSubmitInfo", tbl) end
+function library.MemoryAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO" return ffi.new("struct VkMemoryAllocateInfo", tbl) end
+function library.MappedMemoryRange(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE" return ffi.new("struct VkMappedMemoryRange", tbl) end
+function library.BindSparseInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BIND_SPARSE_INFO" return ffi.new("struct VkBindSparseInfo", tbl) end
+function library.FenceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO" return ffi.new("struct VkFenceCreateInfo", tbl) end
+function library.SemaphoreCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO" return ffi.new("struct VkSemaphoreCreateInfo", tbl) end
+function library.EventCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_EVENT_CREATE_INFO" return ffi.new("struct VkEventCreateInfo", tbl) end
+function library.QueryPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO" return ffi.new("struct VkQueryPoolCreateInfo", tbl) end
+function library.BufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO" return ffi.new("struct VkBufferCreateInfo", tbl) end
+function library.BufferViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO" return ffi.new("struct VkBufferViewCreateInfo", tbl) end
+function library.ImageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO" return ffi.new("struct VkImageCreateInfo", tbl) end
+function library.ImageViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO" return ffi.new("struct VkImageViewCreateInfo", tbl) end
+function library.ShaderModuleCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO" return ffi.new("struct VkShaderModuleCreateInfo", tbl) end
+function library.PipelineCacheCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO" return ffi.new("struct VkPipelineCacheCreateInfo", tbl) end
+function library.PipelineShaderStageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO" return ffi.new("struct VkPipelineShaderStageCreateInfo", tbl) end
+function library.PipelineVertexInputStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineVertexInputStateCreateInfo", tbl) end
+function library.PipelineInputAssemblyStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO" return ffi.new("struct VkPipelineInputAssemblyStateCreateInfo", tbl) end
+function library.PipelineTessellationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineTessellationStateCreateInfo", tbl) end
+function library.PipelineViewportStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineViewportStateCreateInfo", tbl) end
+function library.PipelineRasterizationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineRasterizationStateCreateInfo", tbl) end
+function library.PipelineMultisampleStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO" return ffi.new("struct VkPipelineMultisampleStateCreateInfo", tbl) end
+function library.PipelineDepthStencilStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDepthStencilStateCreateInfo", tbl) end
+function library.PipelineColorBlendStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO" return ffi.new("struct VkPipelineColorBlendStateCreateInfo", tbl) end
+function library.PipelineDynamicStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDynamicStateCreateInfo", tbl) end
+function library.GraphicsPipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO" return ffi.new("struct VkGraphicsPipelineCreateInfo", tbl) end
+function library.ComputePipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO" return ffi.new("struct VkComputePipelineCreateInfo", tbl) end
+function library.PipelineLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO" return ffi.new("struct VkPipelineLayoutCreateInfo", tbl) end
+function library.SamplerCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO" return ffi.new("struct VkSamplerCreateInfo", tbl) end
+function library.DescriptorSetLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO" return ffi.new("struct VkDescriptorSetLayoutCreateInfo", tbl) end
+function library.DescriptorPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO" return ffi.new("struct VkDescriptorPoolCreateInfo", tbl) end
+function library.DescriptorSetAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO" return ffi.new("struct VkDescriptorSetAllocateInfo", tbl) end
+function library.WriteDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET" return ffi.new("struct VkWriteDescriptorSet", tbl) end
+function library.CopyDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET" return ffi.new("struct VkCopyDescriptorSet", tbl) end
+function library.FramebufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO" return ffi.new("struct VkFramebufferCreateInfo", tbl) end
+function library.RenderPassCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO" return ffi.new("struct VkRenderPassCreateInfo", tbl) end
+function library.CommandPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO" return ffi.new("struct VkCommandPoolCreateInfo", tbl) end
+function library.CommandBufferAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO" return ffi.new("struct VkCommandBufferAllocateInfo", tbl) end
+function library.CommandBufferInheritanceInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO" return ffi.new("struct VkCommandBufferInheritanceInfo", tbl) end
+function library.CommandBufferBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO" return ffi.new("struct VkCommandBufferBeginInfo", tbl) end
+function library.RenderPassBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO" return ffi.new("struct VkRenderPassBeginInfo", tbl) end
+function library.BufferMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER" return ffi.new("struct VkBufferMemoryBarrier", tbl) end
+function library.ImageMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER" return ffi.new("struct VkImageMemoryBarrier", tbl) end
+function library.MemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER" return ffi.new("struct VkMemoryBarrier", tbl) end
+function library.LoaderInstanceCreateInfo(tbl) return ffi.new("struct VkLoaderInstanceCreateInfo", tbl) end
+function library.LoaderDeviceCreateInfo(tbl) return ffi.new("struct VkLoaderDeviceCreateInfo", tbl) end
+function library.SwapchainCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR" return ffi.new("struct VkSwapchainCreateInfoKHR", tbl) end
+function library.PresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PRESENT_INFO_KHR" return ffi.new("struct VkPresentInfoKHR", tbl) end
+function library.DisplayModeCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR" return ffi.new("struct VkDisplayModeCreateInfoKHR", tbl) end
+function library.DisplaySurfaceCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR" return ffi.new("struct VkDisplaySurfaceCreateInfoKHR", tbl) end
+function library.DisplayPresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR" return ffi.new("struct VkDisplayPresentInfoKHR", tbl) end
+function library.XlibSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXlibSurfaceCreateInfoKHR", tbl) end
+function library.XcbSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXcbSurfaceCreateInfoKHR", tbl) end
+function library.WaylandSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWaylandSurfaceCreateInfoKHR", tbl) end
+function library.MirSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkMirSurfaceCreateInfoKHR", tbl) end
+function library.AndroidSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkAndroidSurfaceCreateInfoKHR", tbl) end
+function library.Win32SurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWin32SurfaceCreateInfoKHR", tbl) end
+function library.DebugReportCreateInfoEXT(tbl) return ffi.new("struct VkDebugReportCreateInfoEXT", tbl) end
+function library.BeginRange(tbl) return ffi.new("struct VkBeginRange", tbl) end
+function library.EndRange(tbl) return ffi.new("struct VkEndRange", tbl) end
+function library.RangeSize(tbl) return ffi.new("struct VkRangeSize", tbl) end
+function library.MaxEnum(tbl) return ffi.new("struct VkMaxEnum", tbl) end
+	function library.CreateBufferView(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkBufferView_T * [1]")
+		local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
+		local box = ffi.new("struct VkPipeline_T * [1]")
+		local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateShaderModule(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkShaderModule_T * [1]")
+		local status = CLIB.vkCreateShaderModule(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkFramebuffer_T * [1]")
+		local status = CLIB.vkCreateFramebuffer(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
+		local box = ffi.new("struct VkPipeline_T * [1]")
+		local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkDescriptorSetLayout_T * [1]")
+		local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkDescriptorPool_T * [1]")
+		local status = CLIB.vkCreateDescriptorPool(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateBuffer(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkBuffer_T * [1]")
+		local status = CLIB.vkCreateBuffer(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateSemaphore(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkSemaphore_T * [1]")
+		local status = CLIB.vkCreateSemaphore(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkPipelineCache_T * [1]")
+		local status = CLIB.vkCreatePipelineCache(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateImageView(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkImageView_T * [1]")
+		local status = CLIB.vkCreateImageView(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkDevice_T * [1]")
+		local status = CLIB.vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateInstance(pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkInstance_T * [1]")
+		local status = CLIB.vkCreateInstance(pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkDebugReportCallbackEXT_T * [1]")
+		local status = CLIB.vkCreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator)
+		local box = ffi.new("struct VkSwapchainKHR_T * [1]")
+		local status = CLIB.vkCreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkSurfaceKHR_T * [1]")
+		local status = CLIB.vkCreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateImage(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkImage_T * [1]")
+		local status = CLIB.vkCreateImage(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateSwapchainKHR(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkSwapchainKHR_T * [1]")
+		local status = CLIB.vkCreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkDisplayModeKHR_T * [1]")
+		local status = CLIB.vkCreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateFence(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkFence_T * [1]")
+		local status = CLIB.vkCreateFence(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateRenderPass(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkRenderPass_T * [1]")
+		local status = CLIB.vkCreateRenderPass(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateQueryPool(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkQueryPool_T * [1]")
+		local status = CLIB.vkCreateQueryPool(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateSampler(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkSampler_T * [1]")
+		local status = CLIB.vkCreateSampler(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateCommandPool(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkCommandPool_T * [1]")
+		local status = CLIB.vkCreateCommandPool(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreateEvent(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkEvent_T * [1]")
+		local status = CLIB.vkCreateEvent(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+	function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
+		local box = ffi.new("struct VkPipelineLayout_T * [1]")
+		local status = CLIB.vkCreatePipelineLayout(device, pCreateInfo, pAllocator, box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
 return library
