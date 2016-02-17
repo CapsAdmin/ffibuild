@@ -12,13 +12,15 @@ local header = ffibuild.BuildCHeader([[
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^vk") end, function(name) return name:find("^VK_") end, true)
 
-local lua = ffibuild.BuildGenericLua(header, "vulkan", "safe_clib_index", "metatables")
+local lua = ffibuild.BuildGenericLua(header, "vulkan", "metatables")
 
 lua = lua .. "library = {\n"
 
 for func_name, func_type in pairs(meta_data.functions) do
 	local friendly_name = func_name:match("^vk(.+)")
-	lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type, nil, nil, nil, nil, "SAFE_INDEX(CLIB)") .. ",\n"
+	if not extensions[friendly_name:sub(-3):upper()] then
+		lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
+	end
 end
 
 lua = lua .. "}\n"
@@ -37,6 +39,51 @@ do -- macros
 end
 
 local helper_functions = {}
+local object_helper_functions = {}
+
+do -- extensions
+	lua = lua .. "local extensions = {}\n"
+
+	for func_name, func_type in pairs(meta_data.functions) do
+		local friendly_name = func_name:match("^vk(.+)")
+		if extensions[friendly_name:sub(-3):upper()] then
+			for ext in pairs(extensions) do
+				friendly_name = friendly_name:gsub(ext.."$", "")
+			end
+			lua = lua .. "extensions." .. func_name .. " = {ctype = ffi.typeof(\""..func_type:GetDeclaration(meta_data, true).."\"), name = \""..friendly_name.."\"}\n"
+		end
+	end
+
+	lua = lua .. [[
+local function load(func, ptr, ext, decl, name)
+	if extensions[ext] and not decl and not name then
+		decl = extensions[ext].ctype
+		name = extensions[ext].name
+	end
+
+	local ptr = func(ptr, ext)
+
+	if ptr ~= nil then
+		name = name or ext:match("^vk(.+)")
+
+		local func = ffi.cast(decl, ptr)
+
+		library[name] = func
+
+		return func
+	end
+end
+
+library.util.LoadInstanceProcAddr = function(...) load(CLIB.vkGetInstanceProcAddr, ...) end
+library.util.LoadDeviceProcAddr = function(...) load(CLIB.vkGetDeviceProcAddr, ...) end
+]]
+
+	object_helper_functions.Instance = object_helper_functions.Instance or {}
+	object_helper_functions.Instance.LoadProcAddr = "library.util.LoadInstanceProcAddr"
+
+	object_helper_functions.Device = object_helper_functions.Device or {}
+	object_helper_functions.Device.LoadProcAddr = "library.util.LoadDeviceProcAddr"
+end
 
 do -- enumerate helpers so you don't have to make boxed count and array values
 	for func_name, func_type in pairs(meta_data.functions) do
@@ -183,16 +230,14 @@ do -- struct creation helpers
 		local name = info.key:match("VK_STRUCTURE_TYPE_(.+)")
 		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
 
-		if extensions[friendly:sub(-3):upper()] then
-			friendly = friendly:gsub("^(.+)(%u%l%l)$", function(a, s) return a .. s:upper() end)
-		end
+		if not extensions[friendly:sub(-3):upper()] then
+			local struct = meta_data.structs["struct Vk" .. friendly]
 
-		local struct = meta_data.structs["struct Vk" .. friendly]
-
-		if struct then
-			lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
-		else
-			lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+			if struct then
+				lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+			else
+				lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+			end
 		end
 	end
 end
@@ -206,24 +251,27 @@ do
 		if friendly_type_name then
 			objects[basic_type] = {meta_name = friendly_type_name, declaration = type:GetBasicType(meta_data), functions = {}}
 			for func_name, func_type in pairs(meta_data:GetFunctionsStartingWithType(type)) do
-				local friendly_name = func_name:match("^vk(.+)")
-				friendly_name = friendly_name:gsub(friendly_type_name, "")
+				if not extensions[func_name:sub(-3):upper()] then
+					local friendly_name = func_name:match("^vk(.+)")
+					friendly_name = friendly_name:gsub(friendly_type_name, "")
 
 
-				-- INCONSISTENCIES!!!!!
-				if friendly_type_name == "CommandBuffer" then
-					friendly_name = friendly_name:gsub("Cmd", "")
+					-- INCONSISTENCIES!!!!!
+					if friendly_type_name == "CommandBuffer" then
+						friendly_name = friendly_name:gsub("Cmd", "")
+					end
+
+					if helper_functions[func_name] then
+						friendly_name = friendly_name:gsub("^Enumerate", "Get")
+						objects[basic_type].functions[friendly_name] = helper_functions[func_name]
+					else
+						objects[basic_type].functions[friendly_name] = func_type
+					end
 				end
-
-				for ext in pairs(extensions) do
-					friendly_name = friendly_name:gsub(ext.."$", "")
-				end
-
-				if helper_functions[func_name] then
-					friendly_name = friendly_name:gsub("^Enumerate", "Get")
-					objects[basic_type].functions[friendly_name] = helper_functions[func_name]
-				else
-					objects[basic_type].functions[friendly_name] = func_type
+			end
+			if object_helper_functions[friendly_type_name] then
+				for func_name, str in pairs(object_helper_functions[friendly_type_name]) do
+					objects[basic_type].functions[func_name] = str
 				end
 			end
 		end
@@ -231,7 +279,7 @@ do
 
 	for _, info in pairs(objects) do
 		if next(info.functions) then
-			lua = lua .. ffibuild.BuildLuaMetaTable(info.meta_name, info.declaration, info.functions, nil, nil, meta_data, "SAFE_INDEX(CLIB)", true)
+			lua = lua .. ffibuild.BuildLuaMetaTable(info.meta_name, info.declaration, info.functions, nil, nil, meta_data, "library", true)
 		end
 	end
 end
