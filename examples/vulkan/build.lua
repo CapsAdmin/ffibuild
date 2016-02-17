@@ -23,16 +23,22 @@ end
 
 lua = lua .. "}\n"
 
-lua = lua .. "library.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end\n"
-lua = lua .. [[function library.StringList(tbl)
+do -- utilities
+	lua = lua .. "library.util = {}\n"
+	lua = lua .. [[function library.util.StringList(tbl)
 	return ffi.new("const char * const ["..#tbl.."]", tbl), #tbl
 end
 ]]
+end
 
+do -- macros
+	lua = lua .. "library.macros = {}\n"
+	lua = lua .. "library.macros.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end\n"
+end
 
 local helper_functions = {}
 
-do
+do -- enumerate helpers so you don't have to make boxed count and array values
 	for func_name, func_type in pairs(meta_data.functions) do
 		if func_name:find("^vkEnumerate") then
 			local friendly = func_name:match("^vkEnumerate(.+)")
@@ -63,7 +69,7 @@ end
 	end
 end
 
-do
+do -- get helpers so you don't have to make a boxed value
 	for func_name, func_type in pairs(meta_data.functions) do
 		if func_name:find("^vkGet") then
 			local ret_basic_type = func_type.return_type:GetBasicType(meta_data)
@@ -102,6 +108,50 @@ end
 					helper_functions[func_name] = "library." .. friendly
 				end
 			end
+		end
+	end
+end
+
+do -- *Create helpers so you don't have to make a boxed value
+	for func_name, func_type in pairs(meta_data.functions) do
+		local parameters, call = func_type:GetParameters(nil, nil, #func_type.arguments - 1)
+		if #func_type.arguments ~= 1 then call = call .. ", " end
+
+		if func_name:find("^vkCreate") then
+			local friendly = func_name:match("^vk(.+)")
+			lua = lua .. [[
+	function library.]]..friendly..[[(]]..parameters..[[)
+		local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
+		local status = CLIB.]]..func_name..[[(]]..call..[[box)
+
+		if status == 0 then
+			return box[0]
+		end
+
+		return nil, status
+	end
+]]
+			helper_functions[func_name] = "library." .. friendly
+		end
+	end
+end
+
+do -- struct creation helpers
+	lua = lua .. "library.structs = {}\n"
+	for i, info in ipairs(meta_data.enums["enum VkStructureType"].enums) do
+		local name = info.key:match("VK_STRUCTURE_TYPE_(.+)")
+		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
+
+		if extensions[friendly:sub(-3):upper()] then
+			friendly = friendly:gsub("^(.+)(%u%l%l)$", function(a, s) return a .. s:upper() end)
+		end
+
+		local struct = meta_data.structs["struct Vk" .. friendly]
+
+		if struct then
+			lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+		else
+			lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
 		end
 	end
 end
@@ -145,47 +195,11 @@ do
 	end
 end
 
-do
-	for i, info in ipairs(meta_data.enums["enum VkStructureType"].enums) do
-		local name = info.key:match("VK_STRUCTURE_TYPE_(.+)")
-		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
-
-		if extensions[friendly:sub(-3):upper()] then
-			friendly = friendly:gsub("^(.+)(%u%l%l)$", function(a, s) return a .. s:upper() end)
-		end
-
-		local struct = meta_data.structs["struct Vk" .. friendly]
-
-		if struct then
-			lua = lua .. "function library." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
-		else
-			lua = lua .. "function library." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
-		end
-	end
-end
-
-do
-	for func_name, func_type in pairs(meta_data.functions) do
-		local parameters, call = func_type:GetParameters(nil, nil, #func_type.arguments - 1)
-		if #func_type.arguments ~= 1 then call = call .. ", " end
-
-		if func_name:find("^vkCreate") then
-			lua = lua .. [[
-	function library.]]..func_name:match("^vk(.+)")..[[(]]..parameters..[[)
-		local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
-		local status = CLIB.]]..func_name..[[(]]..call..[[box)
-
-		if status == 0 then
-			return box[0]
-		end
-
-		return nil, status
-	end
-]]
-		end
-	end
-end
-
 lua = lua .. "return library\n"
+
+if RELOAD then
+	vfs.Write("/media/caps/ssd_840_120gb/goluwa/src/lua/libraries/graphics/ffi/libvulkan.lua", lua)
+	return
+end
 
 ffibuild.OutputAndValidate(lua, header)

@@ -545,10 +545,11 @@ library = {
 	ResetCommandPool = SAFE_INDEX(CLIB).vkResetCommandPool,
 	CmdSetViewport = SAFE_INDEX(CLIB).vkCmdSetViewport,
 }
-library.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end
 function library.StringList(tbl)
 	return ffi.new("const char * const ["..#tbl.."]", tbl), #tbl
 end
+library.macros = {}
+library.macros.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end
 function library.GetInstanceLayerProperties()
 	local count = ffi.new("uint32_t[1]")
 	local array = ffi.new("struct VkLayerProperties [128]")
@@ -824,256 +825,6 @@ function library.GetPhysicalDeviceMemoryProperties(physicalDevice)
 	CLIB.vkGetPhysicalDeviceMemoryProperties(physicalDevice, box)
 	return box[0]
 end
-do
-	local META = {
-		DestroySurface = SAFE_INDEX(CLIB).vkDestroySurfaceKHR,
-		DebugReportMessage = SAFE_INDEX(CLIB).vkDebugReportMessageEXT,
-		CreateDisplayPlaneSurface = SAFE_INDEX(CLIB).vkCreateDisplayPlaneSurfaceKHR,
-		Destroy = SAFE_INDEX(CLIB).vkDestroyInstance,
-		GetPhysicalDevices = library.GetPhysicalDevices,
-		GetProcAddr = SAFE_INDEX(CLIB).vkGetInstanceProcAddr,
-		CreateDebugReportCallback = SAFE_INDEX(CLIB).vkCreateDebugReportCallbackEXT,
-		DestroyDebugReportCallback = SAFE_INDEX(CLIB).vkDestroyDebugReportCallbackEXT,
-	}
-	META.__index = META
-	ffi.metatype("struct VkInstance_T", META)
-end
-do
-	local META = {
-		BindIndexBuffer = SAFE_INDEX(CLIB).vkCmdBindIndexBuffer,
-		CopyBufferToImage = SAFE_INDEX(CLIB).vkCmdCopyBufferToImage,
-		DrawIndexedIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndexedIndirect,
-		SetBlendConstants = SAFE_INDEX(CLIB).vkCmdSetBlendConstants,
-		CopyBuffer = SAFE_INDEX(CLIB).vkCmdCopyBuffer,
-		BindPipeline = SAFE_INDEX(CLIB).vkCmdBindPipeline,
-		SetLineWidth = SAFE_INDEX(CLIB).vkCmdSetLineWidth,
-		PushConstants = SAFE_INDEX(CLIB).vkCmdPushConstants,
-		DispatchIndirect = SAFE_INDEX(CLIB).vkCmdDispatchIndirect,
-		ClearColorImage = SAFE_INDEX(CLIB).vkCmdClearColorImage,
-		ResolveImage = SAFE_INDEX(CLIB).vkCmdResolveImage,
-		WriteTimestamp = SAFE_INDEX(CLIB).vkCmdWriteTimestamp,
-		SetStencilReference = SAFE_INDEX(CLIB).vkCmdSetStencilReference,
-		DrawIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndirect,
-		SetViewport = SAFE_INDEX(CLIB).vkCmdSetViewport,
-		End = SAFE_INDEX(CLIB).vkEndCommandBuffer,
-		ClearAttachments = SAFE_INDEX(CLIB).vkCmdClearAttachments,
-		SetDepthBias = SAFE_INDEX(CLIB).vkCmdSetDepthBias,
-		WaitEvents = SAFE_INDEX(CLIB).vkCmdWaitEvents,
-		BindVertexBuffers = SAFE_INDEX(CLIB).vkCmdBindVertexBuffers,
-		Reset = SAFE_INDEX(CLIB).vkResetCommandBuffer,
-		Dispatch = SAFE_INDEX(CLIB).vkCmdDispatch,
-		CopyQueryPoolResults = SAFE_INDEX(CLIB).vkCmdCopyQueryPoolResults,
-		SetEvent = SAFE_INDEX(CLIB).vkCmdSetEvent,
-		SetScissor = SAFE_INDEX(CLIB).vkCmdSetScissor,
-		FillBuffer = SAFE_INDEX(CLIB).vkCmdFillBuffer,
-		BlitImage = SAFE_INDEX(CLIB).vkCmdBlitImage,
-		BindDescriptorSets = SAFE_INDEX(CLIB).vkCmdBindDescriptorSets,
-		SetDepthBounds = SAFE_INDEX(CLIB).vkCmdSetDepthBounds,
-		EndQuery = SAFE_INDEX(CLIB).vkCmdEndQuery,
-		ResetEvent = SAFE_INDEX(CLIB).vkCmdResetEvent,
-		ResetQueryPool = SAFE_INDEX(CLIB).vkCmdResetQueryPool,
-		CopyImageToBuffer = SAFE_INDEX(CLIB).vkCmdCopyImageToBuffer,
-		ClearDepthStencilImage = SAFE_INDEX(CLIB).vkCmdClearDepthStencilImage,
-		Draw = SAFE_INDEX(CLIB).vkCmdDraw,
-		SetStencilWriteMask = SAFE_INDEX(CLIB).vkCmdSetStencilWriteMask,
-		DrawIndexed = SAFE_INDEX(CLIB).vkCmdDrawIndexed,
-		SetStencilCompareMask = SAFE_INDEX(CLIB).vkCmdSetStencilCompareMask,
-		ExecuteCommands = SAFE_INDEX(CLIB).vkCmdExecuteCommands,
-		NextSubpass = SAFE_INDEX(CLIB).vkCmdNextSubpass,
-		EndRenderPass = SAFE_INDEX(CLIB).vkCmdEndRenderPass,
-		CopyImage = SAFE_INDEX(CLIB).vkCmdCopyImage,
-		UpdateBuffer = SAFE_INDEX(CLIB).vkCmdUpdateBuffer,
-		BeginRenderPass = SAFE_INDEX(CLIB).vkCmdBeginRenderPass,
-		BeginQuery = SAFE_INDEX(CLIB).vkCmdBeginQuery,
-		PipelineBarrier = SAFE_INDEX(CLIB).vkCmdPipelineBarrier,
-		Begin = SAFE_INDEX(CLIB).vkBeginCommandBuffer,
-	}
-	META.__index = META
-	ffi.metatype("struct VkCommandBuffer_T", META)
-end
-do
-	local META = {
-		CreateBufferView = SAFE_INDEX(CLIB).vkCreateBufferView,
-		DestroySemaphore = SAFE_INDEX(CLIB).vkDestroySemaphore,
-		CreateFramebuffer = SAFE_INDEX(CLIB).vkCreateFramebuffer,
-		DestroyPipelineLayout = SAFE_INDEX(CLIB).vkDestroyPipelineLayout,
-		GetEventStatus = library.GetEventStatus,
-		GetQueue = library.GetDeviceQueue,
-		GetFenceStatus = library.GetFenceStatus,
-		DestroyDescriptorPool = SAFE_INDEX(CLIB).vkDestroyDescriptorPool,
-		GetPipelineCacheData = library.GetPipelineCacheData,
-		GetQueryPoolResults = SAFE_INDEX(CLIB).vkGetQueryPoolResults,
-		DestroyImageView = SAFE_INDEX(CLIB).vkDestroyImageView,
-		WaitIdle = SAFE_INDEX(CLIB).vkDeviceWaitIdle,
-		CreateDescriptorSetLayout = SAFE_INDEX(CLIB).vkCreateDescriptorSetLayout,
-		DestroyCommandPool = SAFE_INDEX(CLIB).vkDestroyCommandPool,
-		CreateFence = SAFE_INDEX(CLIB).vkCreateFence,
-		DestroyFence = SAFE_INDEX(CLIB).vkDestroyFence,
-		WaitForFences = SAFE_INDEX(CLIB).vkWaitForFences,
-		CreateSwapchain = SAFE_INDEX(CLIB).vkCreateSwapchainKHR,
-		CreateImage = SAFE_INDEX(CLIB).vkCreateImage,
-		GetBufferMemoryRequirements = library.GetBufferMemoryRequirements,
-		CreatePipelineLayout = SAFE_INDEX(CLIB).vkCreatePipelineLayout,
-		BindImageMemory = SAFE_INDEX(CLIB).vkBindImageMemory,
-		UnmapMemory = SAFE_INDEX(CLIB).vkUnmapMemory,
-		Destroy = SAFE_INDEX(CLIB).vkDestroyDevice,
-		DestroyShaderModule = SAFE_INDEX(CLIB).vkDestroyShaderModule,
-		CreateSampler = SAFE_INDEX(CLIB).vkCreateSampler,
-		FreeDescriptorSets = SAFE_INDEX(CLIB).vkFreeDescriptorSets,
-		CreateQueryPool = SAFE_INDEX(CLIB).vkCreateQueryPool,
-		DestroySampler = SAFE_INDEX(CLIB).vkDestroySampler,
-		CreateCommandPool = SAFE_INDEX(CLIB).vkCreateCommandPool,
-		ResetCommandPool = SAFE_INDEX(CLIB).vkResetCommandPool,
-		GetImageMemoryRequirements = library.GetImageMemoryRequirements,
-		ResetDescriptorPool = SAFE_INDEX(CLIB).vkResetDescriptorPool,
-		GetProcAddr = SAFE_INDEX(CLIB).vkGetDeviceProcAddr,
-		CreateImageView = SAFE_INDEX(CLIB).vkCreateImageView,
-		CreateDescriptorPool = SAFE_INDEX(CLIB).vkCreateDescriptorPool,
-		DestroyFramebuffer = SAFE_INDEX(CLIB).vkDestroyFramebuffer,
-		DestroyPipeline = SAFE_INDEX(CLIB).vkDestroyPipeline,
-		AllocateMemory = SAFE_INDEX(CLIB).vkAllocateMemory,
-		FreeCommandBuffers = SAFE_INDEX(CLIB).vkFreeCommandBuffers,
-		ResetEvent = SAFE_INDEX(CLIB).vkResetEvent,
-		GetImageSparseMemoryRequirements = library.GetImageSparseMemoryRequirements,
-		ResetFences = SAFE_INDEX(CLIB).vkResetFences,
-		FreeMemory = SAFE_INDEX(CLIB).vkFreeMemory,
-		DestroyImage = SAFE_INDEX(CLIB).vkDestroyImage,
-		FlushMappedMemoryRanges = SAFE_INDEX(CLIB).vkFlushMappedMemoryRanges,
-		UpdateDescriptorSets = SAFE_INDEX(CLIB).vkUpdateDescriptorSets,
-		CreateBuffer = SAFE_INDEX(CLIB).vkCreateBuffer,
-		DestroyPipelineCache = SAFE_INDEX(CLIB).vkDestroyPipelineCache,
-		CreateComputePipelines = SAFE_INDEX(CLIB).vkCreateComputePipelines,
-		AcquireNextImage = SAFE_INDEX(CLIB).vkAcquireNextImageKHR,
-		GetMemoryCommitment = library.GetDeviceMemoryCommitment,
-		SetEvent = SAFE_INDEX(CLIB).vkSetEvent,
-		BindBufferMemory = SAFE_INDEX(CLIB).vkBindBufferMemory,
-		MergePipelineCaches = SAFE_INDEX(CLIB).vkMergePipelineCaches,
-		DestroyEvent = SAFE_INDEX(CLIB).vkDestroyEvent,
-		GetSwapchainImages = library.GetSwapchainImagesKHR,
-		DestroyQueryPool = SAFE_INDEX(CLIB).vkDestroyQueryPool,
-		CreateRenderPass = SAFE_INDEX(CLIB).vkCreateRenderPass,
-		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
-		CreateEvent = SAFE_INDEX(CLIB).vkCreateEvent,
-		DestroyBuffer = SAFE_INDEX(CLIB).vkDestroyBuffer,
-		DestroyDescriptorSetLayout = SAFE_INDEX(CLIB).vkDestroyDescriptorSetLayout,
-		InvalidateMappedMemoryRanges = SAFE_INDEX(CLIB).vkInvalidateMappedMemoryRanges,
-		CreateSemaphore = SAFE_INDEX(CLIB).vkCreateSemaphore,
-		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
-		CreateGraphicsPipelines = SAFE_INDEX(CLIB).vkCreateGraphicsPipelines,
-		AllocateDescriptorSets = SAFE_INDEX(CLIB).vkAllocateDescriptorSets,
-		CreatePipelineCache = SAFE_INDEX(CLIB).vkCreatePipelineCache,
-		DestroyBufferView = SAFE_INDEX(CLIB).vkDestroyBufferView,
-		MapMemory = SAFE_INDEX(CLIB).vkMapMemory,
-		DestroyRenderPass = SAFE_INDEX(CLIB).vkDestroyRenderPass,
-		AllocateCommandBuffers = SAFE_INDEX(CLIB).vkAllocateCommandBuffers,
-		CreateSharedSwapchains = SAFE_INDEX(CLIB).vkCreateSharedSwapchainsKHR,
-		CreateShaderModule = SAFE_INDEX(CLIB).vkCreateShaderModule,
-		DestroySwapchain = SAFE_INDEX(CLIB).vkDestroySwapchainKHR,
-	}
-	META.__index = META
-	ffi.metatype("struct VkDevice_T", META)
-end
-do
-	local META = {
-		Present = SAFE_INDEX(CLIB).vkQueuePresentKHR,
-		WaitIdle = SAFE_INDEX(CLIB).vkQueueWaitIdle,
-		BindSparse = SAFE_INDEX(CLIB).vkQueueBindSparse,
-		Submit = SAFE_INDEX(CLIB).vkQueueSubmit,
-	}
-	META.__index = META
-	ffi.metatype("struct VkQueue_T", META)
-end
-do
-	local META = {
-		GetDisplayPlaneProperties = library.GetPhysicalDeviceDisplayPlanePropertiesKHR,
-		GetQueueFamilyProperties = library.GetPhysicalDeviceQueueFamilyProperties,
-		GetSurfaceCapabilities = library.GetPhysicalDeviceSurfaceCapabilitiesKHR,
-		GetSurfacePresentModes = library.GetPhysicalDeviceSurfacePresentModesKHR,
-		GetDeviceExtensionProperties = library.GetDeviceExtensionProperties,
-		GetDisplayPlaneSupportedDisplays = library.GetDisplayPlaneSupportedDisplaysKHR,
-		GetMemoryProperties = library.GetPhysicalDeviceMemoryProperties,
-		GetDisplayProperties = library.GetPhysicalDeviceDisplayPropertiesKHR,
-		CreateDisplayMode = SAFE_INDEX(CLIB).vkCreateDisplayModeKHR,
-		GetFormatProperties = library.GetPhysicalDeviceFormatProperties,
-		GetSparseImageFormatProperties = library.GetPhysicalDeviceSparseImageFormatProperties,
-		CreateDevice = SAFE_INDEX(CLIB).vkCreateDevice,
-		GetDisplayModeProperties = library.GetDisplayModePropertiesKHR,
-		GetProperties = library.GetPhysicalDeviceProperties,
-		GetFeatures = library.GetPhysicalDeviceFeatures,
-		GetImageFormatProperties = library.GetPhysicalDeviceImageFormatProperties,
-		GetSurfaceFormats = library.GetPhysicalDeviceSurfaceFormatsKHR,
-		GetSurfaceSupport = library.GetPhysicalDeviceSurfaceSupportKHR,
-		GetDisplayPlaneCapabilities = library.GetDisplayPlaneCapabilitiesKHR,
-		GetDeviceLayerProperties = library.GetDeviceLayerProperties,
-	}
-	META.__index = META
-	ffi.metatype("struct VkPhysicalDevice_T", META)
-end
-function library.ApplicationInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO" return ffi.new("struct VkApplicationInfo", tbl) end
-function library.InstanceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO" return ffi.new("struct VkInstanceCreateInfo", tbl) end
-function library.DeviceQueueCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO" return ffi.new("struct VkDeviceQueueCreateInfo", tbl) end
-function library.DeviceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO" return ffi.new("struct VkDeviceCreateInfo", tbl) end
-function library.SubmitInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SUBMIT_INFO" return ffi.new("struct VkSubmitInfo", tbl) end
-function library.MemoryAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO" return ffi.new("struct VkMemoryAllocateInfo", tbl) end
-function library.MappedMemoryRange(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE" return ffi.new("struct VkMappedMemoryRange", tbl) end
-function library.BindSparseInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BIND_SPARSE_INFO" return ffi.new("struct VkBindSparseInfo", tbl) end
-function library.FenceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO" return ffi.new("struct VkFenceCreateInfo", tbl) end
-function library.SemaphoreCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO" return ffi.new("struct VkSemaphoreCreateInfo", tbl) end
-function library.EventCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_EVENT_CREATE_INFO" return ffi.new("struct VkEventCreateInfo", tbl) end
-function library.QueryPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO" return ffi.new("struct VkQueryPoolCreateInfo", tbl) end
-function library.BufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO" return ffi.new("struct VkBufferCreateInfo", tbl) end
-function library.BufferViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO" return ffi.new("struct VkBufferViewCreateInfo", tbl) end
-function library.ImageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO" return ffi.new("struct VkImageCreateInfo", tbl) end
-function library.ImageViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO" return ffi.new("struct VkImageViewCreateInfo", tbl) end
-function library.ShaderModuleCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO" return ffi.new("struct VkShaderModuleCreateInfo", tbl) end
-function library.PipelineCacheCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO" return ffi.new("struct VkPipelineCacheCreateInfo", tbl) end
-function library.PipelineShaderStageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO" return ffi.new("struct VkPipelineShaderStageCreateInfo", tbl) end
-function library.PipelineVertexInputStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineVertexInputStateCreateInfo", tbl) end
-function library.PipelineInputAssemblyStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO" return ffi.new("struct VkPipelineInputAssemblyStateCreateInfo", tbl) end
-function library.PipelineTessellationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineTessellationStateCreateInfo", tbl) end
-function library.PipelineViewportStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineViewportStateCreateInfo", tbl) end
-function library.PipelineRasterizationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineRasterizationStateCreateInfo", tbl) end
-function library.PipelineMultisampleStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO" return ffi.new("struct VkPipelineMultisampleStateCreateInfo", tbl) end
-function library.PipelineDepthStencilStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDepthStencilStateCreateInfo", tbl) end
-function library.PipelineColorBlendStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO" return ffi.new("struct VkPipelineColorBlendStateCreateInfo", tbl) end
-function library.PipelineDynamicStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDynamicStateCreateInfo", tbl) end
-function library.GraphicsPipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO" return ffi.new("struct VkGraphicsPipelineCreateInfo", tbl) end
-function library.ComputePipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO" return ffi.new("struct VkComputePipelineCreateInfo", tbl) end
-function library.PipelineLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO" return ffi.new("struct VkPipelineLayoutCreateInfo", tbl) end
-function library.SamplerCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO" return ffi.new("struct VkSamplerCreateInfo", tbl) end
-function library.DescriptorSetLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO" return ffi.new("struct VkDescriptorSetLayoutCreateInfo", tbl) end
-function library.DescriptorPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO" return ffi.new("struct VkDescriptorPoolCreateInfo", tbl) end
-function library.DescriptorSetAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO" return ffi.new("struct VkDescriptorSetAllocateInfo", tbl) end
-function library.WriteDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET" return ffi.new("struct VkWriteDescriptorSet", tbl) end
-function library.CopyDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET" return ffi.new("struct VkCopyDescriptorSet", tbl) end
-function library.FramebufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO" return ffi.new("struct VkFramebufferCreateInfo", tbl) end
-function library.RenderPassCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO" return ffi.new("struct VkRenderPassCreateInfo", tbl) end
-function library.CommandPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO" return ffi.new("struct VkCommandPoolCreateInfo", tbl) end
-function library.CommandBufferAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO" return ffi.new("struct VkCommandBufferAllocateInfo", tbl) end
-function library.CommandBufferInheritanceInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO" return ffi.new("struct VkCommandBufferInheritanceInfo", tbl) end
-function library.CommandBufferBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO" return ffi.new("struct VkCommandBufferBeginInfo", tbl) end
-function library.RenderPassBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO" return ffi.new("struct VkRenderPassBeginInfo", tbl) end
-function library.BufferMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER" return ffi.new("struct VkBufferMemoryBarrier", tbl) end
-function library.ImageMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER" return ffi.new("struct VkImageMemoryBarrier", tbl) end
-function library.MemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER" return ffi.new("struct VkMemoryBarrier", tbl) end
-function library.LoaderInstanceCreateInfo(tbl) return ffi.new("struct VkLoaderInstanceCreateInfo", tbl) end
-function library.LoaderDeviceCreateInfo(tbl) return ffi.new("struct VkLoaderDeviceCreateInfo", tbl) end
-function library.SwapchainCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR" return ffi.new("struct VkSwapchainCreateInfoKHR", tbl) end
-function library.PresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PRESENT_INFO_KHR" return ffi.new("struct VkPresentInfoKHR", tbl) end
-function library.DisplayModeCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR" return ffi.new("struct VkDisplayModeCreateInfoKHR", tbl) end
-function library.DisplaySurfaceCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR" return ffi.new("struct VkDisplaySurfaceCreateInfoKHR", tbl) end
-function library.DisplayPresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR" return ffi.new("struct VkDisplayPresentInfoKHR", tbl) end
-function library.XlibSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXlibSurfaceCreateInfoKHR", tbl) end
-function library.XcbSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXcbSurfaceCreateInfoKHR", tbl) end
-function library.WaylandSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWaylandSurfaceCreateInfoKHR", tbl) end
-function library.MirSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkMirSurfaceCreateInfoKHR", tbl) end
-function library.AndroidSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkAndroidSurfaceCreateInfoKHR", tbl) end
-function library.Win32SurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWin32SurfaceCreateInfoKHR", tbl) end
-function library.DebugReportCreateInfoEXT(tbl) return ffi.new("struct VkDebugReportCreateInfoEXT", tbl) end
-function library.BeginRange(tbl) return ffi.new("struct VkBeginRange", tbl) end
-function library.EndRange(tbl) return ffi.new("struct VkEndRange", tbl) end
-function library.RangeSize(tbl) return ffi.new("struct VkRangeSize", tbl) end
-function library.MaxEnum(tbl) return ffi.new("struct VkMaxEnum", tbl) end
 	function library.CreateBufferView(device, pCreateInfo, pAllocator)
 		local box = ffi.new("struct VkBufferView_T * [1]")
 		local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
@@ -1334,4 +1085,255 @@ function library.MaxEnum(tbl) return ffi.new("struct VkMaxEnum", tbl) end
 
 		return nil, status
 	end
+library.structs = {}
+function library.structs.ApplicationInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO" return ffi.new("struct VkApplicationInfo", tbl) end
+function library.structs.InstanceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO" return ffi.new("struct VkInstanceCreateInfo", tbl) end
+function library.structs.DeviceQueueCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO" return ffi.new("struct VkDeviceQueueCreateInfo", tbl) end
+function library.structs.DeviceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO" return ffi.new("struct VkDeviceCreateInfo", tbl) end
+function library.structs.SubmitInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SUBMIT_INFO" return ffi.new("struct VkSubmitInfo", tbl) end
+function library.structs.MemoryAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO" return ffi.new("struct VkMemoryAllocateInfo", tbl) end
+function library.structs.MappedMemoryRange(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE" return ffi.new("struct VkMappedMemoryRange", tbl) end
+function library.structs.BindSparseInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BIND_SPARSE_INFO" return ffi.new("struct VkBindSparseInfo", tbl) end
+function library.structs.FenceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO" return ffi.new("struct VkFenceCreateInfo", tbl) end
+function library.structs.SemaphoreCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO" return ffi.new("struct VkSemaphoreCreateInfo", tbl) end
+function library.structs.EventCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_EVENT_CREATE_INFO" return ffi.new("struct VkEventCreateInfo", tbl) end
+function library.structs.QueryPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO" return ffi.new("struct VkQueryPoolCreateInfo", tbl) end
+function library.structs.BufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO" return ffi.new("struct VkBufferCreateInfo", tbl) end
+function library.structs.BufferViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO" return ffi.new("struct VkBufferViewCreateInfo", tbl) end
+function library.structs.ImageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO" return ffi.new("struct VkImageCreateInfo", tbl) end
+function library.structs.ImageViewCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO" return ffi.new("struct VkImageViewCreateInfo", tbl) end
+function library.structs.ShaderModuleCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO" return ffi.new("struct VkShaderModuleCreateInfo", tbl) end
+function library.structs.PipelineCacheCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO" return ffi.new("struct VkPipelineCacheCreateInfo", tbl) end
+function library.structs.PipelineShaderStageCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO" return ffi.new("struct VkPipelineShaderStageCreateInfo", tbl) end
+function library.structs.PipelineVertexInputStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineVertexInputStateCreateInfo", tbl) end
+function library.structs.PipelineInputAssemblyStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO" return ffi.new("struct VkPipelineInputAssemblyStateCreateInfo", tbl) end
+function library.structs.PipelineTessellationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineTessellationStateCreateInfo", tbl) end
+function library.structs.PipelineViewportStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO" return ffi.new("struct VkPipelineViewportStateCreateInfo", tbl) end
+function library.structs.PipelineRasterizationStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO" return ffi.new("struct VkPipelineRasterizationStateCreateInfo", tbl) end
+function library.structs.PipelineMultisampleStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO" return ffi.new("struct VkPipelineMultisampleStateCreateInfo", tbl) end
+function library.structs.PipelineDepthStencilStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDepthStencilStateCreateInfo", tbl) end
+function library.structs.PipelineColorBlendStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO" return ffi.new("struct VkPipelineColorBlendStateCreateInfo", tbl) end
+function library.structs.PipelineDynamicStateCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO" return ffi.new("struct VkPipelineDynamicStateCreateInfo", tbl) end
+function library.structs.GraphicsPipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO" return ffi.new("struct VkGraphicsPipelineCreateInfo", tbl) end
+function library.structs.ComputePipelineCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO" return ffi.new("struct VkComputePipelineCreateInfo", tbl) end
+function library.structs.PipelineLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO" return ffi.new("struct VkPipelineLayoutCreateInfo", tbl) end
+function library.structs.SamplerCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO" return ffi.new("struct VkSamplerCreateInfo", tbl) end
+function library.structs.DescriptorSetLayoutCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO" return ffi.new("struct VkDescriptorSetLayoutCreateInfo", tbl) end
+function library.structs.DescriptorPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO" return ffi.new("struct VkDescriptorPoolCreateInfo", tbl) end
+function library.structs.DescriptorSetAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO" return ffi.new("struct VkDescriptorSetAllocateInfo", tbl) end
+function library.structs.WriteDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET" return ffi.new("struct VkWriteDescriptorSet", tbl) end
+function library.structs.CopyDescriptorSet(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET" return ffi.new("struct VkCopyDescriptorSet", tbl) end
+function library.structs.FramebufferCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO" return ffi.new("struct VkFramebufferCreateInfo", tbl) end
+function library.structs.RenderPassCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO" return ffi.new("struct VkRenderPassCreateInfo", tbl) end
+function library.structs.CommandPoolCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO" return ffi.new("struct VkCommandPoolCreateInfo", tbl) end
+function library.structs.CommandBufferAllocateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO" return ffi.new("struct VkCommandBufferAllocateInfo", tbl) end
+function library.structs.CommandBufferInheritanceInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO" return ffi.new("struct VkCommandBufferInheritanceInfo", tbl) end
+function library.structs.CommandBufferBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO" return ffi.new("struct VkCommandBufferBeginInfo", tbl) end
+function library.structs.RenderPassBeginInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO" return ffi.new("struct VkRenderPassBeginInfo", tbl) end
+function library.structs.BufferMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER" return ffi.new("struct VkBufferMemoryBarrier", tbl) end
+function library.structs.ImageMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER" return ffi.new("struct VkImageMemoryBarrier", tbl) end
+function library.structs.MemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER" return ffi.new("struct VkMemoryBarrier", tbl) end
+function library.structs.LoaderInstanceCreateInfo(tbl) return ffi.new("struct VkLoaderInstanceCreateInfo", tbl) end
+function library.structs.LoaderDeviceCreateInfo(tbl) return ffi.new("struct VkLoaderDeviceCreateInfo", tbl) end
+function library.structs.SwapchainCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR" return ffi.new("struct VkSwapchainCreateInfoKHR", tbl) end
+function library.structs.PresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PRESENT_INFO_KHR" return ffi.new("struct VkPresentInfoKHR", tbl) end
+function library.structs.DisplayModeCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR" return ffi.new("struct VkDisplayModeCreateInfoKHR", tbl) end
+function library.structs.DisplaySurfaceCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR" return ffi.new("struct VkDisplaySurfaceCreateInfoKHR", tbl) end
+function library.structs.DisplayPresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR" return ffi.new("struct VkDisplayPresentInfoKHR", tbl) end
+function library.structs.XlibSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXlibSurfaceCreateInfoKHR", tbl) end
+function library.structs.XcbSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXcbSurfaceCreateInfoKHR", tbl) end
+function library.structs.WaylandSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWaylandSurfaceCreateInfoKHR", tbl) end
+function library.structs.MirSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkMirSurfaceCreateInfoKHR", tbl) end
+function library.structs.AndroidSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkAndroidSurfaceCreateInfoKHR", tbl) end
+function library.structs.Win32SurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWin32SurfaceCreateInfoKHR", tbl) end
+function library.structs.DebugReportCreateInfoEXT(tbl) return ffi.new("struct VkDebugReportCreateInfoEXT", tbl) end
+function library.structs.BeginRange(tbl) return ffi.new("struct VkBeginRange", tbl) end
+function library.structs.EndRange(tbl) return ffi.new("struct VkEndRange", tbl) end
+function library.structs.RangeSize(tbl) return ffi.new("struct VkRangeSize", tbl) end
+function library.structs.MaxEnum(tbl) return ffi.new("struct VkMaxEnum", tbl) end
+do
+	local META = {
+		DestroySurface = SAFE_INDEX(CLIB).vkDestroySurfaceKHR,
+		DebugReportMessage = SAFE_INDEX(CLIB).vkDebugReportMessageEXT,
+		CreateDisplayPlaneSurface = library.CreateDisplayPlaneSurfaceKHR,
+		Destroy = SAFE_INDEX(CLIB).vkDestroyInstance,
+		GetPhysicalDevices = library.GetPhysicalDevices,
+		GetProcAddr = SAFE_INDEX(CLIB).vkGetInstanceProcAddr,
+		CreateDebugReportCallback = library.CreateDebugReportCallbackEXT,
+		DestroyDebugReportCallback = SAFE_INDEX(CLIB).vkDestroyDebugReportCallbackEXT,
+	}
+	META.__index = META
+	ffi.metatype("struct VkInstance_T", META)
+end
+do
+	local META = {
+		BindIndexBuffer = SAFE_INDEX(CLIB).vkCmdBindIndexBuffer,
+		CopyBufferToImage = SAFE_INDEX(CLIB).vkCmdCopyBufferToImage,
+		DrawIndexedIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndexedIndirect,
+		SetBlendConstants = SAFE_INDEX(CLIB).vkCmdSetBlendConstants,
+		CopyBuffer = SAFE_INDEX(CLIB).vkCmdCopyBuffer,
+		BindPipeline = SAFE_INDEX(CLIB).vkCmdBindPipeline,
+		SetLineWidth = SAFE_INDEX(CLIB).vkCmdSetLineWidth,
+		PushConstants = SAFE_INDEX(CLIB).vkCmdPushConstants,
+		DispatchIndirect = SAFE_INDEX(CLIB).vkCmdDispatchIndirect,
+		ClearColorImage = SAFE_INDEX(CLIB).vkCmdClearColorImage,
+		ResolveImage = SAFE_INDEX(CLIB).vkCmdResolveImage,
+		WriteTimestamp = SAFE_INDEX(CLIB).vkCmdWriteTimestamp,
+		SetStencilReference = SAFE_INDEX(CLIB).vkCmdSetStencilReference,
+		DrawIndirect = SAFE_INDEX(CLIB).vkCmdDrawIndirect,
+		SetViewport = SAFE_INDEX(CLIB).vkCmdSetViewport,
+		End = SAFE_INDEX(CLIB).vkEndCommandBuffer,
+		ClearAttachments = SAFE_INDEX(CLIB).vkCmdClearAttachments,
+		SetDepthBias = SAFE_INDEX(CLIB).vkCmdSetDepthBias,
+		WaitEvents = SAFE_INDEX(CLIB).vkCmdWaitEvents,
+		BindVertexBuffers = SAFE_INDEX(CLIB).vkCmdBindVertexBuffers,
+		Reset = SAFE_INDEX(CLIB).vkResetCommandBuffer,
+		Dispatch = SAFE_INDEX(CLIB).vkCmdDispatch,
+		CopyQueryPoolResults = SAFE_INDEX(CLIB).vkCmdCopyQueryPoolResults,
+		SetEvent = SAFE_INDEX(CLIB).vkCmdSetEvent,
+		SetScissor = SAFE_INDEX(CLIB).vkCmdSetScissor,
+		FillBuffer = SAFE_INDEX(CLIB).vkCmdFillBuffer,
+		BlitImage = SAFE_INDEX(CLIB).vkCmdBlitImage,
+		BindDescriptorSets = SAFE_INDEX(CLIB).vkCmdBindDescriptorSets,
+		SetDepthBounds = SAFE_INDEX(CLIB).vkCmdSetDepthBounds,
+		EndQuery = SAFE_INDEX(CLIB).vkCmdEndQuery,
+		ResetEvent = SAFE_INDEX(CLIB).vkCmdResetEvent,
+		ResetQueryPool = SAFE_INDEX(CLIB).vkCmdResetQueryPool,
+		CopyImageToBuffer = SAFE_INDEX(CLIB).vkCmdCopyImageToBuffer,
+		ClearDepthStencilImage = SAFE_INDEX(CLIB).vkCmdClearDepthStencilImage,
+		Draw = SAFE_INDEX(CLIB).vkCmdDraw,
+		SetStencilWriteMask = SAFE_INDEX(CLIB).vkCmdSetStencilWriteMask,
+		DrawIndexed = SAFE_INDEX(CLIB).vkCmdDrawIndexed,
+		SetStencilCompareMask = SAFE_INDEX(CLIB).vkCmdSetStencilCompareMask,
+		ExecuteCommands = SAFE_INDEX(CLIB).vkCmdExecuteCommands,
+		NextSubpass = SAFE_INDEX(CLIB).vkCmdNextSubpass,
+		EndRenderPass = SAFE_INDEX(CLIB).vkCmdEndRenderPass,
+		CopyImage = SAFE_INDEX(CLIB).vkCmdCopyImage,
+		UpdateBuffer = SAFE_INDEX(CLIB).vkCmdUpdateBuffer,
+		BeginRenderPass = SAFE_INDEX(CLIB).vkCmdBeginRenderPass,
+		BeginQuery = SAFE_INDEX(CLIB).vkCmdBeginQuery,
+		PipelineBarrier = SAFE_INDEX(CLIB).vkCmdPipelineBarrier,
+		Begin = SAFE_INDEX(CLIB).vkBeginCommandBuffer,
+	}
+	META.__index = META
+	ffi.metatype("struct VkCommandBuffer_T", META)
+end
+do
+	local META = {
+		CreateBufferView = library.CreateBufferView,
+		DestroySemaphore = SAFE_INDEX(CLIB).vkDestroySemaphore,
+		CreateFramebuffer = library.CreateFramebuffer,
+		DestroyPipelineLayout = SAFE_INDEX(CLIB).vkDestroyPipelineLayout,
+		GetEventStatus = library.GetEventStatus,
+		GetQueue = library.GetDeviceQueue,
+		GetFenceStatus = library.GetFenceStatus,
+		DestroyDescriptorPool = SAFE_INDEX(CLIB).vkDestroyDescriptorPool,
+		GetPipelineCacheData = library.GetPipelineCacheData,
+		GetQueryPoolResults = SAFE_INDEX(CLIB).vkGetQueryPoolResults,
+		DestroyImageView = SAFE_INDEX(CLIB).vkDestroyImageView,
+		WaitIdle = SAFE_INDEX(CLIB).vkDeviceWaitIdle,
+		CreateDescriptorSetLayout = library.CreateDescriptorSetLayout,
+		DestroyCommandPool = SAFE_INDEX(CLIB).vkDestroyCommandPool,
+		CreateFence = library.CreateFence,
+		DestroyFence = SAFE_INDEX(CLIB).vkDestroyFence,
+		WaitForFences = SAFE_INDEX(CLIB).vkWaitForFences,
+		CreateSwapchain = library.CreateSwapchainKHR,
+		CreateImage = library.CreateImage,
+		GetBufferMemoryRequirements = library.GetBufferMemoryRequirements,
+		CreatePipelineLayout = library.CreatePipelineLayout,
+		BindImageMemory = SAFE_INDEX(CLIB).vkBindImageMemory,
+		UnmapMemory = SAFE_INDEX(CLIB).vkUnmapMemory,
+		Destroy = SAFE_INDEX(CLIB).vkDestroyDevice,
+		DestroyShaderModule = SAFE_INDEX(CLIB).vkDestroyShaderModule,
+		CreateSampler = library.CreateSampler,
+		FreeDescriptorSets = SAFE_INDEX(CLIB).vkFreeDescriptorSets,
+		CreateQueryPool = library.CreateQueryPool,
+		DestroySampler = SAFE_INDEX(CLIB).vkDestroySampler,
+		CreateCommandPool = library.CreateCommandPool,
+		ResetCommandPool = SAFE_INDEX(CLIB).vkResetCommandPool,
+		GetImageMemoryRequirements = library.GetImageMemoryRequirements,
+		ResetDescriptorPool = SAFE_INDEX(CLIB).vkResetDescriptorPool,
+		GetProcAddr = SAFE_INDEX(CLIB).vkGetDeviceProcAddr,
+		CreateImageView = library.CreateImageView,
+		CreateDescriptorPool = library.CreateDescriptorPool,
+		DestroyFramebuffer = SAFE_INDEX(CLIB).vkDestroyFramebuffer,
+		DestroyPipeline = SAFE_INDEX(CLIB).vkDestroyPipeline,
+		AllocateMemory = SAFE_INDEX(CLIB).vkAllocateMemory,
+		FreeCommandBuffers = SAFE_INDEX(CLIB).vkFreeCommandBuffers,
+		ResetEvent = SAFE_INDEX(CLIB).vkResetEvent,
+		GetImageSparseMemoryRequirements = library.GetImageSparseMemoryRequirements,
+		ResetFences = SAFE_INDEX(CLIB).vkResetFences,
+		FreeMemory = SAFE_INDEX(CLIB).vkFreeMemory,
+		DestroyImage = SAFE_INDEX(CLIB).vkDestroyImage,
+		FlushMappedMemoryRanges = SAFE_INDEX(CLIB).vkFlushMappedMemoryRanges,
+		UpdateDescriptorSets = SAFE_INDEX(CLIB).vkUpdateDescriptorSets,
+		CreateBuffer = library.CreateBuffer,
+		DestroyPipelineCache = SAFE_INDEX(CLIB).vkDestroyPipelineCache,
+		CreateComputePipelines = library.CreateComputePipelines,
+		AcquireNextImage = SAFE_INDEX(CLIB).vkAcquireNextImageKHR,
+		GetMemoryCommitment = library.GetDeviceMemoryCommitment,
+		SetEvent = SAFE_INDEX(CLIB).vkSetEvent,
+		BindBufferMemory = SAFE_INDEX(CLIB).vkBindBufferMemory,
+		MergePipelineCaches = SAFE_INDEX(CLIB).vkMergePipelineCaches,
+		DestroyEvent = SAFE_INDEX(CLIB).vkDestroyEvent,
+		GetSwapchainImages = library.GetSwapchainImagesKHR,
+		DestroyQueryPool = SAFE_INDEX(CLIB).vkDestroyQueryPool,
+		CreateRenderPass = library.CreateRenderPass,
+		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
+		CreateEvent = library.CreateEvent,
+		DestroyBuffer = SAFE_INDEX(CLIB).vkDestroyBuffer,
+		DestroyDescriptorSetLayout = SAFE_INDEX(CLIB).vkDestroyDescriptorSetLayout,
+		InvalidateMappedMemoryRanges = SAFE_INDEX(CLIB).vkInvalidateMappedMemoryRanges,
+		CreateSemaphore = library.CreateSemaphore,
+		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
+		CreateGraphicsPipelines = library.CreateGraphicsPipelines,
+		AllocateDescriptorSets = SAFE_INDEX(CLIB).vkAllocateDescriptorSets,
+		CreatePipelineCache = library.CreatePipelineCache,
+		DestroyBufferView = SAFE_INDEX(CLIB).vkDestroyBufferView,
+		MapMemory = SAFE_INDEX(CLIB).vkMapMemory,
+		DestroyRenderPass = SAFE_INDEX(CLIB).vkDestroyRenderPass,
+		AllocateCommandBuffers = SAFE_INDEX(CLIB).vkAllocateCommandBuffers,
+		CreateSharedSwapchains = library.CreateSharedSwapchainsKHR,
+		CreateShaderModule = library.CreateShaderModule,
+		DestroySwapchain = SAFE_INDEX(CLIB).vkDestroySwapchainKHR,
+	}
+	META.__index = META
+	ffi.metatype("struct VkDevice_T", META)
+end
+do
+	local META = {
+		Present = SAFE_INDEX(CLIB).vkQueuePresentKHR,
+		WaitIdle = SAFE_INDEX(CLIB).vkQueueWaitIdle,
+		BindSparse = SAFE_INDEX(CLIB).vkQueueBindSparse,
+		Submit = SAFE_INDEX(CLIB).vkQueueSubmit,
+	}
+	META.__index = META
+	ffi.metatype("struct VkQueue_T", META)
+end
+do
+	local META = {
+		GetDisplayPlaneProperties = library.GetPhysicalDeviceDisplayPlanePropertiesKHR,
+		GetQueueFamilyProperties = library.GetPhysicalDeviceQueueFamilyProperties,
+		GetSurfaceCapabilities = library.GetPhysicalDeviceSurfaceCapabilitiesKHR,
+		GetSurfacePresentModes = library.GetPhysicalDeviceSurfacePresentModesKHR,
+		GetDeviceExtensionProperties = library.GetDeviceExtensionProperties,
+		GetDisplayPlaneSupportedDisplays = library.GetDisplayPlaneSupportedDisplaysKHR,
+		GetMemoryProperties = library.GetPhysicalDeviceMemoryProperties,
+		GetDisplayProperties = library.GetPhysicalDeviceDisplayPropertiesKHR,
+		CreateDisplayMode = library.CreateDisplayModeKHR,
+		GetFormatProperties = library.GetPhysicalDeviceFormatProperties,
+		GetSparseImageFormatProperties = library.GetPhysicalDeviceSparseImageFormatProperties,
+		CreateDevice = library.CreateDevice,
+		GetDisplayModeProperties = library.GetDisplayModePropertiesKHR,
+		GetProperties = library.GetPhysicalDeviceProperties,
+		GetFeatures = library.GetPhysicalDeviceFeatures,
+		GetImageFormatProperties = library.GetPhysicalDeviceImageFormatProperties,
+		GetSurfaceFormats = library.GetPhysicalDeviceSurfaceFormatsKHR,
+		GetSurfaceSupport = library.GetPhysicalDeviceSurfaceSupportKHR,
+		GetDisplayPlaneCapabilities = library.GetDisplayPlaneCapabilitiesKHR,
+		GetDeviceLayerProperties = library.GetDeviceLayerProperties,
+	}
+	META.__index = META
+	ffi.metatype("struct VkPhysicalDevice_T", META)
+end
 return library

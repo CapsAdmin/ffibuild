@@ -928,7 +928,7 @@ do -- type metatables
 		function FUNCTION:GetParameters(meta, check, max_arguments)
 			if not self.arguments then return "", "" end
 
-			if max_arguments < 0 then max_arguments = #self.arguments + max_arguments end
+			if max_arguments and max_arguments < 0 then max_arguments = #self.arguments + max_arguments end
 
 			local done = {}
 

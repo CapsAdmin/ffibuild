@@ -84,3 +84,5 @@ This would return a header with all functions that start with purple_ and the re
 
 ## todo
 Use mingw or visual studio on windows somehow.
+Make helper functions for renaming struct properties using ffi.ChangeCase
+Make struct to table functions
