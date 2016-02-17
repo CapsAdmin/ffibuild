@@ -48,17 +48,18 @@ do -- enumerate helpers so you don't have to make boxed count and array values
 				call = call .. ", "
 			end
 
-			lua = lua .. [[
-function library.Get]] .. friendly .. [[(]] .. parameters .. [[)
+			lua = lua .. [[function library.Get]] .. friendly .. [[(]] .. parameters .. [[)
 	local count = ffi.new("uint32_t[1]")
 	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[128]") .. [[")
 	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
-	local out = {}
-	for i = 0, count[0] - 1 do
-		out[i + 1] = array[i]
-	end
 
 	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
 		return out
 	end
 	return nil, status
@@ -77,17 +78,57 @@ do -- get helpers so you don't have to make a boxed value
 				local type = func_type.arguments[#func_type.arguments]
 				if type:GetDeclaration(meta_data):sub(-1) == "*" then
 					local friendly = func_name:match("^vk(.+)")
-					local parameters, call = func_type:GetParameters(nil, nil, -1)
 
-					if #func_type.arguments ~= 1 then
+					if func_type.arguments[#func_type.arguments - 1]:GetDeclaration(meta_data)  == "unsigned int *" then
+						local parameters, call = func_type:GetParameters(nil, nil, -2)
+
 						call = call .. ", "
-					end
+
+
+lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[256]") .. [[")
+]]
+						if ret_basic_type == "enum VkResult" then
+lua = lua .. [[
+	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
+
+	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
+	return nil, status
+end
+]]
+						elseif ret_basic_type == "void" then
+lua = lua .. [[
+	CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
+
+	local out = {}
+
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
+	end
+
+	return out
+end
+]]
+						end
+					else
+						local parameters, call = func_type:GetParameters(nil, nil, -1)
+
+						call = call .. ", "
 
 lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
 	local box = ffi.new("]] .. type:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]") .. [[")
 ]]
 
-					if ret_basic_type == "enum VkResult" then
+						if ret_basic_type == "enum VkResult" then
 lua = lua .. [[
 	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[box)
 
@@ -98,12 +139,13 @@ lua = lua .. [[
 	return nil, status
 end
 ]]
-					elseif ret_basic_type == "void" then
+						elseif ret_basic_type == "void" then
 lua = lua .. [[
 	CLIB.]] .. func_name .. [[(]] .. call .. [[box)
 	return box[0]
 end
 ]]
+						end
 					end
 					helper_functions[func_name] = "library." .. friendly
 				end
@@ -119,17 +161,16 @@ do -- *Create helpers so you don't have to make a boxed value
 
 		if func_name:find("^vkCreate") then
 			local friendly = func_name:match("^vk(.+)")
-			lua = lua .. [[
-	function library.]]..friendly..[[(]]..parameters..[[)
-		local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
-		local status = CLIB.]]..func_name..[[(]]..call..[[box)
+			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)
+	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
+	local status = CLIB.]]..func_name..[[(]]..call..[[box)
 
-		if status == 0 then
-			return box[0]
-		end
-
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
+
+	return nil, status
+end
 ]]
 			helper_functions[func_name] = "library." .. friendly
 		end

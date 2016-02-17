@@ -545,7 +545,8 @@ library = {
 	ResetCommandPool = SAFE_INDEX(CLIB).vkResetCommandPool,
 	CmdSetViewport = SAFE_INDEX(CLIB).vkCmdSetViewport,
 }
-function library.StringList(tbl)
+library.util = {}
+function library.util.StringList(tbl)
 	return ffi.new("const char * const ["..#tbl.."]", tbl), #tbl
 end
 library.macros = {}
@@ -554,12 +555,14 @@ function library.GetInstanceLayerProperties()
 	local count = ffi.new("uint32_t[1]")
 	local array = ffi.new("struct VkLayerProperties [128]")
 	local status = CLIB.vkEnumerateInstanceLayerProperties(count, array)
-	local out = {}
-	for i = 0, count[0] - 1 do
-		out[i + 1] = array[i]
-	end
 
 	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
 		return out
 	end
 	return nil, status
@@ -568,12 +571,14 @@ function library.GetPhysicalDevices(instance)
 	local count = ffi.new("uint32_t[1]")
 	local array = ffi.new("struct VkPhysicalDevice_T * [128]")
 	local status = CLIB.vkEnumeratePhysicalDevices(instance, count, array)
-	local out = {}
-	for i = 0, count[0] - 1 do
-		out[i + 1] = array[i]
-	end
 
 	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
 		return out
 	end
 	return nil, status
@@ -582,12 +587,14 @@ function library.GetInstanceExtensionProperties(pLayerName)
 	local count = ffi.new("uint32_t[1]")
 	local array = ffi.new("struct VkExtensionProperties [128]")
 	local status = CLIB.vkEnumerateInstanceExtensionProperties(pLayerName, count, array)
-	local out = {}
-	for i = 0, count[0] - 1 do
-		out[i + 1] = array[i]
-	end
 
 	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
 		return out
 	end
 	return nil, status
@@ -596,12 +603,14 @@ function library.GetDeviceLayerProperties(physicalDevice)
 	local count = ffi.new("uint32_t[1]")
 	local array = ffi.new("struct VkLayerProperties [128]")
 	local status = CLIB.vkEnumerateDeviceLayerProperties(physicalDevice, count, array)
-	local out = {}
-	for i = 0, count[0] - 1 do
-		out[i + 1] = array[i]
-	end
 
 	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
 		return out
 	end
 	return nil, status
@@ -610,12 +619,14 @@ function library.GetDeviceExtensionProperties(physicalDevice, pLayerName)
 	local count = ffi.new("uint32_t[1]")
 	local array = ffi.new("struct VkExtensionProperties [128]")
 	local status = CLIB.vkEnumerateDeviceExtensionProperties(physicalDevice, pLayerName, count, array)
-	local out = {}
-	for i = 0, count[0] - 1 do
-		out[i + 1] = array[i]
-	end
 
 	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
 		return out
 	end
 	return nil, status
@@ -640,34 +651,62 @@ function library.GetRenderAreaGranularity(device, renderPass)
 	CLIB.vkGetRenderAreaGranularity(device, renderPass, box)
 	return box[0]
 end
-function library.GetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyPropertyCount)
-	local box = ffi.new("struct VkQueueFamilyProperties [1]")
-	CLIB.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyPropertyCount, box)
-	return box[0]
-end
-function library.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, pDisplayCount)
-	local box = ffi.new("struct VkDisplayKHR_T * [1]")
-	local status = CLIB.vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, pDisplayCount, box)
+function library.GetPhysicalDeviceQueueFamilyProperties(physicalDevice)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkQueueFamilyProperties [256]")
+	CLIB.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, count, array)
 
-	if status == 0 then
-		return box[0]
+	local out = {}
+
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
 	end
 
+	return out
+end
+function library.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkDisplayKHR_T * [256]")
+	local status = CLIB.vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, count, array)
+
+	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
 	return nil, status
 end
-function library.GetPhysicalDeviceSparseImageFormatProperties(physicalDevice, format, type, samples, usage, tiling, pPropertyCount)
-	local box = ffi.new("struct VkSparseImageFormatProperties [1]")
-	CLIB.vkGetPhysicalDeviceSparseImageFormatProperties(physicalDevice, format, type, samples, usage, tiling, pPropertyCount, box)
-	return box[0]
-end
-function library.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pSurfaceFormatCount)
-	local box = ffi.new("struct VkSurfaceFormatKHR [1]")
-	local status = CLIB.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pSurfaceFormatCount, box)
+function library.GetPhysicalDeviceSparseImageFormatProperties(physicalDevice, format, type, samples, usage, tiling)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkSparseImageFormatProperties [256]")
+	CLIB.vkGetPhysicalDeviceSparseImageFormatProperties(physicalDevice, format, type, samples, usage, tiling, count, array)
 
-	if status == 0 then
-		return box[0]
+	local out = {}
+
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
 	end
 
+	return out
+end
+function library.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkSurfaceFormatKHR [256]")
+	local status = CLIB.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count, array)
+
+	if status == 0 then
+		local out = {}
+
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
 	return nil, status
 end
 function library.GetImageSubresourceLayout(device, image, pSubresource)
@@ -735,10 +774,18 @@ function library.GetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex
 
 	return nil, status
 end
-function library.GetImageSparseMemoryRequirements(device, image, pSparseMemoryRequirementCount)
-	local box = ffi.new("struct VkSparseImageMemoryRequirements [1]")
-	CLIB.vkGetImageSparseMemoryRequirements(device, image, pSparseMemoryRequirementCount, box)
-	return box[0]
+function library.GetImageSparseMemoryRequirements(device, image)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkSparseImageMemoryRequirements [256]")
+	CLIB.vkGetImageSparseMemoryRequirements(device, image, count, array)
+
+	local out = {}
+
+	for i = 0, count[0] - 1 do
+		out[i + 1] = array[i]
+	end
+
+	return out
 end
 function library.GetImageMemoryRequirements(device, image)
 	local box = ffi.new("struct VkMemoryRequirements [1]")
@@ -755,14 +802,20 @@ function library.GetEventStatus(device)
 
 	return nil, status
 end
-function library.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, pPropertyCount)
-	local box = ffi.new("struct VkDisplayPlanePropertiesKHR [1]")
-	local status = CLIB.vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, pPropertyCount, box)
+function library.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkDisplayPlanePropertiesKHR [256]")
+	local status = CLIB.vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, count, array)
 
 	if status == 0 then
-		return box[0]
-	end
+		local out = {}
 
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
 	return nil, status
 end
 function library.GetDeviceQueue(device, queueFamilyIndex, queueIndex)
@@ -770,44 +823,68 @@ function library.GetDeviceQueue(device, queueFamilyIndex, queueIndex)
 	CLIB.vkGetDeviceQueue(device, queueFamilyIndex, queueIndex, box)
 	return box[0]
 end
-function library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, pPropertyCount)
-	local box = ffi.new("struct VkDisplayPropertiesKHR [1]")
-	local status = CLIB.vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, pPropertyCount, box)
+function library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkDisplayPropertiesKHR [256]")
+	local status = CLIB.vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, count, array)
 
 	if status == 0 then
-		return box[0]
-	end
+		local out = {}
 
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
 	return nil, status
 end
-function library.GetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount)
-	local box = ffi.new("struct VkImage_T * [1]")
-	local status = CLIB.vkGetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount, box)
+function library.GetSwapchainImagesKHR(device, swapchain)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkImage_T * [256]")
+	local status = CLIB.vkGetSwapchainImagesKHR(device, swapchain, count, array)
 
 	if status == 0 then
-		return box[0]
-	end
+		local out = {}
 
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
 	return nil, status
 end
-function library.GetDisplayModePropertiesKHR(physicalDevice, display, pPropertyCount)
-	local box = ffi.new("struct VkDisplayModePropertiesKHR [1]")
-	local status = CLIB.vkGetDisplayModePropertiesKHR(physicalDevice, display, pPropertyCount, box)
+function library.GetDisplayModePropertiesKHR(physicalDevice, display)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("struct VkDisplayModePropertiesKHR [256]")
+	local status = CLIB.vkGetDisplayModePropertiesKHR(physicalDevice, display, count, array)
 
 	if status == 0 then
-		return box[0]
-	end
+		local out = {}
 
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
 	return nil, status
 end
-function library.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, pPresentModeCount)
-	local box = ffi.new("enum VkPresentModeKHR [1]")
-	local status = CLIB.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, pPresentModeCount, box)
+function library.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface)
+	local count = ffi.new("uint32_t[1]")
+	local array = ffi.new("enum VkPresentModeKHR [256]")
+	local status = CLIB.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count, array)
 
 	if status == 0 then
-		return box[0]
-	end
+		local out = {}
 
+		for i = 0, count[0] - 1 do
+			out[i + 1] = array[i]
+		end
+
+		return out
+	end
 	return nil, status
 end
 function library.GetPhysicalDeviceProperties(physicalDevice)
@@ -825,266 +902,266 @@ function library.GetPhysicalDeviceMemoryProperties(physicalDevice)
 	CLIB.vkGetPhysicalDeviceMemoryProperties(physicalDevice, box)
 	return box[0]
 end
-	function library.CreateBufferView(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkBufferView_T * [1]")
-		local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
+function library.CreateBufferView(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkBufferView_T * [1]")
+	local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
-
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
-		local box = ffi.new("struct VkPipeline_T * [1]")
-		local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
+	local box = ffi.new("struct VkPipeline_T * [1]")
+	local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateShaderModule(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkShaderModule_T * [1]")
-		local status = CLIB.vkCreateShaderModule(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateShaderModule(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkShaderModule_T * [1]")
+	local status = CLIB.vkCreateShaderModule(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkFramebuffer_T * [1]")
-		local status = CLIB.vkCreateFramebuffer(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkFramebuffer_T * [1]")
+	local status = CLIB.vkCreateFramebuffer(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
-		local box = ffi.new("struct VkPipeline_T * [1]")
-		local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
+	local box = ffi.new("struct VkPipeline_T * [1]")
+	local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkDescriptorSetLayout_T * [1]")
-		local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkDescriptorSetLayout_T * [1]")
+	local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkDescriptorPool_T * [1]")
-		local status = CLIB.vkCreateDescriptorPool(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkDescriptorPool_T * [1]")
+	local status = CLIB.vkCreateDescriptorPool(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateBuffer(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkBuffer_T * [1]")
-		local status = CLIB.vkCreateBuffer(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateBuffer(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkBuffer_T * [1]")
+	local status = CLIB.vkCreateBuffer(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateSemaphore(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkSemaphore_T * [1]")
-		local status = CLIB.vkCreateSemaphore(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateSemaphore(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkSemaphore_T * [1]")
+	local status = CLIB.vkCreateSemaphore(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkPipelineCache_T * [1]")
-		local status = CLIB.vkCreatePipelineCache(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkPipelineCache_T * [1]")
+	local status = CLIB.vkCreatePipelineCache(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateImageView(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkImageView_T * [1]")
-		local status = CLIB.vkCreateImageView(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateImageView(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkImageView_T * [1]")
+	local status = CLIB.vkCreateImageView(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkDevice_T * [1]")
-		local status = CLIB.vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkDevice_T * [1]")
+	local status = CLIB.vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateInstance(pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkInstance_T * [1]")
-		local status = CLIB.vkCreateInstance(pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateInstance(pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkInstance_T * [1]")
+	local status = CLIB.vkCreateInstance(pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkDebugReportCallbackEXT_T * [1]")
-		local status = CLIB.vkCreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkDebugReportCallbackEXT_T * [1]")
+	local status = CLIB.vkCreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator)
-		local box = ffi.new("struct VkSwapchainKHR_T * [1]")
-		local status = CLIB.vkCreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator)
+	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
+	local status = CLIB.vkCreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkSurfaceKHR_T * [1]")
-		local status = CLIB.vkCreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkSurfaceKHR_T * [1]")
+	local status = CLIB.vkCreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateImage(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkImage_T * [1]")
-		local status = CLIB.vkCreateImage(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateImage(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkImage_T * [1]")
+	local status = CLIB.vkCreateImage(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateSwapchainKHR(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkSwapchainKHR_T * [1]")
-		local status = CLIB.vkCreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateSwapchainKHR(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
+	local status = CLIB.vkCreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkDisplayModeKHR_T * [1]")
-		local status = CLIB.vkCreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkDisplayModeKHR_T * [1]")
+	local status = CLIB.vkCreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateFence(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkFence_T * [1]")
-		local status = CLIB.vkCreateFence(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateFence(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkFence_T * [1]")
+	local status = CLIB.vkCreateFence(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateRenderPass(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkRenderPass_T * [1]")
-		local status = CLIB.vkCreateRenderPass(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateRenderPass(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkRenderPass_T * [1]")
+	local status = CLIB.vkCreateRenderPass(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateQueryPool(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkQueryPool_T * [1]")
-		local status = CLIB.vkCreateQueryPool(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateQueryPool(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkQueryPool_T * [1]")
+	local status = CLIB.vkCreateQueryPool(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateSampler(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkSampler_T * [1]")
-		local status = CLIB.vkCreateSampler(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateSampler(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkSampler_T * [1]")
+	local status = CLIB.vkCreateSampler(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateCommandPool(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkCommandPool_T * [1]")
-		local status = CLIB.vkCreateCommandPool(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateCommandPool(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkCommandPool_T * [1]")
+	local status = CLIB.vkCreateCommandPool(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreateEvent(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkEvent_T * [1]")
-		local status = CLIB.vkCreateEvent(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreateEvent(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkEvent_T * [1]")
+	local status = CLIB.vkCreateEvent(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
-	function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
-		local box = ffi.new("struct VkPipelineLayout_T * [1]")
-		local status = CLIB.vkCreatePipelineLayout(device, pCreateInfo, pAllocator, box)
 
-		if status == 0 then
-			return box[0]
-		end
+	return nil, status
+end
+function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
+	local box = ffi.new("struct VkPipelineLayout_T * [1]")
+	local status = CLIB.vkCreatePipelineLayout(device, pCreateInfo, pAllocator, box)
 
-		return nil, status
+	if status == 0 then
+		return box[0]
 	end
+
+	return nil, status
+end
 library.structs = {}
 function library.structs.ApplicationInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO" return ffi.new("struct VkApplicationInfo", tbl) end
 function library.structs.InstanceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO" return ffi.new("struct VkInstanceCreateInfo", tbl) end
