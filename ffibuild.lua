@@ -1196,7 +1196,7 @@ do -- lua helper functions
 		local lua =
 		"local ffi = require(\"ffi\")\n" ..
 		"ffi.cdef([["..ffi_header.."]])\n" ..
-		"local CLIB = ffi.load(\""..ffi_lib.."\")\n" ..
+		"local CLIB = ffi.load(_G.FFI_LIB or \""..ffi_lib.."\")\n" ..
 		"local library = {}\n"
 
 		if ... then

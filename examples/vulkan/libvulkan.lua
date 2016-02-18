@@ -377,7 +377,7 @@ void vkCmdPipelineBarrier(struct VkCommandBuffer_T*,unsigned int,unsigned int,un
 enum VkResult vkResetCommandPool(struct VkDevice_T*,struct VkCommandPool_T*,unsigned int);
 void vkCmdSetViewport(struct VkCommandBuffer_T*,unsigned int,unsigned int,const struct VkViewport*);
 ]])
-local CLIB = ffi.load("vulkan")
+local CLIB = ffi.load(_G.FFI_LIB or "vulkan")
 local library = {}
 
 
@@ -549,31 +549,30 @@ end
 library.macros = {}
 library.macros.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end
 local extensions = {}
-extensions.vkDestroySurfaceKHR = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , struct VkSurfaceKHR_T * , const struct VkAllocationCallbacks * )"), name = "DestroySurface"}
-extensions.vkGetDisplayPlaneSupportedDisplaysKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int , unsigned int * , struct VkDisplayKHR_T * * )"), name = "GetDisplayPlaneSupportedDisplays"}
-extensions.vkGetPhysicalDeviceSurfaceFormatsKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , struct VkSurfaceFormatKHR * )"), name = "GetPhysicalDeviceSurfaceFormats"}
-extensions.vkDestroyDebugReportCallbackEXT = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , struct VkDebugReportCallbackEXT_T * , const struct VkAllocationCallbacks * )"), name = "DestroyDebugReportCallback"}
-extensions.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , struct VkSurfaceCapabilitiesKHR * )"), name = "GetPhysicalDeviceSurfaceCapabilities"}
-extensions.vkGetPhysicalDeviceSurfaceSupportKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int , struct VkSurfaceKHR_T * , unsigned int * )"), name = "GetPhysicalDeviceSurfaceSupport"}
-extensions.vkGetDisplayPlaneCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayModeKHR_T * , unsigned int , struct VkDisplayPlaneCapabilitiesKHR * )"), name = "GetDisplayPlaneCapabilities"}
-extensions.vkDebugReportMessageEXT = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , unsigned int , enum VkDebugReportObjectTypeEXT , unsigned long , unsigned long , int , const char * , const char * )"), name = "DebugReportMessage"}
-extensions.vkGetPhysicalDeviceDisplayPlanePropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPlanePropertiesKHR * )"), name = "GetPhysicalDeviceDisplayPlaneProperties"}
-extensions.vkCreateDebugReportCallbackEXT = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkInstance_T * , const struct VkDebugReportCallbackCreateInfoEXT * , const struct VkAllocationCallbacks * , struct VkDebugReportCallbackEXT_T * * )"), name = "CreateDebugReportCallback"}
-extensions.vkCreateSharedSwapchainsKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , unsigned int , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )"), name = "CreateSharedSwapchains"}
-extensions.vkCreateDisplayPlaneSurfaceKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkInstance_T * , const struct VkDisplaySurfaceCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSurfaceKHR_T * * )"), name = "CreateDisplayPlaneSurface"}
-extensions.vkDestroySwapchainKHR = {ctype = ffi.typeof("void ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , const struct VkAllocationCallbacks * )"), name = "DestroySwapchain"}
-extensions.vkGetPhysicalDeviceDisplayPropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPropertiesKHR * )"), name = "GetPhysicalDeviceDisplayProperties"}
-extensions.vkQueuePresentKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkQueue_T * , const struct VkPresentInfoKHR * )"), name = "QueuePresent"}
-extensions.vkAcquireNextImageKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned long , struct VkSemaphore_T * , struct VkFence_T * , unsigned int * )"), name = "AcquireNextImage"}
-extensions.vkGetSwapchainImagesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned int * , struct VkImage_T * * )"), name = "GetSwapchainImages"}
-extensions.vkGetDisplayModePropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , unsigned int * , struct VkDisplayModePropertiesKHR * )"), name = "GetDisplayModeProperties"}
-extensions.vkCreateSwapchainKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )"), name = "CreateSwapchain"}
-extensions.vkGetPhysicalDeviceSurfacePresentModesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , enum VkPresentModeKHR * )"), name = "GetPhysicalDeviceSurfacePresentModes"}
-extensions.vkCreateDisplayModeKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , const struct VkDisplayModeCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkDisplayModeKHR_T * * )"), name = "CreateDisplayMode"}
+extensions.vkDestroySurfaceKHR = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , struct VkSurfaceKHR_T * , const struct VkAllocationCallbacks * )")}
+extensions.vkGetDisplayPlaneSupportedDisplaysKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int , unsigned int * , struct VkDisplayKHR_T * * )")}
+extensions.vkGetPhysicalDeviceSurfaceFormatsKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , struct VkSurfaceFormatKHR * )")}
+extensions.vkDestroyDebugReportCallbackEXT = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , struct VkDebugReportCallbackEXT_T * , const struct VkAllocationCallbacks * )")}
+extensions.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , struct VkSurfaceCapabilitiesKHR * )")}
+extensions.vkGetPhysicalDeviceSurfaceSupportKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int , struct VkSurfaceKHR_T * , unsigned int * )")}
+extensions.vkGetDisplayPlaneCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayModeKHR_T * , unsigned int , struct VkDisplayPlaneCapabilitiesKHR * )")}
+extensions.vkDebugReportMessageEXT = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , unsigned int , enum VkDebugReportObjectTypeEXT , unsigned long , unsigned long , int , const char * , const char * )")}
+extensions.vkGetPhysicalDeviceDisplayPlanePropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPlanePropertiesKHR * )")}
+extensions.vkCreateDebugReportCallbackEXT = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkInstance_T * , const struct VkDebugReportCallbackCreateInfoEXT * , const struct VkAllocationCallbacks * , struct VkDebugReportCallbackEXT_T * * )")}
+extensions.vkCreateSharedSwapchainsKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , unsigned int , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
+extensions.vkCreateDisplayPlaneSurfaceKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkInstance_T * , const struct VkDisplaySurfaceCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSurfaceKHR_T * * )")}
+extensions.vkDestroySwapchainKHR = {ctype = ffi.typeof("void ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , const struct VkAllocationCallbacks * )")}
+extensions.vkGetPhysicalDeviceDisplayPropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPropertiesKHR * )")}
+extensions.vkQueuePresentKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkQueue_T * , const struct VkPresentInfoKHR * )")}
+extensions.vkAcquireNextImageKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned long , struct VkSemaphore_T * , struct VkFence_T * , unsigned int * )")}
+extensions.vkGetSwapchainImagesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned int * , struct VkImage_T * * )")}
+extensions.vkGetDisplayModePropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , unsigned int * , struct VkDisplayModePropertiesKHR * )")}
+extensions.vkCreateSwapchainKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
+extensions.vkGetPhysicalDeviceSurfacePresentModesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , enum VkPresentModeKHR * )")}
+extensions.vkCreateDisplayModeKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , const struct VkDisplayModeCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkDisplayModeKHR_T * * )")}
 local function load(func, ptr, ext, decl, name)
 	if extensions[ext] and not decl and not name then
 		decl = extensions[ext].ctype
-		name = extensions[ext].name
 	end
 
 	local ptr = func(ptr, ext)
@@ -1042,6 +1041,18 @@ function library.structs.ImageMemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_
 function library.structs.MemoryBarrier(tbl) tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER" tbl.pNext = nil return ffi.new("struct VkMemoryBarrier", tbl) end
 function library.structs.LoaderInstanceCreateInfo(tbl) return ffi.new("struct VkLoaderInstanceCreateInfo", tbl) end
 function library.structs.LoaderDeviceCreateInfo(tbl) return ffi.new("struct VkLoaderDeviceCreateInfo", tbl) end
+function library.structs.SwapchainCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR" tbl.pNext = nil return ffi.new("struct VkSwapchainCreateInfoKHR", tbl) end
+function library.structs.PresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_PRESENT_INFO_KHR" tbl.pNext = nil return ffi.new("struct VkPresentInfoKHR", tbl) end
+function library.structs.DisplayModeCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR" tbl.pNext = nil return ffi.new("struct VkDisplayModeCreateInfoKHR", tbl) end
+function library.structs.DisplaySurfaceCreateInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR" tbl.pNext = nil return ffi.new("struct VkDisplaySurfaceCreateInfoKHR", tbl) end
+function library.structs.DisplayPresentInfoKHR(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR" tbl.pNext = nil return ffi.new("struct VkDisplayPresentInfoKHR", tbl) end
+function library.structs.XlibSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXlibSurfaceCreateInfoKHR", tbl) end
+function library.structs.XcbSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkXcbSurfaceCreateInfoKHR", tbl) end
+function library.structs.WaylandSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWaylandSurfaceCreateInfoKHR", tbl) end
+function library.structs.MirSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkMirSurfaceCreateInfoKHR", tbl) end
+function library.structs.AndroidSurfaceCreateInfoKHR(tbl) return ffi.new("struct VkAndroidSurfaceCreateInfoKHR", tbl) end
+function library.structs.Win32SurfaceCreateInfoKHR(tbl) return ffi.new("struct VkWin32SurfaceCreateInfoKHR", tbl) end
+function library.structs.DebugReportCreateInfoEXT(tbl) return ffi.new("struct VkDebugReportCreateInfoEXT", tbl) end
 function library.structs.BeginRange(tbl) return ffi.new("struct VkBeginRange", tbl) end
 function library.structs.EndRange(tbl) return ffi.new("struct VkEndRange", tbl) end
 function library.structs.RangeSize(tbl) return ffi.new("struct VkRangeSize", tbl) end
@@ -1331,10 +1342,15 @@ function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 end
 do
 	local META = {
-		GetPhysicalDevices = library.GetPhysicalDevices,
-		GetProcAddr = library.vkGetInstanceProcAddr,
-		LoadProcAddr = library.util.LoadInstanceProcAddr,
+		DestroySurfaceKHR = library.vkDestroySurfaceKHR,
+		DestroyDebugReportCallbackEXT = library.vkDestroyDebugReportCallbackEXT,
 		Destroy = library.vkDestroyInstance,
+		GetPhysicalDevices = library.GetPhysicalDevices,
+		DebugReportMessageEXT = library.vkDebugReportMessageEXT,
+		LoadProcAddr = library.util.LoadInstanceProcAddr,
+		GetProcAddr = library.vkGetInstanceProcAddr,
+		CreateDebugReportCallbackEXT = library.CreateDebugReportCallbackEXT,
+		CreateDisplayPlaneSurfaceKHR = library.CreateDisplayPlaneSurfaceKHR,
 	}
 	META.__index = META
 	ffi.metatype("struct VkInstance_T", META)
@@ -1404,12 +1420,12 @@ do
 		CreateComputePipelines = library.CreateComputePipelines,
 		GetPipelineCacheData = library.GetPipelineCacheData,
 		GetQueryPoolResults = library.vkGetQueryPoolResults,
-		DestroyImageView = library.vkDestroyImageView,
+		DestroyBufferView = library.vkDestroyBufferView,
 		WaitIdle = library.vkDeviceWaitIdle,
 		CreateDescriptorSetLayout = library.CreateDescriptorSetLayout,
 		DestroyCommandPool = library.vkDestroyCommandPool,
 		CreateFence = library.CreateFence,
-		DestroyPipelineCache = library.vkDestroyPipelineCache,
+		DestroyFence = library.vkDestroyFence,
 		WaitForFences = library.vkWaitForFences,
 		CreateImage = library.CreateImage,
 		GetBufferMemoryRequirements = library.GetBufferMemoryRequirements,
@@ -1418,11 +1434,12 @@ do
 		UnmapMemory = library.vkUnmapMemory,
 		Destroy = library.vkDestroyDevice,
 		DestroyShaderModule = library.vkDestroyShaderModule,
-		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
+		CreateSampler = library.CreateSampler,
 		FreeDescriptorSets = library.vkFreeDescriptorSets,
+		GetSwapchainImagesKHR = library.GetSwapchainImagesKHR,
 		CreateQueryPool = library.CreateQueryPool,
 		DestroySampler = library.vkDestroySampler,
-		CreateCommandPool = library.CreateCommandPool,
+		AcquireNextImageKHR = library.vkAcquireNextImageKHR,
 		ResetCommandPool = library.vkResetCommandPool,
 		GetImageMemoryRequirements = library.GetImageMemoryRequirements,
 		ResetDescriptorPool = library.vkResetDescriptorPool,
@@ -1434,32 +1451,36 @@ do
 		AllocateMemory = library.vkAllocateMemory,
 		AllocateCommandBuffers = library.vkAllocateCommandBuffers,
 		ResetEvent = library.vkResetEvent,
+		CreateSharedSwapchainsKHR = library.CreateSharedSwapchainsKHR,
 		GetImageSparseMemoryRequirements = library.GetImageSparseMemoryRequirements,
-		FreeMemory = library.vkFreeMemory,
-		FlushMappedMemoryRanges = library.vkFlushMappedMemoryRanges,
-		CreateBuffer = library.CreateBuffer,
 		LoadProcAddr = library.util.LoadDeviceProcAddr,
-		DestroyBuffer = library.vkDestroyBuffer,
+		FreeMemory = library.vkFreeMemory,
+		CreateSemaphore = library.CreateSemaphore,
+		FlushMappedMemoryRanges = library.vkFlushMappedMemoryRanges,
 		DestroyImage = library.vkDestroyImage,
+		CreateBuffer = library.CreateBuffer,
+		UpdateDescriptorSets = library.vkUpdateDescriptorSets,
+		DestroyPipelineCache = library.vkDestroyPipelineCache,
+		DestroyImageView = library.vkDestroyImageView,
 		GetMemoryCommitment = library.GetDeviceMemoryCommitment,
 		SetEvent = library.vkSetEvent,
-		UpdateDescriptorSets = library.vkUpdateDescriptorSets,
-		CreateSampler = library.CreateSampler,
+		DestroySwapchainKHR = library.vkDestroySwapchainKHR,
+		CreateCommandPool = library.CreateCommandPool,
 		DestroyEvent = library.vkDestroyEvent,
 		AllocateDescriptorSets = library.vkAllocateDescriptorSets,
-		DestroyBufferView = library.vkDestroyBufferView,
 		MergePipelineCaches = library.vkMergePipelineCaches,
 		CreateGraphicsPipelines = library.CreateGraphicsPipelines,
-		CreateEvent = library.CreateEvent,
 		DestroyQueryPool = library.vkDestroyQueryPool,
+		CreateEvent = library.CreateEvent,
 		CreateRenderPass = library.CreateRenderPass,
+		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
 		InvalidateMappedMemoryRanges = library.vkInvalidateMappedMemoryRanges,
-		CreateSemaphore = library.CreateSemaphore,
-		DestroyDescriptorPool = library.vkDestroyDescriptorPool,
-		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
-		DestroyFence = library.vkDestroyFence,
-		CreatePipelineCache = library.CreatePipelineCache,
+		CreateSwapchainKHR = library.CreateSwapchainKHR,
+		DestroyBuffer = library.vkDestroyBuffer,
 		FreeCommandBuffers = library.vkFreeCommandBuffers,
+		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
+		CreatePipelineCache = library.CreatePipelineCache,
+		DestroyDescriptorPool = library.vkDestroyDescriptorPool,
 		MapMemory = library.vkMapMemory,
 		DestroyRenderPass = library.vkDestroyRenderPass,
 		ResetFences = library.vkResetFences,
@@ -1473,6 +1494,7 @@ end
 do
 	local META = {
 		WaitIdle = library.vkQueueWaitIdle,
+		PresentKHR = library.vkQueuePresentKHR,
 		BindSparse = library.vkQueueBindSparse,
 		Submit = library.vkQueueSubmit,
 	}
@@ -1482,15 +1504,25 @@ end
 do
 	local META = {
 		GetQueueFamilyProperties = library.GetPhysicalDeviceQueueFamilyProperties,
-		CreateDevice = library.CreateDevice,
+		GetDisplayPlanePropertiesKHR = library.GetPhysicalDeviceDisplayPlanePropertiesKHR,
+		GetDisplayPlaneSupportedDisplaysKHR = library.GetDisplayPlaneSupportedDisplaysKHR,
+		GetDisplayPropertiesKHR = library.GetPhysicalDeviceDisplayPropertiesKHR,
+		GetSurfaceCapabilitiesKHR = library.GetPhysicalDeviceSurfaceCapabilitiesKHR,
+		GetMemoryProperties = library.GetPhysicalDeviceMemoryProperties,
+		GetSurfaceFormatsKHR = library.GetPhysicalDeviceSurfaceFormatsKHR,
+		GetDisplayModePropertiesKHR = library.GetDisplayModePropertiesKHR,
+		GetSurfaceSupportKHR = library.GetPhysicalDeviceSurfaceSupportKHR,
+		GetDeviceLayerProperties = library.GetDeviceLayerProperties,
 		GetSparseImageFormatProperties = library.GetPhysicalDeviceSparseImageFormatProperties,
-		GetProperties = library.GetPhysicalDeviceProperties,
+		CreateDisplayModeKHR = library.CreateDisplayModeKHR,
+		GetFeatures = library.GetPhysicalDeviceFeatures,
+		GetDisplayPlaneCapabilitiesKHR = library.GetDisplayPlaneCapabilitiesKHR,
 		GetDeviceExtensionProperties = library.GetDeviceExtensionProperties,
 		GetImageFormatProperties = library.GetPhysicalDeviceImageFormatProperties,
-		GetMemoryProperties = library.GetPhysicalDeviceMemoryProperties,
-		GetDeviceLayerProperties = library.GetDeviceLayerProperties,
-		GetFeatures = library.GetPhysicalDeviceFeatures,
+		GetProperties = library.GetPhysicalDeviceProperties,
+		GetSurfacePresentModesKHR = library.GetPhysicalDeviceSurfacePresentModesKHR,
 		GetFormatProperties = library.GetPhysicalDeviceFormatProperties,
+		CreateDevice = library.CreateDevice,
 	}
 	META.__index = META
 	ffi.metatype("struct VkPhysicalDevice_T", META)
