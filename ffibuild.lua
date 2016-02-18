@@ -265,7 +265,7 @@ function ffibuild.GetMetaData(header)
 		return out
 	end
 
-	function meta_data:BuildMinimalHeader(check_function, check_enum, keep_structs)
+	function meta_data:BuildMinimalHeader(check_function, check_enum, keep_structs, iterate_all_enums)
 		local required = {}
 
 		local bottom = ""
@@ -301,7 +301,7 @@ function ffibuild.GetMetaData(header)
 		end
 
 		-- typedef enums
-		for _, type in pairs(required) do
+		for _, type in pairs(iterate_all_enums and self.typedefs or required) do
 			if type:GetSubType() == "enum" then
 				local enums = self.enums[type:GetBasicType(self)]
 				local declaration = enums:GetDeclaration(self, check_enum)

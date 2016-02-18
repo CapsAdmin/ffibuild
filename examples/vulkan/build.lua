@@ -10,7 +10,7 @@ local header = ffibuild.BuildCHeader([[
 ]])
 
 local meta_data = ffibuild.GetMetaData(header)
-local header = meta_data:BuildMinimalHeader(function(name) return name:find("^vk") end, function(name) return name:find("^VK_") end, true)
+local header = meta_data:BuildMinimalHeader(function(name) return name:find("^vk") end, function(name) return name:find("^VK_") end, true, true)
 
 local lua = ffibuild.BuildGenericLua(header, "vulkan", "metatables")
 
@@ -97,7 +97,7 @@ do -- enumerate helpers so you don't have to make boxed count and array values
 
 			lua = lua .. [[function library.Get]] .. friendly .. [[(]] .. parameters .. [[)
 	local count = ffi.new("uint32_t[1]")
-	CLIB.]]..func_name..[[(count, nil)
+	CLIB.]]..func_name..[[(]] .. call .. [[count, nil)
 	if count[0] == 0 then return end
 
 	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[?]") .. [[", count[0])
@@ -138,7 +138,10 @@ do -- get helpers so you don't have to make a boxed value
 
 lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
 	local count = ffi.new("uint32_t[1]")
-	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[256]") .. [[")
+
+	CLIB.]] .. func_name .. [[(]] .. call .. [[count, nil)
+
+	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[?]") .. [[", count[0])
 ]]
 						if ret_basic_type == "enum VkResult" then
 lua = lua .. [[
@@ -205,6 +208,24 @@ end
 	end
 end
 
+do -- struct creation helpers
+	lua = lua .. "library.structs = {}\n"
+	for i, info in ipairs(meta_data.enums["enum VkStructureType"].enums) do
+		local name = info.key:match("VK_STRUCTURE_TYPE_(.+)")
+		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
+
+		if not extensions[friendly:sub(-3):upper()] then
+			local struct = meta_data.structs["struct Vk" .. friendly]
+
+			if struct then
+				lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" tbl.pNext = nil return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+			else
+				lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+			end
+		end
+	end
+end
+
 do -- *Create helpers so you don't have to make a boxed value
 	for func_name, func_type in pairs(meta_data.functions) do
 		local parameters, call = func_type:GetParameters(nil, nil, #func_type.arguments - 1)
@@ -212,7 +233,11 @@ do -- *Create helpers so you don't have to make a boxed value
 
 		if func_name:find("^vkCreate") then
 			local friendly = func_name:match("^vk(.+)")
-			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)
+			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)]] .. "\n"
+	if parameters:find("CreateInfo,") then
+		lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
+	end
+	lua = lua .. [[
 	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
 	local status = CLIB.]]..func_name..[[(]]..call..[[box)
 
@@ -224,24 +249,6 @@ do -- *Create helpers so you don't have to make a boxed value
 end
 ]]
 			helper_functions[func_name] = "library." .. friendly
-		end
-	end
-end
-
-do -- struct creation helpers
-	lua = lua .. "library.structs = {}\n"
-	for i, info in ipairs(meta_data.enums["enum VkStructureType"].enums) do
-		local name = info.key:match("VK_STRUCTURE_TYPE_(.+)")
-		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
-
-		if not extensions[friendly:sub(-3):upper()] then
-			local struct = meta_data.structs["struct Vk" .. friendly]
-
-			if struct then
-				lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" tbl.pNext = 0 return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
-			else
-				lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
-			end
 		end
 	end
 end
