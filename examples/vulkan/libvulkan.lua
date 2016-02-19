@@ -1270,7 +1270,7 @@ function library.CreateSwapchainKHR(device, pCreateInfo, pAllocator)
 	return nil, status
 end
 function library.AllocateMemory(device, pAllocateInfo, pAllocator)
-	if type(pAllocateInfo) == "table" then pAllocateInfo = library.structs.AllocationCallbacks(pAllocateInfo) end
+	if type(pAllocateInfo) == "table" then pAllocateInfo = library.structs.MemoryAllocateInfo(pAllocateInfo) end
 	local box = ffi.new("struct VkDeviceMemory_T * [1]")
 	local status = CLIB.vkAllocateMemory(device, pAllocateInfo, pAllocator, box)
 
