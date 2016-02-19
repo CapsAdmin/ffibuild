@@ -546,6 +546,9 @@ library.util = {}
 function library.util.StringList(tbl)
 	return ffi.new("const char * const ["..#tbl.."]", tbl), #tbl
 end
+function library.e(str_enum)
+	return ffi.cast("enum GLFWenum", str_enum)
+end
 library.macros = {}
 library.macros.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end
 local extensions = {}
@@ -1069,6 +1072,7 @@ function library.CreateBufferView(device, pCreateInfo, pAllocator)
 	return nil, status
 end
 function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
+	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.GraphicsPipelineCreateInfo(pCreateInfo) end
 	local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
@@ -1101,6 +1105,7 @@ function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
 	return nil, status
 end
 function library.CreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
+	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.ComputePipelineCreateInfo(pCreateInfo) end
 	local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
@@ -1114,6 +1119,17 @@ function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.DescriptorSetLayoutCreateInfo(pCreateInfo) end
 	local box = ffi.new("struct VkDescriptorSetLayout_T * [1]")
 	local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
+
+	if status == "VK_SUCCESS" then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.AllocateCommandBuffers(device, pAllocateInfo)
+	if type(pAllocateInfo) == "table" then pAllocateInfo = library.structs.CommandBufferAllocateInfo(pAllocateInfo) end
+	local box = ffi.new("struct VkCommandBuffer_T * [1]")
+	local status = CLIB.vkAllocateCommandBuffers(device, pAllocateInfo, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -1210,6 +1226,7 @@ function library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator)
 	return nil, status
 end
 function library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator)
+	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.SwapchainCreateInfoKHR(pCreateInfo) end
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
 	local status = CLIB.vkCreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
@@ -1245,6 +1262,17 @@ function library.CreateSwapchainKHR(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.SwapchainCreateInfoKHR(pCreateInfo) end
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
 	local status = CLIB.vkCreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
+
+	if status == "VK_SUCCESS" then
+		return box[0]
+	end
+
+	return nil, status
+end
+function library.AllocateMemory(device, pAllocateInfo, pAllocator)
+	if type(pAllocateInfo) == "table" then pAllocateInfo = library.structs.AllocationCallbacks(pAllocateInfo) end
+	local box = ffi.new("struct VkDeviceMemory_T * [1]")
+	local status = CLIB.vkAllocateMemory(device, pAllocateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -1329,6 +1357,17 @@ function library.CreateEvent(device, pCreateInfo, pAllocator)
 
 	return nil, status
 end
+function library.AllocateDescriptorSets(device, pAllocateInfo)
+	if type(pAllocateInfo) == "table" then pAllocateInfo = library.structs.DescriptorSetAllocateInfo(pAllocateInfo) end
+	local box = ffi.new("struct VkDescriptorSet_T * [1]")
+	local status = CLIB.vkAllocateDescriptorSets(device, pAllocateInfo, box)
+
+	if status == "VK_SUCCESS" then
+		return box[0]
+	end
+
+	return nil, status
+end
 function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.PipelineLayoutCreateInfo(pCreateInfo) end
 	local box = ffi.new("struct VkPipelineLayout_T * [1]")
@@ -1342,13 +1381,13 @@ function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 end
 do
 	local META = {
-		DestroySurfaceKHR = library.vkDestroySurfaceKHR,
-		DestroyDebugReportCallbackEXT = library.vkDestroyDebugReportCallbackEXT,
-		Destroy = library.vkDestroyInstance,
+		DestroySurfaceKHR = library.DestroySurfaceKHR,
+		DestroyDebugReportCallbackEXT = library.DestroyDebugReportCallbackEXT,
+		Destroy = library.DestroyInstance,
 		GetPhysicalDevices = library.GetPhysicalDevices,
-		DebugReportMessageEXT = library.vkDebugReportMessageEXT,
+		DebugReportMessageEXT = library.DebugReportMessageEXT,
 		LoadProcAddr = library.util.LoadInstanceProcAddr,
-		GetProcAddr = library.vkGetInstanceProcAddr,
+		GetProcAddr = library.GetInstanceProcAddr,
 		CreateDebugReportCallbackEXT = library.CreateDebugReportCallbackEXT,
 		CreateDisplayPlaneSurfaceKHR = library.CreateDisplayPlaneSurfaceKHR,
 	}
@@ -1357,53 +1396,53 @@ do
 end
 do
 	local META = {
-		BindIndexBuffer = library.vkCmdBindIndexBuffer,
-		CopyBufferToImage = library.vkCmdCopyBufferToImage,
-		DrawIndexedIndirect = library.vkCmdDrawIndexedIndirect,
-		SetBlendConstants = library.vkCmdSetBlendConstants,
-		CopyBuffer = library.vkCmdCopyBuffer,
-		BindPipeline = library.vkCmdBindPipeline,
-		SetLineWidth = library.vkCmdSetLineWidth,
-		PushConstants = library.vkCmdPushConstants,
-		DispatchIndirect = library.vkCmdDispatchIndirect,
-		ClearColorImage = library.vkCmdClearColorImage,
-		ResolveImage = library.vkCmdResolveImage,
-		WriteTimestamp = library.vkCmdWriteTimestamp,
-		SetStencilReference = library.vkCmdSetStencilReference,
-		DrawIndirect = library.vkCmdDrawIndirect,
-		SetViewport = library.vkCmdSetViewport,
-		End = library.vkEndCommandBuffer,
-		ClearAttachments = library.vkCmdClearAttachments,
-		SetDepthBias = library.vkCmdSetDepthBias,
-		WaitEvents = library.vkCmdWaitEvents,
-		BindVertexBuffers = library.vkCmdBindVertexBuffers,
-		Reset = library.vkResetCommandBuffer,
-		Dispatch = library.vkCmdDispatch,
-		CopyQueryPoolResults = library.vkCmdCopyQueryPoolResults,
-		SetEvent = library.vkCmdSetEvent,
-		SetScissor = library.vkCmdSetScissor,
-		FillBuffer = library.vkCmdFillBuffer,
-		BlitImage = library.vkCmdBlitImage,
-		BindDescriptorSets = library.vkCmdBindDescriptorSets,
-		SetDepthBounds = library.vkCmdSetDepthBounds,
-		EndQuery = library.vkCmdEndQuery,
-		ResetEvent = library.vkCmdResetEvent,
-		ResetQueryPool = library.vkCmdResetQueryPool,
-		CopyImageToBuffer = library.vkCmdCopyImageToBuffer,
-		ClearDepthStencilImage = library.vkCmdClearDepthStencilImage,
-		Draw = library.vkCmdDraw,
-		SetStencilWriteMask = library.vkCmdSetStencilWriteMask,
-		DrawIndexed = library.vkCmdDrawIndexed,
-		SetStencilCompareMask = library.vkCmdSetStencilCompareMask,
-		ExecuteCommands = library.vkCmdExecuteCommands,
-		NextSubpass = library.vkCmdNextSubpass,
-		EndRenderPass = library.vkCmdEndRenderPass,
-		CopyImage = library.vkCmdCopyImage,
-		UpdateBuffer = library.vkCmdUpdateBuffer,
-		BeginRenderPass = library.vkCmdBeginRenderPass,
-		BeginQuery = library.vkCmdBeginQuery,
-		PipelineBarrier = library.vkCmdPipelineBarrier,
-		Begin = library.vkBeginCommandBuffer,
+		BindIndexBuffer = library.CmdBindIndexBuffer,
+		CopyBufferToImage = library.CmdCopyBufferToImage,
+		DrawIndexedIndirect = library.CmdDrawIndexedIndirect,
+		SetBlendConstants = library.CmdSetBlendConstants,
+		CopyBuffer = library.CmdCopyBuffer,
+		BindPipeline = library.CmdBindPipeline,
+		SetLineWidth = library.CmdSetLineWidth,
+		PushConstants = library.CmdPushConstants,
+		DispatchIndirect = library.CmdDispatchIndirect,
+		ClearColorImage = library.CmdClearColorImage,
+		ResolveImage = library.CmdResolveImage,
+		WriteTimestamp = library.CmdWriteTimestamp,
+		SetStencilReference = library.CmdSetStencilReference,
+		DrawIndirect = library.CmdDrawIndirect,
+		SetViewport = library.CmdSetViewport,
+		End = library.EndCommandBuffer,
+		ClearAttachments = library.CmdClearAttachments,
+		SetDepthBias = library.CmdSetDepthBias,
+		WaitEvents = library.CmdWaitEvents,
+		BindVertexBuffers = library.CmdBindVertexBuffers,
+		Reset = library.ResetCommandBuffer,
+		Dispatch = library.CmdDispatch,
+		CopyQueryPoolResults = library.CmdCopyQueryPoolResults,
+		SetEvent = library.CmdSetEvent,
+		SetScissor = library.CmdSetScissor,
+		FillBuffer = library.CmdFillBuffer,
+		BlitImage = library.CmdBlitImage,
+		BindDescriptorSets = library.CmdBindDescriptorSets,
+		SetDepthBounds = library.CmdSetDepthBounds,
+		EndQuery = library.CmdEndQuery,
+		ResetEvent = library.CmdResetEvent,
+		ResetQueryPool = library.CmdResetQueryPool,
+		CopyImageToBuffer = library.CmdCopyImageToBuffer,
+		ClearDepthStencilImage = library.CmdClearDepthStencilImage,
+		Draw = library.CmdDraw,
+		SetStencilWriteMask = library.CmdSetStencilWriteMask,
+		DrawIndexed = library.CmdDrawIndexed,
+		SetStencilCompareMask = library.CmdSetStencilCompareMask,
+		ExecuteCommands = library.CmdExecuteCommands,
+		NextSubpass = library.CmdNextSubpass,
+		EndRenderPass = library.CmdEndRenderPass,
+		CopyImage = library.CmdCopyImage,
+		UpdateBuffer = library.CmdUpdateBuffer,
+		BeginRenderPass = library.CmdBeginRenderPass,
+		BeginQuery = library.CmdBeginQuery,
+		PipelineBarrier = library.CmdPipelineBarrier,
+		Begin = library.BeginCommandBuffer,
 	}
 	META.__index = META
 	ffi.metatype("struct VkCommandBuffer_T", META)
@@ -1411,92 +1450,92 @@ end
 do
 	local META = {
 		CreateBufferView = library.CreateBufferView,
-		DestroySemaphore = library.vkDestroySemaphore,
+		DestroySemaphore = library.DestroySemaphore,
 		CreateFramebuffer = library.CreateFramebuffer,
-		DestroyPipelineLayout = library.vkDestroyPipelineLayout,
+		DestroyPipelineLayout = library.DestroyPipelineLayout,
 		GetEventStatus = library.GetEventStatus,
 		GetQueue = library.GetDeviceQueue,
 		GetFenceStatus = library.GetFenceStatus,
 		CreateComputePipelines = library.CreateComputePipelines,
 		GetPipelineCacheData = library.GetPipelineCacheData,
-		GetQueryPoolResults = library.vkGetQueryPoolResults,
-		DestroyBufferView = library.vkDestroyBufferView,
-		WaitIdle = library.vkDeviceWaitIdle,
+		GetQueryPoolResults = library.GetQueryPoolResults,
+		DestroyBufferView = library.DestroyBufferView,
+		WaitIdle = library.DeviceWaitIdle,
 		CreateDescriptorSetLayout = library.CreateDescriptorSetLayout,
-		DestroyCommandPool = library.vkDestroyCommandPool,
+		DestroyCommandPool = library.DestroyCommandPool,
 		CreateFence = library.CreateFence,
-		DestroyFence = library.vkDestroyFence,
-		WaitForFences = library.vkWaitForFences,
+		DestroyFence = library.DestroyFence,
+		WaitForFences = library.WaitForFences,
 		CreateImage = library.CreateImage,
 		GetBufferMemoryRequirements = library.GetBufferMemoryRequirements,
 		CreatePipelineLayout = library.CreatePipelineLayout,
-		BindImageMemory = library.vkBindImageMemory,
-		UnmapMemory = library.vkUnmapMemory,
-		Destroy = library.vkDestroyDevice,
-		DestroyShaderModule = library.vkDestroyShaderModule,
+		BindImageMemory = library.BindImageMemory,
+		UnmapMemory = library.UnmapMemory,
+		Destroy = library.DestroyDevice,
+		DestroyShaderModule = library.DestroyShaderModule,
 		CreateSampler = library.CreateSampler,
-		FreeDescriptorSets = library.vkFreeDescriptorSets,
+		FreeDescriptorSets = library.FreeDescriptorSets,
 		GetSwapchainImagesKHR = library.GetSwapchainImagesKHR,
 		CreateQueryPool = library.CreateQueryPool,
-		DestroySampler = library.vkDestroySampler,
-		AcquireNextImageKHR = library.vkAcquireNextImageKHR,
-		ResetCommandPool = library.vkResetCommandPool,
+		DestroySampler = library.DestroySampler,
+		AcquireNextImageKHR = library.AcquireNextImageKHR,
+		ResetCommandPool = library.ResetCommandPool,
 		GetImageMemoryRequirements = library.GetImageMemoryRequirements,
-		ResetDescriptorPool = library.vkResetDescriptorPool,
-		GetProcAddr = library.vkGetDeviceProcAddr,
+		ResetDescriptorPool = library.ResetDescriptorPool,
+		GetProcAddr = library.GetDeviceProcAddr,
 		CreateImageView = library.CreateImageView,
 		CreateDescriptorPool = library.CreateDescriptorPool,
-		DestroyFramebuffer = library.vkDestroyFramebuffer,
-		DestroyPipeline = library.vkDestroyPipeline,
-		AllocateMemory = library.vkAllocateMemory,
-		AllocateCommandBuffers = library.vkAllocateCommandBuffers,
-		ResetEvent = library.vkResetEvent,
+		DestroyFramebuffer = library.DestroyFramebuffer,
+		DestroyPipeline = library.DestroyPipeline,
+		AllocateMemory = library.AllocateMemory,
+		AllocateCommandBuffers = library.AllocateCommandBuffers,
+		ResetEvent = library.ResetEvent,
 		CreateSharedSwapchainsKHR = library.CreateSharedSwapchainsKHR,
 		GetImageSparseMemoryRequirements = library.GetImageSparseMemoryRequirements,
 		LoadProcAddr = library.util.LoadDeviceProcAddr,
-		FreeMemory = library.vkFreeMemory,
+		FreeMemory = library.FreeMemory,
 		CreateSemaphore = library.CreateSemaphore,
-		FlushMappedMemoryRanges = library.vkFlushMappedMemoryRanges,
-		DestroyImage = library.vkDestroyImage,
+		FlushMappedMemoryRanges = library.FlushMappedMemoryRanges,
+		DestroyImage = library.DestroyImage,
 		CreateBuffer = library.CreateBuffer,
-		UpdateDescriptorSets = library.vkUpdateDescriptorSets,
-		DestroyPipelineCache = library.vkDestroyPipelineCache,
-		DestroyImageView = library.vkDestroyImageView,
+		UpdateDescriptorSets = library.UpdateDescriptorSets,
+		DestroyPipelineCache = library.DestroyPipelineCache,
+		DestroyImageView = library.DestroyImageView,
 		GetMemoryCommitment = library.GetDeviceMemoryCommitment,
-		SetEvent = library.vkSetEvent,
-		DestroySwapchainKHR = library.vkDestroySwapchainKHR,
+		SetEvent = library.SetEvent,
+		DestroySwapchainKHR = library.DestroySwapchainKHR,
 		CreateCommandPool = library.CreateCommandPool,
-		DestroyEvent = library.vkDestroyEvent,
-		AllocateDescriptorSets = library.vkAllocateDescriptorSets,
-		MergePipelineCaches = library.vkMergePipelineCaches,
+		DestroyEvent = library.DestroyEvent,
+		AllocateDescriptorSets = library.AllocateDescriptorSets,
+		MergePipelineCaches = library.MergePipelineCaches,
 		CreateGraphicsPipelines = library.CreateGraphicsPipelines,
-		DestroyQueryPool = library.vkDestroyQueryPool,
+		DestroyQueryPool = library.DestroyQueryPool,
 		CreateEvent = library.CreateEvent,
 		CreateRenderPass = library.CreateRenderPass,
 		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
-		InvalidateMappedMemoryRanges = library.vkInvalidateMappedMemoryRanges,
+		InvalidateMappedMemoryRanges = library.InvalidateMappedMemoryRanges,
 		CreateSwapchainKHR = library.CreateSwapchainKHR,
-		DestroyBuffer = library.vkDestroyBuffer,
-		FreeCommandBuffers = library.vkFreeCommandBuffers,
+		DestroyBuffer = library.DestroyBuffer,
+		FreeCommandBuffers = library.FreeCommandBuffers,
 		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
 		CreatePipelineCache = library.CreatePipelineCache,
-		DestroyDescriptorPool = library.vkDestroyDescriptorPool,
-		MapMemory = library.vkMapMemory,
-		DestroyRenderPass = library.vkDestroyRenderPass,
-		ResetFences = library.vkResetFences,
-		BindBufferMemory = library.vkBindBufferMemory,
+		DestroyDescriptorPool = library.DestroyDescriptorPool,
+		MapMemory = library.MapMemory,
+		DestroyRenderPass = library.DestroyRenderPass,
+		ResetFences = library.ResetFences,
+		BindBufferMemory = library.BindBufferMemory,
 		CreateShaderModule = library.CreateShaderModule,
-		DestroyDescriptorSetLayout = library.vkDestroyDescriptorSetLayout,
+		DestroyDescriptorSetLayout = library.DestroyDescriptorSetLayout,
 	}
 	META.__index = META
 	ffi.metatype("struct VkDevice_T", META)
 end
 do
 	local META = {
-		WaitIdle = library.vkQueueWaitIdle,
-		PresentKHR = library.vkQueuePresentKHR,
-		BindSparse = library.vkQueueBindSparse,
-		Submit = library.vkQueueSubmit,
+		WaitIdle = library.QueueWaitIdle,
+		PresentKHR = library.QueuePresentKHR,
+		BindSparse = library.QueueBindSparse,
+		Submit = library.QueueSubmit,
 	}
 	META.__index = META
 	ffi.metatype("struct VkQueue_T", META)

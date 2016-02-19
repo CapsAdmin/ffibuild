@@ -1,12 +1,13 @@
 local ffibuild = dofile("../../ffibuild.lua")
 
 local header = ffibuild.BuildCHeader([[
+	#include <vulkan/vulkan.h>
 	#include "GLFW/glfw3.h"
-	//#include "GLFW/glfw3native.h"
+	#include "GLFW/glfw3native.h"
 
-	void *glfwGetInstanceProcAddress(void *instance, const char* procname);
-	int glfwGetPhysicalDevicePresentationSupport(void *instance, void *device, uint32_t queuefamily);
-	unsigned int glfwCreateWindowSurface(void *instance, GLFWwindow* window, const void* allocator, void* surface);
+	//void *glfwGetInstanceProcAddress(void *instance, const char* procname);
+	//int glfwGetPhysicalDevicePresentationSupport(void *instance, void *device, uint32_t queuefamily);
+	//unsigned int glfwCreateWindowSurface(void *instance, GLFWwindow* window, const void* allocator, void** surface);
 ]], "-I./glfw/include")
 
 do
@@ -30,6 +31,9 @@ end
 
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^glfw") end, function(name) return name:find("^GLFW") end, true, true)
+header = header:gsub("\nstruct Vk.-\n", "\n")
+header = header:gsub("\nstruct Vk.-\n", "\n")
+header = header:gsub("\nstruct Vk.-\n", "\n")
 
 local lua = ffibuild.BuildGenericLua(header, "glfw3")
 
@@ -51,4 +55,5 @@ if RELOAD then
 	return
 end
 
-ffibuild.OutputAndValidate(lua, header)
+--ffibuild.OutputAndValidate(lua, header)
+io.write(lua)

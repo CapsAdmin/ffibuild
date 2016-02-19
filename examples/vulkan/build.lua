@@ -30,6 +30,9 @@ do -- utilities
 	lua = lua .. [[function library.util.StringList(tbl)
 	return ffi.new("const char * const ["..#tbl.."]", tbl), #tbl
 end
+function library.e(str_enum)
+	return ffi.cast("enum GLFWenum", str_enum)
+end
 ]]
 end
 
@@ -197,6 +200,7 @@ end
 ]]
 						end
 					end
+
 					helper_functions[func_name] = "library." .. friendly
 				end
 			end
@@ -229,13 +233,15 @@ do -- *Create helpers so you don't have to make a boxed value
 		local parameters, call = func_type:GetParameters(nil, nil, #func_type.arguments - 1)
 		if #func_type.arguments ~= 1 then call = call .. ", " end
 
-		if func_name:find("^vkCreate") then
+		if func_name:find("^vkCreate") or func_name:find("^vkAllocate") then
 			local friendly = func_name:match("^vk(.+)")
 			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)]] .. "\n"
-	if parameters:find("CreateInfo,") then
-		lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
-	end
-	lua = lua .. [[
+			if parameters:find("pCreateInfo") then
+				lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
+			elseif parameters:find("pAllocateInfo") then
+				lua = lua .. "\tif type(pAllocateInfo) == \"table\" then pAllocateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 1]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pAllocateInfo) end\n"
+			end
+			lua = lua .. [[
 	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
 	local status = CLIB.]]..func_name..[[(]]..call..[[box)
 
@@ -273,6 +279,7 @@ do
 					friendly_name = friendly_name:gsub("^Enumerate", "Get")
 					objects[basic_type].functions[friendly_name] = helper_functions[func_name]
 				else
+					func_type.name = func_name:match("^vk(.+)") -- TODO
 					objects[basic_type].functions[friendly_name] = func_type
 				end
 			end
