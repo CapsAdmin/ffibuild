@@ -88,6 +88,10 @@ do -- enumerate helpers so you don't have to make boxed count and array values
 	for func_name, func_type in pairs(meta_data.functions) do
 		if func_name:find("^vkEnumerate") then
 			local friendly = func_name:match("^vkEnumerate(.+)")
+			local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+
+			if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
+
 			local parameters, call = func_type:GetParameters(nil, nil, -2)
 
 			if #func_type.arguments ~= 2 then
@@ -96,11 +100,11 @@ do -- enumerate helpers so you don't have to make boxed count and array values
 
 			lua = lua .. [[function library.Get]] .. friendly .. [[(]] .. parameters .. [[)
 	local count = ffi.new("uint32_t[1]")
-	CLIB.]]..func_name..[[(]] .. call .. [[count, nil)
+	]]..lib..[[.]]..func_name..[[(]] .. call .. [[count, nil)
 	if count[0] == 0 then return end
 
 	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[?]") .. [[", count[0])
-	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
+	local status = ]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -128,6 +132,9 @@ do -- get helpers so you don't have to make a boxed value
 				local type = func_type.arguments[#func_type.arguments]
 				if type:GetDeclaration(meta_data):sub(-1) == "*" then
 					local friendly = func_name:match("^vk(.+)")
+					local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+
+					if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
 					if func_type.arguments[#func_type.arguments - 1]:GetDeclaration(meta_data)  == "unsigned int *" then
 						local parameters, call = func_type:GetParameters(nil, nil, -2)
@@ -138,13 +145,13 @@ do -- get helpers so you don't have to make a boxed value
 lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.]] .. func_name .. [[(]] .. call .. [[count, nil)
+	]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[count, nil)
 
 	local array = ffi.new("]] .. func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[?]") .. [[", count[0])
 ]]
 						if ret_basic_type == "enum VkResult" then
 lua = lua .. [[
-	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
+	local status = ]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -160,7 +167,7 @@ end
 ]]
 						elseif ret_basic_type == "void" then
 lua = lua .. [[
-	CLIB.]] .. func_name .. [[(]] .. call .. [[count, array)
+	]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[count, array)
 
 	local out = {}
 
@@ -183,7 +190,7 @@ lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
 
 						if ret_basic_type == "enum VkResult" then
 lua = lua .. [[
-	local status = CLIB.]] .. func_name .. [[(]] .. call .. [[box)
+	local status = ]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -194,7 +201,7 @@ end
 ]]
 						elseif ret_basic_type == "void" then
 lua = lua .. [[
-	CLIB.]] .. func_name .. [[(]] .. call .. [[box)
+	]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[box)
 	return box[0]
 end
 ]]
@@ -226,6 +233,10 @@ do -- struct creation helpers
 			lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
 		end
 	end
+
+	lua = lua .. [[
+		function library.structs.DebugReportCallbackCreateInfoEXT(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT" tbl.pNext = nil return ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl) end
+	]]
 end
 
 do -- *Create helpers so you don't have to make a boxed value
@@ -235,15 +246,19 @@ do -- *Create helpers so you don't have to make a boxed value
 
 		if func_name:find("^vkCreate") or func_name:find("^vkAllocate") then
 			local friendly = func_name:match("^vk(.+)")
+			local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+
+			if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
+
 			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)]] .. "\n"
 			if parameters:find("pCreateInfo") then
 				lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
 			elseif parameters:find("pAllocateInfo") then
-				lua = lua .. "\tif type(pAllocateInfo) == \"table\" then pAllocateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 1]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pAllocateInfo) end\n"
+				lua = lua .. "\tif type(pAllocateInfo) == \"table\" then pAllocateInfo = library.structs." .. func_type.arguments[2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pAllocateInfo) end\n"
 			end
 			lua = lua .. [[
 	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
-	local status = CLIB.]]..func_name..[[(]]..call..[[box)
+	local status = ]]..lib..[[.]]..func_name..[[(]]..call..[[box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -269,6 +284,7 @@ do
 				local friendly_name = func_name:match("^vk(.+)")
 				friendly_name = friendly_name:gsub(friendly_type_name, "")
 
+				if extensions[friendly_name:sub(-3):upper()] then friendly_name = friendly_name:sub(0, -4) func_name = func_name:sub(0, -4) end
 
 				-- INCONSISTENCIES!!!!!
 				if friendly_type_name == "CommandBuffer" then

@@ -55,8 +55,6 @@ local function set_image_layout(device, cmd_pool, image, aspectMask, old_image_l
 		mask = bit.bor(ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_SHADER_READ_BIT"), ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT"))
 	end
 
-	print(mask, new_image_layout)
-
 	setup_cmd:PipelineBarrier(
 		tonumber(ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT")),
 		tonumber(ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT")),
@@ -68,7 +66,7 @@ local function set_image_layout(device, cmd_pool, image, aspectMask, old_image_l
 		1,
 		vk.structs.ImageMemoryBarrier({
 			srcAccessMask = 0,
-			dstAccessMask = mask,
+			dstAccessMask = tonumber(mask),
 			oldLayout = old_image_layout,
 			newLayout = new_image_layout,
 			image = image,
@@ -153,35 +151,42 @@ local function prepare_texture_image(device, tex_colors, tex, tiling, usage, req
 	set_image_layout(device, cmd_pool, image, "VK_IMAGE_ASPECT_COLOR_BIT", "VK_IMAGE_LAYOUT_UNDEFINED", "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL")
 end
 
---demo_init_connection
-glfw.SetErrorCallback(function(_, str) print(ffi.string(str)) end)
-glfw.Init()
-
---demo_init_vk
-local validate = false
-
+--demo_ini_vk
 local extensions = {
 	VK_KHR_surface = true,
 	VK_KHR_xlib_surface = true,
-	VK_EXT_debug_report = validate,
+	VK_EXT_debug_report = true,
 }
 
+local validation_layers = {
+	"VK_LAYER_LUNARG_threading",
+	"VK_LAYER_LUNARG_mem_tracker",
+	"VK_LAYER_LUNARG_object_tracker",
+	"VK_LAYER_LUNARG_draw_state",
+	"VK_LAYER_LUNARG_param_checker",
+	"VK_LAYER_LUNARG_swapchain",
+	"VK_LAYER_LUNARG_device_limits",
+	"VK_LAYER_LUNARG_image",
+}
+
+--require("table.clear")(validation_layers)
+--extensions.VK_EXT_debug_report = nil
+
 do
+	glfw.SetErrorCallback(function(_, str) print(ffi.string(str)) end)
+	glfw.Init()
+
 	local count = ffi.new("uint32_t[1]")
 	local array = glfw.GetRequiredInstanceExtensions(count)
 	for i = 0, count[0] - 1 do
 		extensions[ffi.string(array[i])] = true
 	end
+
+	local temp = {} for k,v in pairs(extensions) do if v then table.insert(temp, k) end end extensions = temp
 end
 
-local validation_layers = {
-	"VK_LAYER_LUNARG_mem_tracker",
-	"VK_LAYER_GOOGLE_unique_objects",
-}
 
-local temp = {} for k,v in pairs(extensions) do if v then table.insert(temp, k) end end extensions = temp
-
-local instance = vk.CreateInstance({
+local instance = assert(vk.CreateInstance({
 	pApplicationInfo = vk.structs.ApplicationInfo({
 		pApplicationName = "goluwa",
 		applicationVersion = 0,
@@ -190,34 +195,12 @@ local instance = vk.CreateInstance({
 		apiVersion = vk.macros.MAKE_VERSION(1, 0, 2),
 	}),
 
-	enabledLayerCount = validate and #validation_layers or 0,
-	ppEnabledLayerNames = validate and vk.util.StringList(validation_layers) or nil,
+	enabledLayerCount = #validation_layers,
+	ppEnabledLayerNames = vk.util.StringList(validation_layers),
 
 	enabledExtensionCount = #extensions,
 	ppEnabledExtensionNames = vk.util.StringList(extensions),
-})
-
-instance:LoadProcAddr("vkCreateDebugReportCallbackEXT")
-instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
-instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
-instance:LoadProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR")
-instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR")
-instance:LoadProcAddr("vkCreateSwapchainKHR")
-instance:LoadProcAddr("vkDestroySwapchainKHR")
-instance:LoadProcAddr("vkGetSwapchainImagesKHR")
-instance:LoadProcAddr("vkAcquireNextImageKHR")
-instance:LoadProcAddr("vkQueuePresentKHR")
-
-if validate then
-	instance:CreateDebugReportCallbackEXT({
-		flags = bit.bor(ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_ERROR_BIT_EXT"), ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_WARNING_BIT_EXT")),
-		pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
-			print(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
-
-			return 0
-		end,
-	})
-end
+}))
 
 glfw.WindowHint(ffi.cast("enum GLFWenum", "GLFW_CLIENT_API"), ffi.cast("enum GLFWenum", "GLFW_NO_API"))
 local window = glfw.CreateWindow(1024, 768, "vulkan", nil, nil)
@@ -240,6 +223,26 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 				})
 			})
 
+			instance:LoadProcAddr("vkCreateDebugReportCallbackEXT")
+			instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
+			instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
+			instance:LoadProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR")
+			instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR")
+			instance:LoadProcAddr("vkCreateSwapchainKHR")
+			instance:LoadProcAddr("vkDestroySwapchainKHR")
+			instance:LoadProcAddr("vkGetSwapchainImagesKHR")
+			instance:LoadProcAddr("vkAcquireNextImageKHR")
+			instance:LoadProcAddr("vkQueuePresentKHR")
+
+			instance:CreateDebugReportCallback({
+				flags = bit.bor(ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_ERROR_BIT_EXT"), ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_WARNING_BIT_EXT")),
+				pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
+					print(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
+
+					return 0
+				end,
+			})
+
 			local queue = device:GetQueue(queue_index, 0)
 			local cmd_pool = device:CreateCommandPool({
 				queueFamilyIndex = queue_index,
@@ -254,8 +257,8 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 			local surface = ffi.new("struct VkSurfaceKHR_T * [1]")
 			glfw.CreateWindowSurface(instance, window, nil, surface)
 
-			local surface_formats = gpu:GetSurfaceFormatsKHR(surface[0])
-			local surface_capabilities = gpu:GetSurfaceCapabilitiesKHR(surface[0])
+			local surface_formats = gpu:GetSurfaceFormats(surface[0])
+			local surface_capabilities = gpu:GetSurfaceCapabilities(surface[0])
 			local memory_properties = gpu:GetMemoryProperties()
 
 			local prefered_format = surface_formats[1].format ~= "VK_FORMAT_UNDEFINED" and surface_formats[1].format or "VK_FORMAT_B8G8R8A8_UNORM"
@@ -272,7 +275,7 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 			local textures = {{color = 0xffff0000}, {color = 0xff00ff00}}
 
 			do -- surface buffers
-				local swap_chain = device:CreateSwapchainKHR({
+				local swap_chain, err = device:CreateSwapchain({
 					surface = surface[0],
 					minImageCount = math.min(surface_capabilities.minImageCount + 1, surface_capabilities.maxImageCount == 0 and math.huge or surface_capabilities.maxImageCount),
 					imageFormat = prefered_format,
@@ -287,10 +290,12 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 					pQueueFamilyIndices = nil,
 					presentMode = "VK_PRESENT_MODE_FIFO_KHR",
 					oldSwapchain = nil,
-					clipped = true,
+					clipped = 1,
 				})
 
-				for i, image in ipairs(device:GetSwapchainImagesKHR(swap_chain)) do
+			print(err)
+
+				for i, image in ipairs(device:GetSwapchainImages(swap_chain)) do
 					screen_buffers[i] = {}
 
 					set_image_layout(

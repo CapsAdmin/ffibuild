@@ -729,13 +729,13 @@ function library.GetPhysicalDeviceQueueFamilyProperties(physicalDevice)
 
 	return out
 end
-function library.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex)
+function library.GetDisplayPlaneSupportedDisplays(physicalDevice, planeIndex)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, count, nil)
+	library.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, count, nil)
 
 	local array = ffi.new("struct VkDisplayKHR_T * [?]", count[0])
-	local status = CLIB.vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, count, array)
+	local status = library.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex, count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -764,13 +764,13 @@ function library.GetPhysicalDeviceSparseImageFormatProperties(physicalDevice, fo
 
 	return out
 end
-function library.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface)
+function library.GetPhysicalDeviceSurfaceFormats(physicalDevice, surface)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count, nil)
+	library.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count, nil)
 
 	local array = ffi.new("struct VkSurfaceFormatKHR [?]", count[0])
-	local status = CLIB.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count, array)
+	local status = library.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -798,9 +798,9 @@ function library.GetFenceStatus(device)
 
 	return nil, status
 end
-function library.GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface)
+function library.GetPhysicalDeviceSurfaceCapabilities(physicalDevice, surface)
 	local box = ffi.new("struct VkSurfaceCapabilitiesKHR [1]")
-	local status = CLIB.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, box)
+	local status = library.GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -808,9 +808,9 @@ function library.GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface
 
 	return nil, status
 end
-function library.GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface)
+function library.GetPhysicalDeviceSurfaceSupport(physicalDevice, queueFamilyIndex, surface)
 	local box = ffi.new("unsigned int [1]")
-	local status = CLIB.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, box)
+	local status = library.GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -838,9 +838,9 @@ function library.GetDeviceMemoryCommitment(device, memory)
 	CLIB.vkGetDeviceMemoryCommitment(device, memory, box)
 	return box[0]
 end
-function library.GetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex)
+function library.GetDisplayPlaneCapabilities(physicalDevice, mode, planeIndex)
 	local box = ffi.new("struct VkDisplayPlaneCapabilitiesKHR [1]")
-	local status = CLIB.vkGetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex, box)
+	local status = library.GetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -879,13 +879,13 @@ function library.GetEventStatus(device)
 
 	return nil, status
 end
-function library.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice)
+function library.GetPhysicalDeviceDisplayPlaneProperties(physicalDevice)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, count, nil)
+	library.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, count, nil)
 
 	local array = ffi.new("struct VkDisplayPlanePropertiesKHR [?]", count[0])
-	local status = CLIB.vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, count, array)
+	local status = library.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -903,13 +903,13 @@ function library.GetDeviceQueue(device, queueFamilyIndex, queueIndex)
 	CLIB.vkGetDeviceQueue(device, queueFamilyIndex, queueIndex, box)
 	return box[0]
 end
-function library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice)
+function library.GetPhysicalDeviceDisplayProperties(physicalDevice)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, count, nil)
+	library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, count, nil)
 
 	local array = ffi.new("struct VkDisplayPropertiesKHR [?]", count[0])
-	local status = CLIB.vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, count, array)
+	local status = library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -922,13 +922,13 @@ function library.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice)
 	end
 	return nil, status
 end
-function library.GetSwapchainImagesKHR(device, swapchain)
+function library.GetSwapchainImages(device, swapchain)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.vkGetSwapchainImagesKHR(device, swapchain, count, nil)
+	library.GetSwapchainImagesKHR(device, swapchain, count, nil)
 
 	local array = ffi.new("struct VkImage_T * [?]", count[0])
-	local status = CLIB.vkGetSwapchainImagesKHR(device, swapchain, count, array)
+	local status = library.GetSwapchainImagesKHR(device, swapchain, count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -941,13 +941,13 @@ function library.GetSwapchainImagesKHR(device, swapchain)
 	end
 	return nil, status
 end
-function library.GetDisplayModePropertiesKHR(physicalDevice, display)
+function library.GetDisplayModeProperties(physicalDevice, display)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.vkGetDisplayModePropertiesKHR(physicalDevice, display, count, nil)
+	library.GetDisplayModePropertiesKHR(physicalDevice, display, count, nil)
 
 	local array = ffi.new("struct VkDisplayModePropertiesKHR [?]", count[0])
-	local status = CLIB.vkGetDisplayModePropertiesKHR(physicalDevice, display, count, array)
+	local status = library.GetDisplayModePropertiesKHR(physicalDevice, display, count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -960,13 +960,13 @@ function library.GetDisplayModePropertiesKHR(physicalDevice, display)
 	end
 	return nil, status
 end
-function library.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface)
+function library.GetPhysicalDeviceSurfacePresentModes(physicalDevice, surface)
 	local count = ffi.new("uint32_t[1]")
 
-	CLIB.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count, nil)
+	library.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count, nil)
 
 	local array = ffi.new("enum VkPresentModeKHR [?]", count[0])
-	local status = CLIB.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count, array)
+	local status = library.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, count, array)
 
 	if status == "VK_SUCCESS" then
 		local out = {}
@@ -1060,7 +1060,8 @@ function library.structs.BeginRange(tbl) return ffi.new("struct VkBeginRange", t
 function library.structs.EndRange(tbl) return ffi.new("struct VkEndRange", tbl) end
 function library.structs.RangeSize(tbl) return ffi.new("struct VkRangeSize", tbl) end
 function library.structs.MaxEnum(tbl) return ffi.new("struct VkMaxEnum", tbl) end
-function library.CreateBufferView(device, pCreateInfo, pAllocator)
+		function library.structs.DebugReportCallbackCreateInfoEXT(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT" tbl.pNext = nil return ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl) end
+	function library.CreateBufferView(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.BufferViewCreateInfo(pCreateInfo) end
 	local box = ffi.new("struct VkBufferView_T * [1]")
 	local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
@@ -1214,10 +1215,10 @@ function library.CreateInstance(pCreateInfo, pAllocator)
 
 	return nil, status
 end
-function library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator)
+function library.CreateDebugReportCallback(instance, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.DebugReportCallbackCreateInfoEXT(pCreateInfo) end
 	local box = ffi.new("struct VkDebugReportCallbackEXT_T * [1]")
-	local status = CLIB.vkCreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
+	local status = library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -1225,10 +1226,10 @@ function library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator)
 
 	return nil, status
 end
-function library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator)
+function library.CreateSharedSwapchains(device, swapchainCount, pCreateInfos, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.SwapchainCreateInfoKHR(pCreateInfo) end
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
-	local status = CLIB.vkCreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
+	local status = library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -1236,10 +1237,10 @@ function library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos,
 
 	return nil, status
 end
-function library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator)
+function library.CreateDisplayPlaneSurface(instance, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.DisplaySurfaceCreateInfoKHR(pCreateInfo) end
 	local box = ffi.new("struct VkSurfaceKHR_T * [1]")
-	local status = CLIB.vkCreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
+	local status = library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -1258,10 +1259,10 @@ function library.CreateImage(device, pCreateInfo, pAllocator)
 
 	return nil, status
 end
-function library.CreateSwapchainKHR(device, pCreateInfo, pAllocator)
+function library.CreateSwapchain(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.SwapchainCreateInfoKHR(pCreateInfo) end
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
-	local status = CLIB.vkCreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
+	local status = library.CreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -1280,10 +1281,10 @@ function library.AllocateMemory(device, pAllocateInfo, pAllocator)
 
 	return nil, status
 end
-function library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator)
+function library.CreateDisplayMode(physicalDevice, display, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.DisplayModeCreateInfoKHR(pCreateInfo) end
 	local box = ffi.new("struct VkDisplayModeKHR_T * [1]")
-	local status = CLIB.vkCreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
+	local status = library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
 		return box[0]
@@ -1381,15 +1382,15 @@ function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 end
 do
 	local META = {
-		DestroySurfaceKHR = library.DestroySurfaceKHR,
-		DestroyDebugReportCallbackEXT = library.DestroyDebugReportCallbackEXT,
+		DestroySurface = library.DestroySurface,
+		CreateDisplayPlaneSurface = library.CreateDisplayPlaneSurface,
 		Destroy = library.DestroyInstance,
-		GetPhysicalDevices = library.GetPhysicalDevices,
-		DebugReportMessageEXT = library.DebugReportMessageEXT,
+		DebugReportMessage = library.DebugReportMessage,
 		LoadProcAddr = library.util.LoadInstanceProcAddr,
+		DestroyDebugReportCallback = library.DestroyDebugReportCallback,
 		GetProcAddr = library.GetInstanceProcAddr,
-		CreateDebugReportCallbackEXT = library.CreateDebugReportCallbackEXT,
-		CreateDisplayPlaneSurfaceKHR = library.CreateDisplayPlaneSurfaceKHR,
+		CreateDebugReportCallback = library.CreateDebugReportCallback,
+		GetPhysicalDevices = library.GetPhysicalDevices,
 	}
 	META.__index = META
 	ffi.metatype("struct VkInstance_T", META)
@@ -1456,16 +1457,17 @@ do
 		GetEventStatus = library.GetEventStatus,
 		GetQueue = library.GetDeviceQueue,
 		GetFenceStatus = library.GetFenceStatus,
-		CreateComputePipelines = library.CreateComputePipelines,
+		DestroyDescriptorPool = library.DestroyDescriptorPool,
 		GetPipelineCacheData = library.GetPipelineCacheData,
 		GetQueryPoolResults = library.GetQueryPoolResults,
-		DestroyBufferView = library.DestroyBufferView,
+		DestroyImageView = library.DestroyImageView,
 		WaitIdle = library.DeviceWaitIdle,
 		CreateDescriptorSetLayout = library.CreateDescriptorSetLayout,
 		DestroyCommandPool = library.DestroyCommandPool,
 		CreateFence = library.CreateFence,
 		DestroyFence = library.DestroyFence,
 		WaitForFences = library.WaitForFences,
+		CreateSwapchain = library.CreateSwapchain,
 		CreateImage = library.CreateImage,
 		GetBufferMemoryRequirements = library.GetBufferMemoryRequirements,
 		CreatePipelineLayout = library.CreatePipelineLayout,
@@ -1475,10 +1477,9 @@ do
 		DestroyShaderModule = library.DestroyShaderModule,
 		CreateSampler = library.CreateSampler,
 		FreeDescriptorSets = library.FreeDescriptorSets,
-		GetSwapchainImagesKHR = library.GetSwapchainImagesKHR,
 		CreateQueryPool = library.CreateQueryPool,
 		DestroySampler = library.DestroySampler,
-		AcquireNextImageKHR = library.AcquireNextImageKHR,
+		CreateCommandPool = library.CreateCommandPool,
 		ResetCommandPool = library.ResetCommandPool,
 		GetImageMemoryRequirements = library.GetImageMemoryRequirements,
 		ResetDescriptorPool = library.ResetDescriptorPool,
@@ -1488,52 +1489,52 @@ do
 		DestroyFramebuffer = library.DestroyFramebuffer,
 		DestroyPipeline = library.DestroyPipeline,
 		AllocateMemory = library.AllocateMemory,
-		AllocateCommandBuffers = library.AllocateCommandBuffers,
+		FreeCommandBuffers = library.FreeCommandBuffers,
 		ResetEvent = library.ResetEvent,
-		CreateSharedSwapchainsKHR = library.CreateSharedSwapchainsKHR,
 		GetImageSparseMemoryRequirements = library.GetImageSparseMemoryRequirements,
 		LoadProcAddr = library.util.LoadDeviceProcAddr,
+		ResetFences = library.ResetFences,
 		FreeMemory = library.FreeMemory,
-		CreateSemaphore = library.CreateSemaphore,
-		FlushMappedMemoryRanges = library.FlushMappedMemoryRanges,
 		DestroyImage = library.DestroyImage,
-		CreateBuffer = library.CreateBuffer,
+		FlushMappedMemoryRanges = library.FlushMappedMemoryRanges,
 		UpdateDescriptorSets = library.UpdateDescriptorSets,
+		CreateBuffer = library.CreateBuffer,
 		DestroyPipelineCache = library.DestroyPipelineCache,
-		DestroyImageView = library.DestroyImageView,
+		CreateComputePipelines = library.CreateComputePipelines,
+		AcquireNextImage = library.AcquireNextImage,
 		GetMemoryCommitment = library.GetDeviceMemoryCommitment,
 		SetEvent = library.SetEvent,
-		DestroySwapchainKHR = library.DestroySwapchainKHR,
-		CreateCommandPool = library.CreateCommandPool,
-		DestroyEvent = library.DestroyEvent,
-		AllocateDescriptorSets = library.AllocateDescriptorSets,
+		BindBufferMemory = library.BindBufferMemory,
 		MergePipelineCaches = library.MergePipelineCaches,
-		CreateGraphicsPipelines = library.CreateGraphicsPipelines,
+		DestroyEvent = library.DestroyEvent,
+		GetSwapchainImages = library.GetSwapchainImages,
 		DestroyQueryPool = library.DestroyQueryPool,
-		CreateEvent = library.CreateEvent,
 		CreateRenderPass = library.CreateRenderPass,
 		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
-		InvalidateMappedMemoryRanges = library.InvalidateMappedMemoryRanges,
-		CreateSwapchainKHR = library.CreateSwapchainKHR,
+		CreateEvent = library.CreateEvent,
 		DestroyBuffer = library.DestroyBuffer,
-		FreeCommandBuffers = library.FreeCommandBuffers,
+		DestroyDescriptorSetLayout = library.DestroyDescriptorSetLayout,
+		InvalidateMappedMemoryRanges = library.InvalidateMappedMemoryRanges,
+		CreateSemaphore = library.CreateSemaphore,
 		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
+		CreateGraphicsPipelines = library.CreateGraphicsPipelines,
+		AllocateDescriptorSets = library.AllocateDescriptorSets,
 		CreatePipelineCache = library.CreatePipelineCache,
-		DestroyDescriptorPool = library.DestroyDescriptorPool,
+		DestroyBufferView = library.DestroyBufferView,
 		MapMemory = library.MapMemory,
 		DestroyRenderPass = library.DestroyRenderPass,
-		ResetFences = library.ResetFences,
-		BindBufferMemory = library.BindBufferMemory,
+		AllocateCommandBuffers = library.AllocateCommandBuffers,
+		CreateSharedSwapchains = library.CreateSharedSwapchains,
 		CreateShaderModule = library.CreateShaderModule,
-		DestroyDescriptorSetLayout = library.DestroyDescriptorSetLayout,
+		DestroySwapchain = library.DestroySwapchain,
 	}
 	META.__index = META
 	ffi.metatype("struct VkDevice_T", META)
 end
 do
 	local META = {
+		Present = library.QueuePresent,
 		WaitIdle = library.QueueWaitIdle,
-		PresentKHR = library.QueuePresentKHR,
 		BindSparse = library.QueueBindSparse,
 		Submit = library.QueueSubmit,
 	}
@@ -1542,26 +1543,26 @@ do
 end
 do
 	local META = {
+		GetDisplayPlaneProperties = library.GetPhysicalDeviceDisplayPlaneProperties,
 		GetQueueFamilyProperties = library.GetPhysicalDeviceQueueFamilyProperties,
-		GetDisplayPlanePropertiesKHR = library.GetPhysicalDeviceDisplayPlanePropertiesKHR,
-		GetDisplayPlaneSupportedDisplaysKHR = library.GetDisplayPlaneSupportedDisplaysKHR,
-		GetDisplayPropertiesKHR = library.GetPhysicalDeviceDisplayPropertiesKHR,
-		GetSurfaceCapabilitiesKHR = library.GetPhysicalDeviceSurfaceCapabilitiesKHR,
-		GetMemoryProperties = library.GetPhysicalDeviceMemoryProperties,
-		GetSurfaceFormatsKHR = library.GetPhysicalDeviceSurfaceFormatsKHR,
-		GetDisplayModePropertiesKHR = library.GetDisplayModePropertiesKHR,
-		GetSurfaceSupportKHR = library.GetPhysicalDeviceSurfaceSupportKHR,
-		GetDeviceLayerProperties = library.GetDeviceLayerProperties,
-		GetSparseImageFormatProperties = library.GetPhysicalDeviceSparseImageFormatProperties,
-		CreateDisplayModeKHR = library.CreateDisplayModeKHR,
-		GetFeatures = library.GetPhysicalDeviceFeatures,
-		GetDisplayPlaneCapabilitiesKHR = library.GetDisplayPlaneCapabilitiesKHR,
+		GetSurfaceCapabilities = library.GetPhysicalDeviceSurfaceCapabilities,
+		GetSurfacePresentModes = library.GetPhysicalDeviceSurfacePresentModes,
 		GetDeviceExtensionProperties = library.GetDeviceExtensionProperties,
-		GetImageFormatProperties = library.GetPhysicalDeviceImageFormatProperties,
-		GetProperties = library.GetPhysicalDeviceProperties,
-		GetSurfacePresentModesKHR = library.GetPhysicalDeviceSurfacePresentModesKHR,
+		GetDisplayPlaneSupportedDisplays = library.GetDisplayPlaneSupportedDisplays,
+		GetMemoryProperties = library.GetPhysicalDeviceMemoryProperties,
+		GetDisplayProperties = library.GetPhysicalDeviceDisplayProperties,
+		CreateDisplayMode = library.CreateDisplayMode,
 		GetFormatProperties = library.GetPhysicalDeviceFormatProperties,
+		GetSparseImageFormatProperties = library.GetPhysicalDeviceSparseImageFormatProperties,
 		CreateDevice = library.CreateDevice,
+		GetDisplayModeProperties = library.GetDisplayModeProperties,
+		GetProperties = library.GetPhysicalDeviceProperties,
+		GetFeatures = library.GetPhysicalDeviceFeatures,
+		GetImageFormatProperties = library.GetPhysicalDeviceImageFormatProperties,
+		GetSurfaceFormats = library.GetPhysicalDeviceSurfaceFormats,
+		GetSurfaceSupport = library.GetPhysicalDeviceSurfaceSupport,
+		GetDisplayPlaneCapabilities = library.GetDisplayPlaneCapabilities,
+		GetDeviceLayerProperties = library.GetDeviceLayerProperties,
 	}
 	META.__index = META
 	ffi.metatype("struct VkPhysicalDevice_T", META)
