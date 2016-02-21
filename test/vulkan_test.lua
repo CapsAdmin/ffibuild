@@ -55,6 +55,8 @@ local function set_image_layout(device, cmd_pool, image, aspectMask, old_image_l
 		mask = bit.bor(ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_SHADER_READ_BIT"), ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT"))
 	end
 
+	if tostring(old_image_layout):find("struct") then error("") end
+
 	setup_cmd:PipelineBarrier(
 		tonumber(ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT")),
 		tonumber(ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT")),
@@ -71,19 +73,19 @@ local function set_image_layout(device, cmd_pool, image, aspectMask, old_image_l
 			newLayout = new_image_layout,
 			image = image,
 			subresourceRange = {
-				aspectMask = tonumber(ffi.new("enum VkImageAspectFlagBits", aspectMask)),
+				tonumber(ffi.new("enum VkImageAspectFlagBits", aspectMask)),
 				0,
 				1,
 				0,
 				1
 			},
-		}
-	))
+		})
+	)
 end
 
 local function flush_setup_cmd(cmd_pool, device, queue)
 	setup_cmd:End()
-	queue:Submit({
+	queue:Submit(1, vk.structs.SubmitInfo{
 		waitSemaphoreCount = 0,
 		pWaitSemaphores = nil,
 		pWaitDstStageMask = nil,
@@ -98,6 +100,8 @@ local function flush_setup_cmd(cmd_pool, device, queue)
 end
 
 local function prepare_texture_image(device, tex_colors, tex, tiling, usage, required_props, memory_properties)
+	required_props = ffi.cast("enum VkMemoryPropertyFlagBits", required_props)
+
 	tex.width = 2
 	tex.height = 2
 
@@ -126,24 +130,24 @@ local function prepare_texture_image(device, tex_colors, tex, tiling, usage, req
 
 
 	if bit.band(required_props, ffi.cast("enum VkMemoryPropertyFlagBits", "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT")) ~= 0 then
-		local layout = device:GetImageSubresourceLayout(image, vk.structs.ImageSubresource({
+		local layout = device:GetImageSubresourceLayout(image, ffi.new("struct VkImageSubresource[0]", {
 			aspectMask = "VK_IMAGE_ASPECT_COLOR_BIT",
 			mipLevel = 0,
 			arrayLayer = 0,
 		}))
 
-		tex.imageLayout = layout
+		tex.imageLayout = tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT"))
 
 		local data = ffi.new("void *[1]")
 
-		device:MapMemory(memory, memory.allocationSize, data)
+		device:MapMemory(memory, 0, memory_requirements.size, 0, data)
 
-		for y = 0, tex.height - 1 do
+		--[[for y = 0, tex.height - 1 do
 			local row = data[0] + layout.rowPitch * y
 			for x = 0, tex.width - 1 do
 				row[0] = tex_colors[bit.xor(bit.band(x, 1), bit.band(y, 1)) + 1]
 			end
-		end
+		end]]
 
 		device:UnmapMemory(memory)
 	end
@@ -233,11 +237,15 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 			instance:LoadProcAddr("vkGetSwapchainImagesKHR")
 			instance:LoadProcAddr("vkAcquireNextImageKHR")
 			instance:LoadProcAddr("vkQueuePresentKHR")
-
 			instance:CreateDebugReportCallback({
-				flags = bit.bor(ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_ERROR_BIT_EXT"), ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_WARNING_BIT_EXT")),
+				flags = bit.bor(
+					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_INFORMATION_BIT_EXT"),
+					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT"),
+					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_ERROR_BIT_EXT"),
+					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_WARNING_BIT_EXT")
+				),
 				pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
-					print(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
+					print(msgFlags, objType, srcObject, location, msgCode, ffi.string(pLayerPrefix), ffi.string(pMsg), pUserData)
 
 					return 0
 				end,
@@ -275,7 +283,7 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 			local textures = {{color = 0xffff0000}, {color = 0xff00ff00}}
 
 			do -- surface buffers
-				local swap_chain, err = device:CreateSwapchain({
+				local swap_chain = device:CreateSwapchain({
 					surface = surface[0],
 					minImageCount = math.min(surface_capabilities.minImageCount + 1, surface_capabilities.maxImageCount == 0 and math.huge or surface_capabilities.maxImageCount),
 					imageFormat = prefered_format,
@@ -293,8 +301,6 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 					clipped = 1,
 				})
 
-			print(err)
-
 				for i, image in ipairs(device:GetSwapchainImages(swap_chain)) do
 					screen_buffers[i] = {}
 
@@ -304,8 +310,7 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 						image,
 						"VK_IMAGE_ASPECT_COLOR_BIT",
 						"VK_IMAGE_LAYOUT_UNDEFINED",
-						"VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
-						memory_properties
+						"VK_IMAGE_LAYOUT_PRESENT_SRC_KHR"
 					)
 
 					-- FAILS TO REMAP ^^^^ enums?
@@ -387,50 +392,108 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 				local props = gpu:GetFormatProperties(format)
 
 				for _, tex_info in ipairs(textures) do
-					if bit.band(props.linearTilingFeatures, ffi.cast("enum VkFormatFeatureFlagBits", "VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT")) ~= 0 and not use_staging then
 
-					elseif bit.band(props.optimalTilingFeatures, ffi.cast("enum VkFormatFeatureFlagBits", "VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT")) ~= 0 and not use_staging then
-						local staging_texture = {}
-						prepare_texture_image(device, tex_info.color, staging_texture, "VK_IMAGE_TILING_LINEAR", "VK_IMAGE_USAGE_TRANSFER_SRC_BIT", "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT", memory_properties)
-						set_image_layout(
-							device,
-							cmd_pool,
-							staging_texture.image,
-							"VK_IMAGE_ASPECT_COLOR_BIT",
-							staging_texture.imageLayout,
-							"VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL",
-							memory_properties
-						)
+					local staging_texture = {}
+					prepare_texture_image(
+						device,
+						tex_info.color,
+						staging_texture,
+						"VK_IMAGE_TILING_LINEAR",
+						"VK_IMAGE_USAGE_TRANSFER_SRC_BIT",
+						"VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT",
+						memory_properties
+					)
+					set_image_layout(
+						device,
+						cmd_pool,
+						staging_texture.image,
+						"VK_IMAGE_ASPECT_COLOR_BIT",
+						staging_texture.imageLayout,
+						"VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL"
+					)
 
-						prepare_texture_image(
-							device,
-							tex_info.color,
-							tex_info,
-							VK_IMAGE_TILING_OPTIMAL,
-							bit.bor(ffi.cast("enum VkImageUsageFlagBits" , "VK_IMAGE_USAGE_TRANSFER_DST_BIT"), ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_SAMPLED_BIT")),
-							"VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT",
-							memory_properties
-						)
-						set_image_layout(device, cmd_pool, tex_info.image, "VK_IMAGE_ASPECT_COLOR_BIT", tex_info.imageLayout, "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL")
+					prepare_texture_image(
+						device,
+						tex_info.color,
+						tex_info,
+						VK_IMAGE_TILING_OPTIMAL,
+						bit.bor(ffi.cast("enum VkImageUsageFlagBits" , "VK_IMAGE_USAGE_TRANSFER_DST_BIT"), ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_SAMPLED_BIT")),
+						"VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT",
+						memory_properties
+					)
+					set_image_layout(
+						device,
+						cmd_pool,
+						tex_info.image,
+						"VK_IMAGE_ASPECT_COLOR_BIT",
+						tex_info.imageLayout,
+						"VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL"
+					)
 
-						setup_cmd:CopyImage(staging_texture.image, "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL", tex_info.image, "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL", vk.structs.ImageCopy{
-							srcSubresource = {tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")), 0, 0, 1},
-							srcOffset = {0, 0, 0},
-							dstSubresource = {tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")), 0, 0, 1},
-							dstOffset = {0, 0, 0},
-							extent = {
-								staging_texture.width,
-								staging_texture.height,
-								1
-							},
-						})
-						set_image_layout(device, cmd_pool, tex_info.image, "VK_IMAGE_ASPECT_COLOR_BIT", "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL", tex_info.imageLayout)
-						flush_setup_cmd(cmd_pool, device, queue)
-						device:DestroyImage(staging_texture.image)
-						device:FreeMemory(staging_texture.memory)
-					end
+					setup_cmd:CopyImage(staging_texture.image, "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL", tex_info.image, "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL", 1, ffi.new("struct VkImageCopy", {
+						srcSubresource = {tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")), 0, 0, 1},
+						srcOffset = {0, 0, 0},
+						dstSubresource = {tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")), 0, 0, 1},
+						dstOffset = {0, 0, 0},
+						extent = {
+							staging_texture.width,
+							staging_texture.height,
+							1
+						},
+					}))
+					set_image_layout(
+						device,
+						cmd_pool,
+						tex_info.image,
+						"VK_IMAGE_ASPECT_COLOR_BIT",
+						"VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL",
+						tex_info.imageLayout
+					)
+					flush_setup_cmd(cmd_pool, device, queue)
+					device:DestroyImage(staging_texture.image)
+					device:FreeMemory(staging_texture.memory)
+
+
+					tex_info.sampler = device:CreateSampler({
+						magFilter = "VK_FILTER_NEAREST",
+						minFilter = "VK_FILTER_NEAREST",
+						mipmapMode = "VK_SAMPLER_MIPMAP_MODE_NEAREST",
+						addressModeU = "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
+						addressModeV = "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
+						addressModeW = "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
+						ipLodBias = 0.0,
+						anisotropyEnable = 0,
+						maxAnisotropy = 1,
+						compareOp = "VK_COMPARE_OP_NEVER",
+						minLod = 0.0,
+						maxLod = 0.0,
+						borderColor = "VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE",
+						unnormalizedCoordinates = 0,
+					})
+
+					tex_info.view = device:CreateImageView({
+						viewType = "VK_IMAGE_VIEW_TYPE_2D",
+						image = tex_info.image,
+						format = format,
+						flags = 0,
+						components = {
+							r = "VK_COMPONENT_SWIZZLE_R",
+							g = "VK_COMPONENT_SWIZZLE_G",
+							b = "VK_COMPONENT_SWIZZLE_B",
+							a = "VK_COMPONENT_SWIZZLE_A"
+						},
+						subresourceRange = {
+							aspectMask = tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")),
+							0,
+							1,
+							0,
+							1
+						},
+					})
 				end
 			end
+
+			print("!!!")
 
 			return
 		end
