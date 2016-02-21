@@ -1791,9 +1791,11 @@ function library.MapMemory(device, memory, a, b, c, type, func)
 	local status = CLIB.vkMapMemory(device, memory, a, b, c, data)
 
 	if status == "VK_SUCCESS" then
-		local data = ffi.cast(type .. " *", data[0])
 		if func then
-			func(data)
+			local ptr = func(ffi.cast(type .. " *", data[0]))
+			if ptr then
+				data[0] = ptr
+			end
 			library.UnmapMemory(device, memory)
 		end
 		return data

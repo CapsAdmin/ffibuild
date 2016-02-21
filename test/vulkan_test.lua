@@ -88,7 +88,6 @@ end
 function DEMO:PrepareDevice()
 	for _, gpu in ipairs(self.Instance:GetPhysicalDevices()) do
 		for i, info in ipairs(gpu:GetQueueFamilyProperties()) do
-
 			if bit.band(info.queueFlags, vk.e.VK_QUEUE_GRAPHICS_BIT) ~= 0 then
 
 				local queue_index = i - 1
@@ -113,6 +112,7 @@ function DEMO:PrepareDevice()
 				self.DeviceCommandPool = self.Device:CreateCommandPool({
 					queueFamilyIndex = self.DeviceQueueIndex,
 				})
+
 				return
 			end
 		end
@@ -341,6 +341,81 @@ function DEMO:PrepareTextures()
 	self.Texture = self:CreateTexture()
 end
 
+function DEMO:PrepareVertices()
+	local vb = ffi.new("float[3][5]", {
+	--  position             	texcoord
+		{ -1.0, -1.0,  0.25,	0.0, 0.0 },
+		{  1.0, -1.0,  0.25,	1.0, 0.0 },
+		{  0.0,  1.0,  1.0,		0.5, 1.0 },
+	})
+	local buffer = self.Device:CreateBuffer({
+		size = ffi.sizeof(vb),
+		usage = vk.e.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+	})
+
+	local memory_requirements = self.Device:GetBufferMemoryRequirements(buffer)
+
+	local memory = self.Device:AllocateMemory({
+		allocationSize = memory_requirements.size,
+		memoryTypeIndex = self:GetMemoryTypeFromProperties(memory_requirements.memoryTypeBits, vk.e.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT),
+	})
+
+	self.Device:MapMemory(memory, 0, memory_requirements.size, 0, "float", function(data)
+		ffi.copy(data, vb, memory_requirements.size)
+	end)
+
+	self.Device:BindBufferMemory(buffer, memory, 0)
+
+	local vertices = {
+		vertexBindingDescriptionCount = 1,
+		pVertexBindingDescriptions = ffi.new("struct VkVertexInputBindingDescription[1]", {
+			{
+				binding = 0,
+				stride = ffi.sizeof(vb[0]),
+				inputRate = vk.e.VK_VERTEX_INPUT_RATE_VERTEX
+			}
+		}),
+		vertexAttributeDescriptionCount = 2,
+		pVertexAttributeDescriptions = ffi.new("struct VkVertexInputAttributeDescription[2]", {
+			{
+				binding = 0,
+				location = 0,
+				format = vk.e.VK_FORMAT_R32G32B32_SFLOAT,
+				offset = 0,
+			},
+			{
+				binding = 0,
+				location = 1,
+				format = vk.e.VK_FORMAT_R32G32_SFLOAT,
+				offset = ffi.sizeof("float") * 3,
+			}
+		}),
+	}
+	self.Vertices = vertices
+	self.VerticesBuffer = buffer
+	self.VerticesMemory = memory
+end
+
+function DEMO:PrepareDescriptorLayout()
+	self.DescriptorLayout = self.Device:CreateDescriptorSetLayout({
+		bindingCount = 1,
+		pBindings = ffi.new("struct VkDescriptorSetLayoutBinding[1]", {
+			{
+				binding = 0,
+				descriptorType = vk.e.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+				descriptorCount = 1,
+				stageFlags = vk.e.VK_SHADER_STAGE_FRAGMENT_BIT,
+				pImmutableSamplers = nil,
+			}
+		}),
+	})
+
+	self.PipelineLayout = self.Device:CreatePipelineLayout({
+		setLayoutCount = 1,
+		pSetLayouts = ffi.new("struct VkDescriptorSetLayout_T *[1]", self.DescriptorLayout),
+	})
+end
+
 function DEMO:Initialize()
 	self:PrepareWindow() -- create a window
 	self:PrepareInstance() -- create a vulkan instance
@@ -348,6 +423,8 @@ function DEMO:Initialize()
 	self:PrepareSurface() -- create the window surface to render on
 	self:PrepareDepthTexture() -- create the depth buffer
 	self:PrepareTextures()
+	self:PrepareVertices()
+	self:PrepareDescriptorLayout()
 
 	self.DrawCMD = self.Device:AllocateCommandBuffers({
 		commandPool = self.DeviceCommandPool,
