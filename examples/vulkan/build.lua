@@ -73,8 +73,8 @@ local function load(func, ptr, ext, decl, name)
 	end
 end
 
-library.util.LoadInstanceProcAddr = function(...) load(CLIB.vkGetInstanceProcAddr, ...) end
-library.util.LoadDeviceProcAddr = function(...) load(CLIB.vkGetDeviceProcAddr, ...) end
+library.util.LoadInstanceProcAddr = function(...) return load(CLIB.vkGetInstanceProcAddr, ...) end
+library.util.LoadDeviceProcAddr = function(...) return load(CLIB.vkGetDeviceProcAddr, ...) end
 ]]
 
 	object_helper_functions.Instance = object_helper_functions.Instance or {}
@@ -82,6 +82,16 @@ library.util.LoadDeviceProcAddr = function(...) load(CLIB.vkGetDeviceProcAddr, .
 
 	object_helper_functions.Device = object_helper_functions.Device or {}
 	object_helper_functions.Device.LoadProcAddr = "library.util.LoadDeviceProcAddr"
+end
+
+do -- enums
+	lua = lua .. "library.e = {\n"
+	for basic_type, type in pairs(meta_data.enums) do
+		for i, enum in ipairs(type.enums) do
+			lua =  lua .. "\t" .. enum.key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
+		end
+	end
+	lua = lua .. "}\n"
 end
 
 do -- enumerate helpers so you don't have to make boxed count and array values

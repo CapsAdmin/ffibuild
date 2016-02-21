@@ -48,6 +48,38 @@ end
 
 lua = lua .. "}\n"
 
+do -- enums
+	lua = lua .. "library.e = {\n"
+	for basic_type, type in pairs(meta_data.enums) do
+		for i, enum in ipairs(type.enums) do
+			lua =  lua .. "\t" .. enum.key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
+		end
+	end
+	lua = lua .. "}\n"
+end
+
+
+lua = lua .. [[
+function library.GetRequiredInstanceExtensions()
+	local count = ffi.new("uint32_t[1]")
+	local array = CLIB.glfwGetRequiredInstanceExtensions(count)
+	local out = {}
+	for i = 0, count[0] - 1 do
+		table.insert(out, ffi.string(array[i]))
+	end
+	return out
+end
+
+function library.CreateWindowSurface(instance, window, huh)
+	local box = ffi.new("struct VkSurfaceKHR_T * [1]")
+	local status = CLIB.glfwCreateWindowSurface(instance, window, huh, box)
+	if status == "VK_SUCCESS" then
+		return box[0]
+	end
+	return nil, status
+end
+]]
+
 lua = lua .. "return library\n"
 
 if RELOAD then

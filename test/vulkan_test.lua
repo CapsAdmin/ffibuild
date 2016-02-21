@@ -1,3 +1,5 @@
+collectgarbage("stop")
+
 local ffi = require("ffi")
 
 package.path = package.path .. ";./../examples/?.lua"
@@ -26,7 +28,7 @@ local function set_image_layout(device, cmd_pool, image, aspectMask, old_image_l
 	if not setup_cmd then
 		setup_cmd = device:AllocateCommandBuffers({
 				commandPool = cmd_pool,
-				level = "VK_COMMAND_BUFFER_LEVEL_PRIMARY",
+				level = vk.e.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 				commandBufferCount = 1,
 		})
 
@@ -45,21 +47,19 @@ local function set_image_layout(device, cmd_pool, image, aspectMask, old_image_l
 
 	local mask = 0
 
-	if new_image_layout == ffi.cast("enum VkImageLayout", "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL") then
-		mask = "VK_ACCESS_TRANSFER_READ_BIT"
-	elseif new_image_layout == ffi.cast("enum VkImageLayout", "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL") then
-		mask = "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT"
-	elseif new_image_layout == ffi.cast("enum VkImageLayout", "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL") then
-		mask = "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT"
-	elseif new_image_layout == ffi.cast("enum VkImageLayout", "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL") then
-		mask = bit.bor(ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_SHADER_READ_BIT"), ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT"))
+	if new_image_layout == vk.e.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL then
+		mask = vk.e.VK_ACCESS_TRANSFER_READ_BIT
+	elseif new_image_layout == vk.e.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL then
+		mask = vk.e.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+	elseif new_image_layout == vk.e.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL then
+		mask = vk.e.VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+	elseif new_image_layout == vk.e.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL then
+		mask = bit.bor(vk.e.VK_ACCESS_SHADER_READ_BIT, vk.e.VK_ACCESS_INPUT_ATTACHMENT_READ_BIT)
 	end
 
-	if tostring(old_image_layout):find("struct") then error("") end
-
 	setup_cmd:PipelineBarrier(
-		tonumber(ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT")),
-		tonumber(ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT")),
+		tonumber(vk.e.VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
+		tonumber(vk.e.VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
 		0,
 		0,
 		nil,
@@ -73,7 +73,7 @@ local function set_image_layout(device, cmd_pool, image, aspectMask, old_image_l
 			newLayout = new_image_layout,
 			image = image,
 			subresourceRange = {
-				tonumber(ffi.new("enum VkImageAspectFlagBits", aspectMask)),
+				tonumber(aspectMask),
 				0,
 				1,
 				0,
@@ -85,33 +85,31 @@ end
 
 local function flush_setup_cmd(cmd_pool, device, queue)
 	setup_cmd:End()
-	queue:Submit(1, vk.structs.SubmitInfo{
+	queue:Submit(1, vk.structs.SubmitInfo({
 		waitSemaphoreCount = 0,
 		pWaitSemaphores = nil,
 		pWaitDstStageMask = nil,
 		commandBufferCount = 1,
-		pCommandBuffers = {setup_cmd},
+		pCommandBuffers = ffi.new("struct VkCommandBuffer_T *[1]", setup_cmd),
 		signalSemaphoreCount = 0,
 		pSignalSemaphores = nil
-	})
+	}), nil)
 	queue:WaitIdle()
-	device:FreeCommandBuffers(cmd_pool, 1, {setup_cmd})
+	device:FreeCommandBuffers(cmd_pool, 1, ffi.new("struct VkCommandBuffer_T *[1]", setup_cmd))
 	setup_cmd = nil
 end
 
 local function prepare_texture_image(device, tex_colors, tex, tiling, usage, required_props, memory_properties)
-	required_props = ffi.cast("enum VkMemoryPropertyFlagBits", required_props)
-
 	tex.width = 2
 	tex.height = 2
 
 	local image = device:CreateImage({
-		imageType = "VK_IMAGE_TYPE_2D",
-		format = "VK_FORMAT_B8G8R8A8_UNORM",
+		imageType = vk.e.VK_IMAGE_TYPE_2D,
+		format = vk.e.VK_FORMAT_B8G8R8A8_UNORM,
 		extent = {tex.width, tex.height, 1},
 		mipLevels = 1,
 		arrayLayers = 1,
-		samples = "VK_SAMPLE_COUNT_1_BIT",
+		samples = vk.e.VK_SAMPLE_COUNT_1_BIT,
 		tiling = tiling,
 	})
 
@@ -129,14 +127,14 @@ local function prepare_texture_image(device, tex_colors, tex, tiling, usage, req
 	device:BindImageMemory(image, memory, 0)
 
 
-	if bit.band(required_props, ffi.cast("enum VkMemoryPropertyFlagBits", "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT")) ~= 0 then
+	if bit.band(required_props, vk.e.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) ~= 0 then
 		local layout = device:GetImageSubresourceLayout(image, ffi.new("struct VkImageSubresource[0]", {
-			aspectMask = "VK_IMAGE_ASPECT_COLOR_BIT",
+			aspectMask = vk.e.VK_IMAGE_ASPECT_COLOR_BIT,
 			mipLevel = 0,
 			arrayLayer = 0,
 		}))
 
-		tex.imageLayout = tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT"))
+		tex.imageLayout = tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT)
 
 		local data = ffi.new("void *[1]")
 
@@ -152,14 +150,11 @@ local function prepare_texture_image(device, tex_colors, tex, tiling, usage, req
 		device:UnmapMemory(memory)
 	end
 
-	set_image_layout(device, cmd_pool, image, "VK_IMAGE_ASPECT_COLOR_BIT", "VK_IMAGE_LAYOUT_UNDEFINED", "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL")
+	set_image_layout(device, cmd_pool, image, vk.e.VK_IMAGE_ASPECT_COLOR_BIT, vk.e.VK_IMAGE_LAYOUT_UNDEFINED, vk.e.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 end
 
---demo_ini_vk
 local extensions = {
-	VK_KHR_surface = true,
-	VK_KHR_xlib_surface = true,
-	VK_EXT_debug_report = true,
+	"VK_EXT_debug_report",
 }
 
 local validation_layers = {
@@ -173,22 +168,14 @@ local validation_layers = {
 	"VK_LAYER_LUNARG_image",
 }
 
---require("table.clear")(validation_layers)
---extensions.VK_EXT_debug_report = nil
+glfw.SetErrorCallback(function(_, str) print(ffi.string(str)) end)
+glfw.Init()
+glfw.WindowHint(glfw.e.GLFW_CLIENT_API, glfw.e.GLFW_NO_API)
+local window = glfw.CreateWindow(1024, 768, "vulkan", nil, nil)
 
-do
-	glfw.SetErrorCallback(function(_, str) print(ffi.string(str)) end)
-	glfw.Init()
-
-	local count = ffi.new("uint32_t[1]")
-	local array = glfw.GetRequiredInstanceExtensions(count)
-	for i = 0, count[0] - 1 do
-		extensions[ffi.string(array[i])] = true
-	end
-
-	local temp = {} for k,v in pairs(extensions) do if v then table.insert(temp, k) end end extensions = temp
+for _, ext in ipairs(glfw.GetRequiredInstanceExtensions()) do
+	table.insert(extensions, ext)
 end
-
 
 local instance = assert(vk.CreateInstance({
 	pApplicationInfo = vk.structs.ApplicationInfo({
@@ -206,13 +193,36 @@ local instance = assert(vk.CreateInstance({
 	ppEnabledExtensionNames = vk.util.StringList(extensions),
 }))
 
-glfw.WindowHint(ffi.cast("enum GLFWenum", "GLFW_CLIENT_API"), ffi.cast("enum GLFWenum", "GLFW_NO_API"))
-local window = glfw.CreateWindow(1024, 768, "vulkan", nil, nil)
+if instance:LoadProcAddr("vkCreateDebugReportCallbackEXT") then
+	instance:CreateDebugReportCallback({
+		flags = bit.bor(
+			vk.e.VK_DEBUG_REPORT_INFORMATION_BIT_EXT,
+			vk.e.VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
+			vk.e.VK_DEBUG_REPORT_ERROR_BIT_EXT,
+			vk.e.VK_DEBUG_REPORT_WARNING_BIT_EXT
+		),
+		pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
+			print(msgFlags, objType, srcObject, location, msgCode, ffi.string(pLayerPrefix), ffi.string(pMsg), pUserData)
+
+			return 0
+		end,
+	})
+end
+
+instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
+instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
+instance:LoadProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR")
+instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR")
+instance:LoadProcAddr("vkCreateSwapchainKHR")
+instance:LoadProcAddr("vkDestroySwapchainKHR")
+instance:LoadProcAddr("vkGetSwapchainImagesKHR")
+instance:LoadProcAddr("vkAcquireNextImageKHR")
+instance:LoadProcAddr("vkQueuePresentKHR")
 
 for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 	for i, info in ipairs(gpu:GetQueueFamilyProperties()) do
 
-		if bit.band(info.queueFlags, ffi.cast("enum VkQueueFlagBits", "VK_QUEUE_GRAPHICS_BIT")) ~= 0 then -- todo: public ffi use is bad!
+		if bit.band(info.queueFlags, vk.e.VK_QUEUE_GRAPHICS_BIT) ~= 0 then
 
 			local queue_index = i - 1
 
@@ -227,30 +237,6 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 				})
 			})
 
-			instance:LoadProcAddr("vkCreateDebugReportCallbackEXT")
-			instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
-			instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
-			instance:LoadProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR")
-			instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR")
-			instance:LoadProcAddr("vkCreateSwapchainKHR")
-			instance:LoadProcAddr("vkDestroySwapchainKHR")
-			instance:LoadProcAddr("vkGetSwapchainImagesKHR")
-			instance:LoadProcAddr("vkAcquireNextImageKHR")
-			instance:LoadProcAddr("vkQueuePresentKHR")
-			instance:CreateDebugReportCallback({
-				flags = bit.bor(
-					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_INFORMATION_BIT_EXT"),
-					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT"),
-					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_ERROR_BIT_EXT"),
-					ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_WARNING_BIT_EXT")
-				),
-				pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
-					print(msgFlags, objType, srcObject, location, msgCode, ffi.string(pLayerPrefix), ffi.string(pMsg), pUserData)
-
-					return 0
-				end,
-			})
-
 			local queue = device:GetQueue(queue_index, 0)
 			local cmd_pool = device:CreateCommandPool({
 				queueFamilyIndex = queue_index,
@@ -258,18 +244,17 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 
 			local draw_cmd = device:AllocateCommandBuffers({
 					commandPool = cmd_pool,
-					level = "VK_COMMAND_BUFFER_LEVEL_PRIMARY",
+					level = vk.e.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 					commandBufferCount = 1,
 			})
 
-			local surface = ffi.new("struct VkSurfaceKHR_T * [1]")
-			glfw.CreateWindowSurface(instance, window, nil, surface)
+			local surface = glfw.CreateWindowSurface(instance, window, nil)
 
-			local surface_formats = gpu:GetSurfaceFormats(surface[0])
-			local surface_capabilities = gpu:GetSurfaceCapabilities(surface[0])
+			local surface_formats = gpu:GetSurfaceFormats(surface)
+			local surface_capabilities = gpu:GetSurfaceCapabilities(surface)
 			local memory_properties = gpu:GetMemoryProperties()
 
-			local prefered_format = surface_formats[1].format ~= "VK_FORMAT_UNDEFINED" and surface_formats[1].format or "VK_FORMAT_B8G8R8A8_UNORM"
+			local prefered_format = surface_formats[1].format ~= vk.e.VK_FORMAT_UNDEFINED and surface_formats[1].format or vk.e.VK_FORMAT_B8G8R8A8_UNORM
 
 			local w, h = surface_capabilities.currentExtent.width, surface_capabilities.currentExtent.height
 
@@ -284,19 +269,19 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 
 			do -- surface buffers
 				local swap_chain = device:CreateSwapchain({
-					surface = surface[0],
+					surface = surface,
 					minImageCount = math.min(surface_capabilities.minImageCount + 1, surface_capabilities.maxImageCount == 0 and math.huge or surface_capabilities.maxImageCount),
 					imageFormat = prefered_format,
 					imagecolorSpace = surface_formats[1].colorSpace,
 					imageExtent = {w, h},
-					imageUse = "VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT",
-					preTransform = bit.band(surface_capabilities.supportedTransforms, ffi.cast("enum VkSurfaceTransformFlagBitsKHR", "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR")) ~= 0 and "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR" or surface_capabilities.currentTransform,
-					compositeAlpha = "VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR",
+					imageUse = vk.e.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+					preTransform = bit.band(surface_capabilities.supportedTransforms, vk.e.VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ~= 0 and vk.e.VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR or surface_capabilities.currentTransform,
+					compositeAlpha = vk.e.VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 					imageArrayLayers = 1,
-					imageSharingMode = "VK_SHARING_MODE_EXCLUSIVE",
+					imageSharingMode = vk.e.VK_SHARING_MODE_EXCLUSIVE,
 					queueFamilyIndexCount = 0,
 					pQueueFamilyIndices = nil,
-					presentMode = "VK_PRESENT_MODE_FIFO_KHR",
+					presentMode = vk.e.VK_PRESENT_MODE_FIFO_KHR,
 					oldSwapchain = nil,
 					clipped = 1,
 				})
@@ -308,26 +293,26 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 						device,
 						cmd_pool,
 						image,
-						"VK_IMAGE_ASPECT_COLOR_BIT",
-						"VK_IMAGE_LAYOUT_UNDEFINED",
-						"VK_IMAGE_LAYOUT_PRESENT_SRC_KHR"
+						vk.e.VK_IMAGE_ASPECT_COLOR_BIT,
+						vk.e.VK_IMAGE_LAYOUT_UNDEFINED,
+						vk.e.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
 					)
 
 					-- FAILS TO REMAP ^^^^ enums?
 
 					local view = device:CreateImageView({
-						viewType = "VK_IMAGE_VIEW_TYPE_2D",
+						viewType = vk.e.VK_IMAGE_VIEW_TYPE_2D,
 						image = image,
 						format = prefered_format,
 						flags = 0,
 						components = {
-							r = "VK_COMPONENT_SWIZZLE_R",
-							g = "VK_COMPONENT_SWIZZLE_G",
-							b = "VK_COMPONENT_SWIZZLE_B",
-							a = "VK_COMPONENT_SWIZZLE_A"
+							r = vk.e.VK_COMPONENT_SWIZZLE_R,
+							g = vk.e.VK_COMPONENT_SWIZZLE_G,
+							b = vk.e.VK_COMPONENT_SWIZZLE_B,
+							a = vk.e.VK_COMPONENT_SWIZZLE_A
 						},
 						subresourceRange = {
-							aspectMask = tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")),
+							aspectMask = tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT),
 							baseMipLevel = 0,
 							levelCount = 1,
 							baseArrayLayer = 0,
@@ -341,17 +326,17 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 			end
 
 			do -- depth
-				local format = "VK_FORMAT_D16_UNORM"
+				local format = vk.e.VK_FORMAT_D16_UNORM
 
 				local image = device:CreateImage({
-					imageType = "VK_IMAGE_TYPE_2D",
+					imageType = vk.e.VK_IMAGE_TYPE_2D,
 					format = format,
 					extent = {w, h, 1},
 					mipLevels = 1,
 					arrayLayers = 1,
-					samples = "VK_SAMPLE_COUNT_1_BIT",
-					tiling = "VK_IMAGE_TILING_OPTIMAL",
-					usage = ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT"),
+					samples = vk.e.VK_SAMPLE_COUNT_1_BIT,
+					tiling = vk.e.VK_IMAGE_TILING_OPTIMAL,
+					usage = vk.e.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 					flags = 0,
 					queueFamilyIndexCount = 0,
 				})
@@ -365,15 +350,15 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 
 				device:BindImageMemory(image, memory, 0)
 
-				set_image_layout(device, cmd_pool, image, "VK_IMAGE_ASPECT_DEPTH_BIT", "VK_IMAGE_LAYOUT_UNDEFINED", "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL")
+				set_image_layout(device, cmd_pool, image, vk.e.VK_IMAGE_ASPECT_DEPTH_BIT, vk.e.VK_IMAGE_LAYOUT_UNDEFINED, vk.e.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
 
 				local view = device:CreateImageView({
-					viewType = "VK_IMAGE_VIEW_TYPE_2D",
+					viewType = vk.e.VK_IMAGE_VIEW_TYPE_2D,
 					image = image,
 					format = format,
 					flags = 0,
 					subresourceRange = {
-						aspectMask = tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_DEPTH_BIT")),
+						aspectMask = tonumber(vk.e.VK_IMAGE_ASPECT_DEPTH_BIT),
 						baseMipLevel = 0,
 						levelCount = 1,
 						baseArrayLayer = 0,
@@ -388,7 +373,7 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 			end
 
 			do -- textures
-				local format = "VK_FORMAT_B8G8R8A8_UNORM"
+				local format = vk.e.VK_FORMAT_B8G8R8A8_UNORM
 				local props = gpu:GetFormatProperties(format)
 
 				for _, tex_info in ipairs(textures) do
@@ -398,18 +383,19 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 						device,
 						tex_info.color,
 						staging_texture,
-						"VK_IMAGE_TILING_LINEAR",
-						"VK_IMAGE_USAGE_TRANSFER_SRC_BIT",
-						"VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT",
+						vk.e.VK_IMAGE_TILING_LINEAR,
+						vk.e.VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+						vk.e.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
 						memory_properties
 					)
+
 					set_image_layout(
 						device,
 						cmd_pool,
 						staging_texture.image,
-						"VK_IMAGE_ASPECT_COLOR_BIT",
+						vk.e.VK_IMAGE_ASPECT_COLOR_BIT,
 						staging_texture.imageLayout,
-						"VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL"
+						vk.e.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
 					)
 
 					prepare_texture_image(
@@ -417,23 +403,23 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 						tex_info.color,
 						tex_info,
 						VK_IMAGE_TILING_OPTIMAL,
-						bit.bor(ffi.cast("enum VkImageUsageFlagBits" , "VK_IMAGE_USAGE_TRANSFER_DST_BIT"), ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_SAMPLED_BIT")),
-						"VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT",
+						bit.bor(vk.e.VK_IMAGE_USAGE_TRANSFER_DST_BIT, vk.e.VK_IMAGE_USAGE_SAMPLED_BIT),
+						vk.e.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 						memory_properties
 					)
 					set_image_layout(
 						device,
 						cmd_pool,
 						tex_info.image,
-						"VK_IMAGE_ASPECT_COLOR_BIT",
+						vk.e.VK_IMAGE_ASPECT_COLOR_BIT,
 						tex_info.imageLayout,
-						"VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL"
+						vk.e.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 					)
 
-					setup_cmd:CopyImage(staging_texture.image, "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL", tex_info.image, "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL", 1, ffi.new("struct VkImageCopy", {
-						srcSubresource = {tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")), 0, 0, 1},
+					setup_cmd:CopyImage(staging_texture.image, vk.e.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, tex_info.image, vk.e.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, ffi.new("struct VkImageCopy", {
+						srcSubresource = {tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT), 0, 0, 1},
 						srcOffset = {0, 0, 0},
-						dstSubresource = {tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")), 0, 0, 1},
+						dstSubresource = {tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT), 0, 0, 1},
 						dstOffset = {0, 0, 0},
 						extent = {
 							staging_texture.width,
@@ -445,51 +431,50 @@ for _, gpu in ipairs(instance:GetPhysicalDevices()) do
 						device,
 						cmd_pool,
 						tex_info.image,
-						"VK_IMAGE_ASPECT_COLOR_BIT",
-						"VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL",
+						vk.e.VK_IMAGE_ASPECT_COLOR_BIT,
+						vk.e.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 						tex_info.imageLayout
 					)
 					flush_setup_cmd(cmd_pool, device, queue)
-					device:DestroyImage(staging_texture.image)
-					device:FreeMemory(staging_texture.memory)
-
-
+					device:DestroyImage(staging_texture.image, nil)
+					device:FreeMemory(staging_texture.memory, nil)
 					tex_info.sampler = device:CreateSampler({
-						magFilter = "VK_FILTER_NEAREST",
-						minFilter = "VK_FILTER_NEAREST",
-						mipmapMode = "VK_SAMPLER_MIPMAP_MODE_NEAREST",
-						addressModeU = "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
-						addressModeV = "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
-						addressModeW = "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
+						magFilter = vk.e.VK_FILTER_NEAREST,
+						minFilter = vk.e.VK_FILTER_NEAREST,
+						mipmapMode = vk.e.VK_SAMPLER_MIPMAP_MODE_NEAREST,
+						addressModeU = vk.e.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+						addressModeV = vk.e.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+						addressModeW = vk.e.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
 						ipLodBias = 0.0,
 						anisotropyEnable = 0,
 						maxAnisotropy = 1,
-						compareOp = "VK_COMPARE_OP_NEVER",
+						compareOp = vk.e.VK_COMPARE_OP_NEVER,
 						minLod = 0.0,
 						maxLod = 0.0,
-						borderColor = "VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE",
+						borderColor = vk.e.VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
 						unnormalizedCoordinates = 0,
 					})
 
 					tex_info.view = device:CreateImageView({
-						viewType = "VK_IMAGE_VIEW_TYPE_2D",
+						viewType = vk.e.VK_IMAGE_VIEW_TYPE_2D,
 						image = tex_info.image,
 						format = format,
 						flags = 0,
 						components = {
-							r = "VK_COMPONENT_SWIZZLE_R",
-							g = "VK_COMPONENT_SWIZZLE_G",
-							b = "VK_COMPONENT_SWIZZLE_B",
-							a = "VK_COMPONENT_SWIZZLE_A"
+							r = vk.e.VK_COMPONENT_SWIZZLE_R,
+							g = vk.e.VK_COMPONENT_SWIZZLE_G,
+							b = vk.e.VK_COMPONENT_SWIZZLE_B,
+							a = vk.e.VK_COMPONENT_SWIZZLE_A
 						},
 						subresourceRange = {
-							aspectMask = tonumber(ffi.new("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT")),
+							aspectMask = tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT),
 							0,
 							1,
 							0,
 							1
 						},
 					})
+					print(i, "????????")
 				end
 			end
 
