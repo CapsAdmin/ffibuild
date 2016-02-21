@@ -1785,7 +1785,23 @@ function library.GetPhysicalDeviceMemoryProperties(physicalDevice)
 	CLIB.vkGetPhysicalDeviceMemoryProperties(physicalDevice, box)
 	return box[0]
 end
-library.structs = {}
+function library.MapMemory(device, memory, a, b, c, type, func)
+	local data = ffi.new("void *[1]")
+
+	local status = CLIB.vkMapMemory(device, memory, a, b, c, data)
+
+	if status == "VK_SUCCESS" then
+		local data = ffi.cast(type .. " *", data[0])
+		if func then
+			func(data)
+			library.UnmapMemory(device, memory)
+		end
+		return data
+	end
+
+	return nil, status
+end
+	library.structs = {}
 function library.structs.ApplicationInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO" tbl.pNext = nil return ffi.new("struct VkApplicationInfo", tbl) end
 function library.structs.InstanceCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO" tbl.pNext = nil return ffi.new("struct VkInstanceCreateInfo", tbl) end
 function library.structs.DeviceQueueCreateInfo(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO" tbl.pNext = nil return ffi.new("struct VkDeviceQueueCreateInfo", tbl) end

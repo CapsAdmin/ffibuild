@@ -223,6 +223,25 @@ end
 			end
 		end
 	end
+
+	lua = lua .. [[
+function library.MapMemory(device, memory, a, b, c, type, func)
+	local data = ffi.new("void *[1]")
+
+	local status = CLIB.vkMapMemory(device, memory, a, b, c, data)
+
+	if status == "VK_SUCCESS" then
+		local data = ffi.cast(type .. " *", data[0])
+		if func then
+			func(data)
+			library.UnmapMemory(device, memory)
+		end
+		return data
+	end
+
+	return nil, status
+end
+	]]
 end
 
 do -- struct creation helpers
