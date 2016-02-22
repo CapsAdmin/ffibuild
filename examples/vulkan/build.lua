@@ -88,7 +88,7 @@ do -- enums
 	lua = lua .. "library.e = {\n"
 	for basic_type, type in pairs(meta_data.enums) do
 		for i, enum in ipairs(type.enums) do
-			lua =  lua .. "\t" .. enum.key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
+			lua =  lua .. "\t" .. enum.key:match("^VK_(.+)") .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
 		end
 	end
 	lua = lua .. "}\n"
@@ -247,7 +247,8 @@ end
 end
 
 do -- struct creation helpers
-	lua = lua .. "library.structs = {}\n"
+	lua = lua .. "library.s = {}\n"
+	local done = {}
 	for i, info in ipairs(meta_data.enums["enum VkStructureType"].enums) do
 		local name = info.key:match("VK_STRUCTURE_TYPE_(.+)")
 		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
@@ -259,14 +260,34 @@ do -- struct creation helpers
 		local struct = meta_data.structs["struct Vk" .. friendly]
 
 		if struct then
-			lua = lua .. "function library.structs." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" tbl.pNext = nil return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
-		else
-			lua = lua .. "function library.structs." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+			lua = lua .. "function library.s." .. friendly .. "(tbl) tbl.sType = \"" .. info.key .. "\" tbl.pNext = nil return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+			done[struct] = true
+		end
+	end
+
+	for _, type in pairs(meta_data.typedefs) do
+		local basic_type = type:GetBasicType(meta_data)
+		local struct = meta_data.structs[basic_type]
+		if struct then
+			local friendly = basic_type:match("^struct Vk(.+)")
+			if friendly then
+				if basic_type:find("^struct Vk.+_T$") then
+					friendly = basic_type:match("^struct Vk(.+)_T$")
+					lua = lua .. 'function library.s.'..friendly..'Array(tbl) return ffi.new("'..basic_type..' *[?]", #tbl, tbl) end\n'
+				else
+					if done[struct] then
+						lua = lua .. 'function library.s.'..friendly..'Array(tbl) for i, v in ipairs(tbl) do tbl[i] = library.s.'..friendly..'(v) end return ffi.new("'..basic_type..'[?]", #tbl, tbl) end\n'
+					else
+						lua = lua .. 'function library.s.'..friendly..'Array(tbl) return ffi.new("'..basic_type..'[?]", #tbl, tbl) end\n'
+						lua = lua .. "function library.s." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+					end
+				end
+			end
 		end
 	end
 
 	lua = lua .. [[
-		function library.structs.DebugReportCallbackCreateInfoEXT(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT" tbl.pNext = nil return ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl) end
+		function library.s.DebugReportCallbackCreateInfoEXT(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT" tbl.pNext = nil return ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl) end
 	]]
 end
 
@@ -287,15 +308,15 @@ do -- *Create helpers so you don't have to make a boxed value
 				lua = lua .. [[
 	if type(pCreateInfos) == "table" then
 		for i, v in ipairs(pCreateInfos) do
-			pCreateInfos[i] = library.structs.]] .. basic_type:match("struct Vk(.+)") .. [[(v)
+			pCreateInfos[i] = library.s.]] .. basic_type:match("struct Vk(.+)") .. [[(v)
 		end
 		pCreateInfos = ffi.new("]]..basic_type..[[["..#pCreateInfos.."]", pCreateInfos)
 	end
 	]]
 			elseif parameters:find("pCreateInfo") then
-				lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
+				lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.s." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
 			elseif parameters:find("pAllocateInfo") then
-				lua = lua .. "\tif type(pAllocateInfo) == \"table\" then pAllocateInfo = library.structs." .. func_type.arguments[2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pAllocateInfo) end\n"
+				lua = lua .. "\tif type(pAllocateInfo) == \"table\" then pAllocateInfo = library.s." .. func_type.arguments[2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pAllocateInfo) end\n"
 			end
 			lua = lua .. [[
 	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
