@@ -1,3 +1,0 @@
-ParamCheckerReportFlags = info,warn,perf,error
-ParamCheckerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-ParamCheckerLogFilename = log.txt

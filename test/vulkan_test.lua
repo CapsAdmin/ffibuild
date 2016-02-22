@@ -12,19 +12,32 @@ _G.FFI_LIB = nil
 
 local DEMO = {}
 
-DEMO.Extensions = {
+DEMO.InstanceExtensions = {
 	"VK_EXT_debug_report",
+}
+
+DEMO.DeviceExtensions = {
+	"VK_NV_glsl_shader",
 }
 
 DEMO.ValidationLayers = {
 	"VK_LAYER_LUNARG_threading",
 	"VK_LAYER_LUNARG_mem_tracker",
 	"VK_LAYER_LUNARG_object_tracker",
-	"VK_LAYER_LUNARG_draw_state",
+	--"VK_LAYER_LUNARG_draw_state",
 	"VK_LAYER_LUNARG_param_checker",
 	"VK_LAYER_LUNARG_swapchain",
 	"VK_LAYER_LUNARG_device_limits",
 	"VK_LAYER_LUNARG_image",
+	--"VK_LAYER_LUNARG_api_dump",
+}
+
+DEMO.DebugFlags = {
+	--vk.e.VK_DEBUG_REPORT_INFORMATION_BIT_EXT,
+	vk.e.VK_DEBUG_REPORT_WARNING_BIT_EXT,
+	vk.e.VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
+	vk.e.VK_DEBUG_REPORT_ERROR_BIT_EXT,
+	vk.e.VK_DEBUG_REPORT_DEBUG_BIT_EXT,
 }
 
 function DEMO:PrepareWindow()
@@ -33,7 +46,7 @@ function DEMO:PrepareWindow()
 	glfw.WindowHint(glfw.e.GLFW_CLIENT_API, glfw.e.GLFW_NO_API)
 
 	for _, ext in ipairs(glfw.GetRequiredInstanceExtensions()) do
-		table.insert(self.Extensions, ext)
+		table.insert(self.InstanceExtensions, ext)
 	end
 
 	self.Window = glfw.CreateWindow(1024, 768, "vulkan", nil, nil)
@@ -52,20 +65,24 @@ function DEMO:PrepareInstance()
 		enabledLayerCount = #self.ValidationLayers,
 		ppEnabledLayerNames = vk.util.StringList(self.ValidationLayers),
 
-		enabledExtensionCount = #self.Extensions,
-		ppEnabledExtensionNames = vk.util.StringList(self.Extensions),
+		enabledExtensionCount = #self.InstanceExtensions,
+		ppEnabledExtensionNames = vk.util.StringList(self.InstanceExtensions),
 	})
 
 	if instance:LoadProcAddr("vkCreateDebugReportCallbackEXT") then
 		instance:CreateDebugReportCallback({
-			flags = bit.bor(
-				vk.e.VK_DEBUG_REPORT_INFORMATION_BIT_EXT,
-				vk.e.VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
-				vk.e.VK_DEBUG_REPORT_ERROR_BIT_EXT,
-				vk.e.VK_DEBUG_REPORT_WARNING_BIT_EXT
-			),
+			flags = bit.bor(unpack(self.DebugFlags)),
 			pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
-				io.write(string.format("Vulkan Debug Report: %s: %s\n", ffi.string(pLayerPrefix), ffi.string(pMsg)))
+
+				local level = 3
+				local info = debug.getinfo(level, "Sln")
+				local lines = {}
+				for i = 3, 10 do
+					local info = debug.getinfo(i, "Sln")
+					if not info or info.currentline == -1 then break end
+					table.insert(lines, info.currentline)
+				end
+				io.write(string.format("Line %s %s: %s: %s\n", table.concat(lines, ", "), info.name or "unknown", ffi.string(pLayerPrefix), ffi.string(pMsg)))
 
 				return 0
 			end,
@@ -94,6 +111,13 @@ function DEMO:PrepareDevice()
 
 				local device = gpu:CreateDevice({
 					queueCreateInfoCount = 1,
+
+					enabledLayerCount = #self.ValidationLayers,
+					ppEnabledLayerNames = vk.util.StringList(self.ValidationLayers),
+
+					enabledExtensionCount = #self.DeviceExtensions,
+					ppEnabledExtensionNames = vk.util.StringList(self.DeviceExtensions),
+
 					pQueueCreateInfos = vk.structs.DeviceQueueCreateInfo({
 						queueFamilyIndex = queue_index,
 						queueCount = 1,
@@ -149,8 +173,10 @@ function DEMO:PrepareSurface()
 		compositeAlpha = vk.e.VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 		imageArrayLayers = 1,
 		imageSharingMode = vk.e.VK_SHARING_MODE_EXCLUSIVE,
+
 		queueFamilyIndexCount = 0,
 		pQueueFamilyIndices = nil,
+
 		presentMode = vk.e.VK_PRESENT_MODE_FIFO_KHR,
 		oldSwapchain = nil,
 		clipped = 1,
@@ -172,18 +198,14 @@ function DEMO:PrepareSurface()
 				b = vk.e.VK_COMPONENT_SWIZZLE_B,
 				a = vk.e.VK_COMPONENT_SWIZZLE_A
 			},
-			subresourceRange = {
-				aspectMask = tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT),
-				baseMipLevel = 0,
-				levelCount = 1,
-				baseArrayLayer = 0,
-				layerCount = 1,
-			},
+			subresourceRange = {vk.e.VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
 		})
 
 		self.SurfaceBuffers[i].view = view
 		self.SurfaceBuffers[i].image = image
 	end
+
+	self.SwapChain = swap_chain
 end
 
 function DEMO:CreateImage(width, height, format, usage, tiling, required_props)
@@ -226,13 +248,7 @@ function DEMO:PrepareDepthTexture()
 		image = image,
 		format = format,
 		flags = 0,
-		subresourceRange = {
-			aspectMask = tonumber(vk.e.VK_IMAGE_ASPECT_DEPTH_BIT),
-			baseMipLevel = 0,
-			levelCount = 1,
-			baseArrayLayer = 0,
-			layerCount = 1,
-		},
+		subresourceRange = {vk.e.VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1},
 	})
 
 	self.DepthBuffer.image = image
@@ -252,7 +268,7 @@ do
 		tex.image = image
 
 		if bit.band(required_props, vk.e.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) ~= 0 then
-			tex.imageLayout = tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT)
+			tex.imageLayout = vk.e.VK_IMAGE_ASPECT_COLOR_BIT
 
 			self.Device:MapMemory(memory, 0, memory_requirements.size, 0, "uint32_t", function(data)
 				for y = 0, tex.height - 1 do
@@ -269,8 +285,6 @@ do
 	function DEMO:CreateTexture()
 		local texture = {}
 
-		local format = vk.e.VK_FORMAT_B8G8R8A8_UNORM
-
 		local staging_texture = {}
 		prepare(self, staging_texture, vk.e.VK_IMAGE_TILING_LINEAR, vk.e.VK_IMAGE_USAGE_TRANSFER_SRC_BIT, vk.e.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
 		self:SetImageLayout(staging_texture.image, vk.e.VK_IMAGE_ASPECT_COLOR_BIT, staging_texture.imageLayout, vk.e.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
@@ -279,9 +293,9 @@ do
 		self:SetImageLayout(texture.image, vk.e.VK_IMAGE_ASPECT_COLOR_BIT, texture.imageLayout, vk.e.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 
 		self.SetupCMD:CopyImage(staging_texture.image, vk.e.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, texture.image, vk.e.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, ffi.new("struct VkImageCopy", {
-			srcSubresource = {tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT), 0, 0, 1},
+			srcSubresource = {vk.e.VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1},
 			srcOffset = {0, 0, 0},
-			dstSubresource = {tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT), 0, 0, 1},
+			dstSubresource = {vk.e.VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1},
 			dstOffset = {0, 0, 0},
 			extent = {
 				staging_texture.width,
@@ -316,7 +330,7 @@ do
 		texture.view = self.Device:CreateImageView({
 			viewType = vk.e.VK_IMAGE_VIEW_TYPE_2D,
 			image = texture.image,
-			format = format,
+			format = self.TextureFormat,
 			flags = 0,
 			components = {
 				r = vk.e.VK_COMPONENT_SWIZZLE_R,
@@ -324,13 +338,7 @@ do
 				b = vk.e.VK_COMPONENT_SWIZZLE_B,
 				a = vk.e.VK_COMPONENT_SWIZZLE_A
 			},
-			subresourceRange = {
-				aspectMask = tonumber(vk.e.VK_IMAGE_ASPECT_COLOR_BIT),
-				0,
-				1,
-				0,
-				1
-			},
+			subresourceRange = {vk.e.VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
 		})
 
 		return texture
@@ -338,6 +346,7 @@ do
 end
 
 function DEMO:PrepareTextures()
+	self.TextureFormat = vk.e.VK_FORMAT_B8G8R8A8_UNORM
 	self.Texture = self:CreateTexture()
 end
 
@@ -366,7 +375,7 @@ function DEMO:PrepareVertices()
 
 	self.Device:BindBufferMemory(buffer, memory, 0)
 
-	local vertices = {
+	self.Vertices = vk.structs.PipelineVertexInputStateCreateInfo({
 		vertexBindingDescriptionCount = 1,
 		pVertexBindingDescriptions = ffi.new("struct VkVertexInputBindingDescription[1]", {
 			{
@@ -390,8 +399,7 @@ function DEMO:PrepareVertices()
 				offset = ffi.sizeof("float") * 3,
 			}
 		}),
-	}
-	self.Vertices = vertices
+	})
 	self.VerticesBuffer = buffer
 	self.VerticesMemory = memory
 end
@@ -416,6 +424,217 @@ function DEMO:PrepareDescriptorLayout()
 	})
 end
 
+function DEMO:PrepareRenderPass()
+	self.RenderPass = self.Device:CreateRenderPass({
+		attachmentCount = 2,
+		pAttachments = ffi.new("struct VkAttachmentDescription[2]", {
+			{
+				format = self.TextureFormat,
+				samples = vk.e.VK_SAMPLE_COUNT_1_BIT,
+				loadOp = vk.e.VK_ATTACHMENT_LOAD_OP_CLEAR,
+				storeOp = vk.e.VK_ATTACHMENT_STORE_OP_STORE,
+				stencilLoadOp = vk.e.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+				stencilStoreOp = vk.e.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+				initialLayout = vk.e.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				finalLayout = vk.e.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			},
+			{
+				format = self.DepthBuffer.format,
+				samples = vk.e.VK_SAMPLE_COUNT_1_BIT,
+				loadOp = vk.e.VK_ATTACHMENT_LOAD_OP_CLEAR,
+				storeOp = vk.e.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+				stencilLoadOp = vk.e.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+				stencilStoreOp = vk.e.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+				initialLayout = vk.e.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+				finalLayout = vk.e.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+			}
+		}),
+		subpassCount = 1,
+		pSubpasses = ffi.new("struct VkSubpassDescription[1]", {
+			{
+				pipelineBindPoint = vk.e.VK_PIPELINE_BIND_POINT_GRAPHICS,
+				flags = 0,
+
+				inputAttachmentCount = 0,
+				pInputAttachments = nil,
+
+				colorAttachmentCount = 1,
+				pColorAttachments = ffi.new("struct VkAttachmentReference[1]", {
+					{
+						attachment = 0,
+						layout = vk.e.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+					}
+				}),
+
+				pResolveAttachments = nil,
+				pDepthStencilAttachment = ffi.new("struct VkAttachmentReference[1]", {
+					{
+						attachment = 0,
+						layout = vk.e.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+					}
+				}),
+
+				preserveAttachmentCount = 0,
+				pPreserveAttachments = nil,
+			}
+		}),
+
+		dependencyCount = 0,
+		pDependencies = nil,
+	})
+end
+
+function DEMO:PreparePipeline()
+	local fragment_code = [[#version 400
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_shading_language_420pack : enable
+layout (binding = 0) uniform sampler2D tex;
+layout (location = 0) in vec2 texcoord;
+layout (location = 0) out vec4 uFragColor;
+void main() {
+   uFragColor = texture(tex, texcoord);
+}]]
+
+	local vertex_code = [[#version 400
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_shading_language_420pack : enable
+layout (location = 0) in vec4 pos;
+layout (location = 1) in vec2 attr;
+layout (location = 0) out vec2 texcoord;
+void main() {
+   texcoord = attr;
+   gl_Position = pos;
+}]]
+
+	local cache = self.Device:CreatePipelineCache({})
+
+	self.Pipeline = self.Device:CreateGraphicsPipelines(cache, 1, {
+		{
+			layout = self.PipelineLayout,
+			pVertexInputState = self.Vertices,
+			renderPass = self.RenderPass,
+
+			stageCount = 2,
+			pStages = ffi.new("struct VkPipelineShaderStageCreateInfo[2]", {
+				vk.structs.PipelineShaderStageCreateInfo({
+					stage = vk.e.VK_SHADER_STAGE_VERTEX_BIT,
+					module = self.Device:CreateShaderModule({
+						codeSize = #vertex_code ,
+						pCode = ffi.cast("uint32_t *", vertex_code),
+					}),
+					pName = "main",
+				}),
+				vk.structs.PipelineShaderStageCreateInfo({
+					stage = vk.e.VK_SHADER_STAGE_FRAGMENT_BIT,
+					module = self.Device:CreateShaderModule({
+						codeSize = #fragment_code ,
+						pCode = ffi.cast("uint32_t *", fragment_code),
+					}),
+					pName = "main",
+				}),
+			}),
+			pInputAssemblyState = vk.structs.PipelineInputAssemblyStateCreateInfo({
+				topology = vk.e.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+			}),
+			pRasterizationState = vk.structs.PipelineRasterizationStateCreateInfo({
+				polygonMode = vk.e.VK_POLYGON_MODE_FILL,
+				cullMode = vk.e.VK_CULL_MODE_BACK_BIT,
+				frontFace = vk.e.VK_FRONT_FACE_CLOCKWISE,
+				depthClampEnable = 0,
+				rasterizerDiscardEnable = 0,
+				depthBiasEnable = 0,
+			}),
+			pColorBlendStage = vk.structs.PipelineColorBlendStateCreateInfo({
+				attachmentCount = 1,
+				pAttachments = ffi.new("struct VkPipelineColorBlendAttachmentState [1]", {
+					{
+						colorWriteMask = 0xf,
+						blendEnable = 0,
+					}
+				})
+			}),
+			pMultisampleState = vk.structs.PipelineMultisampleStateCreateInfo({
+				pSampleMask = nil,
+				rasterizationSamples = vk.e.VK_SAMPLE_COUNT_1_BIT,
+			}),
+			pViewportState = vk.structs.PipelineViewportStateCreateInfo({
+				viewportCount = 1,
+				scissorCount = 1,
+			}),
+			pDepthStencilState = vk.structs.PipelineDepthStencilStateCreateInfo({
+				depthTestEnable = 1,
+				depthWriteEnable = 1,
+				depthCompareOp = vk.e.VK_COMPARE_OP_LESS_OR_EQUAL,
+				depthBoundsTestEnable = 0,
+				stencilTestEnable = 0,
+				back = {
+					failOp = vk.e.VK_STENCIL_OP_KEEP,
+					passOp = vk.e.VK_STENCIL_OP_KEEP,
+					compareOp = vk.e.VK_COMPARE_OP_ALWAYS,
+				},
+				front = {
+					failOp = vk.e.VK_STENCIL_OP_KEEP,
+					passOp = vk.e.VK_STENCIL_OP_KEEP,
+					compareOp = vk.e.VK_COMPARE_OP_ALWAYS,
+				},
+			}),
+			pDynamicState = vk.structs.PipelineDynamicStateCreateInfo({
+				dynamicStateCount = 2,
+				pDynamicStates = ffi.new("enum VkDynamicState[2]",
+					vk.e.VK_DYNAMIC_STATE_VIEWPORT,
+					vk.e.VK_DYNAMIC_STATE_SCISSOR
+				),
+			}),
+		}
+	})
+
+	self.Device:DestroyPipelineCache(cache, nil)
+end
+
+function DEMO:PrepareDescriptorPool()
+	self.DescriptorPool = self.Device:CreateDescriptorPool({
+		maxSets = 1,
+		poolSizeCount = 1,
+		pPoolSizes = ffi.new("struct VkDescriptorPoolSize[1]", {type = vk.e.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorCount = 1})
+	})
+end
+
+function DEMO:PrepareDescriptorSet()
+	self.DescriptorSet = self.Device:AllocateDescriptorSets({
+		descriptorPool = self.DescriptorPool,
+		descriptorSetCount = 1,
+		pSetLayouts = ffi.new("struct VkDescriptorSetLayout_T *[1]", self.DescriptorLayout),
+	})
+
+	self.Device:UpdateDescriptorSets(1, vk.structs.WriteDescriptorSet({
+		dstSet = self.DescriptorSet,
+		descriptorCount = 1,
+		descriptorType = vk.e.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+		pImageInfo = ffi.new("struct VkDescriptorImageInfo[1]",
+			ffi.new("struct VkDescriptorImageInfo", {
+				sampler = self.Texture.sampler,
+				imageView = self.Texture.view,
+				imageLayout = vk.e.VK_IMAGE_LAYOUT_GENERAL,
+			})
+		)
+	}), 0, nil)
+end
+
+function DEMO:PrepareFramebuffers()
+	self.Framebuffers = {}
+
+	for i, buffer in ipairs(self.SurfaceBuffers) do
+		self.Framebuffers[i] = self.Device:CreateFramebuffer({
+			renderPass = self.RenderPass,
+			attachmentCount = 2,
+			pAttachments = ffi.new("struct VkImageView_T *[2]", buffer.view, self.DepthBuffer.view),
+			width = self.Width,
+			height = self.Height,
+			layers = 1,
+		})
+	end
+end
+
 function DEMO:Initialize()
 	self:PrepareWindow() -- create a window
 	self:PrepareInstance() -- create a vulkan instance
@@ -425,12 +644,86 @@ function DEMO:Initialize()
 	self:PrepareTextures()
 	self:PrepareVertices()
 	self:PrepareDescriptorLayout()
+	self:PrepareRenderPass()
+	self:PreparePipeline()
+	self:PrepareDescriptorPool()
+	self:PrepareDescriptorSet()
+	self:PrepareFramebuffers()
 
 	self.DrawCMD = self.Device:AllocateCommandBuffers({
 		commandPool = self.DeviceCommandPool,
 		level = vk.e.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 		commandBufferCount = 1,
 	})
+
+	while glfw.WindowShouldClose(self.Window) == 0 do
+		glfw.PollEvents()
+
+		local semaphore = self.Device:CreateSemaphore({})
+		local index = ffi.new("unsigned int[1]") vk.AcquireNextImageKHR(self.Device, self.SwapChain, 0xFFFFFFFFFFFFFFFFULL, semaphore, nil, index) index = index[0] + 1
+
+		self:SetImageLayout(self.SurfaceBuffers[index].image, vk.e.VK_IMAGE_ASPECT_COLOR_BIT, vk.e.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, vk.e.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		self:FlushSetupCMD()
+
+		self.DrawCMD:Begin(vk.structs.CommandBufferBeginInfo({
+			flags = 0,
+			pInheritanceInfo = vk.structs.CommandBufferInheritanceInfo({
+				renderPass = nil,
+				subpass = 0,
+				framebuffer = nil,
+				offclusionQueryEnable = 0,
+				queryFlags = 0,
+				pipelineStatistics = 0,
+			 })
+		}))
+
+			self.DrawCMD:BeginRenderPass(vk.structs.RenderPassBeginInfo{
+				renderPass = self.RenderPass,
+				framebuffer = self.Framebuffers[index],
+				renderArea = {offset = {0, 0}, extent = {self.Width, self.Height}},
+				clearValueCount = 2,
+				pClearValues = ffi.new("union VkClearValue[2]", {color = {float32 = {0.2, 0.2, 0.2, 0.2}}}, {depthStencil = {1, 0}}),
+			}, vk.e.VK_SUBPASS_CONTENTS_INLINE)
+				self.DrawCMD:BindPipeline(vk.e.VK_PIPELINE_BIND_POINT_GRAPHICS, self.Pipeline)
+				self.DrawCMD:BindDescriptorSets(vk.e.VK_PIPELINE_BIND_POINT_GRAPHICS, self.PipelineLayout, 0, 1, ffi.new("struct VkDescriptorSet_T *[1]", self.DescriptorSet), 0, nil)
+				self.DrawCMD:SetViewport(0,1, ffi.new("struct VkViewport", {0,0,self.Height,self.Width, 0,1,}))
+				self.DrawCMD:SetScissor(0,1, ffi.new("struct VkRect2D", {offset = {0, 0}, extent = {self.Height, self.Width}}))
+				self.DrawCMD:BindVertexBuffers(0, 1, ffi.new("struct VkBuffer_T *[1]", self.VerticesBuffer), ffi.new("unsigned long[1]", 0))
+				self.DrawCMD:Draw(3,1,0,0)
+
+			self.DrawCMD:EndRenderPass()
+			self.DrawCMD:PipelineBarrier(vk.e.VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, vk.e.VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0,0,nil,0,nil,1,ffi.new("struct VkImageMemoryBarrier [1]", vk.structs.ImageMemoryBarrier({
+				srcAccessMask = vk.e.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+				dstAccessMask = vk.e.VK_ACCESS_MEMORY_READ_BIT,
+				oldLayout = vk.e.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				newLayout = vk.e.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+				srcQueueFamilyIndex = bit.bnot(0ULL),--VK_QUEUE_FAMILY_IGNORED,
+				dstQueueFamilyIndex = bit.bnot(0ULL),--VK_QUEUE_FAMILY_IGNORED,
+				subresourceRange = {vk.e.VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}
+			})))
+
+		self.DrawCMD:End()
+
+		self.DeviceQueue:Submit(1, vk.structs.SubmitInfo({
+			waitSemaphoreCount = 1,
+			pWaitSemaphores = ffi.new("struct VkSemaphore_T *[1]", semaphore),
+			pWaitDstStageMask = ffi.new("enum VkPipelineStageFlagBits [1]", vk.e.VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT),
+			commandBufferCount = 1,
+			pCommandBuffers = ffi.new("struct VkCommandBuffer_T *[1]", self.DrawCMD),
+			signalSemaphoreCount = 0,
+			pSignalSemaphores = nil
+		}), nil)
+
+		vk.QueuePresentKHR(self.DeviceQueue, vk.structs.PresentInfoKHR{
+			swapchainCount = 1,
+			pSwapchains = ffi.new("struct VkSwapchainKHR_T * [1]", self.SwapChain),
+			pImageIndices = ffi.new("unsigned int [1]", index - 1),
+		})
+
+		self.Device:WaitIdle()
+		self.Device:DestroySemaphore(semaphore, nil)
+	end
+
 
 	io.write("reached end of demo\n")
 
@@ -498,8 +791,8 @@ function DEMO:SetImageLayout(image, aspectMask, old_image_layout, new_image_layo
 	end
 
 	self.SetupCMD:PipelineBarrier(
-		tonumber(vk.e.VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
-		tonumber(vk.e.VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT),
+		vk.e.VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+		vk.e.VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		0,
 		0,
 		nil,
@@ -508,17 +801,11 @@ function DEMO:SetImageLayout(image, aspectMask, old_image_layout, new_image_layo
 		1,
 		vk.structs.ImageMemoryBarrier({
 			srcAccessMask = 0,
-			dstAccessMask = tonumber(mask),
+			dstAccessMask = mask,
 			oldLayout = old_image_layout,
 			newLayout = new_image_layout,
 			image = image,
-			subresourceRange = {
-				tonumber(aspectMask),
-				0,
-				1,
-				0,
-				1
-			},
+			subresourceRange = {aspectMask, 0, 1, 0, 1},
 		})
 	)
 end

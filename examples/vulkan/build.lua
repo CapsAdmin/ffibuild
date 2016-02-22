@@ -282,7 +282,17 @@ do -- *Create helpers so you don't have to make a boxed value
 			if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
 			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)]] .. "\n"
-			if parameters:find("pCreateInfo") then
+			if parameters:find("pCreateInfos") then
+				local basic_type = func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data)
+				lua = lua .. [[
+	if type(pCreateInfos) == "table" then
+		for i, v in ipairs(pCreateInfos) do
+			pCreateInfos[i] = library.structs.]] .. basic_type:match("struct Vk(.+)") .. [[(v)
+		end
+		pCreateInfos = ffi.new("]]..basic_type..[[["..#pCreateInfos.."]", pCreateInfos)
+	end
+	]]
+			elseif parameters:find("pCreateInfo") then
 				lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.structs." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
 			elseif parameters:find("pAllocateInfo") then
 				lua = lua .. "\tif type(pAllocateInfo) == \"table\" then pAllocateInfo = library.structs." .. func_type.arguments[2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pAllocateInfo) end\n"

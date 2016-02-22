@@ -1882,8 +1882,13 @@ function library.structs.MaxEnum(tbl) return ffi.new("struct VkMaxEnum", tbl) en
 	return nil, status
 end
 function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
-	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.GraphicsPipelineCreateInfo(pCreateInfo) end
-	local box = ffi.new("struct VkPipeline_T * [1]")
+	if type(pCreateInfos) == "table" then
+		for i, v in ipairs(pCreateInfos) do
+			pCreateInfos[i] = library.structs.GraphicsPipelineCreateInfo(v)
+		end
+		pCreateInfos = ffi.new("struct VkGraphicsPipelineCreateInfo["..#pCreateInfos.."]", pCreateInfos)
+	end
+		local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
@@ -1915,8 +1920,13 @@ function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
 	return nil, status
 end
 function library.CreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator)
-	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.ComputePipelineCreateInfo(pCreateInfo) end
-	local box = ffi.new("struct VkPipeline_T * [1]")
+	if type(pCreateInfos) == "table" then
+		for i, v in ipairs(pCreateInfos) do
+			pCreateInfos[i] = library.structs.ComputePipelineCreateInfo(v)
+		end
+		pCreateInfos = ffi.new("struct VkComputePipelineCreateInfo["..#pCreateInfos.."]", pCreateInfos)
+	end
+		local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
@@ -2036,8 +2046,13 @@ function library.CreateDebugReportCallback(instance, pCreateInfo, pAllocator)
 	return nil, status
 end
 function library.CreateSharedSwapchains(device, swapchainCount, pCreateInfos, pAllocator)
-	if type(pCreateInfo) == "table" then pCreateInfo = library.structs.SwapchainCreateInfoKHR(pCreateInfo) end
-	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
+	if type(pCreateInfos) == "table" then
+		for i, v in ipairs(pCreateInfos) do
+			pCreateInfos[i] = library.structs.SwapchainCreateInfoKHR(v)
+		end
+		pCreateInfos = ffi.new("struct VkSwapchainCreateInfoKHR["..#pCreateInfos.."]", pCreateInfos)
+	end
+		local box = ffi.new("struct VkSwapchainKHR_T * [1]")
 	local status = library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
