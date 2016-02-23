@@ -86,6 +86,23 @@ end
 
 do -- enums
 	lua = lua .. "library.e = {\n"
+	lua = lua .. [[
+	LOD_CLAMP_NONE = 1000.0,
+	REMAINING_MIP_LEVELS = 0xFFFFFFFF,
+	REMAINING_ARRAY_LAYERS = 0xFFFFFFFF,
+	WHOLE_SIZE = 0xFFFFFFFFFFFFFFFFULL,
+	ATTACHMENT_UNUSED = 0xFFFFFFFF,
+	TRUE = 1,
+	FALSE = 0,
+	QUEUE_FAMILY_IGNORED = 0xFFFFFFFF,
+	SUBPASS_EXTERNAL = 0xFFFFFFFF,
+	MAX_PHYSICAL_DEVICE_NAME_SIZE = 256,
+	UUID_SIZE = 16,
+	MAX_MEMORY_TYPES = 32,
+	MAX_MEMORY_HEAPS = 16,
+	MAX_EXTENSION_NAME_SIZE = 256,
+	MAX_DESCRIPTION_SIZE = 256,
+	]]
 	for basic_type, type in pairs(meta_data.enums) do
 		for i, enum in ipairs(type.enums) do
 			lua =  lua .. "\t" .. enum.key:match("^VK_(.+)") .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
@@ -136,7 +153,7 @@ end
 
 do -- get helpers so you don't have to make a boxed value
 	for func_name, func_type in pairs(meta_data.functions) do
-		if func_name:find("^vkGet") then
+		if func_name:find("^vkGet") or func_name:find("^vkAcquire") then
 			local ret_basic_type = func_type.return_type:GetBasicType(meta_data)
 			if ret_basic_type == "enum VkResult" or ret_basic_type == "void" then
 				local type = func_type.arguments[#func_type.arguments]
@@ -203,7 +220,7 @@ lua = lua .. [[
 	local status = ]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -267,19 +284,20 @@ do -- struct creation helpers
 
 	for _, type in pairs(meta_data.typedefs) do
 		local basic_type = type:GetBasicType(meta_data)
-		local struct = meta_data.structs[basic_type]
+		local struct = meta_data.structs[basic_type] or meta_data.unions[basic_type]
 		if struct then
-			local friendly = basic_type:match("^struct Vk(.+)")
+			local keyword = struct:GetBasicType()
+			local friendly = basic_type:match("^"..keyword.." Vk(.+)")
 			if friendly then
-				if basic_type:find("^struct Vk.+_T$") then
-					friendly = basic_type:match("^struct Vk(.+)_T$")
+				if basic_type:find("^"..keyword.." Vk.+_T$") then
+					friendly = basic_type:match("^"..keyword.." Vk(.+)_T$")
 					lua = lua .. 'function library.s.'..friendly..'Array(tbl) return ffi.new("'..basic_type..' *[?]", #tbl, tbl) end\n'
 				else
 					if done[struct] then
 						lua = lua .. 'function library.s.'..friendly..'Array(tbl) for i, v in ipairs(tbl) do tbl[i] = library.s.'..friendly..'(v) end return ffi.new("'..basic_type..'[?]", #tbl, tbl) end\n'
 					else
 						lua = lua .. 'function library.s.'..friendly..'Array(tbl) return ffi.new("'..basic_type..'[?]", #tbl, tbl) end\n'
-						lua = lua .. "function library.s." .. friendly .. "(tbl) return ffi.new(\"struct Vk" .. friendly .. "\", tbl) end\n"
+						lua = lua .. "function library.s." .. friendly .. "(tbl) return ffi.new(\""..keyword.." Vk" .. friendly .. "\", tbl) end\n"
 					end
 				end
 			end
@@ -329,6 +347,7 @@ do -- *Create helpers so you don't have to make a boxed value
 	return nil, status
 end
 ]]
+
 			helper_functions[func_name] = "library." .. friendly
 		end
 	end
@@ -346,21 +365,33 @@ do
 				local friendly_name = func_name:match("^vk(.+)")
 				friendly_name = friendly_name:gsub(friendly_type_name, "")
 
-				if extensions[friendly_name:sub(-3):upper()] then friendly_name = friendly_name:sub(0, -4) func_name = func_name:sub(0, -4) end
-
 				-- INCONSISTENCIES!!!!!
 				if friendly_type_name == "CommandBuffer" then
 					friendly_name = friendly_name:gsub("Cmd", "")
 				end
 
-				if helper_functions[func_name] then
-					friendly_name = friendly_name:gsub("^Enumerate", "Get")
-					objects[basic_type].functions[friendly_name] = helper_functions[func_name]
+				if extensions[friendly_name:sub(-3):upper()] then
+					local ext_friendly_name = friendly_name:sub(0, -4)
+					ext_friendly_name = ext_friendly_name:gsub("^Enumerate", "Get")
+
+					if helper_functions[func_name:match("^vk(.+)")] then
+						objects[basic_type].functions[ext_friendly_name] = helper_functions[func_name:match("^vk(.+)")]
+					elseif helper_functions[func_name] then
+						objects[basic_type].functions[ext_friendly_name] = helper_functions[func_name]
+					else
+						objects[basic_type].functions[ext_friendly_name] = "function(...) return library."..func_name:match("^vk(.+)").."(...) end"
+					end
 				else
-					func_type.name = func_name:match("^vk(.+)") -- TODO
-					objects[basic_type].functions[friendly_name] = func_type
+					if helper_functions[func_name] then
+						friendly_name = friendly_name:gsub("^Enumerate", "Get")
+						objects[basic_type].functions[friendly_name] = helper_functions[func_name]
+					else
+						func_type.name = func_name:match("^vk(.+)") -- TODO
+						objects[basic_type].functions[friendly_name] = func_type
+					end
 				end
 			end
+
 			if object_helper_functions[friendly_type_name] then
 				for func_name, str in pairs(object_helper_functions[friendly_type_name]) do
 					objects[basic_type].functions[func_name] = str

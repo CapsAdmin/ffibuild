@@ -594,7 +594,22 @@ end
 library.util.LoadInstanceProcAddr = function(...) return load(CLIB.vkGetInstanceProcAddr, ...) end
 library.util.LoadDeviceProcAddr = function(...) return load(CLIB.vkGetDeviceProcAddr, ...) end
 library.e = {
-	DYNAMIC_STATE_VIEWPORT = ffi.cast("enum VkDynamicState", "VK_DYNAMIC_STATE_VIEWPORT"),
+	LOD_CLAMP_NONE = 1000.0,
+	REMAINING_MIP_LEVELS = 0xFFFFFFFF,
+	REMAINING_ARRAY_LAYERS = 0xFFFFFFFF,
+	WHOLE_SIZE = 0xFFFFFFFFFFFFFFFFULL,
+	ATTACHMENT_UNUSED = 0xFFFFFFFF,
+	TRUE = 1,
+	FALSE = 0,
+	QUEUE_FAMILY_IGNORED = 0xFFFFFFFF,
+	SUBPASS_EXTERNAL = 0xFFFFFFFF,
+	MAX_PHYSICAL_DEVICE_NAME_SIZE = 256,
+	UUID_SIZE = 16,
+	MAX_MEMORY_TYPES = 32,
+	MAX_MEMORY_HEAPS = 16,
+	MAX_EXTENSION_NAME_SIZE = 256,
+	MAX_DESCRIPTION_SIZE = 256,
+		DYNAMIC_STATE_VIEWPORT = ffi.cast("enum VkDynamicState", "VK_DYNAMIC_STATE_VIEWPORT"),
 	DYNAMIC_STATE_SCISSOR = ffi.cast("enum VkDynamicState", "VK_DYNAMIC_STATE_SCISSOR"),
 	DYNAMIC_STATE_LINE_WIDTH = ffi.cast("enum VkDynamicState", "VK_DYNAMIC_STATE_LINE_WIDTH"),
 	DYNAMIC_STATE_DEPTH_BIAS = ffi.cast("enum VkDynamicState", "VK_DYNAMIC_STATE_DEPTH_BIAS"),
@@ -1494,7 +1509,7 @@ function library.GetPipelineCacheData(device, pipelineCache, pDataSize)
 	local status = CLIB.vkGetPipelineCacheData(device, pipelineCache, pDataSize, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -1584,7 +1599,7 @@ function library.GetFenceStatus(device)
 	local status = CLIB.vkGetFenceStatus(device, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -1594,7 +1609,7 @@ function library.GetPhysicalDeviceSurfaceCapabilities(physicalDevice, surface)
 	local status = library.GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -1604,7 +1619,7 @@ function library.GetPhysicalDeviceSurfaceSupport(physicalDevice, queueFamilyInde
 	local status = library.GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -1619,7 +1634,7 @@ function library.GetPhysicalDeviceImageFormatProperties(physicalDevice, format, 
 	local status = CLIB.vkGetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -1634,7 +1649,7 @@ function library.GetDisplayPlaneCapabilities(physicalDevice, mode, planeIndex)
 	local status = library.GetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -1665,7 +1680,7 @@ function library.GetEventStatus(device)
 	local status = CLIB.vkGetEventStatus(device, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -1711,6 +1726,16 @@ function library.GetPhysicalDeviceDisplayProperties(physicalDevice)
 
 		return out
 	end
+	return nil, status
+end
+function library.AcquireNextImage(device, swapchain, timeout, semaphore, fence)
+	local box = ffi.new("unsigned int [1]")
+	local status = library.AcquireNextImageKHR(device, swapchain, timeout, semaphore, fence, box)
+
+	if status == "VK_SUCCESS" then
+		return box[0], status
+	end
+
 	return nil, status
 end
 function library.GetSwapchainImages(device, swapchain)
@@ -1948,6 +1973,8 @@ function library.s.DisplayKHRArray(tbl) return ffi.new("struct VkDisplayKHR_T *[
 function library.s.BufferViewCreateInfoArray(tbl) for i, v in ipairs(tbl) do tbl[i] = library.s.BufferViewCreateInfo(v) end return ffi.new("struct VkBufferViewCreateInfo[?]", #tbl, tbl) end
 function library.s.PipelineRasterizationStateCreateInfoArray(tbl) for i, v in ipairs(tbl) do tbl[i] = library.s.PipelineRasterizationStateCreateInfo(v) end return ffi.new("struct VkPipelineRasterizationStateCreateInfo[?]", #tbl, tbl) end
 function library.s.PipelineCacheCreateInfoArray(tbl) for i, v in ipairs(tbl) do tbl[i] = library.s.PipelineCacheCreateInfo(v) end return ffi.new("struct VkPipelineCacheCreateInfo[?]", #tbl, tbl) end
+function library.s.ClearValueArray(tbl) return ffi.new("union VkClearValue[?]", #tbl, tbl) end
+function library.s.ClearValue(tbl) return ffi.new("union VkClearValue", tbl) end
 function library.s.SubpassDescriptionArray(tbl) return ffi.new("struct VkSubpassDescription[?]", #tbl, tbl) end
 function library.s.SubpassDescription(tbl) return ffi.new("struct VkSubpassDescription", tbl) end
 function library.s.ClearAttachmentArray(tbl) return ffi.new("struct VkClearAttachment[?]", #tbl, tbl) end
@@ -1968,6 +1995,8 @@ function library.s.DescriptorImageInfoArray(tbl) return ffi.new("struct VkDescri
 function library.s.DescriptorImageInfo(tbl) return ffi.new("struct VkDescriptorImageInfo", tbl) end
 function library.s.DescriptorPoolSizeArray(tbl) return ffi.new("struct VkDescriptorPoolSize[?]", #tbl, tbl) end
 function library.s.DescriptorPoolSize(tbl) return ffi.new("struct VkDescriptorPoolSize", tbl) end
+function library.s.ClearColorValueArray(tbl) return ffi.new("union VkClearColorValue[?]", #tbl, tbl) end
+function library.s.ClearColorValue(tbl) return ffi.new("union VkClearColorValue", tbl) end
 function library.s.ImageSubresourceRangeArray(tbl) return ffi.new("struct VkImageSubresourceRange[?]", #tbl, tbl) end
 function library.s.ImageSubresourceRange(tbl) return ffi.new("struct VkImageSubresourceRange", tbl) end
 function library.s.CommandBufferInheritanceInfoArray(tbl) for i, v in ipairs(tbl) do tbl[i] = library.s.CommandBufferInheritanceInfo(v) end return ffi.new("struct VkCommandBufferInheritanceInfo[?]", #tbl, tbl) end
@@ -2407,12 +2436,12 @@ function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 end
 do
 	local META = {
-		DestroySurface = library.DestroySurface,
+		DestroySurface = function(...) return library.DestroySurfaceKHR(...) end,
 		CreateDisplayPlaneSurface = library.CreateDisplayPlaneSurface,
 		Destroy = library.DestroyInstance,
-		DebugReportMessage = library.DebugReportMessage,
+		DebugReportMessage = function(...) return library.DebugReportMessageEXT(...) end,
 		LoadProcAddr = library.util.LoadInstanceProcAddr,
-		DestroyDebugReportCallback = library.DestroyDebugReportCallback,
+		DestroyDebugReportCallback = function(...) return library.DestroyDebugReportCallbackEXT(...) end,
 		GetProcAddr = library.GetInstanceProcAddr,
 		CreateDebugReportCallback = library.CreateDebugReportCallback,
 		GetPhysicalDevices = library.GetPhysicalDevices,
@@ -2551,14 +2580,14 @@ do
 		AllocateCommandBuffers = library.AllocateCommandBuffers,
 		CreateSharedSwapchains = library.CreateSharedSwapchains,
 		CreateShaderModule = library.CreateShaderModule,
-		DestroySwapchain = library.DestroySwapchain,
+		DestroySwapchain = function(...) return library.DestroySwapchainKHR(...) end,
 	}
 	META.__index = META
 	ffi.metatype("struct VkDevice_T", META)
 end
 do
 	local META = {
-		Present = library.QueuePresent,
+		Present = function(...) return library.QueuePresentKHR(...) end,
 		WaitIdle = library.QueueWaitIdle,
 		BindSparse = library.QueueBindSparse,
 		Submit = library.QueueSubmit,
