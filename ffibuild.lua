@@ -83,7 +83,8 @@ function ffibuild.GetMetaData(header)
 		header = header:gsub("#.-\n", "")
 
 		 -- normalize everything to have equal spacing even between punctation
-		header = header:gsub("([*%(%){}&%[%],;&|<>])", " %1 ")
+		header = header:gsub("([*%(%){}&%[%],;&|<>=])", " %1 ")
+
 		header = header:gsub("%s+", " ")
 
 		-- insert a newline after ;
@@ -117,6 +118,13 @@ function ffibuild.GetMetaData(header)
 
 		-- int foo(void); >> int foo();
 		header = header:gsub(" %( void %) ", " ( ) ")
+
+		header = header:gsub("typedef %a- [%a%d_]+ %b{} [^;]- ;", function(statement)
+			if statement:find(",") then
+				local tag, huh = statement:match("^typedef (%a- [%a%d_]+) %b{} .+,(.+);$")
+				return statement:match("(typedef %a- [%a%d_]+ %b{} .-),") .. ";\n" .. "typedef " .. tag .. huh .. ";"
+			end
+		end)
 	end
 
 	local function is_function(str) return str:find("^.+%b() $") end
@@ -129,6 +137,7 @@ function ffibuild.GetMetaData(header)
 		t.i = i
 		return t
 	end
+
 
 	for line in header:gmatch(" (.-);\n") do
 
@@ -150,6 +159,7 @@ function ffibuild.GetMetaData(header)
 				local content, alias = line:match("^(.+) ([%a%d_]+)")
 
 				if content:find("^struct ") or content:find("^union ") or content:find("^enum ") then
+
 					local tag, found = content:gsub(" %b{}", "")
 
 					if not tag:find("%s") then
@@ -184,6 +194,12 @@ function ffibuild.GetMetaData(header)
 				local tag, content = line:match("(enum [%a%d_]+) ({.+})")
 
 				if tag then
+					local test = tag:match("^enum (.+)")
+					if meta_data.typedefs[test] and meta_data.typedefs[test]:GetBasicType() == "int" then
+						meta_data.typedefs[test].last_node.type = tag
+						meta_data.typedefs[test].last_node.enum = true
+					end
+
 					meta_data.enums[tag] = create_type("enums", content, meta_data)
 					meta_data.enums[tag].name = tag
 				else
@@ -597,6 +613,10 @@ do -- type metatables
 		}
 
 		function TYPE:Create(declaration, array_size)
+			if declaration == "unsigned" then
+				declaration = declaration .. " int"
+			end
+
 			local tree = {}
 
 			local node = tree
