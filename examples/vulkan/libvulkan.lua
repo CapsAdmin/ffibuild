@@ -2106,7 +2106,7 @@ function library.s.PushConstantRange(tbl) return ffi.new("struct VkPushConstantR
 	local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2122,7 +2122,7 @@ function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount,
 	local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2133,7 +2133,7 @@ function library.CreateShaderModule(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateShaderModule(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2144,7 +2144,7 @@ function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateFramebuffer(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2160,7 +2160,7 @@ function library.CreateComputePipelines(device, pipelineCache, createInfoCount, 
 	local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2171,7 +2171,7 @@ function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2182,7 +2182,7 @@ function library.AllocateCommandBuffers(device, pAllocateInfo)
 	local status = CLIB.vkAllocateCommandBuffers(device, pAllocateInfo, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2193,7 +2193,7 @@ function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateDescriptorPool(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2204,7 +2204,7 @@ function library.CreateBuffer(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateBuffer(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2215,7 +2215,7 @@ function library.CreateSemaphore(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateSemaphore(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2226,7 +2226,7 @@ function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreatePipelineCache(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2237,7 +2237,7 @@ function library.CreateImageView(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateImageView(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2248,7 +2248,7 @@ function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2259,7 +2259,7 @@ function library.CreateInstance(pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateInstance(pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2270,7 +2270,7 @@ function library.CreateDebugReportCallback(instance, pCreateInfo, pAllocator)
 	local status = library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2286,7 +2286,7 @@ function library.CreateSharedSwapchains(device, swapchainCount, pCreateInfos, pA
 	local status = library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2297,7 +2297,7 @@ function library.CreateDisplayPlaneSurface(instance, pCreateInfo, pAllocator)
 	local status = library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2308,7 +2308,7 @@ function library.CreateImage(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateImage(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2319,7 +2319,7 @@ function library.CreateSwapchain(device, pCreateInfo, pAllocator)
 	local status = library.CreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2330,7 +2330,7 @@ function library.AllocateMemory(device, pAllocateInfo, pAllocator)
 	local status = CLIB.vkAllocateMemory(device, pAllocateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2341,7 +2341,7 @@ function library.CreateDisplayMode(physicalDevice, display, pCreateInfo, pAlloca
 	local status = library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2352,7 +2352,7 @@ function library.CreateFence(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateFence(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2363,7 +2363,7 @@ function library.CreateRenderPass(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateRenderPass(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2374,7 +2374,7 @@ function library.CreateQueryPool(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateQueryPool(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2385,7 +2385,7 @@ function library.CreateSampler(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateSampler(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2396,7 +2396,7 @@ function library.CreateCommandPool(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateCommandPool(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2407,7 +2407,7 @@ function library.CreateEvent(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateEvent(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2418,7 +2418,7 @@ function library.AllocateDescriptorSets(device, pAllocateInfo)
 	local status = CLIB.vkAllocateDescriptorSets(device, pAllocateInfo, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
@@ -2429,7 +2429,7 @@ function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreatePipelineLayout(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status

@@ -1,4 +1,4 @@
-collectgarbage("stop") -- TODO
+--collectgarbage("stop") -- TODO
 
 local ffi = require("ffi")
 
@@ -69,7 +69,7 @@ DEMO.DeviceValidationLayers = {
 	--"VK_LAYER_LUNARG_threading",
 	--"VK_LAYER_LUNARG_mem_tracker",
 	--"VK_LAYER_LUNARG_object_tracker",
-	"VK_LAYER_LUNARG_draw_state",
+	--"VK_LAYER_LUNARG_draw_state",
 	"VK_LAYER_LUNARG_param_checker",
 	"VK_LAYER_LUNARG_swapchain",
 	"VK_LAYER_LUNARG_device_limits",
@@ -84,6 +84,8 @@ DEMO.DebugFlags = {
 	vk.e.DEBUG_REPORT_ERROR_BIT_EXT,
 	vk.e.DEBUG_REPORT_DEBUG_BIT_EXT,
 }
+
+local GLSL = true
 
 if GLSL then
 	table.insert(DEMO.DeviceExtensions, "VK_NV_glsl_shader")
@@ -140,8 +142,6 @@ function DEMO:PrepareInstance()
 		})
 	end
 
-	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
-	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
 	instance:LoadProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR")
 	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR")
 	instance:LoadProcAddr("vkCreateSwapchainKHR")
@@ -149,6 +149,8 @@ function DEMO:PrepareInstance()
 	instance:LoadProcAddr("vkGetSwapchainImagesKHR")
 	instance:LoadProcAddr("vkAcquireNextImageKHR")
 	instance:LoadProcAddr("vkQueuePresentKHR")
+	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
+	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
 
 	self.Instance = instance
 end
@@ -162,7 +164,7 @@ function DEMO:PrepareDevice()
 				self.DeviceMemoryProperties = self.PhysicalDevice:GetMemoryProperties()
 				self.DeviceQueueIndex = i - 1
 
-				self.Device = physical_device:CreateDevice({
+				self.Device = self.PhysicalDevice:CreateDevice({
 					enabledLayerCount = #self.DeviceValidationLayers,
 					ppEnabledLayerNames = vk.util.StringList(self.DeviceValidationLayers),
 
@@ -191,31 +193,41 @@ end
 
 function DEMO:PrepareSurface()
 	self.Surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
-	self.SurfaceFormats = self.PhysicalDevice:GetSurfaceFormats(self.Surface)
-	self.SurfaceCapabilities = self.PhysicalDevice:GetSurfaceCapabilities(self.Surface)
 
-	local prefered_format = self.SurfaceFormats[1].format ~= vk.e.FORMAT_UNDEFINED and self.SurfaceFormats[1].format or vk.e.FORMAT_B8G8R8A8_UNORM
+	local formats = self.PhysicalDevice:GetSurfaceFormats(self.Surface)
+	local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(self.Surface)
 
-	local w, h = self.SurfaceCapabilities.currentExtent.width, self.SurfaceCapabilities.currentExtent.height
+	local prefered_format = formats[1].format
 
-	if w == 0xFFFFFFFF then
-		w = 1024
-		h = 768
+	if prefered_format == vk.e.FORMAT_UNDEFINED then
+		prefered_format = vk.e.FORMAT_B8G8R8A8_UNORM
 	end
 
-	self.Width = w
-	self.Height = w
+	self.Width = capabilities.currentExtent.width
+	self.Height = capabilities.currentExtent.height
 
-	self.SurfaceBuffers = {}
+	if self.Width == 0xFFFFFFFF then
+		self.Width = 1024
+		self.Height = 768
+	end
 
-	local swap_chain = self.Device:CreateSwapchain({
+	local present_mode
+
+	for _, mode in ipairs(self.PhysicalDevice:GetSurfacePresentModes(self.Surface)) do
+		if mode == vk.e.PRESENT_MODE_FIFO_KHR then
+			present_mode = mode
+			break
+		end
+	end
+
+	self.SwapChain = self.Device:CreateSwapchain({
 		surface = self.Surface,
-		minImageCount = math.min(self.SurfaceCapabilities.minImageCount + 1, self.SurfaceCapabilities.maxImageCount == 0 and math.huge or self.SurfaceCapabilities.maxImageCount),
+		minImageCount = math.min(capabilities.minImageCount + 1, capabilities.maxImageCount == 0 and math.huge or capabilities.maxImageCount),
 		imageFormat = prefered_format,
-		imagecolorSpace = self.SurfaceFormats[1].colorSpace,
+		imagecolorSpace = formats[1].colorSpace,
 		imageExtent = {self.Width, self.Height},
 		imageUse = vk.e.IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		preTransform = bit.band(self.SurfaceCapabilities.supportedTransforms, vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ~= 0 and vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR or self.SurfaceCapabilities.currentTransform,
+		preTransform = bit.band(capabilities.supportedTransforms, vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ~= 0 and vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR or capabilities.currentTransform,
 		compositeAlpha = vk.e.COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 		imageArrayLayers = 1,
 		imageSharingMode = vk.e.SHARING_MODE_EXCLUSIVE,
@@ -223,35 +235,33 @@ function DEMO:PrepareSurface()
 		queueFamilyIndexCount = 0,
 		pQueueFamilyIndices = nil,
 
-		presentMode = vk.e.PRESENT_MODE_FIFO_KHR,
+		presentMode = present_mode or vk.e.PRESENT_MODE_IMMEDIATE_KHR,
 		oldSwapchain = nil,
-		clipped = 1,
+		clipped = vk.e.TRUE,
 	})
 
-	for i, image in ipairs(self.Device:GetSwapchainImages(swap_chain)) do
-		self.SurfaceBuffers[i] = {}
+	self.SwapChainBuffers = {}
 
+	for i, image in ipairs(self.Device:GetSwapchainImages(self.SwapChain)) do
 		self:SetImageLayout(image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR)
 
-		local view = self.Device:CreateImageView({
-			viewType = vk.e.IMAGE_VIEW_TYPE_2D,
+		self.SwapChainBuffers[i] = {
 			image = image,
-			format = prefered_format,
-			flags = 0,
-			components = {
-				r = vk.e.COMPONENT_SWIZZLE_R,
-				g = vk.e.COMPONENT_SWIZZLE_G,
-				b = vk.e.COMPONENT_SWIZZLE_B,
-				a = vk.e.COMPONENT_SWIZZLE_A
-			},
-			subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
-		})
-
-		self.SurfaceBuffers[i].view = view
-		self.SurfaceBuffers[i].image = image
+			view = self.Device:CreateImageView({
+				viewType = vk.e.IMAGE_VIEW_TYPE_2D,
+				image = image,
+				format = prefered_format,
+				flags = 0,
+				components = {
+					vk.e.COMPONENT_SWIZZLE_R,
+					vk.e.COMPONENT_SWIZZLE_G,
+					vk.e.COMPONENT_SWIZZLE_B,
+					vk.e.COMPONENT_SWIZZLE_A
+				},
+				subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+			}),
+		}
 	end
-
-	self.SwapChain = swap_chain
 end
 
 function DEMO:PrepareData()
@@ -768,7 +778,7 @@ function DEMO:Initialize()
 	do
 		self.Framebuffers = {}
 
-		for i, buffer in ipairs(self.SurfaceBuffers) do
+		for i, buffer in ipairs(self.SwapChainBuffers) do
 			self.Framebuffers[i] = self.Device:CreateFramebuffer({
 				renderPass = self.RenderPass,
 
@@ -791,35 +801,38 @@ function DEMO:Initialize()
 
 	self.DrawCMDs = {}
 
-	for i, surface_buffer in ipairs(self.SurfaceBuffers) do
+	for i, surface_buffer in ipairs(self.SwapChainBuffers) do
 		local draw_cmd = self.Device:AllocateCommandBuffers({
 			commandPool = self.DeviceCommandPool,
 			level = vk.e.COMMAND_BUFFER_LEVEL_PRIMARY,
 			commandBufferCount = 1,
 		})
 
-		draw_cmd:Begin(vk.s.CommandBufferBeginInfo({
+		draw_cmd:Begin(vk.s.CommandBufferBeginInfo{
 			flags = 0,
-			pInheritanceInfo = vk.s.CommandBufferInheritanceInfo({
+			pInheritanceInfo = vk.s.CommandBufferInheritanceInfo{
 				renderPass = nil,
 				subpass = 0,
 				framebuffer = nil,
 				offclusionQueryEnable = vk.e.FALSE,
 				queryFlags = 0,
 				pipelineStatistics = 0,
-			 })
-		}))
+			 }
+		})
 
-		draw_cmd:BeginRenderPass(vk.s.RenderPassBeginInfo{
-			renderPass = self.RenderPass,
-			framebuffer = self.Framebuffers[i],
-			renderArea = {offset = {0, 0}, extent = {self.Width, self.Height}},
-			clearValueCount = 2,
-			pClearValues = vk.s.ClearValueArray{
-				{color = {float32 = {0.2, 0.2, 0.2, 0.2}}},
-				{depthStencil = {1, 0}}
+		draw_cmd:BeginRenderPass(
+			vk.s.RenderPassBeginInfo{
+				renderPass = self.RenderPass,
+				framebuffer = self.Framebuffers[i],
+				renderArea = {offset = {0, 0}, extent = {self.Width, self.Height}},
+				clearValueCount = 2,
+				pClearValues = vk.s.ClearValueArray{
+					{color = {float32 = {0.2, 0.2, 0.2, 0.2}}},
+					{depthStencil = {1, 0}}
+				},
 			},
-		}, vk.e.SUBPASS_CONTENTS_INLINE)
+			vk.e.SUBPASS_CONTENTS_INLINE
+		)
 
 		draw_cmd:SetViewport(0,1, vk.s.Viewport{0,0,self.Height,self.Width, 0,1,})
 		draw_cmd:SetScissor(0,1, vk.s.Rect2D{offset = {0, 0}, extent = {self.Height, self.Width}})
@@ -868,7 +881,7 @@ function DEMO:Initialize()
 	self.PostPresentCMD = self.Device:AllocateCommandBuffers({
 		commandPool = self.DeviceCommandPool,
 		level = vk.e.COMMAND_BUFFER_LEVEL_PRIMARY,
-		commandBufferCount = #self.SurfaceBuffers,
+		commandBufferCount = #self.SwapChainBuffers,
 	})
 
 	--while glfw.WindowShouldClose(self.Window) == 0 do
@@ -885,79 +898,89 @@ function DEMO:Initialize()
 		local index, status = self.Device:AcquireNextImage(self.SwapChain, vk.e.WHOLE_SIZE, semaphore, nil)
 		index = index + 1
 
-		self:SetImageLayout(self.SurfaceBuffers[index].image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR, vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		self.DeviceQueue:Submit(
+			1,
+			vk.s.SubmitInfoArray{
+				{
+					pWaitDstStageMask = ffi.new("enum VkPipelineStageFlagBits [1]", vk.e.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT),
 
+					waitSemaphoreCount = 1,
+					pWaitSemaphores = vk.s.SemaphoreArray{
+						semaphore
+					},
 
-		self.DeviceQueue:Submit(1, vk.s.SubmitInfo({
-			pWaitDstStageMask = ffi.new("enum VkPipelineStageFlagBits [1]", vk.e.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT),
+					signalSemaphoreCount = 0,
+					pSignalSemaphores = nil,
 
-			waitSemaphoreCount = 1,
-			pWaitSemaphores = vk.s.SemaphoreArray{
-				semaphore
+					commandBufferCount = 1,
+					pCommandBuffers = vk.s.CommandBufferArray{
+						self.DrawCMDs[index]
+					},
+				},
 			},
+			nil
+		)
 
-			signalSemaphoreCount = 0,
-			pSignalSemaphores = nil,
-
-			commandBufferCount = 1,
-			pCommandBuffers = vk.s.CommandBufferArray{
-				self.DrawCMDs[i]
-			},
-		}), nil)
-
-		vk.QueuePresentKHR(self.DeviceQueue, vk.s.PresentInfoKHR{
-			pImageIndices = ffi.new("unsigned int [1]", index - 1),
-
+		self.DeviceQueue:Present(vk.s.PresentInfoKHR{
 			swapchainCount = 1,
 			pSwapchains = vk.s.SwapchainKHRArray{
 				self.SwapChain
 			},
+			pImageIndices = ffi.new("unsigned int [1]", index - 1),
 		})
 
 		self.Device:DestroySemaphore(semaphore, nil)
 
 
+		do
+			self.PostPresentCMD:Begin(vk.s.CommandBufferBeginInfo{
+				flags = 0,
+			})
 
-		self.PostPresentCMD:Begin({})
+			self.PostPresentCMD:PipelineBarrier(
+				vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT,
+				vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+				0,
 
-		self.PostPresentCMD:PipelineBarrier(
-			vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT,
-			vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-			0,
+				0,
+				nil,
 
-			0,
-			nil,
+				0,
+				nil,
 
-			0,
-			nil,
-
-			1,
-			vk.s.ImageMemoryBarrierArray{
-				{
-					srcAccessMask = 0,
-					dstAccessMask = vk.e.ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-					oldLayout = vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR,
-					newLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-					srcQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-					dstQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-					subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
-					image = self.SurfaceBuffers[index].image,
+				1,
+				vk.s.ImageMemoryBarrierArray{
+					{
+						srcAccessMask = 0,
+						dstAccessMask = vk.e.ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+						oldLayout = vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR,
+						newLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+						srcQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
+						dstQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
+						subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+						image = self.SwapChainBuffers[index].image,
+					}
 				}
-			}
-		)
+			)
 
-		self.PostPresentCMD:End()
+			self.PostPresentCMD:End()
 
-		self.DeviceQueue:Submit(1, vk.s.SubmitInfo({
-			commandBufferCount = 1,
-			pCommandBuffers = vk.s.CommandBufferArray{
-				self.PostPresentCMD,
-			},
-		}), nil)
+			self.DeviceQueue:Submit(
+				1,
+				vk.s.SubmitInfoArray{
+					{
+						commandBufferCount = 1,
+						pCommandBuffers = vk.s.CommandBufferArray{
+							self.PostPresentCMD,
+						},
+					},
+				},
+				nil
+			)
+		end
 
 		self.DeviceQueue:WaitIdle()
 	end
-
 
 	io.write("reached end of demo\n")
 
@@ -1169,8 +1192,8 @@ do
 		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, texture.imageLayout)
 
 		texture.sampler = self.Device:CreateSampler({
-			magFilter = vk.e.FILTER_NEAREST,
-			minFilter = vk.e.FILTER_NEAREST,
+			magFilter = vk.e.FILTER_LINEAR,
+			minFilter = vk.e.FILTER_LINEAR,
 			mipmapMode = vk.e.SAMPLER_MIPMAP_MODE_NEAREST,
 			addressModeU = vk.e.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
 			addressModeV = vk.e.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -1191,10 +1214,10 @@ do
 			format = format,
 			flags = 0,
 			components = {
-				r = vk.e.COMPONENT_SWIZZLE_R,
-				g = vk.e.COMPONENT_SWIZZLE_G,
-				b = vk.e.COMPONENT_SWIZZLE_B,
-				a = vk.e.COMPONENT_SWIZZLE_A
+				vk.e.COMPONENT_SWIZZLE_R,
+				vk.e.COMPONENT_SWIZZLE_G,
+				vk.e.COMPONENT_SWIZZLE_B,
+				vk.e.COMPONENT_SWIZZLE_A
 			},
 			subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
 		})

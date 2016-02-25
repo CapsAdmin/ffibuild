@@ -331,17 +331,20 @@ do -- *Create helpers so you don't have to make a boxed value
 		pCreateInfos = ffi.new("]]..basic_type..[[["..#pCreateInfos.."]", pCreateInfos)
 	end
 	]]
-			elseif parameters:find("pCreateInfo") then
-				lua = lua .. "\tif type(pCreateInfo) == \"table\" then pCreateInfo = library.s." .. func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pCreateInfo) end\n"
-			elseif parameters:find("pAllocateInfo") then
-				lua = lua .. "\tif type(pAllocateInfo) == \"table\" then pAllocateInfo = library.s." .. func_type.arguments[2]:GetBasicType(meta_data):match("struct Vk(.+)") .. "(pAllocateInfo) end\n"
+			elseif parameters:find("Info") then
+				for _, arg in ipairs(func_type.arguments) do
+					if arg.name:find("Info") then
+						lua = lua .. "\tif type("..arg.name..") == \"table\" then "..arg.name.." = library.s." .. arg:GetBasicType(meta_data):match("struct Vk(.+)") .. "("..arg.name..") end\n"
+						break
+					end
+				end
 			end
 			lua = lua .. [[
 	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
 	local status = ]]..lib..[[.]]..func_name..[[(]]..call..[[box)
 
 	if status == "VK_SUCCESS" then
-		return box[0]
+		return box[0], status
 	end
 
 	return nil, status
