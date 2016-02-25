@@ -10,6 +10,36 @@ _G.FFI_LIB = "../examples/glfw/glfw/src/libglfw.so"
 local glfw = require("glfw/libglfw")
 _G.FFI_LIB = nil
 
+_G.FFI_LIB = "../examples/freeimage/freeimage/FreeImage/libfreeimage-3.18.0.so"
+local freeimage = require("freeimage/libfreeimage")
+_G.FFI_LIB = nil
+
+function freeimage.LoadImage(data, flags, format)
+	local buffer = ffi.cast("const unsigned char *const ", data)
+
+	local stream = freeimage.OpenMemory(buffer, #data)
+	local type = format or freeimage.GetFileTypeFromMemory(stream, #data)
+
+	if type == freeimage.e.FORMAT_UNKNOWN or type > freeimage.e.FORMAT_RAW then -- huh...
+		freeimage.CloseMemory(stream)
+		error("unknown format", 2)
+	end
+
+	local temp = freeimage.LoadFromMemory(type, stream, flags or 0)
+	local bitmap = freeimage.ConvertTo32Bits(temp)
+	freeimage.Unload(temp)
+
+	local data = freeimage.GetBits(bitmap)
+	local width = freeimage.GetWidth(bitmap)
+	local height = freeimage.GetHeight(bitmap)
+
+	ffi.gc(bitmap, freeimage.Unload)
+
+	freeimage.CloseMemory(stream)
+
+	return data, width, height
+end
+
 local matrix_type = require("matrix44")
 
 local vector_type = ffi.typeof("float[3]")
