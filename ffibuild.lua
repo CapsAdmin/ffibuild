@@ -122,7 +122,9 @@ function ffibuild.GetMetaData(header)
 		header = header:gsub("typedef %a- [%a%d_]+ %b{} [^;]- ;", function(statement)
 			if statement:find(",") then
 				local tag, huh = statement:match("^typedef (%a- [%a%d_]+) %b{} .+,(.+);$")
-				return statement:match("(typedef %a- [%a%d_]+ %b{} .-),") .. ";\n" .. "typedef " .. tag .. huh .. ";"
+				if tag then
+					return statement:match("(typedef %a- [%a%d_]+ %b{} .-),") .. ";\n" .. "typedef " .. tag .. huh .. ";"
+				end
 			end
 		end)
 	end
