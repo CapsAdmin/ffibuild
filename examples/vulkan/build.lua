@@ -33,6 +33,7 @@ end
 function library.e(str_enum)
 	return ffi.cast("enum GLFWenum", str_enum)
 end
+library.struct_gc = setmetatable({},{__mode = "k"})
 ]]
 end
 
@@ -321,7 +322,11 @@ do -- *Create helpers so you don't have to make a boxed value
 			if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
 			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)]] .. "\n"
+
+			local keep_arg = {}
+
 			if parameters:find("pCreateInfos") then
+				keep_arg = "pCreateInfos"
 				local basic_type = func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data)
 				lua = lua .. [[
 	if type(pCreateInfos) == "table" then
@@ -335,6 +340,7 @@ do -- *Create helpers so you don't have to make a boxed value
 				for _, arg in ipairs(func_type.arguments) do
 					if arg.name:find("Info") then
 						lua = lua .. "\tif type("..arg.name..") == \"table\" then "..arg.name.." = library.s." .. arg:GetBasicType(meta_data):match("struct Vk(.+)") .. "("..arg.name..") end\n"
+						keep_arg = arg.name
 						break
 					end
 				end
@@ -344,6 +350,8 @@ do -- *Create helpers so you don't have to make a boxed value
 	local status = ]]..lib..[[.]]..func_name..[[(]]..call..[[box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = ]]..keep_arg..[[
+
 		return box[0], status
 	end
 

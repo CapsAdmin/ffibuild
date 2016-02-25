@@ -1,6 +1,13 @@
---collectgarbage("stop") -- TODO
 
 local ffi = require("ffi")
+
+collectgarbage("stop") -- TODO
+if false then
+	local new = ffi.new
+	local gc = ffi.gc
+	ffi.gc = function(obj) return obj end
+	ffi.new = function(...) local obj = new(...) gc(obj, function() end) return obj end
+end
 
 package.path = package.path .. ";./../examples/?.lua"
 
@@ -14,8 +21,33 @@ _G.FFI_LIB = "../examples/freeimage/freeimage/FreeImage/libfreeimage-3.18.0.so"
 local freeimage = require("freeimage/libfreeimage")
 _G.FFI_LIB = nil
 
-function freeimage.LoadImage(data, flags, format)
-	local buffer = ffi.cast("const unsigned char *const ", data)
+local function pow2floor(n)
+	return 2 ^ math.floor(math.log(n) / math.log(2))
+end
+
+local function create_mip_map(bitmap, w, h, div)
+	local width = pow2floor(w)
+	local height = pow2floor(h)
+
+	local size = width > height and width or height
+
+	size = size / (2 ^ div)
+
+	local new_bitmap = ffi.gc(freeimage.Rescale(bitmap, size, size, freeimage.e.IMAGE_FILTER_BILINEAR), freeimage.Unload)
+
+	return {
+		data = freeimage.GetBits(new_bitmap),
+		size = size,
+		new_bitmap = new_bitmap,
+	}
+end
+
+function freeimage.LoadImage(file_name, flags, format)
+	local file = io.open(file_name, "rb")
+	local data = file:read("*all")
+	file:close()
+
+	local buffer = ffi.cast("unsigned char *", data)
 
 	local stream = freeimage.OpenMemory(buffer, #data)
 	local type = format or freeimage.GetFileTypeFromMemory(stream, #data)
@@ -26,18 +58,23 @@ function freeimage.LoadImage(data, flags, format)
 	end
 
 	local temp = freeimage.LoadFromMemory(type, stream, flags or 0)
-	local bitmap = freeimage.ConvertTo32Bits(temp)
+	local bitmap = freeimage.ConvertTo8Bits(temp)
 	freeimage.Unload(temp)
 
-	local data = freeimage.GetBits(bitmap)
 	local width = freeimage.GetWidth(bitmap)
 	local height = freeimage.GetHeight(bitmap)
 
-	ffi.gc(bitmap, freeimage.Unload)
+	local images = {}
+
+	for level = 1, math.floor(math.log(math.max(width, height)) / math.log(2)) do
+		images[level] = create_mip_map(bitmap, width, height, level)
+	end
+
+	freeimage.Unload(bitmap)
 
 	freeimage.CloseMemory(stream)
 
-	return data, width, height
+	return images
 end
 
 local matrix_type = require("matrix44")
@@ -71,9 +108,9 @@ DEMO.DeviceValidationLayers = {
 	--"VK_LAYER_LUNARG_object_tracker",
 	--"VK_LAYER_LUNARG_draw_state",
 	"VK_LAYER_LUNARG_param_checker",
-	"VK_LAYER_LUNARG_swapchain",
-	"VK_LAYER_LUNARG_device_limits",
-	"VK_LAYER_LUNARG_image",
+	--"VK_LAYER_LUNARG_swapchain",
+	--"VK_LAYER_LUNARG_device_limits",
+	--"VK_LAYER_LUNARG_image",
 	--"VK_LAYER_LUNARG_api_dump",
 }
 
@@ -85,7 +122,7 @@ DEMO.DebugFlags = {
 	vk.e.DEBUG_REPORT_DEBUG_BIT_EXT,
 }
 
-local GLSL = true
+local GLSL = false
 
 if GLSL then
 	table.insert(DEMO.DeviceExtensions, "VK_NV_glsl_shader")
@@ -93,7 +130,7 @@ end
 
 for k,v in pairs(DEMO.DeviceValidationLayers) do table.insert(DEMO.InstanceValidationLayers, v) end
 
-function DEMO:PrepareWindow()
+function DEMO:InitializeGLFW()
 	glfw.SetErrorCallback(function(_, str) io.write(string.format("GLFW Error: %s\n", ffi.string(str))) end)
 	glfw.Init()
 	glfw.WindowHint(glfw.e.GLFW_CLIENT_API, glfw.e.GLFW_NO_API)
@@ -105,168 +142,176 @@ function DEMO:PrepareWindow()
 	self.Window = glfw.CreateWindow(1024, 768, "vulkan", nil, nil)
 end
 
-function DEMO:PrepareInstance()
-	local instance = vk.CreateInstance({
-		pApplicationInfo = vk.s.ApplicationInfo{
-			pApplicationName = "goluwa",
-			applicationVersion = 0,
-			pEngineName = "goluwa",
-			engineVersion = 0,
-			apiVersion = vk.macros.MAKE_VERSION(1, 0, 2),
-		},
+function DEMO:InitializeVulkan()
+	do -- create vulkan instance
+		local instance = vk.CreateInstance({
+			pApplicationInfo = vk.s.ApplicationInfo{
+				pApplicationName = "goluwa",
+				applicationVersion = 0,
+				pEngineName = "goluwa",
+				engineVersion = 0,
+				apiVersion = vk.macros.MAKE_VERSION(1, 0, 2),
+			},
 
-		enabledLayerCount = #self.InstanceValidationLayers,
-		ppEnabledLayerNames = vk.util.StringList(self.InstanceValidationLayers),
+			enabledLayerCount = #self.InstanceValidationLayers,
+			ppEnabledLayerNames = vk.util.StringList(self.InstanceValidationLayers),
 
-		enabledExtensionCount = #self.InstanceExtensions,
-		ppEnabledExtensionNames = vk.util.StringList(self.InstanceExtensions),
-	})
-
-	if instance:LoadProcAddr("vkCreateDebugReportCallbackEXT") then
-		instance:CreateDebugReportCallback({
-			flags = bit.bor(unpack(self.DebugFlags)),
-			pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
-
-				local level = 3
-				local info = debug.getinfo(level, "Sln")
-				local lines = {}
-				for i = 3, 10 do
-					local info = debug.getinfo(i, "Sln")
-					if not info or info.currentline == -1 then break end
-					table.insert(lines, info.currentline)
-				end
-				io.write(string.format("Line %s %s: %s: %s\n", table.concat(lines, ", "), info.name or "unknown", ffi.string(pLayerPrefix), ffi.string(pMsg)))
-
-				return 0
-			end,
+			enabledExtensionCount = #self.InstanceExtensions,
+			ppEnabledExtensionNames = vk.util.StringList(self.InstanceExtensions),
 		})
+
+		if instance:LoadProcAddr("vkCreateDebugReportCallbackEXT") then
+			instance:CreateDebugReportCallback({
+				flags = bit.bor(unpack(self.DebugFlags)),
+				pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
+
+					local level = 3
+					local info = debug.getinfo(level, "Sln")
+					local lines = {}
+					for i = 3, 10 do
+						local info = debug.getinfo(i, "Sln")
+						if not info or info.currentline == -1 then break end
+						table.insert(lines, info.currentline)
+					end
+					io.write(string.format("Line %s %s: %s: %s\n", table.concat(lines, ", "), info.name or "unknown", ffi.string(pLayerPrefix), ffi.string(pMsg)))
+
+					return 0
+				end,
+			})
+		end
+
+		instance:LoadProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR")
+		instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR")
+		instance:LoadProcAddr("vkCreateSwapchainKHR")
+		instance:LoadProcAddr("vkDestroySwapchainKHR")
+		instance:LoadProcAddr("vkGetSwapchainImagesKHR")
+		instance:LoadProcAddr("vkAcquireNextImageKHR")
+		instance:LoadProcAddr("vkQueuePresentKHR")
+		instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
+		instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
+
+		self.Instance = instance
 	end
 
-	instance:LoadProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR")
-	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR")
-	instance:LoadProcAddr("vkCreateSwapchainKHR")
-	instance:LoadProcAddr("vkDestroySwapchainKHR")
-	instance:LoadProcAddr("vkGetSwapchainImagesKHR")
-	instance:LoadProcAddr("vkAcquireNextImageKHR")
-	instance:LoadProcAddr("vkQueuePresentKHR")
-	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
-	instance:LoadProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR")
+	do -- find and use a gpu
+		for _, physical_device in ipairs(self.Instance:GetPhysicalDevices()) do			-- get a list of vulkan capable hardware
+			for i, info in ipairs(physical_device:GetQueueFamilyProperties()) do			-- get a list of queues the hardware supports
+				if bit.band(info.queueFlags, vk.e.QUEUE_GRAPHICS_BIT) ~= 0 then			-- if this queue supports graphics use it
 
-	self.Instance = instance
-end
+					self.PhysicalDevice = physical_device
+					self.DeviceMemoryProperties = self.PhysicalDevice:GetMemoryProperties()
+					self.DeviceQueueIndex = i - 1
 
-function DEMO:PrepareDevice()
-	for _, physical_device in ipairs(self.Instance:GetPhysicalDevices()) do			-- get a list of vulkan capable hardware
-		for i, info in ipairs(physical_device:GetQueueFamilyProperties()) do			-- get a list of queues the hardware supports
-			if bit.band(info.queueFlags, vk.e.QUEUE_GRAPHICS_BIT) ~= 0 then			-- if this queue supports graphics use it
+					self.Device = self.PhysicalDevice:CreateDevice({
+						enabledLayerCount = #self.DeviceValidationLayers,
+						ppEnabledLayerNames = vk.util.StringList(self.DeviceValidationLayers),
 
-				self.PhysicalDevice = physical_device
-				self.DeviceMemoryProperties = self.PhysicalDevice:GetMemoryProperties()
-				self.DeviceQueueIndex = i - 1
+						enabledExtensionCount = #self.DeviceExtensions,
+						ppEnabledExtensionNames = vk.util.StringList(self.DeviceExtensions),
 
-				self.Device = self.PhysicalDevice:CreateDevice({
-					enabledLayerCount = #self.DeviceValidationLayers,
-					ppEnabledLayerNames = vk.util.StringList(self.DeviceValidationLayers),
-
-					enabledExtensionCount = #self.DeviceExtensions,
-					ppEnabledExtensionNames = vk.util.StringList(self.DeviceExtensions),
-
-					queueCreateInfoCount = 1,
-					pQueueCreateInfos = vk.s.DeviceQueueCreateInfoArray{
-						{
-							queueFamilyIndex = self.DeviceQueueIndex,
-							queueCount = 1,
-							pQueuePriorities = ffi.new("float[1]", 0), -- todo: public ffi use is bad!
-							pEnabledFeatures = nil,
+						queueCreateInfoCount = 1,
+						pQueueCreateInfos = vk.s.DeviceQueueCreateInfoArray{
+							{
+								queueFamilyIndex = self.DeviceQueueIndex,
+								queueCount = 1,
+								pQueuePriorities = ffi.new("float[1]", 0), -- todo: public ffi use is bad!
+								pEnabledFeatures = nil,
+							}
 						}
-					}
-				})
+					})
 
-				self.DeviceQueue = self.Device:GetQueue(self.DeviceQueueIndex, 0)
-				self.DeviceCommandPool = self.Device:CreateCommandPool({queueFamilyIndex = self.DeviceQueueIndex})
+					self.DeviceQueue = self.Device:GetQueue(self.DeviceQueueIndex, 0)
+					self.DeviceCommandPool = self.Device:CreateCommandPool({queueFamilyIndex = self.DeviceQueueIndex})
 
-				return
+					self:CreateSetupCMD()
+					self:BeginSetupCMD()
+
+					return
+				end
 			end
 		end
 	end
-end
 
-function DEMO:PrepareSurface()
-	self.Surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
+	do -- setup the glfw window buffer
+		self.Surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
 
-	local formats = self.PhysicalDevice:GetSurfaceFormats(self.Surface)
-	local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(self.Surface)
+		local formats = self.PhysicalDevice:GetSurfaceFormats(self.Surface)
+		local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(self.Surface)
 
-	local prefered_format = formats[1].format
+		local prefered_format = formats[1].format
 
-	if prefered_format == vk.e.FORMAT_UNDEFINED then
-		prefered_format = vk.e.FORMAT_B8G8R8A8_UNORM
-	end
-
-	self.Width = capabilities.currentExtent.width
-	self.Height = capabilities.currentExtent.height
-
-	if self.Width == 0xFFFFFFFF then
-		self.Width = 1024
-		self.Height = 768
-	end
-
-	local present_mode
-
-	for _, mode in ipairs(self.PhysicalDevice:GetSurfacePresentModes(self.Surface)) do
-		if mode == vk.e.PRESENT_MODE_FIFO_KHR then
-			present_mode = mode
-			break
+		if prefered_format == vk.e.FORMAT_UNDEFINED then
+			prefered_format = vk.e.FORMAT_B8G8R8A8_UNORM
 		end
-	end
 
-	self.SwapChain = self.Device:CreateSwapchain({
-		surface = self.Surface,
-		minImageCount = math.min(capabilities.minImageCount + 1, capabilities.maxImageCount == 0 and math.huge or capabilities.maxImageCount),
-		imageFormat = prefered_format,
-		imagecolorSpace = formats[1].colorSpace,
-		imageExtent = {self.Width, self.Height},
-		imageUse = vk.e.IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		preTransform = bit.band(capabilities.supportedTransforms, vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ~= 0 and vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR or capabilities.currentTransform,
-		compositeAlpha = vk.e.COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-		imageArrayLayers = 1,
-		imageSharingMode = vk.e.SHARING_MODE_EXCLUSIVE,
+		self.Width = capabilities.currentExtent.width
+		self.Height = capabilities.currentExtent.height
 
-		queueFamilyIndexCount = 0,
-		pQueueFamilyIndices = nil,
+		if self.Width == 0xFFFFFFFF then
+			self.Width = 1024
+			self.Height = 768
+		end
 
-		presentMode = present_mode or vk.e.PRESENT_MODE_IMMEDIATE_KHR,
-		oldSwapchain = nil,
-		clipped = vk.e.TRUE,
-	})
+		local present_mode
 
-	self.SwapChainBuffers = {}
+		for _, mode in ipairs(self.PhysicalDevice:GetSurfacePresentModes(self.Surface)) do
+			if mode == vk.e.PRESENT_MODE_FIFO_KHR then
+				present_mode = mode
+				break
+			end
+		end
 
-	for i, image in ipairs(self.Device:GetSwapchainImages(self.SwapChain)) do
-		self:SetImageLayout(image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR)
+		self.SwapChain = self.Device:CreateSwapchain({
+			surface = self.Surface,
+			minImageCount = math.min(capabilities.minImageCount + 1, capabilities.maxImageCount == 0 and math.huge or capabilities.maxImageCount),
+			imageFormat = prefered_format,
+			imagecolorSpace = formats[1].colorSpace,
+			imageExtent = {self.Width, self.Height},
+			imageUse = vk.e.IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+			preTransform = bit.band(capabilities.supportedTransforms, vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ~= 0 and vk.e.SURFACE_TRANSFORM_IDENTITY_BIT_KHR or capabilities.currentTransform,
+			compositeAlpha = vk.e.COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+			imageArrayLayers = 1,
+			imageSharingMode = vk.e.SHARING_MODE_EXCLUSIVE,
 
-		self.SwapChainBuffers[i] = {
-			image = image,
-			view = self.Device:CreateImageView({
-				viewType = vk.e.IMAGE_VIEW_TYPE_2D,
+			queueFamilyIndexCount = 0,
+			pQueueFamilyIndices = nil,
+
+			presentMode = present_mode or vk.e.PRESENT_MODE_IMMEDIATE_KHR,
+			oldSwapchain = nil,
+			clipped = vk.e.TRUE,
+		})
+
+		self.SwapChainBuffers = {}
+
+		for i, image in ipairs(self.Device:GetSwapchainImages(self.SwapChain)) do
+			self:SetImageLayout(image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR)
+
+			self.SwapChainBuffers[i] = {
 				image = image,
-				format = prefered_format,
-				flags = 0,
-				components = {
-					vk.e.COMPONENT_SWIZZLE_R,
-					vk.e.COMPONENT_SWIZZLE_G,
-					vk.e.COMPONENT_SWIZZLE_B,
-					vk.e.COMPONENT_SWIZZLE_A
-				},
-				subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
-			}),
-		}
+				view = self.Device:CreateImageView({
+					viewType = vk.e.IMAGE_VIEW_TYPE_2D,
+					image = image,
+					format = prefered_format,
+					flags = 0,
+					components = {
+						vk.e.COMPONENT_SWIZZLE_R,
+						vk.e.COMPONENT_SWIZZLE_G,
+						vk.e.COMPONENT_SWIZZLE_B,
+						vk.e.COMPONENT_SWIZZLE_A
+					},
+					subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+				}),
+			}
+		end
 	end
 end
 
 function DEMO:PrepareData()
 	do
-		self.DepthBuffer = self:CreateImage(self.Width, self.Height, vk.e.FORMAT_D16_UNORM, vk.e.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vk.e.IMAGE_TILING_OPTIMAL, 0)
+		local format = vk.e.FORMAT_D16_UNORM
+		local properties = self.PhysicalDevice:GetFormatProperties(format)
+
+		self.DepthBuffer = self:CreateImage(self.Width, self.Height, format, vk.e.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vk.e.IMAGE_TILING_OPTIMAL)
 
 		self:SetImageLayout(self.DepthBuffer.image, vk.e.IMAGE_ASPECT_DEPTH_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
 
@@ -279,7 +324,7 @@ function DEMO:PrepareData()
 		})
 	end
 
-	self.Texture = self:CreateTexture(vk.e.FORMAT_B8G8R8A8_UNORM)
+	self.Texture = self:CreateTexture("./volcano.jpg", vk.e.FORMAT_B8G8R8A8_UNORM)
 
 	self.Vertices = self:CreateBuffer(
 		vk.e.BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -763,40 +808,37 @@ function DEMO:PreparePipeline()
 	self.Device:DestroyPipelineCache(cache, nil)
 end
 
+function DEMO:PrepareFramebuffers()
+	self.Framebuffers = {}
+
+	for i, buffer in ipairs(self.SwapChainBuffers) do
+		self.Framebuffers[i] = self.Device:CreateFramebuffer({
+			renderPass = self.RenderPass,
+
+			attachmentCount = 2,
+			pAttachments = vk.s.ImageViewArray{
+				buffer.view,
+				self.DepthBuffer.view
+			},
+
+			width = self.Width,
+			height = self.Height,
+			layers = 1,
+		})
+	end
+end
+
 
 function DEMO:Initialize()
-	self:PrepareWindow() -- create a window
-	self:PrepareInstance() -- create a vulkan instance
-	self:PrepareDevice() -- find and physical_device and use it
-	self:PrepareSurface() -- create the window surface to render on
+	self:InitializeGLFW()
+	self:InitializeVulkan()
 
 	self:PrepareData() -- create depth buffers, framebuffers, textures, vertices, indices, etc
 	self:PrepareDescriptors() -- setup the layout of the data like how to bind uniforms and textures
 
 	self:PrepareRenderPass()
-
-	do
-		self.Framebuffers = {}
-
-		for i, buffer in ipairs(self.SwapChainBuffers) do
-			self.Framebuffers[i] = self.Device:CreateFramebuffer({
-				renderPass = self.RenderPass,
-
-				attachmentCount = 2,
-				pAttachments = vk.s.ImageViewArray{
-					buffer.view,
-					self.DepthBuffer.view
-				},
-
-				width = self.Width,
-				height = self.Height,
-				layers = 1,
-			})
-		end
-	end
-
+	self:PrepareFramebuffers()
 	self:PreparePipeline()
-
 	self:FlushSetupCMD()
 
 	self.DrawCMDs = {}
@@ -884,9 +926,9 @@ function DEMO:Initialize()
 		commandBufferCount = #self.SwapChainBuffers,
 	})
 
-	--while glfw.WindowShouldClose(self.Window) == 0 do
+	while glfw.WindowShouldClose(self.Window) == 0 do
 	--for i = 1, 5 do
-	do
+	--do
 		glfw.PollEvents()
 
 		self.DeviceQueue:WaitIdle()
@@ -1014,27 +1056,6 @@ function DEMO:GetMemoryTypeFromProperties(type_bits, requirements_mask)
 end
 
 function DEMO:SetImageLayout(image, aspectMask, old_image_layout, new_image_layout)
-
-	if not self.SetupCMD then
-		self.SetupCMD = self.Device:AllocateCommandBuffers({
-				commandPool = self.DeviceCommandPool,
-				level = vk.e.COMMAND_BUFFER_LEVEL_PRIMARY,
-				commandBufferCount = 1,
-		})
-
-		self.SetupCMD:Begin(vk.s.CommandBufferBeginInfo{
-			flags = 0,
-			pInheritanceInfo = vk.s.CommandBufferInheritanceInfo({
-				renderPass = nil,
-				subpass = 0,
-				framebuffer = nil,
-				offclusionQueryEnable = vk.e.FALSE,
-				queryFlags = 0,
-				pipelineStatistics = 0,
-			 })
-		})
-	end
-
 	local mask = 0
 
 	if new_image_layout == vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL then
@@ -1067,21 +1088,51 @@ function DEMO:SetImageLayout(image, aspectMask, old_image_layout, new_image_layo
 	)
 end
 
-function DEMO:FlushSetupCMD()
-	self.SetupCMD:End()
-	self.DeviceQueue:Submit(1, vk.s.SubmitInfo({
-		waitSemaphoreCount = 0,
-		pWaitSemaphores = nil,
-		pWaitDstStageMask = nil,
-
+function DEMO:CreateSetupCMD()
+	self.SetupCMD = self.Device:AllocateCommandBuffers({
+		commandPool = self.DeviceCommandPool,
+		level = vk.e.COMMAND_BUFFER_LEVEL_PRIMARY,
 		commandBufferCount = 1,
-		pCommandBuffers = vk.s.CommandBufferArray{
-			self.SetupCMD
-		},
+	})
+end
 
-		signalSemaphoreCount = 0,
-		pSignalSemaphores = nil
-	}), nil)
+function DEMO:BeginSetupCMD()
+	self.SetupCMD:Begin(vk.s.CommandBufferBeginInfo{
+		flags = 0,
+		pInheritanceInfo = vk.s.CommandBufferInheritanceInfo({
+			renderPass = nil,
+			subpass = 0,
+			framebuffer = nil,
+			offclusionQueryEnable = vk.e.FALSE,
+			queryFlags = 0,
+			pipelineStatistics = 0,
+		 })
+	})
+end
+
+function DEMO:FlushSetupCMD()
+	if not self.SetupCMD then return end
+
+	self.SetupCMD:End()
+	self.DeviceQueue:Submit(
+		1,
+		vk.s.SubmitInfoArray{
+			{
+				waitSemaphoreCount = 0,
+				pWaitSemaphores = nil,
+				pWaitDstStageMask = nil,
+
+				commandBufferCount = 1,
+				pCommandBuffers = vk.s.CommandBufferArray{
+					self.SetupCMD
+				},
+
+				signalSemaphoreCount = 0,
+				pSignalSemaphores = nil
+			}
+		},
+		nil
+	)
 
 	self.DeviceQueue:WaitIdle()
 
@@ -1096,18 +1147,20 @@ function DEMO:FlushSetupCMD()
 end
 
 
-function DEMO:CreateImage(width, height, format, usage, tiling, required_props)
+function DEMO:CreateImage(width, height, format, usage, tiling, required_props, levels)
 	local image = self.Device:CreateImage({
 		imageType = vk.e.IMAGE_TYPE_2D,
 		format = format,
 		extent = {width, height, 1},
-		mipLevels = 1,
+		mipLevels = levels or 1,
 		arrayLayers = 1,
 		samples = vk.e.SAMPLE_COUNT_1_BIT,
 		tiling = tiling,
 		usage = usage,
 		flags = 0,
 		queueFamilyIndexCount = 0,
+		sharingMode = vk.e.SHARING_MODE_EXCLUSIVE,
+		initialLayout = vk.e.IMAGE_LAYOUT_UNDEFINED,
 	})
 
 	local memory_requirements = self.Device:GetImageMemoryRequirements(image)
@@ -1124,108 +1177,157 @@ function DEMO:CreateImage(width, height, format, usage, tiling, required_props)
 		memory = memory,
 		size = memory_requirements.size,
 		format = format,
+		width = width,
+		height = height,
 	}
 end
 
-do
-	local function prepare(self, tex, tiling, usage, required_props)
-		tex.width = 2
-		tex.height = 2
+function DEMO:CreateTexture(file_name, format)
+	format = format or vk.e.FORMAT_B8G8R8A8_UNORM
 
-		local info = self:CreateImage(tex.width, tex.height, vk.e.FORMAT_B8G8R8A8_UNORM, usage, tiling, required_props)
+	local image_infos = freeimage.LoadImage(file_name)
 
-		tex.memory = info.memory
-		tex.image = info.image
+	local texture = {}
 
-		if bit.band(required_props, vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT) ~= 0 then
-			tex.imageLayout = vk.e.IMAGE_ASPECT_COLOR_BIT
+	texture.width = image_infos[1].size
+	texture.height = image_infos[1].size
+	texture.mip_levels = #image_infos
 
-			self.Device:MapMemory(info.memory, 0, info.size, 0, "uint32_t", function(data)
-				for y = 0, tex.height - 1 do
-					for x = 0, tex.width - 1 do
-						data[x * y] = math.random(0xFFFFFFFF)
-					end
-				end
+	local properties = self.PhysicalDevice:GetFormatProperties(format)
+
+	if bit.band(properties.linearTilingFeatures, vk.e.FORMAT_FEATURE_SAMPLED_IMAGE_BIT) == 0 then
+		for i, image_info in ipairs(image_infos) do
+			local image = self:CreateImage(
+				image_info.size,
+				image_info.size,
+				format,
+				vk.e.VK_IMAGE_USAGE_TRANSFER_SRC_BIT ,
+				vk.e.IMAGE_TILING_LINEAR,
+				vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT
+			)
+
+			self.Device:MapMemory(image.memory, 0, image.size, 0, "uint8_t", function(data)
+				--ffi.copy(data, image.data, image.size)
 			end)
+
+			self:SetImageLayout(image.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+
+			image_infos[i] = image
 		end
 
-		self:SetImageLayout(image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-	end
+		local image = self:CreateImage(
+			texture.width,
+			texture.height,
+			format,
+			bit.bor(vk.e.IMAGE_USAGE_TRANSFER_DST_BIT, vk.e.IMAGE_USAGE_SAMPLED_BIT),
+			vk.e.IMAGE_TILING_OPTIMAL,
+			vk.e.MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			texture.mip_levels
+		)
 
-	function DEMO:CreateTexture(format)
-		local texture = {}
+		texture.image = image.image
+		texture.memory = image.memory
+		texture.size = image.size
+		texture.format = image.format
 
-		prepare(self, texture, vk.e.IMAGE_TILING_OPTIMAL, bit.bor(vk.e.IMAGE_USAGE_TRANSFER_DST_BIT, vk.e.IMAGE_USAGE_SAMPLED_BIT), vk.e.MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, texture.imageLayout, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
 
-		do
-			local staging = {}
-			prepare(self, staging, vk.e.IMAGE_TILING_LINEAR, vk.e.IMAGE_USAGE_TRANSFER_SRC_BIT, vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-			self:SetImageLayout(staging.image, vk.e.IMAGE_ASPECT_COLOR_BIT, staging.imageLayout, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
-
+		for i, mip_map in ipairs(image_infos) do
 			self.SetupCMD:CopyImage(
-				staging.image,
-				vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-				texture.image,
-				vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-
+				mip_map.image, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+				texture.image, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 				1,
 				vk.s.ImageCopyArray{
 					{
-						srcSubresource = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 0, 1},
-						srcOffset = {0, 0, 0},
-						dstSubresource = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 0, 1},
-						dstOffset = {0, 0, 0},
-						extent = {
-							staging.width,
-							staging.height,
-							1
+						extent = {mip_map.width, mip_map.height, 1},
+
+						srcSubresource = {
+							aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+							baseArrayLayer = 0,
+							mipLevel = 0,
+							layerCount = 1,
 						},
+						srcOffset = { 0, 0, 0 },
+
+						dstSubresource = {
+							aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+							baseArrayLayer = 0,
+							mipLevel = i - 1,
+							layerCount = 1,
+						},
+						dstOffset = { 0, 0, 0 },
 					}
 				}
 			)
-
-			self.Device:DestroyImage(staging.image, nil)
-			self.Device:FreeMemory(staging.memory, nil)
 		end
 
-		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, texture.imageLayout)
+		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 
-		texture.sampler = self.Device:CreateSampler({
-			magFilter = vk.e.FILTER_LINEAR,
-			minFilter = vk.e.FILTER_LINEAR,
-			mipmapMode = vk.e.SAMPLER_MIPMAP_MODE_NEAREST,
-			addressModeU = vk.e.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-			addressModeV = vk.e.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-			addressModeW = vk.e.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-			ipLodBias = 0.0,
-			anisotropyEnable = vk.e.FALSE,
-			maxAnisotropy = 1,
-			compareOp = vk.e.COMPARE_OP_NEVER,
-			minLod = 0.0,
-			maxLod = 0.0,
-			borderColor = vk.e.BORDER_COLOR_FLOAT_OPAQUE_WHITE,
-			unnormalizedCoordinates = 0,
-		})
+		self:FlushSetupCMD()
 
-		texture.view = self.Device:CreateImageView({
-			viewType = vk.e.IMAGE_VIEW_TYPE_2D,
-			image = texture.image,
-			format = format,
-			flags = 0,
-			components = {
-				vk.e.COMPONENT_SWIZZLE_R,
-				vk.e.COMPONENT_SWIZZLE_G,
-				vk.e.COMPONENT_SWIZZLE_B,
-				vk.e.COMPONENT_SWIZZLE_A
-			},
-			subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
-		})
+		for i, mip_map in ipairs(image_infos) do
+			self.Device:DestroyImage(mip_map.image, nil)
+			self.Device:FreeMemory(mip_map.memory, nil)
+		end
+	else
+		texture.mip_levels = 0
 
-		texture.format = format
+		local info = self:CreateImage(width, height, format, vk.e.IMAGE_USAGE_SAMPLED_BIT, vk.e.IMAGE_TILING_LINEAR, vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT)
 
-		return texture
+		texture.image = info.image
+		texture.memory = info.memory
+		texture.size = info.size
+		texture.format = info.format
+
+		self.Device:MapMemory(info.memory, 0, info.size, 0, "uint8_t", function(data)
+			--ffi.copy(data, image.data, image.size)
+		end)
+
+		self:SetImageLayout(info.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	end
+
+	texture.sampler = self.Device:CreateSampler({
+		magFilter = vk.e.FILTER_LINEAR,
+		minFilter = vk.e.FILTER_LINEAR,
+		mipmapMode = vk.e.SAMPLER_MIPMAP_MODE_LINEAR,
+		addressModeU = vk.e.SAMPLER_ADDRESS_MODE_REPEAT,
+		addressModeV = vk.e.SAMPLER_ADDRESS_MODE_REPEAT,
+		addressModeW = vk.e.SAMPLER_ADDRESS_MODE_REPEAT,
+		ipLodBias = 0.0,
+		anisotropyEnable = vk.e.TRUE,
+		maxAnisotropy = 8,
+		compareOp = vk.e.COMPARE_OP_NEVER,
+		minLod = 0.0,
+		maxLod = texture.mip_levels,
+		borderColor = vk.e.BORDER_COLOR_FLOAT_OPAQUE_WHITE,
+		unnormalizedCoordinates = 0,
+	})
+
+	texture.view = self.Device:CreateImageView({
+		viewType = vk.e.IMAGE_VIEW_TYPE_2D,
+		image = texture.image,
+		format = format,
+		flags = 0,
+		components = {
+			vk.e.COMPONENT_SWIZZLE_R,
+			vk.e.COMPONENT_SWIZZLE_G,
+			vk.e.COMPONENT_SWIZZLE_B,
+			vk.e.COMPONENT_SWIZZLE_A
+		},
+		subresourceRange = {
+			aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+
+			levelCount = texture.mip_levels,
+			baseMipLevel = 0,
+
+			layerCount = 1,
+			baseLayerLevel = 0
+		},
+	})
+
+	texture.format = format
+
+	return texture
 end
 
 function DEMO:CreateBuffer(usage, data)

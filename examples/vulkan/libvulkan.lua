@@ -549,6 +549,7 @@ end
 function library.e(str_enum)
 	return ffi.cast("enum GLFWenum", str_enum)
 end
+library.struct_gc = setmetatable({},{__mode = "k"})
 library.macros = {}
 library.macros.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end
 local extensions = {}
@@ -2106,6 +2107,7 @@ function library.s.PushConstantRange(tbl) return ffi.new("struct VkPushConstantR
 	local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2122,6 +2124,7 @@ function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount,
 	local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfos
 		return box[0], status
 	end
 
@@ -2133,6 +2136,7 @@ function library.CreateShaderModule(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateShaderModule(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2144,6 +2148,7 @@ function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateFramebuffer(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2160,6 +2165,7 @@ function library.CreateComputePipelines(device, pipelineCache, createInfoCount, 
 	local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfos
 		return box[0], status
 	end
 
@@ -2171,6 +2177,7 @@ function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2182,6 +2189,7 @@ function library.AllocateCommandBuffers(device, pAllocateInfo)
 	local status = CLIB.vkAllocateCommandBuffers(device, pAllocateInfo, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pAllocateInfo
 		return box[0], status
 	end
 
@@ -2193,6 +2201,7 @@ function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateDescriptorPool(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2204,6 +2213,7 @@ function library.CreateBuffer(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateBuffer(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2215,6 +2225,7 @@ function library.CreateSemaphore(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateSemaphore(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2226,6 +2237,7 @@ function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreatePipelineCache(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2237,6 +2249,7 @@ function library.CreateImageView(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateImageView(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2248,6 +2261,7 @@ function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2259,6 +2273,7 @@ function library.CreateInstance(pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateInstance(pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2270,6 +2285,7 @@ function library.CreateDebugReportCallback(instance, pCreateInfo, pAllocator)
 	local status = library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2286,6 +2302,7 @@ function library.CreateSharedSwapchains(device, swapchainCount, pCreateInfos, pA
 	local status = library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfos
 		return box[0], status
 	end
 
@@ -2297,6 +2314,7 @@ function library.CreateDisplayPlaneSurface(instance, pCreateInfo, pAllocator)
 	local status = library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2308,6 +2326,7 @@ function library.CreateImage(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateImage(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2319,6 +2338,7 @@ function library.CreateSwapchain(device, pCreateInfo, pAllocator)
 	local status = library.CreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2330,6 +2350,7 @@ function library.AllocateMemory(device, pAllocateInfo, pAllocator)
 	local status = CLIB.vkAllocateMemory(device, pAllocateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pAllocateInfo
 		return box[0], status
 	end
 
@@ -2341,6 +2362,7 @@ function library.CreateDisplayMode(physicalDevice, display, pCreateInfo, pAlloca
 	local status = library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2352,6 +2374,7 @@ function library.CreateFence(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateFence(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2363,6 +2386,7 @@ function library.CreateRenderPass(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateRenderPass(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2374,6 +2398,7 @@ function library.CreateQueryPool(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateQueryPool(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2385,6 +2410,7 @@ function library.CreateSampler(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateSampler(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2396,6 +2422,7 @@ function library.CreateCommandPool(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateCommandPool(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2407,6 +2434,7 @@ function library.CreateEvent(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreateEvent(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
@@ -2418,6 +2446,7 @@ function library.AllocateDescriptorSets(device, pAllocateInfo)
 	local status = CLIB.vkAllocateDescriptorSets(device, pAllocateInfo, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pAllocateInfo
 		return box[0], status
 	end
 
@@ -2429,6 +2458,7 @@ function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 	local status = CLIB.vkCreatePipelineLayout(device, pCreateInfo, pAllocator, box)
 
 	if status == "VK_SUCCESS" then
+		library.struct_gc[ box[0] ] = pCreateInfo
 		return box[0], status
 	end
 
