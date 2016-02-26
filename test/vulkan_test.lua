@@ -226,7 +226,7 @@ function DEMO:InitializeVulkan()
 					self:CreateSetupCMD()
 					self:BeginSetupCMD()
 
-					return
+					break
 				end
 			end
 		end
@@ -299,7 +299,15 @@ function DEMO:InitializeVulkan()
 						vk.e.COMPONENT_SWIZZLE_B,
 						vk.e.COMPONENT_SWIZZLE_A
 					},
-					subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+					subresourceRange = {
+						aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+
+						levelCount = 1,
+						baseMipLevel = 0,
+
+						layerCount = 1,
+						baseLayerLevel = 0
+					},
 				}),
 			}
 		end
@@ -308,10 +316,7 @@ end
 
 function DEMO:PrepareData()
 	do
-		local format = vk.e.FORMAT_D16_UNORM
-		local properties = self.PhysicalDevice:GetFormatProperties(format)
-
-		self.DepthBuffer = self:CreateImage(self.Width, self.Height, format, vk.e.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vk.e.IMAGE_TILING_OPTIMAL)
+		self.DepthBuffer = self:CreateImage(self.Width, self.Height, vk.e.FORMAT_D16_UNORM, vk.e.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vk.e.IMAGE_TILING_OPTIMAL, 0)
 
 		self:SetImageLayout(self.DepthBuffer.image, vk.e.IMAGE_ASPECT_DEPTH_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
 
@@ -320,7 +325,15 @@ function DEMO:PrepareData()
 			image = self.DepthBuffer.image,
 			format = self.DepthBuffer.format,
 			flags = 0,
-			subresourceRange = {vk.e.IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1},
+			subresourceRange = {
+				aspectMask = vk.e.IMAGE_ASPECT_DEPTH_BIT,
+
+				levelCount = 1,
+				baseMipLevel = 0,
+
+				layerCount = 1,
+				baseLayerLevel = 0
+			},
 		})
 	end
 
@@ -409,8 +422,7 @@ function DEMO:PrepareDescriptors()
 	})
 
 	self.Device:UpdateDescriptorSets(
-		2,
-		vk.s.WriteDescriptorSetArray{
+		2, vk.s.WriteDescriptorSetArray{
 			{
 				dstSet = self.DescriptorSet,
 				descriptorType = vk.e.DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -440,8 +452,7 @@ function DEMO:PrepareDescriptors()
 				}
 			},
 		},
-		0,
-		nil
+		0, nil
 	)
 end
 
@@ -890,18 +901,10 @@ function DEMO:Initialize()
 		draw_cmd:EndRenderPass()
 
 		draw_cmd:PipelineBarrier(
-			vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT,
-			vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-			0,
-
-			0,
-			nil,
-
-			0,
-			nil,
-
-			1,
-			vk.s.ImageMemoryBarrierArray{
+			vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT, vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+			0, nil,
+			0, nil,
+			1, vk.s.ImageMemoryBarrierArray{
 				{
 					srcAccessMask = vk.e.ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 					dstAccessMask = vk.e.ACCESS_MEMORY_READ_BIT,
@@ -909,7 +912,15 @@ function DEMO:Initialize()
 					newLayout = vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR,
 					srcQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
 					dstQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-					subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+					subresourceRange = {
+						aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+
+						levelCount = 1,
+						baseMipLevel = 0,
+
+						layerCount = 1,
+						baseLayerLevel = 0
+					},
 					image = surface_buffer.image,
 				}
 			}
@@ -926,9 +937,9 @@ function DEMO:Initialize()
 		commandBufferCount = #self.SwapChainBuffers,
 	})
 
-	while glfw.WindowShouldClose(self.Window) == 0 do
+	--while glfw.WindowShouldClose(self.Window) == 0 do
 	--for i = 1, 5 do
-	--do
+	do
 		glfw.PollEvents()
 
 		self.DeviceQueue:WaitIdle()
@@ -941,8 +952,7 @@ function DEMO:Initialize()
 		index = index + 1
 
 		self.DeviceQueue:Submit(
-			1,
-			vk.s.SubmitInfoArray{
+			1, vk.s.SubmitInfoArray{
 				{
 					pWaitDstStageMask = ffi.new("enum VkPipelineStageFlagBits [1]", vk.e.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT),
 
@@ -980,18 +990,13 @@ function DEMO:Initialize()
 			})
 
 			self.PostPresentCMD:PipelineBarrier(
-				vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT,
-				vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-				0,
+				vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT, vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
 
-				0,
-				nil,
+				0, nil,
 
-				0,
-				nil,
+				0, nil,
 
-				1,
-				vk.s.ImageMemoryBarrierArray{
+				1, vk.s.ImageMemoryBarrierArray{
 					{
 						srcAccessMask = 0,
 						dstAccessMask = vk.e.ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
@@ -999,7 +1004,15 @@ function DEMO:Initialize()
 						newLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 						srcQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
 						dstQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-						subresourceRange = {vk.e.IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+						subresourceRange = {
+							aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+
+							levelCount = 1,
+							baseMipLevel = 0,
+
+							layerCount = 1,
+							baseLayerLevel = 0
+						},
 						image = self.SwapChainBuffers[index].image,
 					}
 				}
@@ -1008,8 +1021,7 @@ function DEMO:Initialize()
 			self.PostPresentCMD:End()
 
 			self.DeviceQueue:Submit(
-				1,
-				vk.s.SubmitInfoArray{
+				1, vk.s.SubmitInfoArray{
 					{
 						commandBufferCount = 1,
 						pCommandBuffers = vk.s.CommandBufferArray{
@@ -1022,6 +1034,7 @@ function DEMO:Initialize()
 		end
 
 		self.DeviceQueue:WaitIdle()
+		self.Device:WaitIdle()
 	end
 
 	io.write("reached end of demo\n")
@@ -1055,35 +1068,50 @@ function DEMO:GetMemoryTypeFromProperties(type_bits, requirements_mask)
 	end
 end
 
-function DEMO:SetImageLayout(image, aspectMask, old_image_layout, new_image_layout)
-	local mask = 0
+function DEMO:SetImageLayout(image, aspect_mask, old_image_layout, new_image_layout)
+	local src_mask = 0
+	local dst_mask = 0
 
-	if new_image_layout == vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL then
-		mask = vk.e.ACCESS_TRANSFER_READ_BIT
-	elseif new_image_layout == vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL then
-		mask = vk.e.ACCESS_COLOR_ATTACHMENT_WRITE_BIT
-	elseif new_image_layout == vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL then
-		mask = vk.e.ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-	elseif new_image_layout == vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL then
-		mask = bit.bor(vk.e.ACCESS_SHADER_READ_BIT, vk.e.ACCESS_INPUT_ATTACHMENT_READ_BIT)
+    if old_image_layout == vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL then
+        src_mask = vk.e.ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+    end
+
+    if new_image_layout == vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL then
+        dst_mask = vk.e.ACCESS_MEMORY_READ_BIT
+    end
+
+    if new_image_layout == vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL then
+        src_mask = bit.bor(vk.e.ACCESS_HOST_WRITE_BIT, vk.e.ACCESS_TRANSFER_WRITE_BIT)
+        dst_mask = vk.e.ACCESS_SHADER_READ_BIT
+    end
+
+    if new_image_layout == vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL then
+        dst_mask = vk.e.ACCESS_COLOR_ATTACHMENT_READ_BIT
+	end
+
+    if new_image_layout == vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL then
+        dst_mask = vk.e.ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
 	end
 
 	self.SetupCMD:PipelineBarrier(
-		vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-		vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-		0,
-		0,
-		nil,
-		0,
-		nil,
-		1,
-		vk.s.ImageMemoryBarrier({
-			srcAccessMask = 0,
-			dstAccessMask = mask,
+		vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT, vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
+		0, nil,
+		0, nil,
+		1, vk.s.ImageMemoryBarrier({
+			srcAccessMask = src_mask,
+			dstAccessMask = dst_mask,
 			oldLayout = old_image_layout,
 			newLayout = new_image_layout,
 			image = image,
-			subresourceRange = {aspectMask, 0, 1, 0, 1},
+			subresourceRange = {
+				aspectMask = aspect_mask,
+
+				levelCount = 1,
+				baseMipLevel = 0,
+
+				layerCount = 1,
+				baseLayerLevel = 0
+			},
 		})
 	)
 end
@@ -1115,8 +1143,7 @@ function DEMO:FlushSetupCMD()
 
 	self.SetupCMD:End()
 	self.DeviceQueue:Submit(
-		1,
-		vk.s.SubmitInfoArray{
+		1, vk.s.SubmitInfoArray{
 			{
 				waitSemaphoreCount = 0,
 				pWaitSemaphores = nil,
@@ -1138,8 +1165,7 @@ function DEMO:FlushSetupCMD()
 
 	self.Device:FreeCommandBuffers(
 		self.DeviceCommandPool,
-		1,
-		vk.s.CommandBufferArray{
+		1, vk.s.CommandBufferArray{
 			self.SetupCMD
 		}
 	)
@@ -1236,8 +1262,7 @@ function DEMO:CreateTexture(file_name, format)
 			self.SetupCMD:CopyImage(
 				mip_map.image, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 				texture.image, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				1,
-				vk.s.ImageCopyArray{
+				1, vk.s.ImageCopyArray{
 					{
 						extent = {mip_map.width, mip_map.height, 1},
 
@@ -1270,9 +1295,9 @@ function DEMO:CreateTexture(file_name, format)
 			self.Device:FreeMemory(mip_map.memory, nil)
 		end
 	else
-		texture.mip_levels = 0
+		texture.mip_levels = 1
 
-		local info = self:CreateImage(width, height, format, vk.e.IMAGE_USAGE_SAMPLED_BIT, vk.e.IMAGE_TILING_LINEAR, vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+		local info = self:CreateImage(texture.width, texture.height, format, vk.e.IMAGE_USAGE_SAMPLED_BIT, vk.e.IMAGE_TILING_LINEAR, vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT)
 
 		texture.image = info.image
 		texture.memory = info.memory
