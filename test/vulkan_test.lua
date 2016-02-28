@@ -381,54 +381,125 @@ function DEMO:Initialize()
 	end
 
 	do
-		local matrix_type = require("matrix44")
+		self.Texture = self:CreateTexture("./volcano.png", vk.e.FORMAT_B8G8R8A8_UNORM)
+	end
 
-		local vector2_type = ffi.typeof("float[2]")
-		local vector3_type = ffi.typeof("float[3]")
-		local vertex_type = ffi.typeof("struct {$ position; $ color; $ uv; }", vector3_type, vector3_type, vector2_type)
+	local vertices
+
+	do
+		local vertex_type = ffi.typeof([[
+			struct
+			{
+				float pos[3];
+				float uv[2];
+				float color[3];
+			}
+		]])
+
 		local vertices_type = ffi.typeof("$[?]", vertex_type)
 
+		local create_vertices = function(tbl) return vertices_type(#tbl, tbl) end
+
+		vertices = {
+			{ pos = { -1, -1, -1 },  	uv = { 0, 0 } },
+			{ pos = { -1, 1, 1 },  		uv = { 1, 1 } },
+			{ pos = { -1, -1, 1 }, 		uv = { 1, 0 } },
+			{ pos = { -1, 1, 1 },  		uv = { 1, 1 } },
+			{ pos = { -1, -1, -1 },  	uv = { 0, 0 } },
+			{ pos = { -1, 1, -1 },  	uv = { 0, 1 } },
+
+			{ pos = { -1, -1, -1 },  	uv = { 1, 0 } },
+			{ pos = { 1, -1, -1 },  	uv = { 0, 0 } },
+			{ pos = { 1, 1, -1 },  		uv = { 0, 1 } },
+			{ pos = { -1, -1, -1 },  	uv = { 1, 0 } },
+			{ pos = { 1, 1, -1 },  		uv = { 0, 1 } },
+			{ pos = { -1, 1, -1 },  	uv = { 1, 1 } },
+
+			{ pos = { -1, -1, -1 },  	uv = { 1, 1 } },
+			{ pos = { 1, -1, 1 },  		uv = { 0, 0 } },
+			{ pos = { 1, -1, -1 },  	uv = { 1, 0 } },
+			{ pos = { -1, -1, -1 },  	uv = { 1, 1 } },
+			{ pos = { -1, -1, 1 },  	uv = { 0, 1 } },
+			{ pos = { 1, -1, 1 },  		uv = { 0, 0 } },
+
+			{ pos = { -1, 1, -1 },  	uv = { 1, 1 } },
+			{ pos = { 1, 1, 1 },  		uv = { 0, 0 } },
+			{ pos = { -1, 1, 1 },  		uv = { 0, 1 } },
+			{ pos = { -1, 1, -1 }, 	 	uv = { 1, 1 } },
+			{ pos = { 1, 1, -1 },  		uv = { 1, 0 } },
+			{ pos = { 1, 1, 1 },  		uv = { 0, 0 } },
+
+			{ pos = { 1, 1, -1 },  		uv = { 1, 1 } },
+			{ pos = { 1, -1, 1 }, 	 	uv = { 0, 0 } },
+			{ pos = { 1, 1, 1 },  		uv = { 0, 1 } },
+			{ pos = { 1, -1, 1 },  		uv = { 0, 0 } },
+			{ pos = { 1, 1, -1 }, 	 	uv = { 1, 1 } },
+			{ pos = { 1, -1, -1 },  	uv = { 1, 0 } },
+
+			{ pos = { -1, 1, 1 }, 	 	uv = { 0, 1 } },
+			{ pos = { 1, 1, 1 },  		uv = { 1, 1 } },
+			{ pos = { -1, -1, 1 }, 		uv = { 0, 0 } },
+			{ pos = { -1, -1, 1 },  	uv = { 0, 0 } },
+			{ pos = { 1, 1, 1 },  		uv = { 1, 1 } },
+			{ pos = { 1, -1, 1 },  		uv = { 1, 0 } },
+		}
+
+		for k,v in ipairs(vertices) do
+			v.color = {math.random(), math.random(), math.random()}
+		end
+
+		self.Vertices = self:CreateBuffer(vk.e.BUFFER_USAGE_VERTEX_BUFFER_BIT, create_vertices(vertices))
+	end
+
+	do -- indices
 		local indices_type = ffi.typeof("uint32_t[?]")
 
-		local uniforms_type = ffi.typeof("struct { $ projection; $ model; $ view; }", matrix_type, matrix_type, matrix_type)
-
-		local create_vertices = function(tbl) return vertices_type(#tbl, tbl) end
 		local create_indices = function(tbl) return indices_type(#tbl, tbl) end
-		local create_matrix = function(x,y,z) return matrix_type(1,0,0,0, 0,1,0,0, 0,0,1,0, x or 0, y or 0, z or 0,1) end
+
+		-- kind of pointless to use indices like this but whatever
+		local indices = {}
+		for i = 0, #vertices - 1 do
+			table.insert(indices, i)
+		end
+
+		self.Indices = self:CreateBuffer(vk.e.BUFFER_USAGE_INDEX_BUFFER_BIT, create_indices(indices))
+		self.Indices.count = #indices
+	end
+
+	do -- uniforms
+		local matrix_type = require("matrix44")
+
+		local uniforms_type = ffi.typeof("struct { $ projection; $ view; $ world; }", matrix_type, matrix_type, matrix_type)
 		local create_uniforms = uniforms_type
 
-		self.Texture = self:CreateTexture("./volcano.jpg", vk.e.FORMAT_B8G8R8A8_UNORM)
+		local create_matrix = function()
+			return matrix_type(
+				1,0,0,0,
+				0,1,0,0,
+				0,0,1,0,
+				0,0,0,1
+			)
+		end
 
-		self.Vertices = self:CreateBuffer(
-			vk.e.BUFFER_USAGE_VERTEX_BUFFER_BIT,
-			create_vertices
-			{
-				{ { 1.0,  1.0, 0.0 }, { 1.0, 0.0, 0.0 }, {1, 0} },
-				{ {-1.0,  1.0, 0.0 }, { 0.0, 1.0, 0.0 }, {0, 0} },
-				{ { 0.0, -1.0, 0.0 }, { 0.0, 0.0, 1.0 }, {0, 1} },
-			}
-		)
+		local uniforms = create_uniforms
+		{
+			projection = create_matrix(),
+			view = create_matrix(),
+			world = create_matrix(),
+		}
 
-		self.Indices = self:CreateBuffer(
-			vk.e.BUFFER_USAGE_INDEX_BUFFER_BIT,
-			create_indices
-			{
-				0,
-				1,
-				2,
-			}
-		)
-		self.Indices.count = self.Indices.size / ffi.sizeof("uint32_t")
+		self.ProjectionMatrix = uniforms.projection
+		self.ViewMatrix = uniforms.view
+		self.ModelMatrix = uniforms.world
 
-		self.Uniforms = self:CreateBuffer(
-			vk.e.BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			create_uniforms
-			{
-				projection = create_matrix():Perspective(math.rad(60), 0.1, 256, self.Width / self.Height),
-				view = create_matrix(0,0,-30),
-				model = create_matrix(),
-			}
-		)
+		self.ProjectionMatrix:Perspective(math.rad(90), 32000, 0.1, self.Width / self.Height)
+		self.ViewMatrix:Translate(0,0,-5)
+		self.ModelMatrix:Rotate(0.5, 0,1,0)
+
+		self.Uniforms = self:CreateBuffer(vk.e.BUFFER_USAGE_UNIFORM_BUFFER_BIT, uniforms)
+
+		--self.ViewMatrix:Translate(5,3,10)
+		--self.ViewMatrix:Rotate(math.rad(90), 0,-1,0)
 	end
 
 	-- update uniforms
@@ -451,7 +522,7 @@ function DEMO:Initialize()
 			{
 				dstSet = self.DescriptorSet,
 				descriptorType = vk.e.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				dstBinding = 0,
+				dstBinding = 1,
 
 				descriptorCount = 1,
 				pImageInfo = vk.s.DescriptorImageInfoArray{
@@ -466,54 +537,62 @@ function DEMO:Initialize()
 		0, nil
 	)
 
-	local vertex_code, vertex_size = vk.util.GLSLToSpirV("vert", [[
-		#version 400
-		#extension GL_ARB_separate_shader_objects : enable
-		#extension GL_ARB_shading_language_420pack : enable
+	local code, size = vk.util.GLSLToSpirV("vert", [[
+		#version 450
 
-		layout (location = 0) in vec3 position;
-		layout (location = 1) in vec3 color;
-		layout (location = 2) in vec2 uv;
+		in layout(location = 0) vec3 position;
+		in layout(location = 1) vec2 uv;
+		in layout(location = 2) vec3 color;
 
-		layout (location = 0) out vec2 frag_uv;
-		layout (location = 1) out vec3 frag_color;
-
-		/*layout (binding = 0) uniform matrices
+		uniform layout (std140, binding = 0) matrices_t
 		{
 			mat4 projection;
 			mat4 view;
-			mat4 model;
-		};*/
+			mat4 world;
+		} matrices;
+
+		// to fragment
+		out layout(location = 0) vec2 frag_uv;
+		out layout(location = 1) vec3 frag_color;
 
 		void main()
 		{
-			gl_Position = vec4(position, 1);// * (matrices.projection * matrices.view * matrices.model);
+			gl_Position = (matrices.projection * matrices.view * matrices.world) * vec4(position, 1);
 
+			// to fragment
 			frag_uv = uv;
 			frag_color = color;
 		}
 	]])
 
-	local fragment_code, fragment_size = vk.util.GLSLToSpirV("frag", [[
-		#version 400
-		#extension GL_ARB_separate_shader_objects : enable
-		#extension GL_ARB_shading_language_420pack : enable
+	self.VertexShader = self.Device:CreateShaderModule({
+		codeSize = size,
+		pCode = code,
+	})
 
-		//from vertex
-		layout (location = 0) in vec2 uv;
-		layout (location = 1) in vec3 color;
-
-		//to render pass (kinda)
-		layout (location = 0) out vec4 frag_color;
+	local code, size = vk.util.GLSLToSpirV("frag", [[
+		#version 450
 
 		//from descriptor sets
-		layout (binding = 0) uniform sampler2D tex;
+		uniform layout(binding = 1) sampler2D tex;
+
+		//from vertex
+		in layout(location = 0) vec2 uv;
+		in layout(location = 1) vec3 color;
+
+		//to render pass (kinda)
+		out layout(location = 0) vec4 frag_color;
 
 		void main()
 		{
-			frag_color = texture(tex, uv) + vec4(color, 1);
+			frag_color =  texture(tex, uv) * vec4(color, 1);
 		}
 	]])
+
+	self.FragmentShader = self.Device:CreateShaderModule({
+		codeSize = size,
+		pCode = code,
+	})
 
 	self.Pipeline = self.Device:CreateGraphicsPipelines(nil, 1, {
 		{
@@ -527,22 +606,29 @@ function DEMO:Initialize()
 						inputRate = vk.e.VERTEX_INPUT_RATE_VERTEX
 					}
 				},
-				vertexAttributeDescriptionCount = 2,
+				vertexAttributeDescriptionCount = 3,
 				pVertexAttributeDescriptions = vk.s.VertexInputAttributeDescriptionArray{
-					-- location 0: position
+					-- layout(location = 0) in vec3 position;
 					{
 						binding = 0,
 						location = 0,
 						format = vk.e.FORMAT_R32G32B32_SFLOAT,
 						offset = 0,
 					},
-					-- location 1: color
+					-- layout(location = 1) in vec2 uv;
 					{
 						binding = 0,
 						location = 1,
+						format = vk.e.FORMAT_R32G32_SFLOAT,
+						offset = ffi.sizeof(self.Vertices.data[0].pos),
+					},
+					-- layout(location = 2) in vec3 color;
+					{
+						binding = 0,
+						location = 2,
 						format = vk.e.FORMAT_R32G32B32_SFLOAT,
-						offset = ffi.sizeof(self.Vertices.data[0].position),
-					}
+						offset = ffi.sizeof(self.Vertices.data[0].pos)  + ffi.sizeof(self.Vertices.data[0].uv),
+					},
 				},
 			}),
 			renderPass = self.RenderPass,
@@ -551,18 +637,12 @@ function DEMO:Initialize()
 			pStages = vk.s.PipelineShaderStageCreateInfoArray{
 				{
 					stage = vk.e.SHADER_STAGE_VERTEX_BIT,
-					module = self.Device:CreateShaderModule({
-						codeSize = vertex_size,
-						pCode = vertex_code,
-					}),
+					module = self.VertexShader,
 					pName = "main",
 				},
 				{
 					stage = vk.e.SHADER_STAGE_FRAGMENT_BIT,
-					module = self.Device:CreateShaderModule({
-						codeSize = fragment_size,
-						pCode = fragment_code,
-					}),
+					module = self.FragmentShader,
 					pName = "main",
 				},
 			},
@@ -573,7 +653,7 @@ function DEMO:Initialize()
 
 			pRasterizationState = vk.s.PipelineRasterizationStateCreateInfo{
 				polygonMode = vk.e.POLYGON_MODE_FILL,
-				cullMode = vk.e.CULL_MODE_BACK_BIT,
+				cullMode = vk.e.CULL_MODE_NONE,--vk.e.CULL_MODE_BACK_BIT,
 				frontFace = vk.e.FRONT_FACE_CLOCKWISE,
 				depthClampEnable = vk.e.FALSE,
 				rasterizerDiscardEnable = vk.e.FALSE,
@@ -715,12 +795,6 @@ function DEMO:Initialize()
 
 	self:FlushSetupCMD()
 
-	self.PostPresentCMD = self.Device:AllocateCommandBuffers({
-		commandPool = self.DeviceCommandPool,
-		level = vk.e.COMMAND_BUFFER_LEVEL_PRIMARY,
-		commandBufferCount = #self.SwapChainBuffers,
-	})
-
 	while glfw.WindowShouldClose(self.Window) == 0 do
 		glfw.PollEvents()
 
@@ -764,55 +838,6 @@ function DEMO:Initialize()
 		})
 
 		self.Device:DestroySemaphore(semaphore, nil)
-
-		do
-			self.PostPresentCMD:Begin(vk.s.CommandBufferBeginInfo{
-				flags = 0,
-			})
-
-			self.PostPresentCMD:PipelineBarrier(
-				vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT, vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
-
-				0, nil,
-
-				0, nil,
-
-				1, vk.s.ImageMemoryBarrierArray{
-					{
-						srcAccessMask = 0,
-						dstAccessMask = vk.e.ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-						oldLayout = vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR,
-						newLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-						srcQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-						dstQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-						subresourceRange = {
-							aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
-
-							levelCount = 1,
-							baseMipLevel = 0,
-
-							layerCount = 1,
-							baseLayerLevel = 0
-						},
-						image = self.SwapChainBuffers[index].image,
-					}
-				}
-			)
-
-			self.PostPresentCMD:End()
-
-			self.DeviceQueue:Submit(
-				1, vk.s.SubmitInfoArray{
-					{
-						commandBufferCount = 1,
-						pCommandBuffers = vk.s.CommandBufferArray{
-							self.PostPresentCMD,
-						},
-					},
-				},
-				nil
-			)
-		end
 
 		self.DeviceQueue:WaitIdle()
 		self.Device:WaitIdle()
@@ -977,32 +1002,13 @@ function DEMO:CreateTexture(file_name, format)
 
 	local texture = {}
 
-	texture.width = image_infos[1].size
-	texture.height = image_infos[1].size
+	texture.width = image_infos[1].width
+	texture.height = image_infos[1].height
 	texture.mip_levels = #image_infos
 
 	local properties = self.PhysicalDevice:GetFormatProperties(format)
 
 	if bit.band(properties.linearTilingFeatures, vk.e.FORMAT_FEATURE_SAMPLED_IMAGE_BIT) ~= 0 then
-		for i, image_info in ipairs(image_infos) do
-			local image = self:CreateImage(
-				image_info.size,
-				image_info.size,
-				format,
-				vk.e.VK_IMAGE_USAGE_TRANSFER_SRC_BIT ,
-				vk.e.IMAGE_TILING_LINEAR,
-				vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT
-			)
-
-			self.Device:MapMemory(image.memory, 0, image.size, 0, "uint8_t", function(data)
-				ffi.copy(data, image_info.data, image_info.size)
-			end)
-
-			self:SetImageLayout(image.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
-
-			image_infos[i] = image
-		end
-
 		local image = self:CreateImage(
 			texture.width,
 			texture.height,
@@ -1016,10 +1022,34 @@ function DEMO:CreateTexture(file_name, format)
 		texture.image = image.image
 		texture.memory = image.memory
 		texture.size = image.size
+		texture.width = image.width
+		texture.height = image.height
 		texture.format = image.format
+
+		-- copy the mip maps into temporary images
+		for i, image_info in ipairs(image_infos) do
+			local image = self:CreateImage(
+				image_info.width,
+				image_info.height,
+				format,
+				vk.e.VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+				vk.e.IMAGE_TILING_LINEAR,
+				vk.e.MEMORY_PROPERTY_HOST_VISIBLE_BIT
+			)
+
+			self.Device:MapMemory(image.memory, 0, image.size, 0, "uint8_t", function(data)
+				--for i = 0, tonumber(info.size) - 1 do data[i] = math.random(255) end
+				ffi.copy(data, image_info.data, image.size)
+			end)
+
+			self:SetImageLayout(image.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+
+			image_infos[i] = image
+		end
 
 		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
 
+		-- copy from temporary mip map images to main image
 		for i, mip_map in ipairs(image_infos) do
 			self.SetupCMD:CopyImage(
 				mip_map.image, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -1046,16 +1076,15 @@ function DEMO:CreateTexture(file_name, format)
 					}
 				}
 			)
-		end
 
-		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-		self:FlushSetupCMD()
-		self:CreateSetupCMD()
-
-		for i, mip_map in ipairs(image_infos) do
 			self.Device:DestroyImage(mip_map.image, nil)
 			self.Device:FreeMemory(mip_map.memory, nil)
 		end
+
+		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+
+		self:FlushSetupCMD()
+		self:CreateSetupCMD()
 	else
 		texture.mip_levels = 1
 
@@ -1064,9 +1093,12 @@ function DEMO:CreateTexture(file_name, format)
 		texture.image = info.image
 		texture.memory = info.memory
 		texture.size = info.size
+		texture.width = info.width
+		texture.height = info.height
 		texture.format = info.format
 
 		self.Device:MapMemory(info.memory, 0, info.size, 0, "uint8_t", function(data)
+			--for i = 0, tonumber(info.size) - 1 do data[i] = math.random(255) end
 			ffi.copy(data, image_infos[1].data, image_infos[1].size)
 		end)
 

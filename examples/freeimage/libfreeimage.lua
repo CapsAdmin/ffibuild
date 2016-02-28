@@ -650,13 +650,13 @@ library.e = {
 }
 do
 
-	local function pow2floor(n)
-		return 2 ^ math.floor(math.log(n) / math.log(2))
+	local function pow2ceil(n)
+		return 2 ^ math.ceil(math.log(n) / math.log(2))
 	end
 
 	local function create_mip_map(bitmap, w, h, div)
-		local width = pow2floor(w)
-		local height = pow2floor(h)
+		local width = pow2ceil(w)
+		local height = pow2ceil(h)
 
 		local size = width > height and width or height
 
@@ -666,7 +666,9 @@ do
 
 		return {
 			data = library.GetBits(new_bitmap),
-			size = size,
+			size = library.GetMemorySize(new_bitmap),
+			width = size,
+			height = size,
 			new_bitmap = new_bitmap,
 		}
 	end
@@ -681,25 +683,23 @@ do
 		local stream = library.OpenMemory(buffer, #data)
 		local type = format or library.GetFileTypeFromMemory(stream, #data)
 
-		if type == library.e.FORMAT_UNKNOWN or type > library.e.FORMAT_RAW then -- huh...
-			library.CloseMemory(stream)
-			error("unknown format", 2)
-		end
+		print(type)
 
 		local temp = library.LoadFromMemory(type, stream, flags or 0)
-		local bitmap = library.ConvertTo8Bits(temp)
-		library.Unload(temp)
+		local bitmap = library.ConvertTo32Bits(temp)
+
 
 		local width = library.GetWidth(bitmap)
 		local height = library.GetHeight(bitmap)
 
 		local images = {}
 
-		for level = 1, math.floor(math.log(math.max(width, height)) / math.log(2)) do
+		for level = 0, math.floor(math.log(math.max(width, height)) / math.log(2)) do
 			images[level] = create_mip_map(bitmap, width, height, level)
 		end
 
 		library.Unload(bitmap)
+		library.Unload(temp)
 
 		library.CloseMemory(stream)
 
