@@ -2,7 +2,7 @@
 
 rm ../examples/glfw/libglfw.lua && make -C ../examples/glfw/
 rm ../examples/vulkan/libvulkan.lua && make -C ../examples/vulkan/
-rm ../examples/vulkan/libfreeimage.lua && make -C ../examples/freeimage/
+rm ../examples/freeimage/libfreeimage.lua && make -C ../examples/freeimage/
 
 export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"
 #export VK_LOADER_DEBUG=all

@@ -1,20 +1,8 @@
-
 local ffi = require("ffi")
-
-collectgarbage("stop") -- TODO
-if false then
-	local new = ffi.new
-	local gc = ffi.gc
-	ffi.gc = function(obj) return obj end
-	ffi.new = function(...) local obj = new(...) gc(obj, function() end) return obj end
-end
 
 package.path = package.path .. ";./../examples/?.lua"
 
 local vk = require("vulkan/libvulkan")
-
-_G.FFI_LIB = "../examples/glslang/glslang/glslang/libglslang.so"
-local glslang = require("glslang/libglslang")
 
 _G.FFI_LIB = "../examples/glfw/glfw/src/libglfw.so"
 local glfw = require("glfw/libglfw")
@@ -23,77 +11,6 @@ _G.FFI_LIB = "../examples/freeimage/freeimage/FreeImage/libfreeimage-3.18.0.so"
 local freeimage = require("freeimage/libfreeimage")
 
 _G.FFI_LIB = nil
-
-local function pow2floor(n)
-	return 2 ^ math.floor(math.log(n) / math.log(2))
-end
-
-local function create_mip_map(bitmap, w, h, div)
-	local width = pow2floor(w)
-	local height = pow2floor(h)
-
-	local size = width > height and width or height
-
-	size = size / (2 ^ div)
-
-	local new_bitmap = ffi.gc(freeimage.Rescale(bitmap, size, size, freeimage.e.IMAGE_FILTER_BILINEAR), freeimage.Unload)
-
-	return {
-		data = freeimage.GetBits(new_bitmap),
-		size = size,
-		new_bitmap = new_bitmap,
-	}
-end
-
-function freeimage.LoadImage(file_name, flags, format)
-	local file = io.open(file_name, "rb")
-	local data = file:read("*all")
-	file:close()
-
-	local buffer = ffi.cast("unsigned char *", data)
-
-	local stream = freeimage.OpenMemory(buffer, #data)
-	local type = format or freeimage.GetFileTypeFromMemory(stream, #data)
-
-	if type == freeimage.e.FORMAT_UNKNOWN or type > freeimage.e.FORMAT_RAW then -- huh...
-		freeimage.CloseMemory(stream)
-		error("unknown format", 2)
-	end
-
-	local temp = freeimage.LoadFromMemory(type, stream, flags or 0)
-	local bitmap = freeimage.ConvertTo8Bits(temp)
-	freeimage.Unload(temp)
-
-	local width = freeimage.GetWidth(bitmap)
-	local height = freeimage.GetHeight(bitmap)
-
-	local images = {}
-
-	for level = 1, math.floor(math.log(math.max(width, height)) / math.log(2)) do
-		images[level] = create_mip_map(bitmap, width, height, level)
-	end
-
-	freeimage.Unload(bitmap)
-
-	freeimage.CloseMemory(stream)
-
-	return images
-end
-
-local matrix_type = require("matrix44")
-
-local vector_type = ffi.typeof("float[3]")
-local vertex_type = ffi.typeof("$[2]", vector_type)
-local vertices_type = ffi.typeof("$[?]", vertex_type)
-
-local indices_type = ffi.typeof("uint32_t[?]")
-
-local uniforms_type = ffi.typeof("struct { $ projection; $ model; $ view; }", matrix_type, matrix_type, matrix_type)
-
-local create_vertices = function(tbl) return vertices_type(#tbl, tbl) end
-local create_indices = function(tbl) return indices_type(#tbl, tbl) end
-local create_matrix = function(x,y,z) return matrix_type(1,0,0,0, 0,1,0,0, 0,0,1,0, x or 0, y or 0, z or 0,1) end
-local create_uniforms = uniforms_type
 
 local DEMO = {}
 
@@ -125,27 +42,24 @@ DEMO.DebugFlags = {
 	vk.e.DEBUG_REPORT_DEBUG_BIT_EXT,
 }
 
-local GLSL = false
-
-if GLSL then
-	table.insert(DEMO.DeviceExtensions, "VK_NV_glsl_shader")
+for k,v in pairs(DEMO.DeviceValidationLayers) do
+	table.insert(DEMO.InstanceValidationLayers, v)
 end
 
-for k,v in pairs(DEMO.DeviceValidationLayers) do table.insert(DEMO.InstanceValidationLayers, v) end
+function DEMO:Initialize()
 
-function DEMO:InitializeGLFW()
-	glfw.SetErrorCallback(function(_, str) io.write(string.format("GLFW Error: %s\n", ffi.string(str))) end)
-	glfw.Init()
-	glfw.WindowHint(glfw.e.GLFW_CLIENT_API, glfw.e.GLFW_NO_API)
+	do -- create glfw window
+		glfw.SetErrorCallback(function(_, str) io.write(string.format("GLFW Error: %s\n", ffi.string(str))) end)
+		glfw.Init()
+		glfw.WindowHint(glfw.e.GLFW_CLIENT_API, glfw.e.GLFW_NO_API)
 
-	for _, ext in ipairs(glfw.GetRequiredInstanceExtensions()) do
-		table.insert(self.InstanceExtensions, ext)
+		for _, ext in ipairs(glfw.GetRequiredInstanceExtensions()) do
+			table.insert(self.InstanceExtensions, ext)
+		end
+
+		self.Window = glfw.CreateWindow(1024, 768, "vulkan", nil, nil)
 	end
 
-	self.Window = glfw.CreateWindow(1024, 768, "vulkan", nil, nil)
-end
-
-function DEMO:InitializeVulkan()
 	do -- create vulkan instance
 		local instance = vk.CreateInstance({
 			pApplicationInfo = vk.s.ApplicationInfo{
@@ -233,10 +147,10 @@ function DEMO:InitializeVulkan()
 	end
 
 	do -- setup the glfw window buffer
-		self.Surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
+		local surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
 
-		local formats = self.PhysicalDevice:GetSurfaceFormats(self.Surface)
-		local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(self.Surface)
+		local formats = self.PhysicalDevice:GetSurfaceFormats(surface)
+		local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(surface)
 
 		local prefered_format = formats[1].format
 
@@ -254,15 +168,17 @@ function DEMO:InitializeVulkan()
 
 		local present_mode
 
-		for _, mode in ipairs(self.PhysicalDevice:GetSurfacePresentModes(self.Surface)) do
+		for _, mode in ipairs(self.PhysicalDevice:GetSurfacePresentModes(surface)) do
 			if mode == vk.e.PRESENT_MODE_FIFO_KHR then
 				present_mode = mode
 				break
 			end
 		end
 
+		self.Surface = surface
+
 		self.SwapChain = self.Device:CreateSwapchain({
-			surface = self.Surface,
+			surface = surface,
 			minImageCount = math.min(capabilities.minImageCount + 1, capabilities.maxImageCount == 0 and math.huge or capabilities.maxImageCount),
 			imageFormat = prefered_format,
 			imagecolorSpace = formats[1].colorSpace,
@@ -281,10 +197,112 @@ function DEMO:InitializeVulkan()
 			clipped = vk.e.TRUE,
 		})
 
+		self:CreateSetupCMD()
+
+		do -- depth buffer to use in render pass
+			self.DepthBuffer = self:CreateImage(self.Width, self.Height, vk.e.FORMAT_D16_UNORM, vk.e.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vk.e.IMAGE_TILING_OPTIMAL, 0)
+
+			self:SetImageLayout(self.DepthBuffer.image, vk.e.IMAGE_ASPECT_DEPTH_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+
+			self.DepthBuffer.view = self.Device:CreateImageView({
+				viewType = vk.e.IMAGE_VIEW_TYPE_2D,
+				image = self.DepthBuffer.image,
+				format = self.DepthBuffer.format,
+				flags = 0,
+				subresourceRange = {
+					aspectMask = vk.e.IMAGE_ASPECT_DEPTH_BIT,
+
+					levelCount = 1,
+					baseMipLevel = 0,
+
+					layerCount = 1,
+					baseLayerLevel = 0
+				},
+			})
+		end
+
+		self.RenderPass = self.Device:CreateRenderPass({
+			attachmentCount = 2,
+			pAttachments = vk.s.AttachmentDescriptionArray{
+				{
+					format = prefered_format,
+					samples = vk.e.SAMPLE_COUNT_1_BIT,
+					loadOp = vk.e.ATTACHMENT_LOAD_OP_CLEAR,
+					storeOp = vk.e.ATTACHMENT_STORE_OP_STORE,
+					stencilLoadOp = vk.e.ATTACHMENT_LOAD_OP_DONT_CARE,
+					stencilStoreOp = vk.e.ATTACHMENT_STORE_OP_DONT_CARE,
+					initialLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+					finalLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				},
+				{
+					format = self.DepthBuffer.format,
+					samples = vk.e.SAMPLE_COUNT_1_BIT,
+					loadOp = vk.e.ATTACHMENT_LOAD_OP_CLEAR,
+					storeOp = vk.e.ATTACHMENT_STORE_OP_DONT_CARE,
+					stencilLoadOp = vk.e.ATTACHMENT_LOAD_OP_DONT_CARE,
+					stencilStoreOp = vk.e.ATTACHMENT_STORE_OP_DONT_CARE,
+					initialLayout = vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+					finalLayout = vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+				},
+			},
+			subpassCount = 1,
+			pSubpasses = vk.s.SubpassDescriptionArray{
+				{
+					pipelineBindPoint = vk.e.PIPELINE_BIND_POINT_GRAPHICS,
+					flags = 0,
+
+					inputAttachmentCount = 0,
+					pInputAttachments = nil,
+
+					colorAttachmentCount = 1,
+					pColorAttachments = vk.s.AttachmentReferenceArray{
+						{
+							attachment = 0,
+							layout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+						},
+					},
+
+					pResolveAttachments = nil,
+					pDepthStencilAttachment = vk.s.AttachmentReference{
+						attachment = 1,
+						layout = vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+					},
+
+					preserveAttachmentCount = 0,
+					pPreserveAttachments = nil,
+				},
+			},
+
+			dependencyCount = 0,
+			pDependencies = nil,
+		})
+
 		self.SwapChainBuffers = {}
 
 		for i, image in ipairs(self.Device:GetSwapchainImages(self.SwapChain)) do
 			self:SetImageLayout(image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR)
+
+			local view = self.Device:CreateImageView({
+				viewType = vk.e.IMAGE_VIEW_TYPE_2D,
+				image = image,
+				format = prefered_format,
+				flags = 0,
+				components = {
+					vk.e.COMPONENT_SWIZZLE_R,
+					vk.e.COMPONENT_SWIZZLE_G,
+					vk.e.COMPONENT_SWIZZLE_B,
+					vk.e.COMPONENT_SWIZZLE_A
+				},
+				subresourceRange = {
+					aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+
+					levelCount = 1,
+					baseMipLevel = 0,
+
+					layerCount = 1,
+					baseLayerLevel = 0
+				},
+			})
 
 			self.SwapChainBuffers[i] = {
 				cmd = self.Device:AllocateCommandBuffers({
@@ -293,139 +311,127 @@ function DEMO:InitializeVulkan()
 					commandBufferCount = 1,
 				}),
 				image = image,
-				view = self.Device:CreateImageView({
-					viewType = vk.e.IMAGE_VIEW_TYPE_2D,
-					image = image,
-					format = prefered_format,
-					flags = 0,
-					components = {
-						vk.e.COMPONENT_SWIZZLE_R,
-						vk.e.COMPONENT_SWIZZLE_G,
-						vk.e.COMPONENT_SWIZZLE_B,
-						vk.e.COMPONENT_SWIZZLE_A
-					},
-					subresourceRange = {
-						aspectMask = vk.e.IMAGE_ASPECT_COLOR_BIT,
+				view = view,
+				framebuffer = self.Device:CreateFramebuffer({
+					renderPass = self.RenderPass,
 
-						levelCount = 1,
-						baseMipLevel = 0,
-
-						layerCount = 1,
-						baseLayerLevel = 0
+					attachmentCount = 2,
+					pAttachments = vk.s.ImageViewArray{
+						view,
+						self.DepthBuffer.view
 					},
-				}),
+
+					width = self.Width,
+					height = self.Height,
+					layers = 1,
+				})
 			}
 		end
 	end
-end
 
-function DEMO:PrepareData()
-	do
-		self.DepthBuffer = self:CreateImage(self.Width, self.Height, vk.e.FORMAT_D16_UNORM, vk.e.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vk.e.IMAGE_TILING_OPTIMAL, 0)
+	do -- data layout
+		self.DescriptorLayout = self.Device:CreateDescriptorSetLayout({
+			bindingCount = 2,
+			pBindings = vk.s.DescriptorSetLayoutBindingArray{
+				{
+					binding = 0,
+					descriptorType = vk.e.DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+					descriptorCount = 1,
+					stageFlags = vk.e.SHADER_STAGE_VERTEX_BIT,
+					pImmutableSamplers = nil,
+				},
+				{
+					binding = 1,
+					descriptorType = vk.e.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+					descriptorCount = 1,
+					stageFlags = vk.e.SHADER_STAGE_FRAGMENT_BIT,
+					pImmutableSamplers = nil,
+				},
+			},
+		})
 
-		self:SetImageLayout(self.DepthBuffer.image, vk.e.IMAGE_ASPECT_DEPTH_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+		self.PipelineLayout = self.Device:CreatePipelineLayout({
+			setLayoutCount = 1,
+			pSetLayouts = vk.s.DescriptorSetLayoutArray{
+				self.DescriptorLayout,
+			},
+		})
 
-		self.DepthBuffer.view = self.Device:CreateImageView({
-			viewType = vk.e.IMAGE_VIEW_TYPE_2D,
-			image = self.DepthBuffer.image,
-			format = self.DepthBuffer.format,
-			flags = 0,
-			subresourceRange = {
-				aspectMask = vk.e.IMAGE_ASPECT_DEPTH_BIT,
+		self.DescriptorSet = self.Device:AllocateDescriptorSets({
+			descriptorPool = self.Device:CreateDescriptorPool({
+				maxSets = 2,
+				poolSizeCount = 2,
+				pPoolSizes = vk.s.DescriptorPoolSizeArray{
+					{
+						type = vk.e.DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+						descriptorCount = 1
+					},
+					{
+						type = vk.e.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+						descriptorCount = 1
+					},
+				}
+			}),
 
-				levelCount = 1,
-				baseMipLevel = 0,
-
-				layerCount = 1,
-				baseLayerLevel = 0
+			descriptorSetCount = 1,
+			pSetLayouts = vk.s.DescriptorSetLayoutArray{
+				self.DescriptorLayout
 			},
 		})
 	end
 
-	self.Texture = self:CreateTexture("./volcano.jpg", vk.e.FORMAT_B8G8R8A8_UNORM)
+	do
+		local matrix_type = require("matrix44")
 
-	self.Vertices = self:CreateBuffer(
-		vk.e.BUFFER_USAGE_VERTEX_BUFFER_BIT,
-		create_vertices
-		{
-			{ { 1.0,  1.0, 0.0 }, { 1.0, 0.0, 0.0 } },
-			{ {-1.0,  1.0, 0.0 }, { 0.0, 1.0, 0.0 } },
-			{ { 0.0, -1.0, 0.0 }, { 0.0, 0.0, 1.0 } },
-		}
-	)
+		local vector2_type = ffi.typeof("float[2]")
+		local vector3_type = ffi.typeof("float[3]")
+		local vertex_type = ffi.typeof("struct {$ position; $ color; $ uv; }", vector3_type, vector3_type, vector2_type)
+		local vertices_type = ffi.typeof("$[?]", vertex_type)
 
-	self.Indices = self:CreateBuffer(
-		vk.e.BUFFER_USAGE_INDEX_BUFFER_BIT,
-		create_indices
-		{
-			0,
-			1,
-			2,
-		}
-	)
-	self.Indices.count = self.Indices.size / ffi.sizeof("uint32_t")
+		local indices_type = ffi.typeof("uint32_t[?]")
 
-	self.Uniforms = self:CreateBuffer(
-		vk.e.BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-		create_uniforms
-		{
-			projection = create_matrix():Perspective(math.rad(60), 0.1, 256, self.Width / self.Height),
-			view = create_matrix(0,0,-30),
-			model = create_matrix(),
-		}
-	)
-end
+		local uniforms_type = ffi.typeof("struct { $ projection; $ model; $ view; }", matrix_type, matrix_type, matrix_type)
 
-function DEMO:PrepareDescriptors()
-	self.DescriptorLayout = self.Device:CreateDescriptorSetLayout({
-		bindingCount = 2,
-		pBindings = vk.s.DescriptorSetLayoutBindingArray{
+		local create_vertices = function(tbl) return vertices_type(#tbl, tbl) end
+		local create_indices = function(tbl) return indices_type(#tbl, tbl) end
+		local create_matrix = function(x,y,z) return matrix_type(1,0,0,0, 0,1,0,0, 0,0,1,0, x or 0, y or 0, z or 0,1) end
+		local create_uniforms = uniforms_type
+
+		self.Texture = self:CreateTexture("./volcano.jpg", vk.e.FORMAT_B8G8R8A8_UNORM)
+
+		self.Vertices = self:CreateBuffer(
+			vk.e.BUFFER_USAGE_VERTEX_BUFFER_BIT,
+			create_vertices
 			{
-				binding = 0,
-				descriptorType = vk.e.DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-				descriptorCount = 1,
-				stageFlags = vk.e.SHADER_STAGE_VERTEX_BIT,
-				pImmutableSamplers = nil,
-			},
-			{
-				binding = 1,
-				descriptorType = vk.e.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				descriptorCount = 1,
-				stageFlags = vk.e.SHADER_STAGE_FRAGMENT_BIT,
-				pImmutableSamplers = nil,
-			},
-		},
-	})
-
-	self.PipelineLayout = self.Device:CreatePipelineLayout({
-		setLayoutCount = 1,
-		pSetLayouts = vk.s.DescriptorSetLayoutArray{
-			self.DescriptorLayout,
-		},
-	})
-
-	self.DescriptorSet = self.Device:AllocateDescriptorSets({
-		descriptorPool = self.Device:CreateDescriptorPool({
-			maxSets = 2,
-			poolSizeCount = 2,
-			pPoolSizes = vk.s.DescriptorPoolSizeArray{
-				{
-					type = vk.e.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-					descriptorCount = 1
-				},
-				{
-					type = vk.e.DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-					descriptorCount = 1
-				},
+				{ { 1.0,  1.0, 0.0 }, { 1.0, 0.0, 0.0 }, {1, 0} },
+				{ {-1.0,  1.0, 0.0 }, { 0.0, 1.0, 0.0 }, {0, 0} },
+				{ { 0.0, -1.0, 0.0 }, { 0.0, 0.0, 1.0 }, {0, 1} },
 			}
-		}),
+		)
 
-		descriptorSetCount = 1,
-		pSetLayouts = vk.s.DescriptorSetLayoutArray{
-			self.DescriptorLayout
-		},
-	})
+		self.Indices = self:CreateBuffer(
+			vk.e.BUFFER_USAGE_INDEX_BUFFER_BIT,
+			create_indices
+			{
+				0,
+				1,
+				2,
+			}
+		)
+		self.Indices.count = self.Indices.size / ffi.sizeof("uint32_t")
 
+		self.Uniforms = self:CreateBuffer(
+			vk.e.BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			create_uniforms
+			{
+				projection = create_matrix():Perspective(math.rad(60), 0.1, 256, self.Width / self.Height),
+				view = create_matrix(0,0,-30),
+				model = create_matrix(),
+			}
+		)
+	end
+
+	-- update uniforms
 	self.Device:UpdateDescriptorSets(
 		2, vk.s.WriteDescriptorSetArray{
 			{
@@ -437,15 +443,15 @@ function DEMO:PrepareDescriptors()
 				pBufferInfo = vk.s.DescriptorBufferInfoArray{
 					{
 						buffer = self.Uniforms.buffer,
-						offset = 0,
 						range = self.Uniforms.size,
+						offset = 0,
 					}
 				}
 			},
 			{
 				dstSet = self.DescriptorSet,
 				descriptorType = vk.e.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				dstBinding = 1,
+				dstBinding = 0,
 
 				descriptorCount = 1,
 				pImageInfo = vk.s.DescriptorImageInfoArray{
@@ -459,255 +465,57 @@ function DEMO:PrepareDescriptors()
 		},
 		0, nil
 	)
-end
 
-function DEMO:PrepareRenderPass()
-	self.RenderPass = self.Device:CreateRenderPass({
-		attachmentCount = 2,
-		pAttachments = vk.s.AttachmentDescriptionArray{
-			{
-				format = self.Texture.format,
-				samples = vk.e.SAMPLE_COUNT_1_BIT,
-				loadOp = vk.e.ATTACHMENT_LOAD_OP_CLEAR,
-				storeOp = vk.e.ATTACHMENT_STORE_OP_STORE,
-				stencilLoadOp = vk.e.ATTACHMENT_LOAD_OP_DONT_CARE,
-				stencilStoreOp = vk.e.ATTACHMENT_STORE_OP_DONT_CARE,
-				initialLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-				finalLayout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-			},
-			{
-				format = self.DepthBuffer.format,
-				samples = vk.e.SAMPLE_COUNT_1_BIT,
-				loadOp = vk.e.ATTACHMENT_LOAD_OP_CLEAR,
-				storeOp = vk.e.ATTACHMENT_STORE_OP_DONT_CARE,
-				stencilLoadOp = vk.e.ATTACHMENT_LOAD_OP_DONT_CARE,
-				stencilStoreOp = vk.e.ATTACHMENT_STORE_OP_DONT_CARE,
-				initialLayout = vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-				finalLayout = vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-			},
-		},
-		subpassCount = 1,
-		pSubpasses = vk.s.SubpassDescriptionArray{
-			{
-				pipelineBindPoint = vk.e.PIPELINE_BIND_POINT_GRAPHICS,
-				flags = 0,
+	local vertex_code, vertex_size = vk.util.GLSLToSpirV("vert", [[
+		#version 400
+		#extension GL_ARB_separate_shader_objects : enable
+		#extension GL_ARB_shading_language_420pack : enable
 
-				inputAttachmentCount = 0,
-				pInputAttachments = nil,
+		layout (location = 0) in vec3 position;
+		layout (location = 1) in vec3 color;
+		layout (location = 2) in vec2 uv;
 
-				colorAttachmentCount = 1,
-				pColorAttachments = vk.s.AttachmentReferenceArray{
-					{
-						attachment = 0,
-						layout = vk.e.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-					},
-				},
+		layout (location = 0) out vec2 frag_uv;
+		layout (location = 1) out vec3 frag_color;
 
-				pResolveAttachments = nil,
-				pDepthStencilAttachment = vk.s.AttachmentReference{
-					attachment = 0,
-					layout = vk.e.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-				},
+		/*layout (binding = 0) uniform matrices
+		{
+			mat4 projection;
+			mat4 view;
+			mat4 model;
+		};*/
 
-				preserveAttachmentCount = 0,
-				pPreserveAttachments = nil,
-			},
-		},
+		void main()
+		{
+			gl_Position = vec4(position, 1);// * (matrices.projection * matrices.view * matrices.model);
 
-		dependencyCount = 0,
-		pDependencies = nil,
-	})
-end
-
-function DEMO:PreparePipeline()
-	local vertex_code, vertex_size
-	local fragment_code, fragment_size
-
-	if GLSL then
-		vertex_code = [[
-			#version 400
-			#extension GL_ARB_separate_shader_objects : enable
-			#extension GL_ARB_shading_language_420pack : enable
-			layout (location = 0) in vec4 pos;
-			layout (location = 1) in vec2 attr;
-			layout (location = 0) out vec2 texcoord;
-			void main() {
-			   texcoord = attr;
-			   gl_Position = pos;
-			}
-		]]
-
-		vertex_size = #vertex_code
-		vertex_code = ffi.cast("uint32_t *", vertex_code)
-
-		fragment_code = [[
-			#version 400
-			#extension GL_ARB_separate_shader_objects : enable
-			#extension GL_ARB_shading_language_420pack : enable
-			layout (binding = 0) uniform sampler2D tex;
-			layout (location = 0) in vec2 texcoord;
-			layout (location = 0) out vec4 uFragColor;
-			void main() {
-			   uFragColor = texture(tex, texcoord);
-			}
-		]]
-		fragment_size = #fragment_code
-		fragment_code = ffi.cast("uint32_t *", fragment_code)
-	else
-		vertex_code = {
-			0x03, 0x02, 0x23, 0x07, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x08, 0x00,
-			0x1e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x00, 0x02, 0x00,
-			0x01, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x06, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x47, 0x4c, 0x53, 0x4c, 0x2e, 0x73, 0x74, 0x64, 0x2e, 0x34, 0x35, 0x30,
-			0x00, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x01, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x04, 0x00, 0x00, 0x00, 0x6d, 0x61, 0x69, 0x6e, 0x00, 0x00, 0x00, 0x00,
-			0x09, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00,
-			0x17, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x1d, 0x00, 0x00, 0x00,
-			0x03, 0x00, 0x03, 0x00, 0x02, 0x00, 0x00, 0x00, 0x90, 0x01, 0x00, 0x00,
-			0x04, 0x00, 0x09, 0x00, 0x47, 0x4c, 0x5f, 0x41, 0x52, 0x42, 0x5f, 0x73,
-			0x65, 0x70, 0x61, 0x72, 0x61, 0x74, 0x65, 0x5f, 0x73, 0x68, 0x61, 0x64,
-			0x65, 0x72, 0x5f, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x00, 0x00,
-			0x04, 0x00, 0x09, 0x00, 0x47, 0x4c, 0x5f, 0x41, 0x52, 0x42, 0x5f, 0x73,
-			0x68, 0x61, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x6c, 0x61, 0x6e, 0x67, 0x75,
-			0x61, 0x67, 0x65, 0x5f, 0x34, 0x32, 0x30, 0x70, 0x61, 0x63, 0x6b, 0x00,
-			0x05, 0x00, 0x04, 0x00, 0x04, 0x00, 0x00, 0x00, 0x6d, 0x61, 0x69, 0x6e,
-			0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x05, 0x00, 0x09, 0x00, 0x00, 0x00,
-			0x74, 0x65, 0x78, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x00, 0x00, 0x00, 0x00,
-			0x05, 0x00, 0x04, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x61, 0x74, 0x74, 0x72,
-			0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x06, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x67, 0x6c, 0x5f, 0x50, 0x65, 0x72, 0x56, 0x65, 0x72, 0x74, 0x65, 0x78,
-			0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x06, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x67, 0x6c, 0x5f, 0x50, 0x6f, 0x73, 0x69, 0x74,
-			0x69, 0x6f, 0x6e, 0x00, 0x06, 0x00, 0x07, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x01, 0x00, 0x00, 0x00, 0x67, 0x6c, 0x5f, 0x50, 0x6f, 0x69, 0x6e, 0x74,
-			0x53, 0x69, 0x7a, 0x65, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x07, 0x00,
-			0x11, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x67, 0x6c, 0x5f, 0x43,
-			0x6c, 0x69, 0x70, 0x44, 0x69, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x00,
-			0x05, 0x00, 0x03, 0x00, 0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x05, 0x00, 0x03, 0x00, 0x17, 0x00, 0x00, 0x00, 0x70, 0x6f, 0x73, 0x00,
-			0x05, 0x00, 0x05, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x67, 0x6c, 0x5f, 0x56,
-			0x65, 0x72, 0x74, 0x65, 0x78, 0x49, 0x44, 0x00, 0x05, 0x00, 0x06, 0x00,
-			0x1d, 0x00, 0x00, 0x00, 0x67, 0x6c, 0x5f, 0x49, 0x6e, 0x73, 0x74, 0x61,
-			0x6e, 0x63, 0x65, 0x49, 0x44, 0x00, 0x00, 0x00, 0x47, 0x00, 0x04, 0x00,
-			0x09, 0x00, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x47, 0x00, 0x04, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x00,
-			0x01, 0x00, 0x00, 0x00, 0x48, 0x00, 0x05, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x48, 0x00, 0x05, 0x00, 0x11, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x0b, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x48, 0x00, 0x05, 0x00,
-			0x11, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00,
-			0x03, 0x00, 0x00, 0x00, 0x47, 0x00, 0x03, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x02, 0x00, 0x00, 0x00, 0x47, 0x00, 0x04, 0x00, 0x17, 0x00, 0x00, 0x00,
-			0x1e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x47, 0x00, 0x04, 0x00,
-			0x1c, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
-			0x47, 0x00, 0x04, 0x00, 0x1d, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00,
-			0x06, 0x00, 0x00, 0x00, 0x13, 0x00, 0x02, 0x00, 0x02, 0x00, 0x00, 0x00,
-			0x21, 0x00, 0x03, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
-			0x16, 0x00, 0x03, 0x00, 0x06, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
-			0x17, 0x00, 0x04, 0x00, 0x07, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
-			0x02, 0x00, 0x00, 0x00, 0x20, 0x00, 0x04, 0x00, 0x08, 0x00, 0x00, 0x00,
-			0x03, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x3b, 0x00, 0x04, 0x00,
-			0x08, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
-			0x20, 0x00, 0x04, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x07, 0x00, 0x00, 0x00, 0x3b, 0x00, 0x04, 0x00, 0x0a, 0x00, 0x00, 0x00,
-			0x0b, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x17, 0x00, 0x04, 0x00,
-			0x0d, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
-			0x15, 0x00, 0x04, 0x00, 0x0e, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x2b, 0x00, 0x04, 0x00, 0x0e, 0x00, 0x00, 0x00,
-			0x0f, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x04, 0x00,
-			0x10, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00,
-			0x1e, 0x00, 0x05, 0x00, 0x11, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00,
-			0x06, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x20, 0x00, 0x04, 0x00,
-			0x12, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x3b, 0x00, 0x04, 0x00, 0x12, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00,
-			0x03, 0x00, 0x00, 0x00, 0x15, 0x00, 0x04, 0x00, 0x14, 0x00, 0x00, 0x00,
-			0x20, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x2b, 0x00, 0x04, 0x00,
-			0x14, 0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x20, 0x00, 0x04, 0x00, 0x16, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x0d, 0x00, 0x00, 0x00, 0x3b, 0x00, 0x04, 0x00, 0x16, 0x00, 0x00, 0x00,
-			0x17, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0x04, 0x00,
-			0x19, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00,
-			0x20, 0x00, 0x04, 0x00, 0x1b, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x14, 0x00, 0x00, 0x00, 0x3b, 0x00, 0x04, 0x00, 0x1b, 0x00, 0x00, 0x00,
-			0x1c, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x3b, 0x00, 0x04, 0x00,
-			0x1b, 0x00, 0x00, 0x00, 0x1d, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x36, 0x00, 0x05, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x02, 0x00,
-			0x05, 0x00, 0x00, 0x00, 0x3d, 0x00, 0x04, 0x00, 0x07, 0x00, 0x00, 0x00,
-			0x0c, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x03, 0x00,
-			0x09, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x3d, 0x00, 0x04, 0x00,
-			0x0d, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00,
-			0x41, 0x00, 0x05, 0x00, 0x19, 0x00, 0x00, 0x00, 0x1a, 0x00, 0x00, 0x00,
-			0x13, 0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x03, 0x00,
-			0x1a, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xfd, 0x00, 0x01, 0x00,
-			0x38, 0x00, 0x01, 0x00
+			frag_uv = uv;
+			frag_color = color;
 		}
-		vertex_size = #vertex_code
-		vertex_code = ffi.cast("const unsigned int *", ffi.new("uint8_t[?]", vertex_size, vertex_code))
+	]])
 
-		fragment_code = {
-			0x03, 0x02, 0x23, 0x07, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x08, 0x00,
-			0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x00, 0x02, 0x00,
-			0x01, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x06, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x47, 0x4c, 0x53, 0x4c, 0x2e, 0x73, 0x74, 0x64, 0x2e, 0x34, 0x35, 0x30,
-			0x00, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x01, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x07, 0x00, 0x04, 0x00, 0x00, 0x00,
-			0x04, 0x00, 0x00, 0x00, 0x6d, 0x61, 0x69, 0x6e, 0x00, 0x00, 0x00, 0x00,
-			0x09, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x00, 0x10, 0x00, 0x03, 0x00,
-			0x04, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x03, 0x00, 0x03, 0x00,
-			0x02, 0x00, 0x00, 0x00, 0x90, 0x01, 0x00, 0x00, 0x04, 0x00, 0x09, 0x00,
-			0x47, 0x4c, 0x5f, 0x41, 0x52, 0x42, 0x5f, 0x73, 0x65, 0x70, 0x61, 0x72,
-			0x61, 0x74, 0x65, 0x5f, 0x73, 0x68, 0x61, 0x64, 0x65, 0x72, 0x5f, 0x6f,
-			0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x00, 0x00, 0x04, 0x00, 0x09, 0x00,
-			0x47, 0x4c, 0x5f, 0x41, 0x52, 0x42, 0x5f, 0x73, 0x68, 0x61, 0x64, 0x69,
-			0x6e, 0x67, 0x5f, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x5f,
-			0x34, 0x32, 0x30, 0x70, 0x61, 0x63, 0x6b, 0x00, 0x05, 0x00, 0x04, 0x00,
-			0x04, 0x00, 0x00, 0x00, 0x6d, 0x61, 0x69, 0x6e, 0x00, 0x00, 0x00, 0x00,
-			0x05, 0x00, 0x05, 0x00, 0x09, 0x00, 0x00, 0x00, 0x75, 0x46, 0x72, 0x61,
-			0x67, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x00, 0x00, 0x05, 0x00, 0x03, 0x00,
-			0x0d, 0x00, 0x00, 0x00, 0x74, 0x65, 0x78, 0x00, 0x05, 0x00, 0x05, 0x00,
-			0x11, 0x00, 0x00, 0x00, 0x74, 0x65, 0x78, 0x63, 0x6f, 0x6f, 0x72, 0x64,
-			0x00, 0x00, 0x00, 0x00, 0x47, 0x00, 0x04, 0x00, 0x09, 0x00, 0x00, 0x00,
-			0x1e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x47, 0x00, 0x04, 0x00,
-			0x0d, 0x00, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x47, 0x00, 0x04, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x21, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x47, 0x00, 0x04, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x1e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x00, 0x02, 0x00,
-			0x02, 0x00, 0x00, 0x00, 0x21, 0x00, 0x03, 0x00, 0x03, 0x00, 0x00, 0x00,
-			0x02, 0x00, 0x00, 0x00, 0x16, 0x00, 0x03, 0x00, 0x06, 0x00, 0x00, 0x00,
-			0x20, 0x00, 0x00, 0x00, 0x17, 0x00, 0x04, 0x00, 0x07, 0x00, 0x00, 0x00,
-			0x06, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x20, 0x00, 0x04, 0x00,
-			0x08, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
-			0x3b, 0x00, 0x04, 0x00, 0x08, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00,
-			0x03, 0x00, 0x00, 0x00, 0x19, 0x00, 0x09, 0x00, 0x0a, 0x00, 0x00, 0x00,
-			0x06, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x1b, 0x00, 0x03, 0x00, 0x0b, 0x00, 0x00, 0x00,
-			0x0a, 0x00, 0x00, 0x00, 0x20, 0x00, 0x04, 0x00, 0x0c, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x3b, 0x00, 0x04, 0x00,
-			0x0c, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x17, 0x00, 0x04, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
-			0x02, 0x00, 0x00, 0x00, 0x20, 0x00, 0x04, 0x00, 0x10, 0x00, 0x00, 0x00,
-			0x01, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x3b, 0x00, 0x04, 0x00,
-			0x10, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-			0x36, 0x00, 0x05, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0xf8, 0x00, 0x02, 0x00,
-			0x05, 0x00, 0x00, 0x00, 0x3d, 0x00, 0x04, 0x00, 0x0b, 0x00, 0x00, 0x00,
-			0x0e, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x3d, 0x00, 0x04, 0x00,
-			0x0f, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x00,
-			0x57, 0x00, 0x05, 0x00, 0x07, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00,
-			0x0e, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x03, 0x00,
-			0x09, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0xfd, 0x00, 0x01, 0x00,
-			0x38, 0x00, 0x01, 0x00
+	local fragment_code, fragment_size = vk.util.GLSLToSpirV("frag", [[
+		#version 400
+		#extension GL_ARB_separate_shader_objects : enable
+		#extension GL_ARB_shading_language_420pack : enable
+
+		//from vertex
+		layout (location = 0) in vec2 uv;
+		layout (location = 1) in vec3 color;
+
+		//to render pass (kinda)
+		layout (location = 0) out vec4 frag_color;
+
+		//from descriptor sets
+		layout (binding = 0) uniform sampler2D tex;
+
+		void main()
+		{
+			frag_color = texture(tex, uv) + vec4(color, 1);
 		}
-		fragment_size = #fragment_code
-		fragment_code = ffi.cast("const unsigned int *", ffi.new("uint8_t[?]", fragment_size, fragment_code))
-	end
+	]])
 
-	local cache = self.Device:CreatePipelineCache({})
-
-	self.Pipeline = self.Device:CreateGraphicsPipelines(cache, 1, {
+	self.Pipeline = self.Device:CreateGraphicsPipelines(nil, 1, {
 		{
 			layout = self.PipelineLayout,
 			pVertexInputState = vk.s.PipelineVertexInputStateCreateInfo({
@@ -733,7 +541,7 @@ function DEMO:PreparePipeline()
 						binding = 0,
 						location = 1,
 						format = vk.e.FORMAT_R32G32B32_SFLOAT,
-						offset = ffi.sizeof(self.Vertices.data[0][0]),
+						offset = ffi.sizeof(self.Vertices.data[0].position),
 					}
 				},
 			}),
@@ -821,37 +629,6 @@ function DEMO:PreparePipeline()
 		}
 	})
 
-	self.Device:DestroyPipelineCache(cache, nil)
-end
-
-function DEMO:PrepareFramebuffers()
-	for i, buffer in ipairs(self.SwapChainBuffers) do
-		buffer.framebuffer = self.Device:CreateFramebuffer({
-			renderPass = self.RenderPass,
-
-			attachmentCount = 2,
-			pAttachments = vk.s.ImageViewArray{
-				buffer.view,
-				self.DepthBuffer.view
-			},
-
-			width = self.Width,
-			height = self.Height,
-			layers = 1,
-		})
-	end
-end
-
-function DEMO:Initialize()
-	self:InitializeGLFW()
-	self:InitializeVulkan()
-
-	self:PrepareData() -- create depth buffers, framebuffers, textures, vertices, indices, etc
-	self:PrepareDescriptors() -- setup the layout of the data like how to bind uniforms and textures
-
-	self:PrepareRenderPass()
-	self:PrepareFramebuffers()
-	self:PreparePipeline()
 	self:FlushSetupCMD()
 
 	for i, buffer in ipairs(self.SwapChainBuffers) do
@@ -944,9 +721,7 @@ function DEMO:Initialize()
 		commandBufferCount = #self.SwapChainBuffers,
 	})
 
-	--while glfw.WindowShouldClose(self.Window) == 0 do
-	--for i = 1, 5 do
-	do
+	while glfw.WindowShouldClose(self.Window) == 0 do
 		glfw.PollEvents()
 
 		self.DeviceQueue:WaitIdle()
@@ -1042,25 +817,6 @@ function DEMO:Initialize()
 		self.DeviceQueue:WaitIdle()
 		self.Device:WaitIdle()
 	end
-
-	io.write("reached end of demo\n")
-
-	local function table_print(tbl, level)
-		level = level or 0
-		for k,v in pairs(tbl) do
-			if type(v) == "table" then
-				io.write(("\t"):rep(level)..tostring(k).." = {\n")
-				level = level + 1
-				table_print(v, level)
-				level = level - 1
-				io.write(("\t"):rep(level).."}\n")
-			elseif type(v) ~= "function" then
-				io.write(string.format(("\t"):rep(level) .. "%s = %s\n", tostring(k), tostring(v)))
-			end
-		end
-	end
-
---	table_print(self)
 end
 
 function DEMO:GetMemoryTypeFromProperties(type_bits, requirements_mask)
@@ -1227,7 +983,7 @@ function DEMO:CreateTexture(file_name, format)
 
 	local properties = self.PhysicalDevice:GetFormatProperties(format)
 
-	if bit.band(properties.linearTilingFeatures, vk.e.FORMAT_FEATURE_SAMPLED_IMAGE_BIT) == 0 then
+	if bit.band(properties.linearTilingFeatures, vk.e.FORMAT_FEATURE_SAMPLED_IMAGE_BIT) ~= 0 then
 		for i, image_info in ipairs(image_infos) do
 			local image = self:CreateImage(
 				image_info.size,
@@ -1239,7 +995,7 @@ function DEMO:CreateTexture(file_name, format)
 			)
 
 			self.Device:MapMemory(image.memory, 0, image.size, 0, "uint8_t", function(data)
-				--ffi.copy(data, image.data, image.size)
+				ffi.copy(data, image_info.data, image_info.size)
 			end)
 
 			self:SetImageLayout(image.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
@@ -1311,7 +1067,7 @@ function DEMO:CreateTexture(file_name, format)
 		texture.format = info.format
 
 		self.Device:MapMemory(info.memory, 0, info.size, 0, "uint8_t", function(data)
-			--ffi.copy(data, image.data, image.size)
+			ffi.copy(data, image_infos[1].data, image_infos[1].size)
 		end)
 
 		self:SetImageLayout(info.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)

@@ -648,4 +648,62 @@ library.e = {
 	QUANTIZE_NNQUANT = ffi.cast("enum FREE_IMAGE_QUANTIZE", "FIQ_NNQUANT"),
 	QUANTIZE_LFPQUANT = ffi.cast("enum FREE_IMAGE_QUANTIZE", "FIQ_LFPQUANT"),
 }
+do
+
+	local function pow2floor(n)
+		return 2 ^ math.floor(math.log(n) / math.log(2))
+	end
+
+	local function create_mip_map(bitmap, w, h, div)
+		local width = pow2floor(w)
+		local height = pow2floor(h)
+
+		local size = width > height and width or height
+
+		size = size / (2 ^ div)
+
+		local new_bitmap = ffi.gc(library.Rescale(bitmap, size, size, library.e.IMAGE_FILTER_BILINEAR), library.Unload)
+
+		return {
+			data = library.GetBits(new_bitmap),
+			size = size,
+			new_bitmap = new_bitmap,
+		}
+	end
+
+	function library.LoadImage(file_name, flags, format)
+		local file = io.open(file_name, "rb")
+		local data = file:read("*all")
+		file:close()
+
+		local buffer = ffi.cast("unsigned char *", data)
+
+		local stream = library.OpenMemory(buffer, #data)
+		local type = format or library.GetFileTypeFromMemory(stream, #data)
+
+		if type == library.e.FORMAT_UNKNOWN or type > library.e.FORMAT_RAW then -- huh...
+			library.CloseMemory(stream)
+			error("unknown format", 2)
+		end
+
+		local temp = library.LoadFromMemory(type, stream, flags or 0)
+		local bitmap = library.ConvertTo8Bits(temp)
+		library.Unload(temp)
+
+		local width = library.GetWidth(bitmap)
+		local height = library.GetHeight(bitmap)
+
+		local images = {}
+
+		for level = 1, math.floor(math.log(math.max(width, height)) / math.log(2)) do
+			images[level] = create_mip_map(bitmap, width, height, level)
+		end
+
+		library.Unload(bitmap)
+
+		library.CloseMemory(stream)
+
+		return images
+	end
+end
 return library

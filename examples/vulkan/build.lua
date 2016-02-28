@@ -30,6 +30,28 @@ do -- utilities
 	lua = lua .. [[function library.util.StringList(tbl)
 	return ffi.new("const char * const ["..#tbl.."]", tbl), #tbl
 end
+function library.util.GLSLToSpirV(type, glsl)
+	local glsl_name = os.tmpname() .. "." .. type
+	local spirv_name = os.tmpname()
+
+	local temp
+
+	temp = io.open(glsl_name, "wb")
+	temp:write(glsl)
+	temp:close()
+
+	local msg = io.popen("glslangValidator -V -o " .. spirv_name .. " " .. glsl_name):read("*all")
+
+	temp = io.open(spirv_name, "rb")
+	local spirv = temp:read("*all")
+	temp:close()
+
+	if msg:find("ERROR") then
+		error(msg, 2)
+	end
+
+	return ffi.cast("uint32_t *", spirv), #spirv
+end
 function library.e(str_enum)
 	return ffi.cast("enum GLFWenum", str_enum)
 end
