@@ -1,3 +1,5 @@
+collectgarbage("stop")
+
 local ffi = require("ffi")
 
 package.path = package.path .. ";./../examples/?.lua"
@@ -497,6 +499,8 @@ function DEMO:Initialize()
 		self.ModelMatrix:Rotate(0.5, 0,1,0)
 
 		self.Uniforms = self:CreateBuffer(vk.e.BUFFER_USAGE_UNIFORM_BUFFER_BIT, uniforms)
+		self.uniform_ref = uniforms
+
 
 		--self.ViewMatrix:Translate(5,3,10)
 		--self.ViewMatrix:Rotate(math.rad(90), 0,-1,0)
@@ -796,9 +800,10 @@ function DEMO:Initialize()
 	self:FlushSetupCMD()
 
 	while glfw.WindowShouldClose(self.Window) == 0 do
-		glfw.PollEvents()
-
 		self.DeviceQueue:WaitIdle()
+		self.Device:WaitIdle()
+
+		glfw.PollEvents()
 
 		local semaphore = self.Device:CreateSemaphore({
 			flags = 0,
@@ -806,6 +811,19 @@ function DEMO:Initialize()
 
 		local index, status = self.Device:AcquireNextImage(self.SwapChain, vk.e.WHOLE_SIZE, semaphore, nil)
 		index = index + 1
+
+		if glfw.GetKey(self.Window, glfw.e.GLFW_KEY_W) == glfw.e.GLFW_PRESS then
+			self.ViewMatrix:Translate(0,0,1)
+		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_S) == glfw.e.GLFW_PRESS then
+			self.ViewMatrix:Translate(0,0,-1)
+		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_A) == glfw.e.GLFW_PRESS then
+			self.ViewMatrix:Translate(1,0,0)
+		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_D) == glfw.e.GLFW_PRESS then
+			self.ViewMatrix:Translate(-1,0,0)
+		end
+
+		--self.ProjectionMatrix:Perspective(math.rad(90), 32000, 0.1, self.Width / self.Height)
+		self:UpdateBuffer(self.Uniforms)
 
 		self.DeviceQueue:Submit(
 			1, vk.s.SubmitInfoArray{
@@ -838,9 +856,6 @@ function DEMO:Initialize()
 		})
 
 		self.Device:DestroySemaphore(semaphore, nil)
-
-		self.DeviceQueue:WaitIdle()
-		self.Device:WaitIdle()
 	end
 end
 
@@ -1173,6 +1188,11 @@ function DEMO:CreateBuffer(usage, data)
 		data = data,
 		size = size,
 	}
+end
+
+function DEMO:UpdateBuffer(buffer)
+	ffi.copy(self.Device:MapMemory(buffer.memory, 0, buffer.size, 0), buffer.data, buffer.size)
+	self.Device:UnmapMemory(buffer.memory)
 end
 
 DEMO:Initialize()

@@ -1846,7 +1846,7 @@ function library.MapMemory(device, memory, a, b, c, type, func)
 			end
 			library.UnmapMemory(device, memory)
 		end
-		return data
+		return data[0]
 	end
 
 	return nil, status

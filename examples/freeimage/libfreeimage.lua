@@ -683,8 +683,6 @@ do
 		local stream = library.OpenMemory(buffer, #data)
 		local type = format or library.GetFileTypeFromMemory(stream, #data)
 
-		print(type)
-
 		local temp = library.LoadFromMemory(type, stream, flags or 0)
 		local bitmap = library.ConvertTo32Bits(temp)
 
