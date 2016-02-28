@@ -13,12 +13,15 @@ package.path = package.path .. ";./../examples/?.lua"
 
 local vk = require("vulkan/libvulkan")
 
+_G.FFI_LIB = "../examples/glslang/glslang/glslang/libglslang.so"
+local glslang = require("glslang/libglslang")
+
 _G.FFI_LIB = "../examples/glfw/glfw/src/libglfw.so"
 local glfw = require("glfw/libglfw")
-_G.FFI_LIB = nil
 
 _G.FFI_LIB = "../examples/freeimage/freeimage/FreeImage/libfreeimage-3.18.0.so"
 local freeimage = require("freeimage/libfreeimage")
+
 _G.FFI_LIB = nil
 
 local function pow2floor(n)
@@ -223,9 +226,6 @@ function DEMO:InitializeVulkan()
 					self.DeviceQueue = self.Device:GetQueue(self.DeviceQueueIndex, 0)
 					self.DeviceCommandPool = self.Device:CreateCommandPool({queueFamilyIndex = self.DeviceQueueIndex})
 
-					self:CreateSetupCMD()
-					self:BeginSetupCMD()
-
 					break
 				end
 			end
@@ -287,6 +287,11 @@ function DEMO:InitializeVulkan()
 			self:SetImageLayout(image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_UNDEFINED, vk.e.IMAGE_LAYOUT_PRESENT_SRC_KHR)
 
 			self.SwapChainBuffers[i] = {
+				cmd = self.Device:AllocateCommandBuffers({
+					commandPool = self.DeviceCommandPool,
+					level = vk.e.COMMAND_BUFFER_LEVEL_PRIMARY,
+					commandBufferCount = 1,
+				}),
 				image = image,
 				view = self.Device:CreateImageView({
 					viewType = vk.e.IMAGE_VIEW_TYPE_2D,
@@ -820,10 +825,8 @@ function DEMO:PreparePipeline()
 end
 
 function DEMO:PrepareFramebuffers()
-	self.Framebuffers = {}
-
 	for i, buffer in ipairs(self.SwapChainBuffers) do
-		self.Framebuffers[i] = self.Device:CreateFramebuffer({
+		buffer.framebuffer = self.Device:CreateFramebuffer({
 			renderPass = self.RenderPass,
 
 			attachmentCount = 2,
@@ -839,7 +842,6 @@ function DEMO:PrepareFramebuffers()
 	end
 end
 
-
 function DEMO:Initialize()
 	self:InitializeGLFW()
 	self:InitializeVulkan()
@@ -852,16 +854,8 @@ function DEMO:Initialize()
 	self:PreparePipeline()
 	self:FlushSetupCMD()
 
-	self.DrawCMDs = {}
-
-	for i, surface_buffer in ipairs(self.SwapChainBuffers) do
-		local draw_cmd = self.Device:AllocateCommandBuffers({
-			commandPool = self.DeviceCommandPool,
-			level = vk.e.COMMAND_BUFFER_LEVEL_PRIMARY,
-			commandBufferCount = 1,
-		})
-
-		draw_cmd:Begin(vk.s.CommandBufferBeginInfo{
+	for i, buffer in ipairs(self.SwapChainBuffers) do
+		buffer.cmd:Begin(vk.s.CommandBufferBeginInfo{
 			flags = 0,
 			pInheritanceInfo = vk.s.CommandBufferInheritanceInfo{
 				renderPass = nil,
@@ -873,10 +867,10 @@ function DEMO:Initialize()
 			 }
 		})
 
-		draw_cmd:BeginRenderPass(
+		buffer.cmd:BeginRenderPass(
 			vk.s.RenderPassBeginInfo{
 				renderPass = self.RenderPass,
-				framebuffer = self.Framebuffers[i],
+				framebuffer = buffer.framebuffer,
 				renderArea = {offset = {0, 0}, extent = {self.Width, self.Height}},
 				clearValueCount = 2,
 				pClearValues = vk.s.ClearValueArray{
@@ -887,20 +881,33 @@ function DEMO:Initialize()
 			vk.e.SUBPASS_CONTENTS_INLINE
 		)
 
-		draw_cmd:SetViewport(0,1, vk.s.Viewport{0,0,self.Height,self.Width, 0,1,})
-		draw_cmd:SetScissor(0,1, vk.s.Rect2D{offset = {0, 0}, extent = {self.Height, self.Width}})
+		buffer.cmd:SetViewport(
+			0,
+			1, vk.s.ViewportArray{
+				{0,0,self.Height,self.Width, 0,1}
+			}
+		)
+		buffer.cmd:SetScissor(
+			0,
+			1, vk.s.Rect2DArray{
+				{
+					offset = {0, 0},
+					extent = {self.Height, self.Width}
+				}
+			}
+		)
 
-		draw_cmd:BindPipeline(vk.e.PIPELINE_BIND_POINT_GRAPHICS, self.Pipeline)
+		buffer.cmd:BindPipeline(vk.e.PIPELINE_BIND_POINT_GRAPHICS, self.Pipeline)
 
-		draw_cmd:BindDescriptorSets(vk.e.PIPELINE_BIND_POINT_GRAPHICS, self.PipelineLayout, 0, 1, vk.s.DescriptorSetArray{self.DescriptorSet}, 0, nil)
-		draw_cmd:BindVertexBuffers(0, 1, vk.s.BufferArray{self.Vertices.buffer}, ffi.new("unsigned long[1]", 0))
-		draw_cmd:BindIndexBuffer(self.Indices.buffer, 0, vk.e.INDEX_TYPE_UINT32)
+		buffer.cmd:BindDescriptorSets(vk.e.PIPELINE_BIND_POINT_GRAPHICS, self.PipelineLayout, 0, 1, vk.s.DescriptorSetArray{self.DescriptorSet}, 0, nil)
+		buffer.cmd:BindVertexBuffers(0, 1, vk.s.BufferArray{self.Vertices.buffer}, ffi.new("unsigned long[1]", 0))
+		buffer.cmd:BindIndexBuffer(self.Indices.buffer, 0, vk.e.INDEX_TYPE_UINT32)
 
-		draw_cmd:DrawIndexed(self.Indices.count, 1, 0, 0, 0)
+		buffer.cmd:DrawIndexed(self.Indices.count, 1, 0, 0, 0)
 
-		draw_cmd:EndRenderPass()
+		buffer.cmd:EndRenderPass()
 
-		draw_cmd:PipelineBarrier(
+		buffer.cmd:PipelineBarrier(
 			vk.e.PIPELINE_STAGE_ALL_COMMANDS_BIT, vk.e.PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0,
 			0, nil,
 			0, nil,
@@ -921,15 +928,15 @@ function DEMO:Initialize()
 						layerCount = 1,
 						baseLayerLevel = 0
 					},
-					image = surface_buffer.image,
+					image = buffer.image,
 				}
 			}
 		)
 
-		draw_cmd:End()
-
-		self.DrawCMDs[i] = draw_cmd
+		buffer.cmd:End()
 	end
+
+	self:FlushSetupCMD()
 
 	self.PostPresentCMD = self.Device:AllocateCommandBuffers({
 		commandPool = self.DeviceCommandPool,
@@ -966,7 +973,7 @@ function DEMO:Initialize()
 
 					commandBufferCount = 1,
 					pCommandBuffers = vk.s.CommandBufferArray{
-						self.DrawCMDs[index]
+						self.SwapChainBuffers[index].cmd
 					},
 				},
 			},
@@ -982,7 +989,6 @@ function DEMO:Initialize()
 		})
 
 		self.Device:DestroySemaphore(semaphore, nil)
-
 
 		do
 			self.PostPresentCMD:Begin(vk.s.CommandBufferBeginInfo{
@@ -1287,8 +1293,8 @@ function DEMO:CreateTexture(file_name, format)
 		end
 
 		self:SetImageLayout(texture.image, vk.e.IMAGE_ASPECT_COLOR_BIT, vk.e.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, vk.e.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-
 		self:FlushSetupCMD()
+		self:CreateSetupCMD()
 
 		for i, mip_map in ipairs(image_infos) do
 			self.Device:DestroyImage(mip_map.image, nil)
