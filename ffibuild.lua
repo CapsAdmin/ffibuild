@@ -151,12 +151,12 @@ function ffibuild.GetMetaData(header)
 			line = line:match("^typedef (.+)")
 
 			if is_function_pointer(line) then
-				local type = create_type("function", line:sub(0, -2), true)
+				local type = create_type("function", line:sub(0, -2), true, meta_data)
 				meta_data.typedefs[type.name] = type
 				line = nil
 			elseif is_function(line) then
 				local alias = line:match(".- ([%a%d_]+) %b()")
-				meta_data.typedefs[alias] = create_type("function", line:sub(0, -2))
+				meta_data.typedefs[alias] = create_type("function", line:sub(0, -2), false, meta_data)
 			else
 				local content, alias = line:match("^(.+) ([%a%d_]+)")
 
@@ -187,10 +187,10 @@ function ffibuild.GetMetaData(header)
 
 		if line then
 			if is_function_pointer(line) then
-				local type = create_type("function", line:sub(0, -2), true)
+				local type = create_type("function", line:sub(0, -2), true, meta_data)
 				meta_data.functions[type.name] = type
 			elseif is_function(line) then
-				local type = create_type("function", line:sub(0, -2))
+				local type = create_type("function", line:sub(0, -2), false, meta_data)
 				meta_data.functions[type.name] = type
 			elseif line:find("^enum") then
 				local tag, content = line:match("(enum [%a%d_]+) ({.+})")
@@ -762,7 +762,7 @@ do -- type metatables
 		function TYPE:FetchRequired(meta_data, out)
 			local basic_type = self:GetBasicType(meta_data)
 
-			if not out[basic_type] then
+			if basic_type and not out[basic_type] then
 				out[basic_type] = self:GetPrimitive(meta_data)
 
 				if meta_data.structs[basic_type] then
@@ -824,7 +824,7 @@ do -- type metatables
 			return out
 		end
 
-		function FUNCTION:Create(declaration, is_callback)
+		function FUNCTION:Create(declaration, is_callback, meta_data)
 			local return_line, func_name, arg_line, func_type
 
 			if is_callback then
@@ -834,6 +834,9 @@ do -- type metatables
 				end
 			else
 				return_line, func_name, arg_line = declaration:match("(.-) ([%a%d_]+) (%b())")
+				if not return_line then
+					return_line, func_name, arg_line = declaration:match("(.-) %( ([%a%d_]+) %) (%b())")
+				end
 			end
 
 			arg_line = arg_line:sub(3, -3)
@@ -850,13 +853,13 @@ do -- type metatables
 					elseif basic_types[arg] then
 						type = ffibuild.CreateType("type", arg)
 					elseif arg:find("%b() %b()") then
-						type = ffibuild.CreateType("function", arg, true)
+						type = ffibuild.CreateType("function", arg, true, meta_data)
 					else
 						local declaration, name = arg:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
 
-						if not declaration then
+						if not declaration or (meta_data and meta_data.typedefs[name]) or basic_types[name] then
 							declaration = arg
-							name = "unknown"
+							name = "unknown_" .. i
 						end
 
 						type = ffibuild.CreateType("type", declaration)
