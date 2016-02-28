@@ -1,5 +1,3 @@
-collectgarbage("stop")
-
 local ffi = require("ffi")
 
 package.path = package.path .. ";./../examples/?.lua"
@@ -20,9 +18,21 @@ DEMO.InstanceExtensions = {
 	"VK_EXT_debug_report",
 }
 
-DEMO.InstanceValidationLayers = {}
+DEMO.InstanceValidationLayers = {
+	--"VK_LAYER_LUNARG_threading",
+	--"VK_LAYER_LUNARG_mem_tracker",
+	--"VK_LAYER_LUNARG_object_tracker",
+	--"VK_LAYER_LUNARG_draw_state",
+	"VK_LAYER_LUNARG_param_checker",
+	--"VK_LAYER_LUNARG_swapchain",
+	--"VK_LAYER_LUNARG_device_limits",
+	--"VK_LAYER_LUNARG_image",
+	--"VK_LAYER_LUNARG_api_dump",
+}
 
-DEMO.DeviceExtensions = {}
+DEMO.DeviceExtensions = {
+
+}
 
 DEMO.DeviceValidationLayers = {
 	--"VK_LAYER_LUNARG_threading",
@@ -43,10 +53,6 @@ DEMO.DebugFlags = {
 	vk.e.DEBUG_REPORT_ERROR_BIT_EXT,
 	vk.e.DEBUG_REPORT_DEBUG_BIT_EXT,
 }
-
-for k,v in pairs(DEMO.DeviceValidationLayers) do
-	table.insert(DEMO.InstanceValidationLayers, v)
-end
 
 function DEMO:Initialize()
 
@@ -446,8 +452,8 @@ function DEMO:Initialize()
 			{ pos = { 1, -1, 1 },  		uv = { 1, 0 } },
 		}
 
-		for k,v in ipairs(vertices) do
-			v.color = {math.random(), math.random(), math.random()}
+		for _, vertex in ipairs(vertices) do
+			vertex.color = {math.random(), math.random(), math.random()}
 		end
 
 		self.Vertices = self:CreateBuffer(vk.e.BUFFER_USAGE_VERTEX_BUFFER_BIT, create_vertices(vertices))
@@ -715,7 +721,7 @@ function DEMO:Initialize()
 
 	self:FlushSetupCMD()
 
-	for i, buffer in ipairs(self.SwapChainBuffers) do
+	for _, buffer in ipairs(self.SwapChainBuffers) do
 		buffer.cmd:Begin(vk.s.CommandBufferBeginInfo{
 			flags = 0,
 			pInheritanceInfo = vk.s.CommandBufferInheritanceInfo{
@@ -759,8 +765,9 @@ function DEMO:Initialize()
 		)
 
 		buffer.cmd:BindPipeline(vk.e.PIPELINE_BIND_POINT_GRAPHICS, self.Pipeline)
-
 		buffer.cmd:BindDescriptorSets(vk.e.PIPELINE_BIND_POINT_GRAPHICS, self.PipelineLayout, 0, 1, vk.s.DescriptorSetArray{self.DescriptorSet}, 0, nil)
+
+
 		buffer.cmd:BindVertexBuffers(0, 1, vk.s.BufferArray{self.Vertices.buffer}, ffi.new("unsigned long[1]", 0))
 		buffer.cmd:BindIndexBuffer(self.Indices.buffer, 0, vk.e.INDEX_TYPE_UINT32)
 
@@ -809,7 +816,7 @@ function DEMO:Initialize()
 			flags = 0,
 		})
 
-		local index, status = self.Device:AcquireNextImage(self.SwapChain, vk.e.WHOLE_SIZE, semaphore, nil)
+		local index = self.Device:AcquireNextImage(self.SwapChain, vk.e.WHOLE_SIZE, semaphore, nil)
 		index = index + 1
 
 		if glfw.GetKey(self.Window, glfw.e.GLFW_KEY_W) == glfw.e.GLFW_PRESS then

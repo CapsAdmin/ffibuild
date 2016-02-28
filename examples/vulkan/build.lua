@@ -372,7 +372,7 @@ do -- *Create helpers so you don't have to make a boxed value
 	local status = ]]..lib..[[.]]..func_name..[[(]]..call..[[box)
 
 	if status == "VK_SUCCESS" then
-		library.struct_gc[ box[0] ] = ]]..keep_arg..[[
+		library.struct_gc[ box ] = ]]..keep_arg..[[
 
 		return box[0], status
 	end
