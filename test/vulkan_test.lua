@@ -820,13 +820,13 @@ function DEMO:Initialize()
 		index = index + 1
 
 		if glfw.GetKey(self.Window, glfw.e.GLFW_KEY_W) == glfw.e.GLFW_PRESS then
-			self.ViewMatrix:Translate(0,0,1)
+			self.ViewMatrix:Translate(0,0,0.1)
 		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_S) == glfw.e.GLFW_PRESS then
-			self.ViewMatrix:Translate(0,0,-1)
+			self.ViewMatrix:Translate(0,0,-0.1)
 		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_A) == glfw.e.GLFW_PRESS then
-			self.ViewMatrix:Translate(1,0,0)
+			self.ViewMatrix:Translate(0.1,0,0)
 		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_D) == glfw.e.GLFW_PRESS then
-			self.ViewMatrix:Translate(-1,0,0)
+			self.ViewMatrix:Translate(-0.1,0,0)
 		end
 
 		--self.ProjectionMatrix:Perspective(math.rad(90), 32000, 0.1, self.Width / self.Height)
@@ -1020,7 +1020,7 @@ end
 function DEMO:CreateTexture(file_name, format)
 	format = format or vk.e.FORMAT_B8G8R8A8_UNORM
 
-	local image_infos = freeimage.LoadImage(file_name)
+	local image_infos = freeimage.LoadImageMipMaps(file_name)
 
 	local texture = {}
 

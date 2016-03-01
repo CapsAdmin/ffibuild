@@ -79,8 +79,8 @@ function ffibuild.GetMetaData(header)
 		-- remove comments
 		header = header:gsub("/%*.-%*/", "")
 
-		-- remove things like #pragma
-		header = header:gsub("#.-\n", "")
+		-- TODO: remove things like #pragma
+			header = header:gsub("#.-\n", "")
 
 		 -- normalize everything to have equal spacing even between punctation
 		header = header:gsub("([*%(%){}&%[%],;&|<>=])", " %1 ")
@@ -94,20 +94,22 @@ function ffibuild.GetMetaData(header)
 		header = header:gsub("%b{}", function(s) return s:gsub("%s+", " ") end)
 		header = header:gsub("%b()", function(s) return s:gsub("%s+", " ") end)
 
-		-- remove compiler __attribute__
-		header = header:gsub("__%a-__ %b() ", "")
 
-		-- remove __extension__
-		header = header:gsub("__extension__ ", "")
+		--TODO
+			-- remove compiler __attribute__
+			header = header:gsub("__%a-__ %b() ", "")
 
-		-- remove __restrict
-		header = header:gsub("__restrict__ ", "")
-		header = header:gsub("__restrict", "")
+			-- remove __extension__
+			header = header:gsub("__extension__ ", "")
 
-		header = header:gsub("__max_align_..", "")
+			-- remove __restrict
+			header = header:gsub("__restrict__ ", "")
+			header = header:gsub("__restrict", "")
 
-		-- remove volatile
-		header = header:gsub(" volatile ", " ")
+			header = header:gsub("__max_align_..", "")
+
+			-- remove volatile
+			header = header:gsub(" volatile ", " ")
 
 		-- remove inline functions
 		header = header:gsub(" static __inline.-%b().-%b{}", "")
@@ -119,6 +121,11 @@ function ffibuild.GetMetaData(header)
 		-- int foo(void); >> int foo();
 		header = header:gsub(" %( void %) ", " ( ) ")
 
+		-- TODO: support more than 2 definitions
+		-- struct foo {} foo_t, * pfoo_t;
+		-- >>
+		-- struct foo {} foo_t;
+		-- struct foo {} * pfoo_t;
 		header = header:gsub("typedef %a- [%a%d_]+ %b{} [^;]- ;", function(statement)
 			if statement:find(",") then
 				local tag, huh = statement:match("^typedef (%a- [%a%d_]+) %b{} .+,(.+);$")

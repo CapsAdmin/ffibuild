@@ -83,6 +83,7 @@ In the first example you would get glib functions exported as well since purple 
 This would return a header with all functions that start with purple_ and the required structs, unions and enums based on what those functions need. The check enum function will just remove any global or typedef enum that don't start with PURPLE_
 
 ## todo
-Use mingw or visual studio on windows somehow.
-Make helper functions for renaming struct properties using ffi.ChangeCase
+Use mingw, visual studio or maybe lcpp on windows somehow.
+Don't strip out pragma pack and other compiler specific things
 Make struct to table functions
+Have a way to make anonymous definitions using typof and parameterized types
