@@ -1,5 +1,16 @@
 local ffibuild = {}
 
+function ffibuild.BuildSharedLibrary(name, clone, build)
+	--os.execute("git --git-dir=./repo/.git pull")
+	local f = io.open("lib"..name..".so", "r")
+	if not f then
+		os.execute(clone)
+		os.execute(build)
+	else
+		f:close()
+	end
+end
+
 function ffibuild.BuildCHeader(c_source, flags)
 	flags = flags or ""
 	local temp_name = os.tmpname()
@@ -1308,7 +1319,28 @@ do -- lua helper functions
 		return s
 	end
 
-	function ffibuild.OutputAndValidate(lua, header)
+	function ffibuild.BuildEnums(meta_data, pattern)
+		local s = "{\n"
+		for basic_type, type in pairs(meta_data.enums) do
+			for i, enum in ipairs(type.enums) do
+				local key
+
+				if pattern then
+					key = enum.key:match(pattern)
+				else
+					key = enum.key
+				end
+
+				if key then
+					s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
+				end
+			end
+		end
+		s = s .. "}\n"
+		return s
+	end
+
+	function ffibuild.OutputAndValidate(name, lua, header)
 		-- check if this wokrs if possible
 		if jit and header then
 			local ok, err = pcall(function()
@@ -1329,7 +1361,9 @@ do -- lua helper functions
 			end
 		end
 
-		io.write(lua) -- write output to make file
+		local file = io.open("./lib"..name..".lua", "wb")
+		file:write(lua) -- write output to make file
+		file:close()
 
 		assert(loadstring(lua))
 	end

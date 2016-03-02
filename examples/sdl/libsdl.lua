@@ -1,9 +1,3 @@
-../../ffibuild.lua:1308: unexpected symbol near 'SDL_MESSAGEBOX_COLOR_MAX' at line 88
-86: struct SDL_MessageBoxButtonData {unsigned int flags;int buttonid;const char*text;};
-87: struct SDL_MessageBoxColor {unsigned char r;unsigned char g;unsigned char b;};
-88: struct SDL_MessageBoxColorScheme {struct SDL_MessageBoxColor colors[ SDL_MESSAGEBOX_COLOR_MAX ];};
-89: struct SDL_MessageBoxData {unsigned int flags;struct SDL_Window*window;const char*title;const char*message;int numbuttons;const struct SDL_MessageBoxButtonData*buttons;const struct SDL_MessageBoxColorScheme*colorScheme;};
-90: struct SDL_RendererInfo {const char*name;unsigned int flags;unsigned int num_texture_formats;unsigned int texture_formats[ 16 ];int max_texture_width;int max_texture_height;};
 local ffi = require("ffi")
 ffi.cdef([[enum{SDL_PIXELTYPE_UNKNOWN=0,SDL_PIXELTYPE_INDEX1=1,SDL_PIXELTYPE_INDEX4=2,SDL_PIXELTYPE_INDEX8=3,SDL_PIXELTYPE_PACKED8=4,SDL_PIXELTYPE_PACKED16=5,SDL_PIXELTYPE_PACKED32=6,SDL_PIXELTYPE_ARRAYU8=7,SDL_PIXELTYPE_ARRAYU16=8,SDL_PIXELTYPE_ARRAYU32=9,SDL_PIXELTYPE_ARRAYF16=10,SDL_PIXELTYPE_ARRAYF32=11,
 SDL_BITMAPORDER_NONE=0,SDL_BITMAPORDER_4321=1,SDL_BITMAPORDER_1234=2,

@@ -1,8 +1,14 @@
 local ffibuild = dofile("../../ffibuild.lua")
 
+ffibuild.BuildSharedLibrary(
+	"freeimage",
+	"wget -qO- -O temp.tar.gz http://freeimage.cvs.sourceforge.net/viewvc/freeimage/?view=tar && mkdir repo && tar xf temp.tar.gz --directory=repo && rm temp.tar.gz",
+	"cd repo/freeimage/FreeImage && make && cd ../.. && cp repo/freeimage/FreeImage/libfreeimage-3.18.0.so libfreeimage.so"
+)
+
 local header = ffibuild.BuildCHeader([[
 	#include "FreeImage.h"
-]], "-I./freeimage/FreeImage/Source/")
+]], "-I./repo/freeimage/FreeImage/Source/")
 
 
 local meta_data = ffibuild.GetMetaData(header)
@@ -186,4 +192,4 @@ end
 
 lua = lua .. "return library\n"
 
-ffibuild.OutputAndValidate(lua, header)
+ffibuild.OutputAndValidate("freeimage", lua, header)

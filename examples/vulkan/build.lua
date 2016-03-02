@@ -1,13 +1,18 @@
+local ffibuild = dofile("../../ffibuild.lua")
+
+ffibuild.BuildSharedLibrary(
+	"vulkan",
+	"git clone https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers repo"
+)
+
 local extensions = {
 	EXT = true,
 	KHR = true
 }
 
-local ffibuild = dofile("../../ffibuild.lua")
-
 local header = ffibuild.BuildCHeader([[
-	#include "/usr/include/vulkan/vulkan.h"
-]])
+	#include "vulkan/vulkan.h"
+]], "-I./repo/include/")
 
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^vk") end, function(name) return name:find("^VK_") end, true, true)
@@ -447,4 +452,4 @@ if RELOAD then
 	return
 end
 
-ffibuild.OutputAndValidate(lua, header)
+ffibuild.OutputAndValidate("vulkan", lua, header)

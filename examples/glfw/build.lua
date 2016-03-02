@@ -1,5 +1,10 @@
 local ffibuild = dofile("../../ffibuild.lua")
 
+ffibuild.BuildSharedLibrary(
+	"git clone https://github.com/glfw/glfw repo",
+	"cd repo && cmake -DBUILD_SHARED_LIBS=1 . && make && cd .. && cp repo/src/libglfw.so.3.2 libglfw.so"
+)
+
 local header = ffibuild.BuildCHeader([[
 	#include <vulkan/vulkan.h>
 	#include "GLFW/glfw3.h"
@@ -8,10 +13,10 @@ local header = ffibuild.BuildCHeader([[
 	//void *glfwGetInstanceProcAddress(void *instance, const char* procname);
 	//int glfwGetPhysicalDevicePresentationSupport(void *instance, void *device, uint32_t queuefamily);
 	//unsigned int glfwCreateWindowSurface(void *instance, GLFWwindow* window, const void* allocator, void** surface);
-]], "-I./glfw/include")
+]], "-I./repo/include")
 
 do
-	local temp = io.open("./glfw/include/GLFW/glfw3.h")
+	local temp = io.open("./repo/include/GLFW/glfw3.h")
 	local raw_header = temp:read("*all")
 	temp:close()
 
@@ -82,10 +87,4 @@ end
 
 lua = lua .. "return library\n"
 
-if RELOAD then
-	vfs.Write("/media/caps/ssd_840_120gb/goluwa/src/lua/libraries/graphics/ffi/libglfw3.lua", lua)
-	return
-end
-
---ffibuild.OutputAndValidate(lua, header)
-io.write(lua)
+ffibuild.OutputAndValidate("glfw", lua, header)

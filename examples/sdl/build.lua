@@ -1,5 +1,11 @@
 local ffibuild = dofile("../../ffibuild.lua")
 
+ffibuild.BuildSharedLibrary(
+	"sdl",
+	"hg clone http://hg.libsdl.org/SDL repo",
+	"cd repo && mkdir build && cd build && ../configure && make && cd ../../ && cp repo/build/.libs/libSDL2-2.0.so.0.4.0 libSDL2.so"
+)
+
 local header = ffibuild.BuildCHeader([[
 	#include "SDL.h"
 ]], "$(pkg-config --cflags sdl2)")
@@ -35,4 +41,4 @@ end
 
 lua = lua .. "return library\n"
 
---ffibuild.OutputAndValidate(lua, header)
+ffibuild.OutputAndValidate("sdl", lua, header)
