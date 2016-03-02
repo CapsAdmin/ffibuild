@@ -87,3 +87,4 @@ Use mingw, visual studio or maybe lcpp on windows somehow.
 Don't strip out pragma pack and other compiler specific things
 Make struct to table functions
 Have a way to make anonymous definitions using typof and parameterized types
+maybe add a way to prefix types

@@ -1,19 +1,22 @@
-local ffibuild = dofile("../../ffibuild.lua")
+package.path = package.path .. ";../../?.lua"
+local ffibuild = require("ffibuild")
+
 
 ffibuild.BuildSharedLibrary(
+	"glfw",
 	"git clone https://github.com/glfw/glfw repo",
 	"cd repo && cmake -DBUILD_SHARED_LIBS=1 . && make && cd .. && cp repo/src/libglfw.so.3.2 libglfw.so"
 )
 
 local header = ffibuild.BuildCHeader([[
-	#include <vulkan/vulkan.h>
+	#include "vulkan.h"
 	#include "GLFW/glfw3.h"
 	#include "GLFW/glfw3native.h"
 
 	//void *glfwGetInstanceProcAddress(void *instance, const char* procname);
 	//int glfwGetPhysicalDevicePresentationSupport(void *instance, void *device, uint32_t queuefamily);
 	//unsigned int glfwCreateWindowSurface(void *instance, GLFWwindow* window, const void* allocator, void** surface);
-]], "-I./repo/include")
+]], "-I./repo/include -I./../vulkan/repo/include/vulkan")
 
 do
 	local temp = io.open("./repo/include/GLFW/glfw3.h")

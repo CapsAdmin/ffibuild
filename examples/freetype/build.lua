@@ -1,4 +1,5 @@
-local ffibuild = dofile("../../ffibuild.lua")
+package.path = package.path .. ";../../?.lua"
+local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"freetype",
@@ -62,6 +63,11 @@ local header = ffibuild.BuildCHeader([[
 	#include FT_GZIP_H
 	#include FT_ADVANCES_H
 ]], "-I./repo/include/")
+
+print(header)
+
+
+do return end
 
 
 local meta_data = ffibuild.GetMetaData(header)

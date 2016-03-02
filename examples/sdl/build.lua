@@ -1,4 +1,6 @@
-local ffibuild = dofile("../../ffibuild.lua")
+package.path = package.path .. ";../../?.lua"
+local ffibuild = require("ffibuild")
+
 
 ffibuild.BuildSharedLibrary(
 	"sdl",

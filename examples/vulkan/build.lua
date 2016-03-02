@@ -1,4 +1,6 @@
-local ffibuild = dofile("../../ffibuild.lua")
+package.path = package.path .. ";../../?.lua"
+local ffibuild = require("ffibuild")
+
 
 ffibuild.BuildSharedLibrary(
 	"vulkan",
@@ -446,10 +448,5 @@ do
 end
 
 lua = lua .. "return library\n"
-
-if RELOAD then
-	vfs.Write("/media/caps/ssd_840_120gb/goluwa/src/lua/libraries/graphics/ffi/libvulkan.lua", lua)
-	return
-end
 
 ffibuild.OutputAndValidate("vulkan", lua, header)
