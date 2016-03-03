@@ -16,9 +16,8 @@ local header = ffibuild.BuildCHeader([[
 
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^glfw") end, function(name) return name:find("^GLFW") end, true, true)
-header = header:gsub("\nstruct Vk.-\n", "\n")
-header = header:gsub("\nstruct Vk.-\n", "\n")
-header = header:gsub("\nstruct Vk.-\n", "\n")
+
+header = header:gsub("^struct VkInstance_T.-struct VkSurfaceKHR_T {};", "") -- TODO
 
 local lua = ffibuild.StartLibrary(header)
 
