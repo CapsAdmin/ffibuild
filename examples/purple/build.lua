@@ -1,6 +1,7 @@
 package.path = package.path .. ";../../?.lua"
 local ffibuild = require("ffibuild")
 
+ffibuild.lib_name = "purple"
 
 local header = ffibuild.BuildCHeader([[
 	#define PURPLE_PLUGINS

@@ -4,7 +4,7 @@ local ffibuild = require("ffibuild")
 ffibuild.BuildSharedLibrary(
 	"freetype",
 	"git clone git://git.sv.nongnu.org/freetype/freetype2.git repo",
-	"cd repo && mkdir build && cd build && cmake .. -DBUILD_SHARED_LIBS=1 && make && cd ../../ && cp repo/build/libfreetype.so.2.6.2 libfreetype.so"
+	"cd repo && mkdir build && cd build && cmake .. -DBUILD_SHARED_LIBS=1 && make && cd ../../ && cp repo/build/libfreetype.so.2.6.3 libfreetype.so"
 )
 
 local header = ffibuild.BuildCHeader([[
@@ -69,6 +69,6 @@ local header = meta_data:BuildMinimalHeader(function(name) return name:find("^FT
 local lua = ffibuild.StartLibrary(header)
 
 lua = lua .. "library = " .. meta_data:BuildFunctions("^FT_(.+)")
-lua = lua .. "library.e = " .. ffibuild.BuildEnums(meta_data, "^FT_(.+)")
+lua = lua .. "library.e = " .. meta_data:BuildEnums("^FT_(.+)")
 
 ffibuild.EndLibrary(lua, header)

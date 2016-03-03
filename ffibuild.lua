@@ -413,25 +413,42 @@ function ffibuild.GetMetaData(header)
 		return s
 	end
 
-	function meta_data:BuildEnums(pattern)
-		local s = "{\n"
-		for basic_type, type in pairs(self.enums) do
-			for i, enum in ipairs(type.enums) do
-				local key
+	do
+		function meta_data:BuildEnums(pattern)
+			local s = "{\n"
+			for basic_type, type in pairs(self.enums) do
+				for _, enum in ipairs(type.enums) do
+					local key
 
-				if pattern then
-					key = enum.key:match(pattern)
-				else
-					key = enum.key
-				end
+					if pattern then
+						key = enum.key:match(pattern)
+					else
+						key = enum.key
+					end
 
-				if key then
-					s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
+					if key then
+						s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
+					end
 				end
 			end
+			for _, enums in pairs(self.global_enums) do
+				for _, enum in ipairs(enums.enums) do
+					local key
+
+					if pattern then
+						key = enum.key:match(pattern)
+					else
+						key = enum.key
+					end
+
+					if key then
+						s =  s .. "\t" .. key .. " = "..enum.val..",\n"
+					end
+				end
+			end
+			s = s .. "}\n"
+			return s
 		end
-		s = s .. "}\n"
-		return s
 	end
 
 	return meta_data

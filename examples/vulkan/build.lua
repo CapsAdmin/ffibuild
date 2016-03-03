@@ -1,7 +1,6 @@
 package.path = package.path .. ";../../?.lua"
 local ffibuild = require("ffibuild")
 
-
 ffibuild.BuildSharedLibrary(
 	"vulkan",
 	"git clone https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers repo"

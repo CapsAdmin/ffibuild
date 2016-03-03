@@ -1748,7 +1748,7 @@ int purple_plugin_ipc_get_params(struct _PurplePlugin*,const char*,struct Purple
 void*purple_blist_get_ui_data();
 void purple_network_listen_map_external(int);
 ]])
-local CLIB = ffi.load("purple")
+local CLIB = ffi.load(_G.FFI_LIB or "purple")
 local library = {}
 
 
@@ -2148,20 +2148,20 @@ do
 		Reset = function(self, extra) local v = CLIB.purple_cipher_context_reset(self.ptr, extra)  return v end,
 		SetKey = function(self, key) local v = CLIB.purple_cipher_context_set_key(self.ptr, key)  return v end,
 		GetSaltSize = function(self) local v = CLIB.purple_cipher_context_get_salt_size(self.ptr)  return v end,
-		DigestToStr = function(self, in_len, unknown, out_len) local v = CLIB.purple_cipher_context_digest_to_str(self.ptr, in_len, unknown, out_len)  return v end,
+		DigestToStr = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest_to_str(self.ptr, in_len, unknown_3, out_len)  return v end,
 		GetKeySize = function(self) local v = CLIB.purple_cipher_context_get_key_size(self.ptr)  return v end,
 		SetIv = function(self, iv, len) local v = CLIB.purple_cipher_context_set_iv(self.ptr, iv, len)  return v end,
 		Append = function(self, data, len) local v = CLIB.purple_cipher_context_append(self.ptr, data, len)  return v end,
-		Digest = function(self, in_len, unknown, out_len) local v = CLIB.purple_cipher_context_digest(self.ptr, in_len, unknown, out_len)  return v end,
+		Digest = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest(self.ptr, in_len, unknown_3, out_len)  return v end,
 		SetData = function(self, data) local v = CLIB.purple_cipher_context_set_data(self.ptr, data)  return v end,
 		Destroy = function(self) local v = CLIB.purple_cipher_context_destroy(self.ptr)  return v end,
-		Decrypt = function(self, unknown, len, unknown1, outlen) local v = CLIB.purple_cipher_context_decrypt(self.ptr, unknown, len, unknown1, outlen)  return v end,
+		Decrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_decrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
 		SetSalt = function(self, salt) local v = CLIB.purple_cipher_context_set_salt(self.ptr, salt)  return v end,
 		GetBlockSize = function(self) local v = CLIB.purple_cipher_context_get_block_size(self.ptr)  return v end,
 		SetOption = function(self, name, value) local v = CLIB.purple_cipher_context_set_option(self.ptr, name, value)  return v end,
 		GetOption = function(self, name) local v = CLIB.purple_cipher_context_get_option(self.ptr, name)  return v end,
 		GetData = function(self) local v = CLIB.purple_cipher_context_get_data(self.ptr)  return v end,
-		Encrypt = function(self, unknown, len, unknown1, outlen) local v = CLIB.purple_cipher_context_encrypt(self.ptr, unknown, len, unknown1, outlen)  return v end,
+		Encrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_encrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
 		SetBatchMode = function(self, mode) local v = CLIB.purple_cipher_context_set_batch_mode(self.ptr, mode)  return v end,
 	}
 	META.__index = META
@@ -3183,7 +3183,7 @@ library.print = {
 	Utf8ToConsole = function(filestream, message) local v = CLIB.purple_print_utf8_to_console(filestream, message)  return v end,
 }
 library.cipher = {
-	DigestRegion = function(name, data, data_len, in_len, unknown, out_len) local v = CLIB.purple_cipher_digest_region(name, data, data_len, in_len, unknown, out_len)  return v end,
+	DigestRegion = function(name, data, data_len, in_len, unknown_5, out_len) local v = CLIB.purple_cipher_digest_region(name, data, data_len, in_len, unknown_5, out_len)  return v end,
 	HttpDigestCalculateSessionKey = function(algorithm, username, realm, password, nonce, client_nonce) local v = CLIB.purple_cipher_http_digest_calculate_session_key(algorithm, username, realm, password, nonce, client_nonce) v = chars_to_string(v) return v end,
 	ContextNewByName = function(name, extra) local v = CLIB.purple_cipher_context_new_by_name(name, extra) v = wrap_pointer(v, "CipherContext") return v end,
 	HttpDigestCalculateResponse = function(algorithm, method, digest_uri, qop, entity, nonce, nonce_count, client_nonce, session_key) local v = CLIB.purple_cipher_http_digest_calculate_response(algorithm, method, digest_uri, qop, entity, nonce, nonce_count, client_nonce, session_key) v = chars_to_string(v) return v end,

@@ -22,7 +22,7 @@ install: $(PLUGIN_HEADER)
 	cp *.lua $(PLUGIN_DIR)/$(PLUGIN_NAME)
 
 $(PLUGIN_HEADER): $(PLUGIN_NAME).so
-	./$(LUA_DIR)/$(LUA_BIN) $(LUA_BUILD) > $(PLUGIN_HEADER)
+	./$(LUA_DIR)/$(LUA_BIN) $(LUA_BUILD)
 
 $(PLUGIN_NAME).so: $(PLUGIN_NAME).o
 	$(CC) -shared $(PLUGIN_NAME).o -o $(PLUGIN_NAME).so -Wl,--whole-archive $(LUA_LIBS) -Wl,--no-whole-archive $(PURPLE_LIBS)
@@ -31,7 +31,7 @@ $(PLUGIN_NAME).o: $(LUA_DIR)
 	$(CC) $(CFLAGS) -fPIC -c $(PLUGIN_NAME).c -o $(PLUGIN_NAME).o $(LUA_CFLAGS) $(PURPLE_CFLAGS) -DHAVE_CONFIG_H
 
 $(LUA_DIR):
-	cd ../../ && make
+	cd ../../ && make LuaJIT
 
 clean:
 	rm -rf *.o *.c~ *.h~ *.so *.la .libs $(PLUGIN_HEADER)

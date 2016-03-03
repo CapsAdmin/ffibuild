@@ -2,13 +2,12 @@ LUA_URL = https://github.com/LuaJIT/LuaJIT
 LUA_BRANCH = v2.1
 LUA_DIR = LuaJIT
 
-all: examples
+SUBDIRS := $(wildcard ./examples/*)
 
-examples: $(LUA_DIR)
-	cd examples/glfw && make
-	cd examples/sdl && make
-	cd examples/purple && make
-	cd examples/vulkan && make
+all: $(LUA_DIR)
+	for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir; \
+	done
 
 $(LUA_DIR):
 	git clone $(LUA_URL)
@@ -17,7 +16,6 @@ $(LUA_DIR):
 
 clean:
 	rm -rf $(LUA_DIR)
-	cd examples/glfw && make clean
-	cd examples/sdl && make clean
-	cd examples/purple && make clean
-	cd examples/vulkan && make clean
+	for dir in $(SUBDIRS); do \
+		$(MAKE) clean -C $$dir; \
+	done

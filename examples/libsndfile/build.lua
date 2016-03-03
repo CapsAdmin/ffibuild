@@ -18,6 +18,6 @@ local header = meta_data:BuildMinimalHeader(function(name) return name:find("^sf
 local lua = ffibuild.StartLibrary(header)
 
 lua = lua .. "library = " .. meta_data:BuildFunctions("^sf_(.+)")
-lua = lua .. "library.e = " .. meta_data:BuildEnums()
+lua = lua .. "library.e = " .. meta_data:BuildEnums("^SF_(.+)")
 
 ffibuild.EndLibrary(lua, header)
