@@ -546,7 +546,7 @@ do -- type metatables
 		L("~", "bnot")
 
 		local function parse_bit_declaration(expression, original_expression)
-			expression = expression:gsub("([%d%.xabcdefABCDEF]+)", "(%1)")
+			expression = expression:gsub("(0x%.[%dabcdefABCDEF]+)", "(%1)")
 
 			for operator, info in pairs(operators) do
 				expression = expression:gsub(info.find, info.replace)
@@ -609,7 +609,7 @@ do -- type metatables
 							val = val:gsub("(%([%s%l]-%))", "")
 
 							local found
-							local test = val:gsub("(%a[%a%d_]+)", function(what)
+							local test = val:gsub("([%a_][%a%d_]+)", function(what)
 								local val = find_enum(current_meta_data, enums, what)
 
 								if val then
@@ -619,6 +619,7 @@ do -- type metatables
 
 								-- don't bother with type casting
 								if current_meta_data.typedefs[what] then
+									found = true
 									return "_REMOVE_ME_"
 								end
 							end)
@@ -633,7 +634,7 @@ do -- type metatables
 							else
 								val = find_enum(current_meta_data, enums, val) or val
 
-								if val:sub(#val, #val) == "u" then
+								if type(val) == "string" and val:sub(#val, #val) == "u" then
 									val = val:sub(0, -2)
 								end
 
@@ -647,7 +648,7 @@ do -- type metatables
 					end
 
 					if not num then
-						num = parse_bit_declaration(val, declaration)
+						num = parse_bit_declaration(val, "")
 					end
 
 					if not num then
@@ -813,13 +814,21 @@ do -- type metatables
 		end
 
 		function TYPE:GetCopy()
+			-- TODO
+			local array_size = self.array_size
+			self.array_size = nil
+
 			local copy = ffibuild.CreateType("type", self:GetDeclaration())
+
 
 			for k,v in pairs(self) do
 				if type(v) ~= "table" then
 					copy[k] = v
 				end
 			end
+
+			copy.array_size = array_size
+			self.array_size = array_size
 
 			return copy
 		end
@@ -1244,6 +1253,7 @@ do -- type metatables
 				elseif type.MetaType == "struct" then
 					str = str .. type:GetBasicType() .. " " ..type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
 				elseif type.array_size then
+
 					-- TODO
 					local array_size = type.array_size
 					type.array_size = nil

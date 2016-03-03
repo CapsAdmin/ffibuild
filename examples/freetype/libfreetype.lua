@@ -53,7 +53,7 @@ struct BDF_PropertyRec_ {enum BDF_PropertyType_ type;union {const char*atom;sign
 struct PS_FontInfoRec_ {};
 struct PS_PrivateRec_ {};
 struct FT_MM_Axis_ {char*name;signed long minimum;signed long maximum;};
-struct FT_Multi_Master_ {unsigned int num_axis;unsigned int num_designs;struct FT_MM_Axis_ axis[ 4 ];};
+struct FT_Multi_Master_ {unsigned int num_axis;unsigned int num_designs;struct FT_MM_Axis_ axis[4];};
 struct FT_Var_Axis_ {char*name;signed long minimum;signed long def;signed long maximum;unsigned long tag;unsigned int strid;};
 struct FT_Var_Named_Style_ {signed long*coords;unsigned int strid;};
 struct FT_MM_Var_ {unsigned int num_axis;unsigned int num_designs;unsigned int num_namedstyles;struct FT_Var_Axis_*axis;struct FT_Var_Named_Style_*namedstyle;};
