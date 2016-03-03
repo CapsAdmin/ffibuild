@@ -96,7 +96,7 @@ void glfwSetClipboardString(struct GLFWwindow*,const char*);
 void(*glfwSetCursorPosCallback(struct GLFWwindow*,void(*)(struct GLFWwindow*,double,double)))(struct GLFWwindow*,double,double);
 void(*glfwSetScrollCallback(struct GLFWwindow*,void(*)(struct GLFWwindow*,double,double)))(struct GLFWwindow*,double,double);
 ]])
-local CLIB = ffi.load(_G.FFI_LIB or "glfw3")
+local CLIB = ffi.load(_G.FFI_LIB or "glfw")
 local library = {}
 library = {
 	MaximizeWindow = CLIB.glfwMaximizeWindow,

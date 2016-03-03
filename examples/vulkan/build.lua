@@ -19,7 +19,7 @@ local header = ffibuild.BuildCHeader([[
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^vk") end, function(name) return name:find("^VK_") end, true, true)
 
-local lua = ffibuild.BuildGenericLua(header, "vulkan", "metatables")
+local lua = ffibuild.StartLibrary(header, "metatables")
 
 lua = lua .. "library = {\n"
 
@@ -447,6 +447,4 @@ do
 	end
 end
 
-lua = lua .. "return library\n"
-
-ffibuild.OutputAndValidate("vulkan", lua, header)
+ffibuild.EndLibrary(lua, header)

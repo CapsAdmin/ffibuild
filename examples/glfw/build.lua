@@ -43,28 +43,10 @@ header = header:gsub("\nstruct Vk.-\n", "\n")
 header = header:gsub("\nstruct Vk.-\n", "\n")
 header = header:gsub("\nstruct Vk.-\n", "\n")
 
-local lua = ffibuild.BuildGenericLua(header, "glfw3")
+local lua = ffibuild.StartLibrary(header)
 
-lua = lua .. "library = {\n"
-
-for func_name, func_type in pairs(meta_data.functions) do
-	if func_name:find("^glfw") then
-		local friendly_name = func_name:match("glfw(.+)")
-		lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
-	end
-end
-
-lua = lua .. "}\n"
-
-do -- enums
-	lua = lua .. "library.e = {\n"
-	for basic_type, type in pairs(meta_data.enums) do
-		for i, enum in ipairs(type.enums) do
-			lua =  lua .. "\t" .. enum.key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
-		end
-	end
-	lua = lua .. "}\n"
-end
+lua = lua .. "library = " .. meta_data:BuildFunctions("^glfw(.+)")
+lua = lua .. "library.e = " .. meta_data:BuildEnums()
 
 
 lua = lua .. [[
@@ -88,6 +70,4 @@ function library.CreateWindowSurface(instance, window, huh)
 end
 ]]
 
-lua = lua .. "return library\n"
-
-ffibuild.OutputAndValidate("glfw", lua, header)
+ffibuild.EndLibrary(lua, header)

@@ -64,29 +64,11 @@ local header = ffibuild.BuildCHeader([[
 	#include FT_ADVANCES_H
 ]], "-I./repo/include/")
 
-print(header)
-
-
-do return end
-
-
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^FT_") end, function(name) return name:find("^FT_") or name:find("^BDF_") end, true, true)
-local lua = ffibuild.BuildGenericLua(header, "freetype")
+local lua = ffibuild.StartLibrary(header)
 
-lua = lua .. "library = {\n"
-
-for func_name, func_type in pairs(meta_data.functions) do
-	if func_name:find("^FT_") then
-		local friendly_name = func_name:match("FT_(.+)")
-		lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
-	end
-end
-
-lua = lua .. "}\n"
-
+lua = lua .. "library = " .. meta_data:BuildFunctions("^FT_(.+)")
 lua = lua .. "library.e = " .. ffibuild.BuildEnums(meta_data, "^FT_(.+)")
 
-lua = lua .. "return library\n"
-
-ffibuild.OutputAndValidate("freetype", lua, header)
+ffibuild.EndLibrary(lua, header)

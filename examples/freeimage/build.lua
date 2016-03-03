@@ -15,18 +15,11 @@ local header = ffibuild.BuildCHeader([[
 
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^FreeImage_") end, function(name) return name:find("^FI") end, true, true)
-local lua = ffibuild.BuildGenericLua(header, "freeimage")
+local lua = ffibuild.StartLibrary(header)
 
-lua = lua .. "library = {\n"
+meta_data.functions.FreeImage_RegisterExternalPlugin = nil
 
-for func_name, func_type in pairs(meta_data.functions) do
-	if func_name:find("^FreeImage_") and func_name ~= "FreeImage_RegisterExternalPlugin" then
-		local friendly_name = func_name:match("FreeImage_(.+)")
-		lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
-	end
-end
-
-lua = lua .. "}\n"
+lua = lua .. "library = " .. meta_data:BuildFunctions("^FreeImage_(.+)")
 
 do -- enums
 	lua = lua .. "library.e = {\n"
@@ -191,7 +184,4 @@ do
 end
 ]]
 
-
-lua = lua .. "return library\n"
-
-ffibuild.OutputAndValidate("freeimage", lua, header)
+ffibuild.EndLibrary(lua, header)

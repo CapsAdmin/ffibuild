@@ -9,6 +9,8 @@ function ffibuild.BuildSharedLibrary(name, clone, build)
 	else
 		f:close()
 	end
+
+	ffibuild.lib_name = name
 end
 
 function ffibuild.BuildCHeader(c_source, flags)
@@ -390,6 +392,46 @@ function ffibuild.GetMetaData(header)
 		--struct _GList{void*data;struct _GList*next;struct _GList*prev;};
 
 		return header
+	end
+
+	function meta_data:BuildFunctions(pattern)
+		local s = "{\n"
+		for func_name, func_type in pairs(self.functions) do
+			local friendly_name
+
+			if pattern then
+				friendly_name = func_name:match(pattern)
+			else
+				friendly_name = func_name
+			end
+
+			if friendly_name then
+				s = s .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
+			end
+		end
+		s = s .. "}\n"
+		return s
+	end
+
+	function meta_data:BuildEnums(pattern)
+		local s = "{\n"
+		for basic_type, type in pairs(self.enums) do
+			for i, enum in ipairs(type.enums) do
+				local key
+
+				if pattern then
+					key = enum.key:match(pattern)
+				else
+					key = enum.key
+				end
+
+				if key then
+					s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
+				end
+			end
+		end
+		s = s .. "}\n"
+		return s
 	end
 
 	return meta_data
@@ -1235,11 +1277,11 @@ do -- lua helper functions
 	]],
 	}
 
-	function ffibuild.BuildGenericLua(ffi_header, ffi_lib, ...)
+	function ffibuild.StartLibrary(ffi_header, ...)
 		local lua =
 		"local ffi = require(\"ffi\")\n" ..
 		"ffi.cdef([["..ffi_header.."]])\n" ..
-		"local CLIB = ffi.load(_G.FFI_LIB or \""..ffi_lib.."\")\n" ..
+		"local CLIB = ffi.load(_G.FFI_LIB or \""..ffibuild.lib_name.."\")\n" ..
 		"local library = {}\n"
 
 		if ... then
@@ -1319,28 +1361,9 @@ do -- lua helper functions
 		return s
 	end
 
-	function ffibuild.BuildEnums(meta_data, pattern)
-		local s = "{\n"
-		for basic_type, type in pairs(meta_data.enums) do
-			for i, enum in ipairs(type.enums) do
-				local key
+	function ffibuild.EndLibrary(lua, header)
+		lua = lua .. "return library\n"
 
-				if pattern then
-					key = enum.key:match(pattern)
-				else
-					key = enum.key
-				end
-
-				if key then
-					s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
-				end
-			end
-		end
-		s = s .. "}\n"
-		return s
-	end
-
-	function ffibuild.OutputAndValidate(name, lua, header)
 		-- check if this wokrs if possible
 		if jit and header then
 			local ok, err = pcall(function()
@@ -1361,7 +1384,7 @@ do -- lua helper functions
 			end
 		end
 
-		local file = io.open("./lib"..name..".lua", "wb")
+		local file = io.open("./lib"..ffibuild.lib_name..".lua", "wb")
 		file:write(lua) -- write output to make file
 		file:close()
 

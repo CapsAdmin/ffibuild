@@ -10,7 +10,7 @@ local header = ffibuild.BuildCHeader([[
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^purple_") end, function(name) return name:find("PURPLE_") or name:find("XMLNODE_") end, true)
 
-local lua = ffibuild.BuildGenericLua(header, "purple", "metatables", "chars_to_string")
+local lua = ffibuild.StartLibrary(header, "metatables", "chars_to_string")
 
 lua = lua .. [[
 local function glist_to_table(l, meta_name)
@@ -231,6 +231,4 @@ end
 ]]
 end
 
-lua = lua .. "return library\n"
-
-ffibuild.OutputAndValidate(lua, header)
+ffibuild.EndLibrary(lua, header)

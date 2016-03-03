@@ -17,30 +17,9 @@ header = "struct SDL_BlitMap {};\n" .. header
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^SDL_") end, function(name) return name:find("^SDL_") or name:find("^KMOD_") end, true)
 
-local lua = ffibuild.BuildGenericLua(header, "sdl")
+local lua = ffibuild.StartLibrary(header)
 
-lua = lua .. "library = {\n"
+lua = lua .. "library = " .. meta_data:BuildFunctions("^SDL_(.+)")
+lua = lua .. "library.e = " .. meta_data:BuildEnums()
 
-for func_name, func_type in pairs(meta_data.functions) do
-	if func_name:find("^SDL_") then
-		local friendly_name = func_name:match("SDL_(.+)")
-		lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
-	end
-end
-
-lua = lua .. "}\n"
-
-do -- enums
-	lua = lua .. "library.e = {\n"
-	for basic_type, type in pairs(meta_data.enums) do
-		for i, enum in ipairs(type.enums) do
-			lua =  lua .. "\t" .. enum.key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
-		end
-	end
-	lua = lua .. "}\n"
-end
-
-
-lua = lua .. "return library\n"
-
-ffibuild.OutputAndValidate("sdl", lua, header)
+ffibuild.EndLibrary(lua, header)

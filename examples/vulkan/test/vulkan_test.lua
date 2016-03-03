@@ -1,13 +1,13 @@
 local ffi = require("ffi")
 
-package.path = package.path .. ";./../examples/?.lua"
+package.path = package.path .. ";./../../?.lua"
 
 local vk = require("vulkan/libvulkan")
 
-_G.FFI_LIB = "../examples/glfw/glfw/src/libglfw.so"
+_G.FFI_LIB = "../../glfw/libglfw.so"
 local glfw = require("glfw/libglfw")
 
-_G.FFI_LIB = "../examples/freeimage/freeimage/FreeImage/libfreeimage-3.18.0.so"
+_G.FFI_LIB = "../../freeimage/libfreeimage.so"
 local freeimage = require("freeimage/libfreeimage")
 
 _G.FFI_LIB = nil
