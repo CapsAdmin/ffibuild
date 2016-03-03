@@ -451,6 +451,14 @@ function ffibuild.GetMetaData(header)
 		end
 	end
 
+	function meta_data:BuildLuaMetaTable(meta_name, declaration, functions, argument_translate, return_translate, clib, ffi_metatype)
+		return ffibuild.BuildLuaMetaTable(meta_name, declaration, functions, argument_translate, return_translate, self, clib, ffi_metatype)
+	end
+
+	function meta_data:BuildLuaFunction(real_name, func_type, call_translate, return_translate, first_argument_self, clib)
+		return ffibuild.BuildLuaFunction(real_name, func_type, call_translate, return_translate, self, first_argument_self, clib)
+	end
+
 	return meta_data
 end
 

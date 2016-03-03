@@ -441,7 +441,7 @@ do
 
 	for _, info in pairs(objects) do
 		if next(info.functions) then
-			lua = lua .. ffibuild.BuildLuaMetaTable(info.meta_name, info.declaration, info.functions, nil, nil, meta_data, "library", true)
+			lua = lua .. meta_data:BuildLuaMetaTable(info.meta_name, info.declaration, info.functions, nil, nil, "library", true)
 		end
 	end
 end

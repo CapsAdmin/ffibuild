@@ -122,7 +122,7 @@ do -- metatables
 	end
 
 	for _, info in pairs(objects) do
-		lua = lua .. ffibuild.BuildLuaMetaTable(info.meta_name, info.declaration, info.functions, argument_translate, return_translate, meta_data)
+		lua = lua .. meta_data:BuildLuaMetaTable(info.meta_name, info.declaration, info.functions, argument_translate, return_translate)
 	end
 end
 
@@ -146,7 +146,7 @@ do -- libraries
 	for library_name, functions in pairs(libraries) do
 		lua = lua .. "library." .. library_name .. " = {\n"
 		for friendly_name, func_type in pairs(functions) do
-			lua = lua .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type, argument_translate, return_translate, meta_data) .. ",\n"
+			lua = lua .. "\t" .. friendly_name .. " = " .. meta_data:BuildLuaFunction(func_type.name, func_type, argument_translate, return_translate) .. ",\n"
 		end
 		lua = lua .. "}\n"
 	end
