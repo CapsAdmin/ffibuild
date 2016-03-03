@@ -63,7 +63,7 @@ local function match_type_declaration(str)
 	local declaration, name, array_size = str:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
 
 	if not declaration then
-		declaration, name, array_size = str:match("^([%a%d%s_%*]-) ([%a%d_]-) %[(.-)%]$")
+		declaration, name, array_size = str:match("^([%a%d%s_%*]-) ([%a%d_]-) (%[.+%])")
 	end
 
 	return declaration, name, array_size
@@ -232,7 +232,6 @@ function ffibuild.GetMetaData(header)
 				end
 			elseif line:find("^struct") or line:find("^union") then
 				local keyword = line:match("^([%a%d_]+)")
-
 
 				local tag, content = line:match("("..keyword.." [%a%d_]+) ({.+})")
 
@@ -424,10 +423,12 @@ function ffibuild.GetMetaData(header)
 			end
 
 			-- if the prefix has been stripped the key might start with a number
-			if key:find("^%d") then
+			if key and key:find("^%d") then
 				print("enum " .. key .. " starts with a number. prepending _")
 				key = "_" .. key
 			end
+
+			return key
 		end
 
 		function meta_data:BuildEnums(pattern, define_file, define_starts_with)
@@ -607,7 +608,8 @@ do -- type metatables
 							-- kind of hacky but removes "( unsigned long )" and the like which have space
 							val = val:gsub("(%([%s%l]-%))", "")
 
-							local test, found = val:gsub("(%a[%a%d_]+)", function(what)
+							local found
+							local test = val:gsub("(%a[%a%d_]+)", function(what)
 								local val = find_enum(current_meta_data, enums, what)
 
 								if val then
@@ -626,10 +628,14 @@ do -- type metatables
 								test = test:gsub("%( _REMOVE_ME_ %) ", "")
 							end
 
-							if found > 0 then
+							if found then
 								val = test
 							else
 								val = find_enum(current_meta_data, enums, val) or val
+
+								if val:sub(#val, #val) == "u" then
+									val = val:sub(0, -2)
+								end
 
 								local test = tonumber(val)
 
@@ -787,7 +793,7 @@ do -- type metatables
 			end
 
 			if self.array_size then
-				table.insert(declaration, 1, ("[ "..self.array_size.." ]"):reverse())
+				table.insert(declaration, 1, self.array_size:reverse())
 			end
 
 			return table.concat(declaration, " "):reverse()
@@ -1146,13 +1152,13 @@ do -- type metatables
 					local keyword = line:match("^([%a%d_]+)")
 
 					if line:find("%b{}") then
-						local tag, content, name = line:match("^(" .. keyword .. " [%a%d_]+) ({.+}) (.+)")
+						local tag, content, name = line:match("^(" .. keyword .. " [%a%d_]+) (%b{}) (.+)")
 						if not tag then
-							content, name = line:match("^" .. keyword .. " ({.+}) (.+)")
+							content, name = line:match("^" .. keyword .. " (%b{}) (.+)")
 						end
 
 						if not content then
-							content = line:match("^" .. keyword .. " ({.+})$")
+							content = line:match("^" .. keyword .. " (%b{})$")
 							name = ""
 							tag = ""
 						end
@@ -1165,6 +1171,13 @@ do -- type metatables
 
 						if meta_data and tag then
 							(keyword == "struct" and meta_data.structs or meta_data.unions)[tag] = type
+						end
+					elseif line:find(" , ") then
+						local declaration, names = line:match("^("..keyword.." [%a%d_]+) (.+)")
+						for name in (names .. " , "):gmatch("(.-) , ") do
+							local type = ffibuild.CreateType("type", declaration)
+							type.name = name
+							table.insert(out, type)
 						end
 					else
 						local declaration, name, array_size = match_type_declaration(line:match("^" .. keyword .. " (.+)"))
@@ -1231,7 +1244,11 @@ do -- type metatables
 				elseif type.MetaType == "struct" then
 					str = str .. type:GetBasicType() .. " " ..type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
 				elseif type.array_size then
-					str = str .. type:GetDeclaration(meta_data):gsub("%[", type.name .. "[") .. " ; "
+					-- TODO
+					local array_size = type.array_size
+					type.array_size = nil
+					str = str .. type:GetDeclaration(meta_data) .. " " .. type.name .. array_size .. " ; "
+					type.array_size = array_size
 				else
 					str = str .. type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
 				end
