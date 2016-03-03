@@ -414,17 +414,27 @@ function ffibuild.GetMetaData(header)
 	end
 
 	do
-		function meta_data:BuildEnums(pattern)
+		local function get_enum_name(name, pattern)
+			local key
+
+			if pattern then
+				key = name:match(pattern)
+			else
+				key = name
+			end
+
+			-- if the prefix has been stripped the key might start with a number
+			if key:find("^%d") then
+				print("enum " .. key .. " starts with a number. prepending _")
+				key = "_" .. key
+			end
+		end
+
+		function meta_data:BuildEnums(pattern, define_file, define_starts_with)
 			local s = "{\n"
 			for basic_type, type in pairs(self.enums) do
 				for _, enum in ipairs(type.enums) do
-					local key
-
-					if pattern then
-						key = enum.key:match(pattern)
-					else
-						key = enum.key
-					end
+					local key = get_enum_name(enum.key, pattern)
 
 					if key then
 						s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
@@ -433,17 +443,21 @@ function ffibuild.GetMetaData(header)
 			end
 			for _, enums in pairs(self.global_enums) do
 				for _, enum in ipairs(enums.enums) do
-					local key
-
-					if pattern then
-						key = enum.key:match(pattern)
-					else
-						key = enum.key
-					end
+					local key = get_enum_name(enum.key, pattern)
 
 					if key then
 						s =  s .. "\t" .. key .. " = "..enum.val..",\n"
 					end
+				end
+			end
+
+			if type(define_file) == "table" then
+				for i,v in ipairs(define_file) do
+					s = s .. ffibuild.BuildDefineEnums(v[1], v[2], "\t", ",\n", pattern)
+				end
+			else
+				if define_file and define_starts_with then
+					s = s .. ffibuild.BuildDefineEnums(define_file, define_starts_with, "\t", ",\n", pattern)
 				end
 			end
 			s = s .. "}\n"
@@ -602,9 +616,7 @@ do -- type metatables
 								end
 
 								-- don't bother with type casting
-								local type = current_meta_data.typedefs[what]
-
-								if type then
+								if current_meta_data.typedefs[what] then
 									return "_REMOVE_ME_"
 								end
 							end)
@@ -1382,6 +1394,56 @@ do -- lua helper functions
 			s = s .. " return v "
 			s = s .. "end"
 		end
+
+		return s
+	end
+
+	function ffibuild.BuildDefineEnums(file, starts_with, prepend, append, pattern)
+		append = append or "\n"
+
+		local temp = assert(io.open(file))
+		local raw_header = temp:read("*all")
+		temp:close()
+
+		local temp_enums = {}
+
+		local s = ""
+
+		raw_header = raw_header:gsub("/%*.-%*/", "")
+
+		raw_header:gsub("#define ("..starts_with..".-)\n", function(chunk)
+			local enum, found = chunk:gsub("^(%S-)(%s+)(.+)", function(key, _, val)
+				if temp_enums[val] then
+					val = temp_enums[val]
+				end
+				temp_enums[key] = val
+
+				local matched_key
+
+				if pattern then
+					matched_key = key:match(pattern)
+				else
+					matched_key = key
+				end
+
+				key = matched_key
+
+				-- if the prefix has been stripped the key might start with a number
+				if key:find("^%d") then
+					print("enum " .. key .. " starts with a number. prepending _")
+					key = "_" .. key
+				end
+
+				val = val:gsub("%((.+)%)", "%1")
+
+				if val:sub(#val, #val) == "f" then
+					val = val:sub(0, -2)
+					val = tonumber(val)
+				end
+
+				s = s .. prepend .. key .. " = " .. val .. append
+			end)
+		end)
 
 		return s
 	end
