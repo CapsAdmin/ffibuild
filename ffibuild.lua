@@ -406,7 +406,7 @@ function ffibuild.GetMetaData(header)
 			end
 
 			if friendly_name then
-				s = s .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
+				s = s .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type) .. ",\n"
 			end
 		end
 		s = s .. "}\n"
@@ -1326,7 +1326,7 @@ do -- lua helper functions
 			if type(func_type) == "string" then
 				lua = lua .. "\t\t" .. friendly_name .. " = " .. func_type .. ",\n"
 			else
-				lua = lua .. "\t\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data, true, clib) .. ",\n"
+				lua = lua .. "\t\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type, argument_translate, return_translate, meta_data, true, clib) .. ",\n"
 			end
 		end
 		lua = lua .. "\t}\n"
@@ -1340,7 +1340,7 @@ do -- lua helper functions
 		return lua
 	end
 
-	function ffibuild.BuildLuaFunction(friendly_name, real_name, func_type, call_translate, return_translate, meta_data, first_argument_self, clib)
+	function ffibuild.BuildLuaFunction(real_name, func_type, call_translate, return_translate, meta_data, first_argument_self, clib)
 		clib = clib or "CLIB"
 
 		local s = ""
@@ -1351,10 +1351,10 @@ do -- lua helper functions
 			end)
 
 
-			s = s .. friendly_name .. " = function(" .. parameters .. ") "
+			s = s .. "function(" .. parameters .. ") "
 			s = s .. "local v = " .. clib .. "." .. real_name .. "(" .. call .. ") "
 		else
-			s = s .. friendly_name .. " = " .. clib .. "." .. real_name
+			s = s .. clib .. "." .. real_name
 		end
 
 		if return_translate then

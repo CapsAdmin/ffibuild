@@ -25,7 +25,7 @@ lua = lua .. "library = {\n"
 for func_name, func_type in pairs(meta_data.functions) do
 	local friendly_name = func_name:match("^vk(.+)")
 	if not extensions[friendly_name:sub(-3):upper()] then
-		lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type) .. ",\n"
+		lua = lua .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type) .. ",\n"
 	end
 end
 

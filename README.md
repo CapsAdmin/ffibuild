@@ -14,7 +14,7 @@ code = code .. "local library = {}\n"
 
 for func_name, func_type in pairs(meta_data.functions) do
 	local friendly_name = ffibuild.ChangeCase(func_name, "foo_bar", "fooBar")
-	code = code .. "library." .. ffibuild.BuildLuaFunction(friendly_name, func_name, func_type) .. "\n"
+	code = code .. "library." .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_name, func_type) .. "\n"
 end
 
 code = code .. "return library\n"

@@ -146,7 +146,7 @@ do -- libraries
 	for library_name, functions in pairs(libraries) do
 		lua = lua .. "library." .. library_name .. " = {\n"
 		for friendly_name, func_type in pairs(functions) do
-			lua = lua .. "\t" .. ffibuild.BuildLuaFunction(friendly_name, func_type.name, func_type, argument_translate, return_translate, meta_data) .. ",\n"
+			lua = lua .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type, argument_translate, return_translate, meta_data) .. ",\n"
 		end
 		lua = lua .. "}\n"
 	end
