@@ -3,7 +3,3 @@ Adds a plugin called goura to pidgin and exposes the entire libpurple api to lua
 When the plugin is enabled it adds a command "!l" to chat and exposes _G.purple. If you trust a friend to execute code on your computer with !l you can make a group called lua and add them there.
 
 This is just something I personally wanted and so the !l command serves more as example usage. I don't know what else to do with this. Modify main.lua to do what you want.
-
-input and output looks like so:
-
-[input](https://gist.github.com/CapsAdmin/cfe25510646274122699) > [build.lua](build.lua) > [output](https://gist.github.com/CapsAdmin/9ddeb5a0b1825ab265f4)
