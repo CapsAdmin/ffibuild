@@ -79,7 +79,7 @@ do -- extensions
 	for func_name, func_type in pairs(meta_data.functions) do
 		local friendly_name = func_name:match("^vk(.+)")
 		if extensions[friendly_name:sub(-3):upper()] then
-			lua = lua .. "extensions." .. func_name .. " = {ctype = ffi.typeof(\""..func_type:GetDeclaration(meta_data, true).."\")}\n"
+			lua = lua .. "extensions." .. func_name .. " = {ctype = ffi.typeof(\""..func_type:GetDeclaration(meta_data, "*", "").."\")}\n"
 		end
 	end
 

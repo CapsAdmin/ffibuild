@@ -110,7 +110,6 @@ function ffibuild.GetMetaData(header)
 		header = header:gsub("%b{}", function(s) return s:gsub("%s+", " ") end)
 		header = header:gsub("%b()", function(s) return s:gsub("%s+", " ") end)
 
-
 		--TODO
 			-- remove compiler __attribute__
 			header = header:gsub("__%a-__ %b() ", "")
@@ -150,10 +149,13 @@ function ffibuild.GetMetaData(header)
 				end
 			end
 		end)
+
+		-- void * foo ( int , int ) >> void * ( foo ) ( int , int )
+		-- this makes things easier to parse
+		header = header:gsub("(.-) ([%a%d_]+) (%b() ;)", function(a,b,c) return a .. " ( " .. b .. " ) " .. c end)
 	end
 
-	local function is_function(str) return str:find("^.+%b() $") end
-	local function is_function_pointer(str) return str:find("^.-%(.-%*.-%).-%b() $") end
+	local function is_function(str) return str:find("^.-%b() %b() $") end
 
 	local i = 1
 
@@ -173,13 +175,12 @@ function ffibuild.GetMetaData(header)
 			typedef = true
 			line = line:match("^typedef (.+)")
 
-			if is_function_pointer(line) then
-				local type = create_type("function", line:sub(0, -2), true, meta_data)
+			if is_function(line) then
+				local type = create_type("function", line:sub(0, -2), meta_data)
 				meta_data.typedefs[type.name] = type
-				line = nil
-			elseif is_function(line) then
-				local type = create_type("function", line:sub(0, -2), false, meta_data)
-				meta_data.typedefs[type.name] = type
+				if type.func_type ~= "" then
+					line = nil
+				end
 			else
 				local content, alias = line:match("^(.+) ([%a%d_]+)")
 
@@ -209,11 +210,8 @@ function ffibuild.GetMetaData(header)
 		end
 
 		if line then
-			if is_function_pointer(line) then
-				local type = create_type("function", line:sub(0, -2), true, meta_data)
-				meta_data.functions[type.name] = type
-			elseif is_function(line) then
-				local type = create_type("function", line:sub(0, -2), false, meta_data)
+			if is_function(line) then
+				local type = create_type("function", line:sub(0, -2), meta_data)
 				meta_data.functions[type.name] = type
 			elseif line:find("^enum") then
 				local tag, content = line:match("(enum [%a%d_]+) ({.+})")
@@ -939,21 +937,9 @@ do -- type metatables
 			return out
 		end
 
-		function FUNCTION:Create(declaration, is_callback, meta_data)
-			local return_line, func_name, arg_line, func_type
-
-			if is_callback then
-				return_line, func_type, func_name, arg_line = declaration:match("^(.-)%( (%*.*) ([%a%d_]+) %) (%b())$")
-				if not return_line then
-					return_line, func_type, func_name, arg_line = declaration:match("^(.-)%( %( (%*.*) ([%a%d_]+) %) (%b()) %)$")
-				end
-			else
-				return_line, func_name, arg_line = declaration:match("(.-) ([%a%d_]+) (%b())")
-				if not return_line then
-					return_line, func_name, arg_line = declaration:match("(.-) %( ([%a%d_]+) %) (%b())")
-				end
-			end
-
+		function FUNCTION:Create(declaration, meta_data)
+			local return_line, func_type, func_name, arg_line = declaration:match("^(.-) %((.-)([%a%d_]+) %) (%b())$")
+			func_type = func_type:sub(2, -2)
 			arg_line = arg_line:sub(3, -3)
 
 			local arguments
@@ -968,7 +954,7 @@ do -- type metatables
 					elseif basic_types[arg] then
 						type = ffibuild.CreateType("type", arg)
 					elseif arg:find("%b() %b()") then
-						type = ffibuild.CreateType("function", arg, true, meta_data)
+						type = ffibuild.CreateType("function", arg, meta_data)
 					else
 						local declaration, name = arg:match("^([%a%d%s_%*]-) ([%a%d_]-)$")
 
@@ -989,7 +975,6 @@ do -- type metatables
 				name = func_name,
 				arguments = arguments,
 				return_type = ffibuild.CreateType("type", return_line),
-				callback = is_callback,
 				func_type = func_type,
 			}
 		end
@@ -1017,14 +1002,14 @@ do -- type metatables
 		end
 
 		function FUNCTION:GetBasicType()
-			return self.callback and "callback" or "function"
+			return "function"
 		end
 
 		function FUNCTION:GetSubType()
 			return self:GetBasicType()
 		end
 
-		function FUNCTION:GetDeclaration(meta_data, as_callback, name)
+		function FUNCTION:GetDeclaration(meta_data, func_type, func_name)
 			local arg_line = {}
 
 			if self.arguments then
@@ -1039,22 +1024,14 @@ do -- type metatables
 
 			return_type = return_type:GetPrimitive(meta_data)
 
-			if return_type.callback then
-				local ret, urn = return_type:GetDeclaration(meta_data):match("^(.-%( %*) (.+)")
+			if return_type.func_type then
+				local ret, urn = return_type:GetDeclaration(meta_data, "*", ""):match("^(.-%(%*) (.+)")
 				local res = ret .. " " .. self.name .. " " .. arg_line .. " " .. urn
 
 				return res
 			end
 
-			if self.callback or as_callback == true then
-				if name then
-					return return_type:GetDeclaration(meta_data) .. " ( " .. (self.func_type or "* ") .. name .. " ) " .. arg_line
-				else
-					return return_type:GetDeclaration(meta_data) .. " ( " .. (self.func_type or "*") .. " ) " .. arg_line
-				end
-			else
-				return return_type:GetDeclaration(meta_data)  .. " " .. self.name .. " " .. arg_line
-			end
+			return return_type:GetDeclaration(meta_data)  .. "(" .. (func_type or self.func_type) .. " " .. (func_name or self.name or "") .. ")" .. arg_line
 		end
 
 		local keywords = {
@@ -1199,7 +1176,7 @@ do -- type metatables
 						table.insert(out, type)
 					end
 				elseif line:find("%b() %b()") then
-					table.insert(out, ffibuild.CreateType("function", line, true))
+					table.insert(out, ffibuild.CreateType("function", line))
 				elseif line:find(" , ") then
 					local declaration, names = line:match("([%a%d_]+) (.+)")
 					for name in (names .. " , "):gmatch("(.-) , ") do
@@ -1251,7 +1228,7 @@ do -- type metatables
 			for _, type in ipairs(self.data) do
 				if type.GetPrimitive and meta_data then type = type:GetPrimitive(meta_data) end
 				if type.MetaType == "function" then
-					str = str .. type:GetDeclaration(meta_data, true, type.name) .. " ; "
+					str = str .. type:GetDeclaration(meta_data) .. " ; "
 				elseif type.MetaType == "struct" then
 					str = str .. type:GetBasicType() .. " " ..type:GetDeclaration(meta_data) .. " " .. type.name .. " ; "
 				elseif type.array_size then

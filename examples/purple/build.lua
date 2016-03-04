@@ -196,7 +196,7 @@ do -- callbacks
 
 		lua = lua .. "callbacks[\"" .. func_name:gsub("_", "-") .. "\"] = {\n"
 		lua = lua .. "\twrap = function(" .. arg_line .. ") local ret = callback(" .. wrap_line .. ") " .. ret_line .. " end,\n"
-		lua = lua .. "\tdefinition = \"" .. func_type:GetDeclaration(meta_data, true) .. "\",\n"
+		lua = lua .. "\tdefinition = \"" .. func_type:GetDeclaration(meta_data, "*", "") .. "\",\n"
 		lua = lua .. "}\n"
 	end
 

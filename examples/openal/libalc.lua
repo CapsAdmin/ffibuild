@@ -1,26 +1,26 @@
 local ffi = require("ffi")
 ffi.cdef([[struct ALCdevice_struct {};
 struct ALCcontext_struct {};
-void*alcGetProcAddress(struct ALCdevice_struct*,const char*);
-struct ALCcontext_struct*alcCreateContext(struct ALCdevice_struct*,const int*);
-void alcDestroyContext(struct ALCcontext_struct*);
-void alcSuspendContext(struct ALCcontext_struct*);
-char alcMakeContextCurrent(struct ALCcontext_struct*);
-void alcCaptureStop(struct ALCdevice_struct*);
-struct ALCdevice_struct*alcGetContextsDevice(struct ALCcontext_struct*);
-char alcCloseDevice(struct ALCdevice_struct*);
-const char*alcGetString(struct ALCdevice_struct*,int);
-struct ALCcontext_struct*alcGetCurrentContext();
-void alcProcessContext(struct ALCcontext_struct*);
-char alcIsExtensionPresent(struct ALCdevice_struct*,const char*);
-void alcCaptureStart(struct ALCdevice_struct*);
-void alcCaptureSamples(struct ALCdevice_struct*,void*,int);
-int alcGetEnumValue(struct ALCdevice_struct*,const char*);
-void alcGetIntegerv(struct ALCdevice_struct*,int,int,int*);
-struct ALCdevice_struct*alcOpenDevice(const char*);
-int alcGetError(struct ALCdevice_struct*);
-struct ALCdevice_struct*alcCaptureOpenDevice(const char*,unsigned int,int,int);
-char alcCaptureCloseDevice(struct ALCdevice_struct*);
+void*(alcGetProcAddress)(struct ALCdevice_struct*,const char*);
+struct ALCcontext_struct*(alcCreateContext)(struct ALCdevice_struct*,const int*);
+void(alcDestroyContext)(struct ALCcontext_struct*);
+void(alcSuspendContext)(struct ALCcontext_struct*);
+char(alcMakeContextCurrent)(struct ALCcontext_struct*);
+void(alcCaptureStop)(struct ALCdevice_struct*);
+struct ALCdevice_struct*(alcGetContextsDevice)(struct ALCcontext_struct*);
+char(alcCloseDevice)(struct ALCdevice_struct*);
+const char*(alcGetString)(struct ALCdevice_struct*,int);
+struct ALCcontext_struct*(alcGetCurrentContext)();
+void(alcProcessContext)(struct ALCcontext_struct*);
+char(alcIsExtensionPresent)(struct ALCdevice_struct*,const char*);
+void(alcCaptureStart)(struct ALCdevice_struct*);
+void(alcCaptureSamples)(struct ALCdevice_struct*,void*,int);
+int(alcGetEnumValue)(struct ALCdevice_struct*,const char*);
+void(alcGetIntegerv)(struct ALCdevice_struct*,int,int,int*);
+struct ALCdevice_struct*(alcOpenDevice)(const char*);
+int(alcGetError)(struct ALCdevice_struct*);
+struct ALCdevice_struct*(alcCaptureOpenDevice)(const char*,unsigned int,int,int);
+char(alcCaptureCloseDevice)(struct ALCdevice_struct*);
 ]])
 local CLIB = ffi.load(_G.FFI_LIB or "openal")
 local library = {}

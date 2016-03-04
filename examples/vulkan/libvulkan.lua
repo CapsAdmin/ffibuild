@@ -218,164 +218,164 @@ struct VkDisplayPlanePropertiesKHR {struct VkDisplayKHR_T*currentDisplay;unsigne
 struct VkDisplaySurfaceCreateInfoKHR {enum VkStructureType sType;const void*pNext;unsigned int flags;struct VkDisplayModeKHR_T*displayMode;unsigned int planeIndex;unsigned int planeStackIndex;enum VkSurfaceTransformFlagBitsKHR transform;float globalAlpha;enum VkDisplayPlaneAlphaFlagBitsKHR alphaMode;struct VkExtent2D imageExtent;};
 struct VkDebugReportCallbackEXT_T {};
 struct VkDebugReportCallbackCreateInfoEXT {enum VkStructureType sType;const void*pNext;unsigned int flags;unsigned int(*pfnCallback)(unsigned int,enum VkDebugReportObjectTypeEXT,unsigned long,unsigned long,int,const char*,const char*,void*);void*pUserData;};
-void vkGetBufferMemoryRequirements(struct VkDevice_T*,struct VkBuffer_T*,struct VkMemoryRequirements*);
-enum VkResult vkDeviceWaitIdle(struct VkDevice_T*);
-enum VkResult vkCreateBufferView(struct VkDevice_T*,const struct VkBufferViewCreateInfo*,const struct VkAllocationCallbacks*,struct VkBufferView_T**);
-void vkCmdCopyImageToBuffer(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkBuffer_T*,unsigned int,const struct VkBufferImageCopy*);
-void vkCmdResolveImage(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkImageResolve*);
-enum VkResult vkCreateGraphicsPipelines(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned int,const struct VkGraphicsPipelineCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipeline_T**);
-void vkCmdSetStencilCompareMask(struct VkCommandBuffer_T*,unsigned int,unsigned int);
-enum VkResult vkGetPipelineCacheData(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned long*,void*);
-void vkGetRenderAreaGranularity(struct VkDevice_T*,struct VkRenderPass_T*,struct VkExtent2D*);
-void vkDestroyInstance(struct VkInstance_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkEnumerateInstanceLayerProperties(unsigned int*,struct VkLayerProperties*);
-enum VkResult vkResetEvent(struct VkDevice_T*,struct VkEvent_T*);
-void vkGetPhysicalDeviceQueueFamilyProperties(struct VkPhysicalDevice_T*,unsigned int*,struct VkQueueFamilyProperties*);
-enum VkResult vkQueueWaitIdle(struct VkQueue_T*);
-enum VkResult vkEnumeratePhysicalDevices(struct VkInstance_T*,unsigned int*,struct VkPhysicalDevice_T**);
-void vkCmdWriteTimestamp(struct VkCommandBuffer_T*,enum VkPipelineStageFlagBits,struct VkQueryPool_T*,unsigned int);
-enum VkResult vkCreateShaderModule(struct VkDevice_T*,const struct VkShaderModuleCreateInfo*,const struct VkAllocationCallbacks*,struct VkShaderModule_T**);
-void vkDestroySurfaceKHR(struct VkInstance_T*,struct VkSurfaceKHR_T*,const struct VkAllocationCallbacks*);
-void vkCmdCopyQueryPoolResults(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int,struct VkBuffer_T*,unsigned long,unsigned long,unsigned int);
-enum VkResult vkMergePipelineCaches(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned int,struct VkPipelineCache_T*const*);
-void vkCmdSetStencilWriteMask(struct VkCommandBuffer_T*,unsigned int,unsigned int);
-enum VkResult vkCreateFramebuffer(struct VkDevice_T*,const struct VkFramebufferCreateInfo*,const struct VkAllocationCallbacks*,struct VkFramebuffer_T**);
-void vkCmdResetEvent(struct VkCommandBuffer_T*,struct VkEvent_T*,unsigned int);
-enum VkResult vkBindBufferMemory(struct VkDevice_T*,struct VkBuffer_T*,struct VkDeviceMemory_T*,unsigned long);
-void vkCmdSetEvent(struct VkCommandBuffer_T*,struct VkEvent_T*,unsigned int);
-void vkCmdBindDescriptorSets(struct VkCommandBuffer_T*,enum VkPipelineBindPoint,struct VkPipelineLayout_T*,unsigned int,unsigned int,struct VkDescriptorSet_T*const*,unsigned int,const unsigned int*);
-enum VkResult vkEnumerateInstanceExtensionProperties(const char*,unsigned int*,struct VkExtensionProperties*);
-void vkCmdSetDepthBounds(struct VkCommandBuffer_T*,float,float);
-void vkCmdDispatchIndirect(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long);
-void vkDestroyEvent(struct VkDevice_T*,struct VkEvent_T*,const struct VkAllocationCallbacks*);
-void vkCmdNextSubpass(struct VkCommandBuffer_T*,enum VkSubpassContents);
-void vkCmdCopyBuffer(struct VkCommandBuffer_T*,struct VkBuffer_T*,struct VkBuffer_T*,unsigned int,const struct VkBufferCopy*);
-enum VkResult vkGetDisplayPlaneSupportedDisplaysKHR(struct VkPhysicalDevice_T*,unsigned int,unsigned int*,struct VkDisplayKHR_T**);
-void vkDestroyBuffer(struct VkDevice_T*,struct VkBuffer_T*,const struct VkAllocationCallbacks*);
-void vkCmdCopyImage(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkImageCopy*);
-void vkGetPhysicalDeviceSparseImageFormatProperties(struct VkPhysicalDevice_T*,enum VkFormat,enum VkImageType,enum VkSampleCountFlagBits,unsigned int,enum VkImageTiling,unsigned int*,struct VkSparseImageFormatProperties*);
-enum VkResult vkCreateComputePipelines(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned int,const struct VkComputePipelineCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipeline_T**);
-enum VkResult vkCreateDescriptorSetLayout(struct VkDevice_T*,const struct VkDescriptorSetLayoutCreateInfo*,const struct VkAllocationCallbacks*,struct VkDescriptorSetLayout_T**);
-enum VkResult vkAllocateCommandBuffers(struct VkDevice_T*,const struct VkCommandBufferAllocateInfo*,struct VkCommandBuffer_T**);
-enum VkResult vkGetPhysicalDeviceSurfaceFormatsKHR(struct VkPhysicalDevice_T*,struct VkSurfaceKHR_T*,unsigned int*,struct VkSurfaceFormatKHR*);
-void vkDestroyQueryPool(struct VkDevice_T*,struct VkQueryPool_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkCreateDescriptorPool(struct VkDevice_T*,const struct VkDescriptorPoolCreateInfo*,const struct VkAllocationCallbacks*,struct VkDescriptorPool_T**);
-void vkGetImageSubresourceLayout(struct VkDevice_T*,struct VkImage_T*,const struct VkImageSubresource*,struct VkSubresourceLayout*);
-void vkCmdUpdateBuffer(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned long,const unsigned int*);
-void vkCmdSetStencilReference(struct VkCommandBuffer_T*,unsigned int,unsigned int);
-enum VkResult vkCreateBuffer(struct VkDevice_T*,const struct VkBufferCreateInfo*,const struct VkAllocationCallbacks*,struct VkBuffer_T**);
-void vkFreeCommandBuffers(struct VkDevice_T*,struct VkCommandPool_T*,unsigned int,struct VkCommandBuffer_T*const*);
-void vkDestroyDebugReportCallbackEXT(struct VkInstance_T*,struct VkDebugReportCallbackEXT_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkGetFenceStatus(struct VkDevice_T*,struct VkFence_T*);
-void vkCmdBeginQuery(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int);
-enum VkResult vkGetPhysicalDeviceSurfaceCapabilitiesKHR(struct VkPhysicalDevice_T*,struct VkSurfaceKHR_T*,struct VkSurfaceCapabilitiesKHR*);
-void vkDestroyPipeline(struct VkDevice_T*,struct VkPipeline_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkQueueSubmit(struct VkQueue_T*,unsigned int,const struct VkSubmitInfo*,struct VkFence_T*);
-void vkCmdBlitImage(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkImageBlit*,enum VkFilter);
-void vkCmdDrawIndexedIndirect(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned int,unsigned int);
-void vkCmdSetDepthBias(struct VkCommandBuffer_T*,float,float,float);
-enum VkResult vkGetPhysicalDeviceSurfaceSupportKHR(struct VkPhysicalDevice_T*,unsigned int,struct VkSurfaceKHR_T*,unsigned int*);
-enum VkResult vkCreateSemaphore(struct VkDevice_T*,const struct VkSemaphoreCreateInfo*,const struct VkAllocationCallbacks*,struct VkSemaphore_T**);
-void vkDestroyShaderModule(struct VkDevice_T*,struct VkShaderModule_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkCreatePipelineCache(struct VkDevice_T*,const struct VkPipelineCacheCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipelineCache_T**);
-enum VkResult vkCreateImageView(struct VkDevice_T*,const struct VkImageViewCreateInfo*,const struct VkAllocationCallbacks*,struct VkImageView_T**);
-void vkGetPhysicalDeviceFeatures(struct VkPhysicalDevice_T*,struct VkPhysicalDeviceFeatures*);
-void vkDestroyPipelineLayout(struct VkDevice_T*,struct VkPipelineLayout_T*,const struct VkAllocationCallbacks*);
-void vkDestroySampler(struct VkDevice_T*,struct VkSampler_T*,const struct VkAllocationCallbacks*);
-void vkFreeMemory(struct VkDevice_T*,struct VkDeviceMemory_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkGetPhysicalDeviceImageFormatProperties(struct VkPhysicalDevice_T*,enum VkFormat,enum VkImageType,enum VkImageTiling,unsigned int,unsigned int,struct VkImageFormatProperties*);
-enum VkResult vkMapMemory(struct VkDevice_T*,struct VkDeviceMemory_T*,unsigned long,unsigned long,unsigned int,void**);
-void vkDestroyFramebuffer(struct VkDevice_T*,struct VkFramebuffer_T*,const struct VkAllocationCallbacks*);
-void vkGetDeviceMemoryCommitment(struct VkDevice_T*,struct VkDeviceMemory_T*,unsigned long*);
-void vkCmdCopyBufferToImage(struct VkCommandBuffer_T*,struct VkBuffer_T*,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkBufferImageCopy*);
-void vkCmdBindVertexBuffers(struct VkCommandBuffer_T*,unsigned int,unsigned int,struct VkBuffer_T*const*,const unsigned long*);
-void vkDestroyCommandPool(struct VkDevice_T*,struct VkCommandPool_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkInvalidateMappedMemoryRanges(struct VkDevice_T*,unsigned int,const struct VkMappedMemoryRange*);
-enum VkResult vkGetDisplayPlaneCapabilitiesKHR(struct VkPhysicalDevice_T*,struct VkDisplayModeKHR_T*,unsigned int,struct VkDisplayPlaneCapabilitiesKHR*);
-void vkCmdBindPipeline(struct VkCommandBuffer_T*,enum VkPipelineBindPoint,struct VkPipeline_T*);
-void vkDestroyBufferView(struct VkDevice_T*,struct VkBufferView_T*,const struct VkAllocationCallbacks*);
-void vkGetImageSparseMemoryRequirements(struct VkDevice_T*,struct VkImage_T*,unsigned int*,struct VkSparseImageMemoryRequirements*);
-void vkDestroyImageView(struct VkDevice_T*,struct VkImageView_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkResetCommandBuffer(struct VkCommandBuffer_T*,unsigned int);
-void vkCmdDrawIndirect(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned int,unsigned int);
+void(vkGetBufferMemoryRequirements)(struct VkDevice_T*,struct VkBuffer_T*,struct VkMemoryRequirements*);
+enum VkResult(vkDeviceWaitIdle)(struct VkDevice_T*);
+enum VkResult(vkCreateBufferView)(struct VkDevice_T*,const struct VkBufferViewCreateInfo*,const struct VkAllocationCallbacks*,struct VkBufferView_T**);
+void(vkCmdCopyImageToBuffer)(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkBuffer_T*,unsigned int,const struct VkBufferImageCopy*);
+void(vkCmdResolveImage)(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkImageResolve*);
+enum VkResult(vkCreateGraphicsPipelines)(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned int,const struct VkGraphicsPipelineCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipeline_T**);
+void(vkCmdSetStencilCompareMask)(struct VkCommandBuffer_T*,unsigned int,unsigned int);
+enum VkResult(vkGetPipelineCacheData)(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned long*,void*);
+void(vkGetRenderAreaGranularity)(struct VkDevice_T*,struct VkRenderPass_T*,struct VkExtent2D*);
+void(vkDestroyInstance)(struct VkInstance_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkEnumerateInstanceLayerProperties)(unsigned int*,struct VkLayerProperties*);
+enum VkResult(vkResetEvent)(struct VkDevice_T*,struct VkEvent_T*);
+void(vkGetPhysicalDeviceQueueFamilyProperties)(struct VkPhysicalDevice_T*,unsigned int*,struct VkQueueFamilyProperties*);
+enum VkResult(vkQueueWaitIdle)(struct VkQueue_T*);
+enum VkResult(vkEnumeratePhysicalDevices)(struct VkInstance_T*,unsigned int*,struct VkPhysicalDevice_T**);
+void(vkCmdWriteTimestamp)(struct VkCommandBuffer_T*,enum VkPipelineStageFlagBits,struct VkQueryPool_T*,unsigned int);
+enum VkResult(vkCreateShaderModule)(struct VkDevice_T*,const struct VkShaderModuleCreateInfo*,const struct VkAllocationCallbacks*,struct VkShaderModule_T**);
+void(vkDestroySurfaceKHR)(struct VkInstance_T*,struct VkSurfaceKHR_T*,const struct VkAllocationCallbacks*);
+void(vkCmdCopyQueryPoolResults)(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int,struct VkBuffer_T*,unsigned long,unsigned long,unsigned int);
+enum VkResult(vkMergePipelineCaches)(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned int,struct VkPipelineCache_T*const*);
+void(vkCmdSetStencilWriteMask)(struct VkCommandBuffer_T*,unsigned int,unsigned int);
+enum VkResult(vkCreateFramebuffer)(struct VkDevice_T*,const struct VkFramebufferCreateInfo*,const struct VkAllocationCallbacks*,struct VkFramebuffer_T**);
+void(vkCmdResetEvent)(struct VkCommandBuffer_T*,struct VkEvent_T*,unsigned int);
+enum VkResult(vkBindBufferMemory)(struct VkDevice_T*,struct VkBuffer_T*,struct VkDeviceMemory_T*,unsigned long);
+void(vkCmdSetEvent)(struct VkCommandBuffer_T*,struct VkEvent_T*,unsigned int);
+void(vkCmdBindDescriptorSets)(struct VkCommandBuffer_T*,enum VkPipelineBindPoint,struct VkPipelineLayout_T*,unsigned int,unsigned int,struct VkDescriptorSet_T*const*,unsigned int,const unsigned int*);
+enum VkResult(vkEnumerateInstanceExtensionProperties)(const char*,unsigned int*,struct VkExtensionProperties*);
+void(vkCmdSetDepthBounds)(struct VkCommandBuffer_T*,float,float);
+void(vkCmdDispatchIndirect)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long);
+void(vkDestroyEvent)(struct VkDevice_T*,struct VkEvent_T*,const struct VkAllocationCallbacks*);
+void(vkCmdNextSubpass)(struct VkCommandBuffer_T*,enum VkSubpassContents);
+void(vkCmdCopyBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,struct VkBuffer_T*,unsigned int,const struct VkBufferCopy*);
+enum VkResult(vkGetDisplayPlaneSupportedDisplaysKHR)(struct VkPhysicalDevice_T*,unsigned int,unsigned int*,struct VkDisplayKHR_T**);
+void(vkDestroyBuffer)(struct VkDevice_T*,struct VkBuffer_T*,const struct VkAllocationCallbacks*);
+void(vkCmdCopyImage)(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkImageCopy*);
+void(vkGetPhysicalDeviceSparseImageFormatProperties)(struct VkPhysicalDevice_T*,enum VkFormat,enum VkImageType,enum VkSampleCountFlagBits,unsigned int,enum VkImageTiling,unsigned int*,struct VkSparseImageFormatProperties*);
+enum VkResult(vkCreateComputePipelines)(struct VkDevice_T*,struct VkPipelineCache_T*,unsigned int,const struct VkComputePipelineCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipeline_T**);
+enum VkResult(vkCreateDescriptorSetLayout)(struct VkDevice_T*,const struct VkDescriptorSetLayoutCreateInfo*,const struct VkAllocationCallbacks*,struct VkDescriptorSetLayout_T**);
+enum VkResult(vkAllocateCommandBuffers)(struct VkDevice_T*,const struct VkCommandBufferAllocateInfo*,struct VkCommandBuffer_T**);
+enum VkResult(vkGetPhysicalDeviceSurfaceFormatsKHR)(struct VkPhysicalDevice_T*,struct VkSurfaceKHR_T*,unsigned int*,struct VkSurfaceFormatKHR*);
+void(vkDestroyQueryPool)(struct VkDevice_T*,struct VkQueryPool_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkCreateDescriptorPool)(struct VkDevice_T*,const struct VkDescriptorPoolCreateInfo*,const struct VkAllocationCallbacks*,struct VkDescriptorPool_T**);
+void(vkGetImageSubresourceLayout)(struct VkDevice_T*,struct VkImage_T*,const struct VkImageSubresource*,struct VkSubresourceLayout*);
+void(vkCmdUpdateBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned long,const unsigned int*);
+void(vkCmdSetStencilReference)(struct VkCommandBuffer_T*,unsigned int,unsigned int);
+enum VkResult(vkCreateBuffer)(struct VkDevice_T*,const struct VkBufferCreateInfo*,const struct VkAllocationCallbacks*,struct VkBuffer_T**);
+void(vkFreeCommandBuffers)(struct VkDevice_T*,struct VkCommandPool_T*,unsigned int,struct VkCommandBuffer_T*const*);
+void(vkDestroyDebugReportCallbackEXT)(struct VkInstance_T*,struct VkDebugReportCallbackEXT_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkGetFenceStatus)(struct VkDevice_T*,struct VkFence_T*);
+void(vkCmdBeginQuery)(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int);
+enum VkResult(vkGetPhysicalDeviceSurfaceCapabilitiesKHR)(struct VkPhysicalDevice_T*,struct VkSurfaceKHR_T*,struct VkSurfaceCapabilitiesKHR*);
+void(vkDestroyPipeline)(struct VkDevice_T*,struct VkPipeline_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkQueueSubmit)(struct VkQueue_T*,unsigned int,const struct VkSubmitInfo*,struct VkFence_T*);
+void(vkCmdBlitImage)(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkImageBlit*,enum VkFilter);
+void(vkCmdDrawIndexedIndirect)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned int,unsigned int);
+void(vkCmdSetDepthBias)(struct VkCommandBuffer_T*,float,float,float);
+enum VkResult(vkGetPhysicalDeviceSurfaceSupportKHR)(struct VkPhysicalDevice_T*,unsigned int,struct VkSurfaceKHR_T*,unsigned int*);
+enum VkResult(vkCreateSemaphore)(struct VkDevice_T*,const struct VkSemaphoreCreateInfo*,const struct VkAllocationCallbacks*,struct VkSemaphore_T**);
+void(vkDestroyShaderModule)(struct VkDevice_T*,struct VkShaderModule_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkCreatePipelineCache)(struct VkDevice_T*,const struct VkPipelineCacheCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipelineCache_T**);
+enum VkResult(vkCreateImageView)(struct VkDevice_T*,const struct VkImageViewCreateInfo*,const struct VkAllocationCallbacks*,struct VkImageView_T**);
+void(vkGetPhysicalDeviceFeatures)(struct VkPhysicalDevice_T*,struct VkPhysicalDeviceFeatures*);
+void(vkDestroyPipelineLayout)(struct VkDevice_T*,struct VkPipelineLayout_T*,const struct VkAllocationCallbacks*);
+void(vkDestroySampler)(struct VkDevice_T*,struct VkSampler_T*,const struct VkAllocationCallbacks*);
+void(vkFreeMemory)(struct VkDevice_T*,struct VkDeviceMemory_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkGetPhysicalDeviceImageFormatProperties)(struct VkPhysicalDevice_T*,enum VkFormat,enum VkImageType,enum VkImageTiling,unsigned int,unsigned int,struct VkImageFormatProperties*);
+enum VkResult(vkMapMemory)(struct VkDevice_T*,struct VkDeviceMemory_T*,unsigned long,unsigned long,unsigned int,void**);
+void(vkDestroyFramebuffer)(struct VkDevice_T*,struct VkFramebuffer_T*,const struct VkAllocationCallbacks*);
+void(vkGetDeviceMemoryCommitment)(struct VkDevice_T*,struct VkDeviceMemory_T*,unsigned long*);
+void(vkCmdCopyBufferToImage)(struct VkCommandBuffer_T*,struct VkBuffer_T*,struct VkImage_T*,enum VkImageLayout,unsigned int,const struct VkBufferImageCopy*);
+void(vkCmdBindVertexBuffers)(struct VkCommandBuffer_T*,unsigned int,unsigned int,struct VkBuffer_T*const*,const unsigned long*);
+void(vkDestroyCommandPool)(struct VkDevice_T*,struct VkCommandPool_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkInvalidateMappedMemoryRanges)(struct VkDevice_T*,unsigned int,const struct VkMappedMemoryRange*);
+enum VkResult(vkGetDisplayPlaneCapabilitiesKHR)(struct VkPhysicalDevice_T*,struct VkDisplayModeKHR_T*,unsigned int,struct VkDisplayPlaneCapabilitiesKHR*);
+void(vkCmdBindPipeline)(struct VkCommandBuffer_T*,enum VkPipelineBindPoint,struct VkPipeline_T*);
+void(vkDestroyBufferView)(struct VkDevice_T*,struct VkBufferView_T*,const struct VkAllocationCallbacks*);
+void(vkGetImageSparseMemoryRequirements)(struct VkDevice_T*,struct VkImage_T*,unsigned int*,struct VkSparseImageMemoryRequirements*);
+void(vkDestroyImageView)(struct VkDevice_T*,struct VkImageView_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkResetCommandBuffer)(struct VkCommandBuffer_T*,unsigned int);
+void(vkCmdDrawIndirect)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned int,unsigned int);
 void(*vkGetInstanceProcAddr(struct VkInstance_T*,const char*))();
-void vkGetImageMemoryRequirements(struct VkDevice_T*,struct VkImage_T*,struct VkMemoryRequirements*);
-enum VkResult vkSetEvent(struct VkDevice_T*,struct VkEvent_T*);
-enum VkResult vkGetEventStatus(struct VkDevice_T*,struct VkEvent_T*);
-enum VkResult vkCreateDevice(struct VkPhysicalDevice_T*,const struct VkDeviceCreateInfo*,const struct VkAllocationCallbacks*,struct VkDevice_T**);
-enum VkResult vkCreateInstance(const struct VkInstanceCreateInfo*,const struct VkAllocationCallbacks*,struct VkInstance_T**);
-void vkCmdClearDepthStencilImage(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,const struct VkClearDepthStencilValue*,unsigned int,const struct VkImageSubresourceRange*);
-enum VkResult vkBeginCommandBuffer(struct VkCommandBuffer_T*,const struct VkCommandBufferBeginInfo*);
-void vkCmdDrawIndexed(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int,int,unsigned int);
-void vkDebugReportMessageEXT(struct VkInstance_T*,unsigned int,enum VkDebugReportObjectTypeEXT,unsigned long,unsigned long,int,const char*,const char*);
-enum VkResult vkGetPhysicalDeviceDisplayPlanePropertiesKHR(struct VkPhysicalDevice_T*,unsigned int*,struct VkDisplayPlanePropertiesKHR*);
-void vkCmdFillBuffer(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned long,unsigned int);
-enum VkResult vkCreateDebugReportCallbackEXT(struct VkInstance_T*,const struct VkDebugReportCallbackCreateInfoEXT*,const struct VkAllocationCallbacks*,struct VkDebugReportCallbackEXT_T**);
-void vkGetDeviceQueue(struct VkDevice_T*,unsigned int,unsigned int,struct VkQueue_T**);
-enum VkResult vkCreateSharedSwapchainsKHR(struct VkDevice_T*,unsigned int,const struct VkSwapchainCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkSwapchainKHR_T**);
-enum VkResult vkCreateDisplayPlaneSurfaceKHR(struct VkInstance_T*,const struct VkDisplaySurfaceCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkSurfaceKHR_T**);
-void vkCmdWaitEvents(struct VkCommandBuffer_T*,unsigned int,struct VkEvent_T*const*,unsigned int,unsigned int,unsigned int,const struct VkMemoryBarrier*,unsigned int,const struct VkBufferMemoryBarrier*,unsigned int,const struct VkImageMemoryBarrier*);
-void vkCmdEndRenderPass(struct VkCommandBuffer_T*);
-void vkDestroySwapchainKHR(struct VkDevice_T*,struct VkSwapchainKHR_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkGetPhysicalDeviceDisplayPropertiesKHR(struct VkPhysicalDevice_T*,unsigned int*,struct VkDisplayPropertiesKHR*);
-enum VkResult vkQueuePresentKHR(struct VkQueue_T*,const struct VkPresentInfoKHR*);
-enum VkResult vkAcquireNextImageKHR(struct VkDevice_T*,struct VkSwapchainKHR_T*,unsigned long,struct VkSemaphore_T*,struct VkFence_T*,unsigned int*);
-void vkDestroyFence(struct VkDevice_T*,struct VkFence_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkGetSwapchainImagesKHR(struct VkDevice_T*,struct VkSwapchainKHR_T*,unsigned int*,struct VkImage_T**);
-enum VkResult vkCreateImage(struct VkDevice_T*,const struct VkImageCreateInfo*,const struct VkAllocationCallbacks*,struct VkImage_T**);
-enum VkResult vkGetDisplayModePropertiesKHR(struct VkPhysicalDevice_T*,struct VkDisplayKHR_T*,unsigned int*,struct VkDisplayModePropertiesKHR*);
-enum VkResult vkCreateSwapchainKHR(struct VkDevice_T*,const struct VkSwapchainCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkSwapchainKHR_T**);
-enum VkResult vkGetPhysicalDeviceSurfacePresentModesKHR(struct VkPhysicalDevice_T*,struct VkSurfaceKHR_T*,unsigned int*,enum VkPresentModeKHR*);
-enum VkResult vkAllocateMemory(struct VkDevice_T*,const struct VkMemoryAllocateInfo*,const struct VkAllocationCallbacks*,struct VkDeviceMemory_T**);
-void vkCmdClearColorImage(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,const union VkClearColorValue*,unsigned int,const struct VkImageSubresourceRange*);
-void vkCmdExecuteCommands(struct VkCommandBuffer_T*,unsigned int,struct VkCommandBuffer_T*const*);
-enum VkResult vkCreateDisplayModeKHR(struct VkPhysicalDevice_T*,struct VkDisplayKHR_T*,const struct VkDisplayModeCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkDisplayModeKHR_T**);
-void vkCmdBeginRenderPass(struct VkCommandBuffer_T*,const struct VkRenderPassBeginInfo*,enum VkSubpassContents);
-void vkCmdClearAttachments(struct VkCommandBuffer_T*,unsigned int,const struct VkClearAttachment*,unsigned int,const struct VkClearRect*);
-void vkCmdPushConstants(struct VkCommandBuffer_T*,struct VkPipelineLayout_T*,unsigned int,unsigned int,unsigned int,const void*);
-void vkCmdResetQueryPool(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int);
-void vkCmdEndQuery(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int);
-enum VkResult vkCreateFence(struct VkDevice_T*,const struct VkFenceCreateInfo*,const struct VkAllocationCallbacks*,struct VkFence_T**);
-void vkCmdBindIndexBuffer(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,enum VkIndexType);
-enum VkResult vkEndCommandBuffer(struct VkCommandBuffer_T*);
-enum VkResult vkCreateRenderPass(struct VkDevice_T*,const struct VkRenderPassCreateInfo*,const struct VkAllocationCallbacks*,struct VkRenderPass_T**);
-void vkDestroyImage(struct VkDevice_T*,struct VkImage_T*,const struct VkAllocationCallbacks*);
-void vkDestroySemaphore(struct VkDevice_T*,struct VkSemaphore_T*,const struct VkAllocationCallbacks*);
-void vkCmdSetBlendConstants(struct VkCommandBuffer_T*,const float);
-enum VkResult vkEnumerateDeviceLayerProperties(struct VkPhysicalDevice_T*,unsigned int*,struct VkLayerProperties*);
-void vkDestroyPipelineCache(struct VkDevice_T*,struct VkPipelineCache_T*,const struct VkAllocationCallbacks*);
+void(vkGetImageMemoryRequirements)(struct VkDevice_T*,struct VkImage_T*,struct VkMemoryRequirements*);
+enum VkResult(vkSetEvent)(struct VkDevice_T*,struct VkEvent_T*);
+enum VkResult(vkGetEventStatus)(struct VkDevice_T*,struct VkEvent_T*);
+enum VkResult(vkCreateDevice)(struct VkPhysicalDevice_T*,const struct VkDeviceCreateInfo*,const struct VkAllocationCallbacks*,struct VkDevice_T**);
+enum VkResult(vkCreateInstance)(const struct VkInstanceCreateInfo*,const struct VkAllocationCallbacks*,struct VkInstance_T**);
+void(vkCmdClearDepthStencilImage)(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,const struct VkClearDepthStencilValue*,unsigned int,const struct VkImageSubresourceRange*);
+enum VkResult(vkBeginCommandBuffer)(struct VkCommandBuffer_T*,const struct VkCommandBufferBeginInfo*);
+void(vkCmdDrawIndexed)(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int,int,unsigned int);
+void(vkDebugReportMessageEXT)(struct VkInstance_T*,unsigned int,enum VkDebugReportObjectTypeEXT,unsigned long,unsigned long,int,const char*,const char*);
+enum VkResult(vkGetPhysicalDeviceDisplayPlanePropertiesKHR)(struct VkPhysicalDevice_T*,unsigned int*,struct VkDisplayPlanePropertiesKHR*);
+void(vkCmdFillBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned long,unsigned int);
+enum VkResult(vkCreateDebugReportCallbackEXT)(struct VkInstance_T*,const struct VkDebugReportCallbackCreateInfoEXT*,const struct VkAllocationCallbacks*,struct VkDebugReportCallbackEXT_T**);
+void(vkGetDeviceQueue)(struct VkDevice_T*,unsigned int,unsigned int,struct VkQueue_T**);
+enum VkResult(vkCreateSharedSwapchainsKHR)(struct VkDevice_T*,unsigned int,const struct VkSwapchainCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkSwapchainKHR_T**);
+enum VkResult(vkCreateDisplayPlaneSurfaceKHR)(struct VkInstance_T*,const struct VkDisplaySurfaceCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkSurfaceKHR_T**);
+void(vkCmdWaitEvents)(struct VkCommandBuffer_T*,unsigned int,struct VkEvent_T*const*,unsigned int,unsigned int,unsigned int,const struct VkMemoryBarrier*,unsigned int,const struct VkBufferMemoryBarrier*,unsigned int,const struct VkImageMemoryBarrier*);
+void(vkCmdEndRenderPass)(struct VkCommandBuffer_T*);
+void(vkDestroySwapchainKHR)(struct VkDevice_T*,struct VkSwapchainKHR_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkGetPhysicalDeviceDisplayPropertiesKHR)(struct VkPhysicalDevice_T*,unsigned int*,struct VkDisplayPropertiesKHR*);
+enum VkResult(vkQueuePresentKHR)(struct VkQueue_T*,const struct VkPresentInfoKHR*);
+enum VkResult(vkAcquireNextImageKHR)(struct VkDevice_T*,struct VkSwapchainKHR_T*,unsigned long,struct VkSemaphore_T*,struct VkFence_T*,unsigned int*);
+void(vkDestroyFence)(struct VkDevice_T*,struct VkFence_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkGetSwapchainImagesKHR)(struct VkDevice_T*,struct VkSwapchainKHR_T*,unsigned int*,struct VkImage_T**);
+enum VkResult(vkCreateImage)(struct VkDevice_T*,const struct VkImageCreateInfo*,const struct VkAllocationCallbacks*,struct VkImage_T**);
+enum VkResult(vkGetDisplayModePropertiesKHR)(struct VkPhysicalDevice_T*,struct VkDisplayKHR_T*,unsigned int*,struct VkDisplayModePropertiesKHR*);
+enum VkResult(vkCreateSwapchainKHR)(struct VkDevice_T*,const struct VkSwapchainCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkSwapchainKHR_T**);
+enum VkResult(vkGetPhysicalDeviceSurfacePresentModesKHR)(struct VkPhysicalDevice_T*,struct VkSurfaceKHR_T*,unsigned int*,enum VkPresentModeKHR*);
+enum VkResult(vkAllocateMemory)(struct VkDevice_T*,const struct VkMemoryAllocateInfo*,const struct VkAllocationCallbacks*,struct VkDeviceMemory_T**);
+void(vkCmdClearColorImage)(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,const union VkClearColorValue*,unsigned int,const struct VkImageSubresourceRange*);
+void(vkCmdExecuteCommands)(struct VkCommandBuffer_T*,unsigned int,struct VkCommandBuffer_T*const*);
+enum VkResult(vkCreateDisplayModeKHR)(struct VkPhysicalDevice_T*,struct VkDisplayKHR_T*,const struct VkDisplayModeCreateInfoKHR*,const struct VkAllocationCallbacks*,struct VkDisplayModeKHR_T**);
+void(vkCmdBeginRenderPass)(struct VkCommandBuffer_T*,const struct VkRenderPassBeginInfo*,enum VkSubpassContents);
+void(vkCmdClearAttachments)(struct VkCommandBuffer_T*,unsigned int,const struct VkClearAttachment*,unsigned int,const struct VkClearRect*);
+void(vkCmdPushConstants)(struct VkCommandBuffer_T*,struct VkPipelineLayout_T*,unsigned int,unsigned int,unsigned int,const void*);
+void(vkCmdResetQueryPool)(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int);
+void(vkCmdEndQuery)(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int);
+enum VkResult(vkCreateFence)(struct VkDevice_T*,const struct VkFenceCreateInfo*,const struct VkAllocationCallbacks*,struct VkFence_T**);
+void(vkCmdBindIndexBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,enum VkIndexType);
+enum VkResult(vkEndCommandBuffer)(struct VkCommandBuffer_T*);
+enum VkResult(vkCreateRenderPass)(struct VkDevice_T*,const struct VkRenderPassCreateInfo*,const struct VkAllocationCallbacks*,struct VkRenderPass_T**);
+void(vkDestroyImage)(struct VkDevice_T*,struct VkImage_T*,const struct VkAllocationCallbacks*);
+void(vkDestroySemaphore)(struct VkDevice_T*,struct VkSemaphore_T*,const struct VkAllocationCallbacks*);
+void(vkCmdSetBlendConstants)(struct VkCommandBuffer_T*,const float);
+enum VkResult(vkEnumerateDeviceLayerProperties)(struct VkPhysicalDevice_T*,unsigned int*,struct VkLayerProperties*);
+void(vkDestroyPipelineCache)(struct VkDevice_T*,struct VkPipelineCache_T*,const struct VkAllocationCallbacks*);
 void(*vkGetDeviceProcAddr(struct VkDevice_T*,const char*))();
-enum VkResult vkBindImageMemory(struct VkDevice_T*,struct VkImage_T*,struct VkDeviceMemory_T*,unsigned long);
-void vkDestroyRenderPass(struct VkDevice_T*,struct VkRenderPass_T*,const struct VkAllocationCallbacks*);
-void vkUnmapMemory(struct VkDevice_T*,struct VkDeviceMemory_T*);
-void vkDestroyDescriptorPool(struct VkDevice_T*,struct VkDescriptorPool_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkEnumerateDeviceExtensionProperties(struct VkPhysicalDevice_T*,const char*,unsigned int*,struct VkExtensionProperties*);
-void vkGetPhysicalDeviceProperties(struct VkPhysicalDevice_T*,struct VkPhysicalDeviceProperties*);
-enum VkResult vkCreateQueryPool(struct VkDevice_T*,const struct VkQueryPoolCreateInfo*,const struct VkAllocationCallbacks*,struct VkQueryPool_T**);
-void vkCmdDispatch(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int);
-void vkGetPhysicalDeviceFormatProperties(struct VkPhysicalDevice_T*,enum VkFormat,struct VkFormatProperties*);
-enum VkResult vkResetDescriptorPool(struct VkDevice_T*,struct VkDescriptorPool_T*,unsigned int);
-enum VkResult vkWaitForFences(struct VkDevice_T*,unsigned int,struct VkFence_T*const*,unsigned int,unsigned long);
-void vkCmdSetLineWidth(struct VkCommandBuffer_T*,float);
-enum VkResult vkResetFences(struct VkDevice_T*,unsigned int,struct VkFence_T*const*);
-enum VkResult vkCreateSampler(struct VkDevice_T*,const struct VkSamplerCreateInfo*,const struct VkAllocationCallbacks*,struct VkSampler_T**);
-void vkDestroyDescriptorSetLayout(struct VkDevice_T*,struct VkDescriptorSetLayout_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkFlushMappedMemoryRanges(struct VkDevice_T*,unsigned int,const struct VkMappedMemoryRange*);
-void vkDestroyDevice(struct VkDevice_T*,const struct VkAllocationCallbacks*);
-enum VkResult vkFreeDescriptorSets(struct VkDevice_T*,struct VkDescriptorPool_T*,unsigned int,struct VkDescriptorSet_T*const*);
-void vkCmdDraw(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int,unsigned int);
-enum VkResult vkCreateCommandPool(struct VkDevice_T*,const struct VkCommandPoolCreateInfo*,const struct VkAllocationCallbacks*,struct VkCommandPool_T**);
-enum VkResult vkCreateEvent(struct VkDevice_T*,const struct VkEventCreateInfo*,const struct VkAllocationCallbacks*,struct VkEvent_T**);
-void vkGetPhysicalDeviceMemoryProperties(struct VkPhysicalDevice_T*,struct VkPhysicalDeviceMemoryProperties*);
-enum VkResult vkAllocateDescriptorSets(struct VkDevice_T*,const struct VkDescriptorSetAllocateInfo*,struct VkDescriptorSet_T**);
-void vkCmdSetScissor(struct VkCommandBuffer_T*,unsigned int,unsigned int,const struct VkRect2D*);
-enum VkResult vkCreatePipelineLayout(struct VkDevice_T*,const struct VkPipelineLayoutCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipelineLayout_T**);
-enum VkResult vkQueueBindSparse(struct VkQueue_T*,unsigned int,const struct VkBindSparseInfo*,struct VkFence_T*);
-void vkUpdateDescriptorSets(struct VkDevice_T*,unsigned int,const struct VkWriteDescriptorSet*,unsigned int,const struct VkCopyDescriptorSet*);
-enum VkResult vkGetQueryPoolResults(struct VkDevice_T*,struct VkQueryPool_T*,unsigned int,unsigned int,unsigned long,void*,unsigned long,unsigned int);
-void vkCmdPipelineBarrier(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int,unsigned int,const struct VkMemoryBarrier*,unsigned int,const struct VkBufferMemoryBarrier*,unsigned int,const struct VkImageMemoryBarrier*);
-enum VkResult vkResetCommandPool(struct VkDevice_T*,struct VkCommandPool_T*,unsigned int);
-void vkCmdSetViewport(struct VkCommandBuffer_T*,unsigned int,unsigned int,const struct VkViewport*);
+enum VkResult(vkBindImageMemory)(struct VkDevice_T*,struct VkImage_T*,struct VkDeviceMemory_T*,unsigned long);
+void(vkDestroyRenderPass)(struct VkDevice_T*,struct VkRenderPass_T*,const struct VkAllocationCallbacks*);
+void(vkUnmapMemory)(struct VkDevice_T*,struct VkDeviceMemory_T*);
+void(vkDestroyDescriptorPool)(struct VkDevice_T*,struct VkDescriptorPool_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkEnumerateDeviceExtensionProperties)(struct VkPhysicalDevice_T*,const char*,unsigned int*,struct VkExtensionProperties*);
+void(vkGetPhysicalDeviceProperties)(struct VkPhysicalDevice_T*,struct VkPhysicalDeviceProperties*);
+enum VkResult(vkCreateQueryPool)(struct VkDevice_T*,const struct VkQueryPoolCreateInfo*,const struct VkAllocationCallbacks*,struct VkQueryPool_T**);
+void(vkCmdDispatch)(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int);
+void(vkGetPhysicalDeviceFormatProperties)(struct VkPhysicalDevice_T*,enum VkFormat,struct VkFormatProperties*);
+enum VkResult(vkResetDescriptorPool)(struct VkDevice_T*,struct VkDescriptorPool_T*,unsigned int);
+enum VkResult(vkWaitForFences)(struct VkDevice_T*,unsigned int,struct VkFence_T*const*,unsigned int,unsigned long);
+void(vkCmdSetLineWidth)(struct VkCommandBuffer_T*,float);
+enum VkResult(vkResetFences)(struct VkDevice_T*,unsigned int,struct VkFence_T*const*);
+enum VkResult(vkCreateSampler)(struct VkDevice_T*,const struct VkSamplerCreateInfo*,const struct VkAllocationCallbacks*,struct VkSampler_T**);
+void(vkDestroyDescriptorSetLayout)(struct VkDevice_T*,struct VkDescriptorSetLayout_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkFlushMappedMemoryRanges)(struct VkDevice_T*,unsigned int,const struct VkMappedMemoryRange*);
+void(vkDestroyDevice)(struct VkDevice_T*,const struct VkAllocationCallbacks*);
+enum VkResult(vkFreeDescriptorSets)(struct VkDevice_T*,struct VkDescriptorPool_T*,unsigned int,struct VkDescriptorSet_T*const*);
+void(vkCmdDraw)(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int,unsigned int);
+enum VkResult(vkCreateCommandPool)(struct VkDevice_T*,const struct VkCommandPoolCreateInfo*,const struct VkAllocationCallbacks*,struct VkCommandPool_T**);
+enum VkResult(vkCreateEvent)(struct VkDevice_T*,const struct VkEventCreateInfo*,const struct VkAllocationCallbacks*,struct VkEvent_T**);
+void(vkGetPhysicalDeviceMemoryProperties)(struct VkPhysicalDevice_T*,struct VkPhysicalDeviceMemoryProperties*);
+enum VkResult(vkAllocateDescriptorSets)(struct VkDevice_T*,const struct VkDescriptorSetAllocateInfo*,struct VkDescriptorSet_T**);
+void(vkCmdSetScissor)(struct VkCommandBuffer_T*,unsigned int,unsigned int,const struct VkRect2D*);
+enum VkResult(vkCreatePipelineLayout)(struct VkDevice_T*,const struct VkPipelineLayoutCreateInfo*,const struct VkAllocationCallbacks*,struct VkPipelineLayout_T**);
+enum VkResult(vkQueueBindSparse)(struct VkQueue_T*,unsigned int,const struct VkBindSparseInfo*,struct VkFence_T*);
+void(vkUpdateDescriptorSets)(struct VkDevice_T*,unsigned int,const struct VkWriteDescriptorSet*,unsigned int,const struct VkCopyDescriptorSet*);
+enum VkResult(vkGetQueryPoolResults)(struct VkDevice_T*,struct VkQueryPool_T*,unsigned int,unsigned int,unsigned long,void*,unsigned long,unsigned int);
+void(vkCmdPipelineBarrier)(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int,unsigned int,const struct VkMemoryBarrier*,unsigned int,const struct VkBufferMemoryBarrier*,unsigned int,const struct VkImageMemoryBarrier*);
+enum VkResult(vkResetCommandPool)(struct VkDevice_T*,struct VkCommandPool_T*,unsigned int);
+void(vkCmdSetViewport)(struct VkCommandBuffer_T*,unsigned int,unsigned int,const struct VkViewport*);
 ]])
 local CLIB = ffi.load(_G.FFI_LIB or "vulkan")
 local library = {}
@@ -575,27 +575,27 @@ library.struct_gc = setmetatable({},{__mode = "k"})
 library.macros = {}
 library.macros.MAKE_VERSION = function(major, minor, patch) return bit.bor(bit.lshift(major, 22), bit.lshift(minor, 12) , patch) end
 local extensions = {}
-extensions.vkDestroySurfaceKHR = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , struct VkSurfaceKHR_T * , const struct VkAllocationCallbacks * )")}
-extensions.vkGetDisplayPlaneSupportedDisplaysKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int , unsigned int * , struct VkDisplayKHR_T * * )")}
-extensions.vkGetPhysicalDeviceSurfaceFormatsKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , struct VkSurfaceFormatKHR * )")}
-extensions.vkDestroyDebugReportCallbackEXT = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , struct VkDebugReportCallbackEXT_T * , const struct VkAllocationCallbacks * )")}
-extensions.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , struct VkSurfaceCapabilitiesKHR * )")}
-extensions.vkGetPhysicalDeviceSurfaceSupportKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int , struct VkSurfaceKHR_T * , unsigned int * )")}
-extensions.vkGetDisplayPlaneCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayModeKHR_T * , unsigned int , struct VkDisplayPlaneCapabilitiesKHR * )")}
-extensions.vkDebugReportMessageEXT = {ctype = ffi.typeof("void ( * ) ( struct VkInstance_T * , unsigned int , enum VkDebugReportObjectTypeEXT , unsigned long , unsigned long , int , const char * , const char * )")}
-extensions.vkGetPhysicalDeviceDisplayPlanePropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPlanePropertiesKHR * )")}
-extensions.vkCreateDebugReportCallbackEXT = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkInstance_T * , const struct VkDebugReportCallbackCreateInfoEXT * , const struct VkAllocationCallbacks * , struct VkDebugReportCallbackEXT_T * * )")}
-extensions.vkCreateSharedSwapchainsKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , unsigned int , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
-extensions.vkCreateDisplayPlaneSurfaceKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkInstance_T * , const struct VkDisplaySurfaceCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSurfaceKHR_T * * )")}
-extensions.vkDestroySwapchainKHR = {ctype = ffi.typeof("void ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , const struct VkAllocationCallbacks * )")}
-extensions.vkGetPhysicalDeviceDisplayPropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPropertiesKHR * )")}
-extensions.vkQueuePresentKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkQueue_T * , const struct VkPresentInfoKHR * )")}
-extensions.vkAcquireNextImageKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned long , struct VkSemaphore_T * , struct VkFence_T * , unsigned int * )")}
-extensions.vkGetSwapchainImagesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned int * , struct VkImage_T * * )")}
-extensions.vkGetDisplayModePropertiesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , unsigned int * , struct VkDisplayModePropertiesKHR * )")}
-extensions.vkCreateSwapchainKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkDevice_T * , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
-extensions.vkGetPhysicalDeviceSurfacePresentModesKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , enum VkPresentModeKHR * )")}
-extensions.vkCreateDisplayModeKHR = {ctype = ffi.typeof("enum VkResult ( * ) ( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , const struct VkDisplayModeCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkDisplayModeKHR_T * * )")}
+extensions.vkDestroySurfaceKHR = {ctype = ffi.typeof("void(* )( struct VkInstance_T * , struct VkSurfaceKHR_T * , const struct VkAllocationCallbacks * )")}
+extensions.vkGetDisplayPlaneSupportedDisplaysKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , unsigned int , unsigned int * , struct VkDisplayKHR_T * * )")}
+extensions.vkGetPhysicalDeviceSurfaceFormatsKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , struct VkSurfaceFormatKHR * )")}
+extensions.vkDestroyDebugReportCallbackEXT = {ctype = ffi.typeof("void(* )( struct VkInstance_T * , struct VkDebugReportCallbackEXT_T * , const struct VkAllocationCallbacks * )")}
+extensions.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , struct VkSurfaceCapabilitiesKHR * )")}
+extensions.vkGetPhysicalDeviceSurfaceSupportKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , unsigned int , struct VkSurfaceKHR_T * , unsigned int * )")}
+extensions.vkGetDisplayPlaneCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkDisplayModeKHR_T * , unsigned int , struct VkDisplayPlaneCapabilitiesKHR * )")}
+extensions.vkDebugReportMessageEXT = {ctype = ffi.typeof("void(* )( struct VkInstance_T * , unsigned int , enum VkDebugReportObjectTypeEXT , unsigned long , unsigned long , int , const char * , const char * )")}
+extensions.vkGetPhysicalDeviceDisplayPlanePropertiesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPlanePropertiesKHR * )")}
+extensions.vkCreateDebugReportCallbackEXT = {ctype = ffi.typeof("enum VkResult(* )( struct VkInstance_T * , const struct VkDebugReportCallbackCreateInfoEXT * , const struct VkAllocationCallbacks * , struct VkDebugReportCallbackEXT_T * * )")}
+extensions.vkCreateSharedSwapchainsKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , unsigned int , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
+extensions.vkCreateDisplayPlaneSurfaceKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkInstance_T * , const struct VkDisplaySurfaceCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSurfaceKHR_T * * )")}
+extensions.vkDestroySwapchainKHR = {ctype = ffi.typeof("void(* )( struct VkDevice_T * , struct VkSwapchainKHR_T * , const struct VkAllocationCallbacks * )")}
+extensions.vkGetPhysicalDeviceDisplayPropertiesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPropertiesKHR * )")}
+extensions.vkQueuePresentKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkQueue_T * , const struct VkPresentInfoKHR * )")}
+extensions.vkAcquireNextImageKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned long , struct VkSemaphore_T * , struct VkFence_T * , unsigned int * )")}
+extensions.vkGetSwapchainImagesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , struct VkSwapchainKHR_T * , unsigned int * , struct VkImage_T * * )")}
+extensions.vkGetDisplayModePropertiesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , unsigned int * , struct VkDisplayModePropertiesKHR * )")}
+extensions.vkCreateSwapchainKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
+extensions.vkGetPhysicalDeviceSurfacePresentModesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , enum VkPresentModeKHR * )")}
+extensions.vkCreateDisplayModeKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , const struct VkDisplayModeCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkDisplayModeKHR_T * * )")}
 local function load(func, ptr, ext, decl, name)
 	if extensions[ext] and not decl and not name then
 		decl = extensions[ext].ctype
