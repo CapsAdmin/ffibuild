@@ -5,7 +5,7 @@ local ffibuild = require("ffibuild")
 ffibuild.BuildSharedLibrary(
 	"freeimage",
 	"wget -qO- -O temp.tar.gz http://freeimage.cvs.sourceforge.net/viewvc/freeimage/?view=tar && mkdir repo && tar xf temp.tar.gz --directory=repo && rm temp.tar.gz",
-	"cd repo/freeimage/FreeImage && make && cd ../../../ && cp repo/freeimage/FreeImage/libfreeimage-3.18.0.so libfreeimage.so"
+	"cd repo/freeimage/FreeImage && make && cd ../../../"
 )
 
 local header = ffibuild.BuildCHeader([[

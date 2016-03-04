@@ -1,11 +1,14 @@
 local ffibuild = {}
 
-function ffibuild.BuildSharedLibrary(name, clone, build)
+function ffibuild.BuildSharedLibrary(name, clone, build, copy)
 	--os.execute("git --git-dir=./repo/.git pull")
 	local f = io.open("lib"..name..".so", "r")
 	if not f then
 		os.execute(clone)
 		os.execute(build)
+		if not copy then
+			os.execute("cp $(find . -name 'lib"..name.."*.so' -o -name 'lib"..name.."*.so.*' -type f -print -quit) lib"..name..".so")
+		end
 	else
 		f:close()
 	end

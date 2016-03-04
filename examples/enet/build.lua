@@ -4,7 +4,7 @@ local ffibuild = require("ffibuild")
 ffibuild.BuildSharedLibrary(
 	"enet",
 	"git clone https://github.com/lsalzman/enet repo",
-	"cd repo && autoreconf -vfi && ./configure && make && cd .. && cp repo/.libs/libenet.so.7.0.1 libenet.so"
+	"cd repo && autoreconf -vfi && ./configure && make && cd .."
 )
 
 local header = ffibuild.BuildCHeader([[

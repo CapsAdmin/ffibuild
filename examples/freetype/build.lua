@@ -4,7 +4,7 @@ local ffibuild = require("ffibuild")
 ffibuild.BuildSharedLibrary(
 	"freetype",
 	"git clone git://git.sv.nongnu.org/freetype/freetype2.git repo",
-	"cd repo && mkdir build && cd build && cmake .. -DBUILD_SHARED_LIBS=1 && make && cd ../../ && cp repo/build/libfreetype.so.2.6.3 libfreetype.so"
+	"cd repo && mkdir build && cd build && cmake .. -DBUILD_SHARED_LIBS=1 && make && cd ../../"
 )
 
 local header = ffibuild.BuildCHeader([[

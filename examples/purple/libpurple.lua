@@ -166,7 +166,7 @@ struct _PurpleTheme {struct _GObject parent;void*priv;};
 struct _PurpleSoundTheme {struct _PurpleTheme parent;void*priv;};
 struct _PurpleThemeLoader {struct _GObject parent;void*priv;};
 struct _PurpleStringref {};
-struct _PurpleStunNatDiscovery {enum PurpleStunStatus status;enum PurpleStunNatType type;char publicip[ 16 ];char*servername;long lookup_time;};
+struct _PurpleStunNatDiscovery {enum PurpleStunStatus status;enum PurpleStunNatType type;char publicip[16];char*servername;long lookup_time;};
 struct _UPnPMappingAddRemove {};
 int purple_log_common_sizer(struct _PurpleLog*);
 void purple_status_type_add_attrs_vargs(struct _PurpleStatusType*,__builtin_va_list);

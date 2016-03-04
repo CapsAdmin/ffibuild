@@ -619,7 +619,7 @@ unsigned long SDL_WriteBE32(struct SDL_RWops*,unsigned int);
 void SDL_RestoreWindow(struct SDL_Window*);
 int SDL_UpdateWindowSurfaceRects(struct SDL_Window*,const struct SDL_Rect*,int);
 ]])
-local CLIB = ffi.load(_G.FFI_LIB or "sdl")
+local CLIB = ffi.load(_G.FFI_LIB or "SDL2")
 local library = {}
 library = {
 	HapticStopAll = CLIB.SDL_HapticStopAll,
