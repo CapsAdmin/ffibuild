@@ -175,8 +175,8 @@ function ffibuild.GetMetaData(header)
 				meta_data.typedefs[type.name] = type
 				line = nil
 			elseif is_function(line) then
-				local alias = line:match(".- ([%a%d_]+) %b()")
-				meta_data.typedefs[alias] = create_type("function", line:sub(0, -2), false, meta_data)
+				local type = create_type("function", line:sub(0, -2), false, meta_data)
+				meta_data.typedefs[type.name] = type
 			else
 				local content, alias = line:match("^(.+) ([%a%d_]+)")
 
@@ -546,7 +546,7 @@ do -- type metatables
 		L("~", "bnot")
 
 		local function parse_bit_declaration(expression, original_expression)
-			expression = expression:gsub("(0x%.[%dabcdefABCDEF]+)", "(%1)")
+			expression = expression:gsub("([%dxXabcdefABCDEF]+)", "(%1)")
 
 			for operator, info in pairs(operators) do
 				expression = expression:gsub(info.find, info.replace)
@@ -1022,7 +1022,6 @@ do -- type metatables
 		end
 
 		function FUNCTION:GetDeclaration(meta_data, as_callback, name)
-
 			local arg_line = {}
 
 			if self.arguments then
