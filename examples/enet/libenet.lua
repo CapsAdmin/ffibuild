@@ -70,20 +70,20 @@ unsigned long(enet_protocol_command_size)(unsigned char);
 void(enet_peer_setup_outgoing_command)(struct _ENetPeer*,struct _ENetOutgoingCommand*);
 void(enet_range_coder_destroy)(void*);
 void*(enet_range_coder_create)();
-int(enet_socket_wait)(int,unsigned int*,unsigned int);
+struct _ENetPacket*(enet_peer_receive)(struct _ENetPeer*,unsigned char*);
 void(enet_peer_on_connect)(struct _ENetPeer*);
 void(enet_peer_dispatch_incoming_unreliable_commands)(struct _ENetPeer*,struct _ENetChannel*);
-struct _ENetAcknowledgement*(enet_peer_queue_acknowledgement)(struct _ENetPeer*,const union _ENetProtocol*,unsigned short);
 void(enet_deinitialize)();
+struct _ENetAcknowledgement*(enet_peer_queue_acknowledgement)(struct _ENetPeer*,const union _ENetProtocol*,unsigned short);
 struct _ENetIncomingCommand*(enet_peer_queue_incoming_command)(struct _ENetPeer*,const union _ENetProtocol*,const void*,unsigned long,unsigned int,unsigned int);
 int(enet_peer_throttle)(struct _ENetPeer*,unsigned int);
 void(enet_peer_throttle_configure)(struct _ENetPeer*,unsigned int,unsigned int,unsigned int);
 void(enet_peer_disconnect_later)(struct _ENetPeer*,unsigned int);
 void(enet_peer_ping_interval)(struct _ENetPeer*,unsigned int);
-void(enet_peer_ping)(struct _ENetPeer*);
 void(enet_host_flush)(struct _ENetHost*);
-struct _ENetPacket*(enet_peer_receive)(struct _ENetPeer*,unsigned char*);
+void(enet_peer_ping)(struct _ENetPeer*);
 void(enet_peer_on_disconnect)(struct _ENetPeer*);
+int(enet_socket_set_option)(int,enum _ENetSocketOption,int);
 unsigned int(enet_host_random_seed)();
 void(enet_host_bandwidth_throttle)(struct _ENetHost*);
 void(enet_host_channel_limit)(struct _ENetHost*,unsigned long);
@@ -92,12 +92,12 @@ struct _ENetPeer*(enet_host_connect)(struct _ENetHost*,const struct _ENetAddress
 void(enet_host_destroy)(struct _ENetHost*);
 struct _ENetHost*(enet_host_create)(const struct _ENetAddress*,unsigned long,unsigned long,unsigned int,unsigned int);
 unsigned int(enet_crc32)(const struct ENetBuffer*,unsigned long);
-int(enet_address_get_host)(const struct _ENetAddress*,char*,unsigned long);
 struct _ENetListNode*(enet_list_insert)(struct _ENetListNode*,void*);
+int(enet_address_get_host)(const struct _ENetAddress*,char*,unsigned long);
 void(enet_socket_destroy)(int);
-int(enet_socket_set_option)(int,enum _ENetSocketOption,int);
-int(enet_peer_send)(struct _ENetPeer*,unsigned char,struct _ENetPacket*);
 int(enet_socket_get_address)(int,struct _ENetAddress*);
+int(enet_peer_send)(struct _ENetPeer*,unsigned char,struct _ENetPacket*);
+int(enet_socket_wait)(int,unsigned int*,unsigned int);
 int(enet_socket_get_option)(int,enum _ENetSocketOption,int*);
 void(enet_packet_destroy)(struct _ENetPacket*);
 int(enet_socket_shutdown)(int,enum _ENetSocketShutdown);
@@ -146,20 +146,20 @@ library = {
 	peer_setup_outgoing_command = CLIB.enet_peer_setup_outgoing_command,
 	range_coder_destroy = CLIB.enet_range_coder_destroy,
 	range_coder_create = CLIB.enet_range_coder_create,
-	socket_wait = CLIB.enet_socket_wait,
+	peer_receive = CLIB.enet_peer_receive,
 	peer_on_connect = CLIB.enet_peer_on_connect,
 	peer_dispatch_incoming_unreliable_commands = CLIB.enet_peer_dispatch_incoming_unreliable_commands,
-	peer_queue_acknowledgement = CLIB.enet_peer_queue_acknowledgement,
 	deinitialize = CLIB.enet_deinitialize,
+	peer_queue_acknowledgement = CLIB.enet_peer_queue_acknowledgement,
 	peer_queue_incoming_command = CLIB.enet_peer_queue_incoming_command,
 	peer_throttle = CLIB.enet_peer_throttle,
 	peer_throttle_configure = CLIB.enet_peer_throttle_configure,
 	peer_disconnect_later = CLIB.enet_peer_disconnect_later,
 	peer_ping_interval = CLIB.enet_peer_ping_interval,
-	peer_ping = CLIB.enet_peer_ping,
 	host_flush = CLIB.enet_host_flush,
-	peer_receive = CLIB.enet_peer_receive,
+	peer_ping = CLIB.enet_peer_ping,
 	peer_on_disconnect = CLIB.enet_peer_on_disconnect,
+	socket_set_option = CLIB.enet_socket_set_option,
 	host_random_seed = CLIB.enet_host_random_seed,
 	host_bandwidth_throttle = CLIB.enet_host_bandwidth_throttle,
 	host_channel_limit = CLIB.enet_host_channel_limit,
@@ -168,12 +168,12 @@ library = {
 	host_destroy = CLIB.enet_host_destroy,
 	host_create = CLIB.enet_host_create,
 	crc32 = CLIB.enet_crc32,
-	address_get_host = CLIB.enet_address_get_host,
 	list_insert = CLIB.enet_list_insert,
+	address_get_host = CLIB.enet_address_get_host,
 	socket_destroy = CLIB.enet_socket_destroy,
-	socket_set_option = CLIB.enet_socket_set_option,
-	peer_send = CLIB.enet_peer_send,
 	socket_get_address = CLIB.enet_socket_get_address,
+	peer_send = CLIB.enet_peer_send,
+	socket_wait = CLIB.enet_socket_wait,
 	socket_get_option = CLIB.enet_socket_get_option,
 	packet_destroy = CLIB.enet_packet_destroy,
 	socket_shutdown = CLIB.enet_socket_shutdown,
