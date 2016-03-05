@@ -152,7 +152,12 @@ function ffibuild.GetMetaData(header)
 
 		-- void * foo ( int , int ) >> void * ( foo ) ( int , int )
 		-- this makes things easier to parse
-		header = header:gsub("(.-) ([%a%d_]+) (%b() ;)", function(a,b,c) return a .. " ( " .. b .. " ) " .. c end)
+		header = header:gsub("([^\n]-) ([%a%d_]+) (%b() ;)", function(a,b,c)
+			local line = a .. " ( " .. b .. " ) " .. c
+			line = line:gsub("%( %(", "(")
+			line = line:gsub("%) %)", ")")
+			return line
+		end)
 	end
 
 	local function is_function(str) return str:find("^.-%b() %b() $") end
@@ -938,8 +943,9 @@ do -- type metatables
 		end
 
 		function FUNCTION:Create(declaration, meta_data)
-			local return_line, func_type, func_name, arg_line = declaration:match("^(.-) %((.-)([%a%d_]+) %) (%b())$")
-			func_type = func_type:sub(2, -2)
+			local return_line, func_type, func_name, arg_line = declaration:match("^(.-) %((.-)([%a%d_]*) %) (%b())$")
+
+			func_type = func_type:match "^%s*(.-)%s*$"
 			arg_line = arg_line:sub(3, -3)
 
 			local arguments
