@@ -344,12 +344,21 @@ function ffibuild.GetMetaData(header)
 		end
 
 		-- typedef enums
-		for _, type in pairs(iterate_all_enums and self.typedefs or required) do
-			if type:GetSubType() == "enum" then
-				local enums = self.enums[type:GetBasicType(self)]
+		if iterate_all_enums then
+			for name, enums in pairs(self.enums) do
 				local declaration = enums:GetDeclaration(self, check_enum)
 				if declaration then
 					top = top .. declaration .. "\n"
+				end
+			end
+		else
+			for _, type in pairs(required) do
+				if type:GetSubType() == "enum" then
+					local enums = self.enums[type:GetBasicType(self)]
+					local declaration = enums:GetDeclaration(self, check_enum)
+					if declaration then
+						top = top .. declaration .. "\n"
+					end
 				end
 			end
 		end
@@ -437,11 +446,15 @@ function ffibuild.GetMetaData(header)
 			return key
 		end
 
-		function meta_data:BuildEnums(pattern, define_file, define_starts_with)
+		function meta_data:BuildEnums(pattern, define_file, define_starts_with, group)
 			local s = "{\n"
 			for basic_type, type in pairs(self.enums) do
 				for _, enum in ipairs(type.enums) do
 					local key = get_enum_name(enum.key, pattern)
+
+					if not key and group and basic_type:find(group) then
+						key = enum.key
+					end
 
 					if key then
 						s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
@@ -675,7 +688,6 @@ do -- type metatables
 		function ENUMS:GetCopy() return self end
 
 		function ENUMS:GetDeclaration(meta_data, check_enums)
-
 			local str = {}
 
 			for i, info in ipairs(self.enums) do
@@ -879,6 +891,7 @@ do -- type metatables
 
 		function TYPE:FetchRequired(meta_data, out)
 			local basic_type = self:GetBasicType(meta_data)
+
 
 			if basic_type and not out[basic_type] then
 				out[basic_type] = self:GetPrimitive(meta_data)
@@ -1182,7 +1195,7 @@ do -- type metatables
 						table.insert(out, type)
 					end
 				elseif line:find("%b() %b()") then
-					table.insert(out, ffibuild.CreateType("function", line))
+					table.insert(out, ffibuild.CreateType("function", (line:gsub("%( %(", "("):gsub("%) %)", ")"))))
 				elseif line:find(" , ") then
 					local declaration, names = line:match("([%a%d_]+) (.+)")
 					for name in (names .. " , "):gmatch("(.-) , ") do
@@ -1255,7 +1268,7 @@ do -- type metatables
 
 		function STRUCT:FetchRequired(meta_data, out)
 			for _, type in ipairs(self.data) do
-				if type.MetaType == "type" then
+				if type.FetchRequired then
 					type:FetchRequired(meta_data, out)
 				end
 			end
@@ -1463,31 +1476,28 @@ do -- lua helper functions
 	function ffibuild.EndLibrary(lua, header)
 		lua = lua .. "return library\n"
 
+		local file = io.open("./lib"..ffibuild.lib_name..".lua", "wb")
+		file:write(lua)
+		file:close()
+
 		-- check if this wokrs if possible
-		if jit and header then
-			local ok, err = pcall(function()
-				require("ffi").cdef(header)
-			end)
-			if not ok then
-				print(err)
-				local line = tonumber(err:match("line (%d+)"))
-				if line then
-					local i = 1
-					for s in header:gmatch("(.-)\n") do
-						if line > i - 3 and line < i + 3 then
-							print(i .. ": " .. s)
-						end
-						i = i + 1
+		local ok, err = pcall(function()
+			assert(loadstring(lua))()
+		end)
+		if not ok then
+			print(err)
+			local line = tonumber(err:match("line (%d+)"))
+			if line then
+				local i = 1
+				for s in header:gmatch("(.-)\n") do
+					if line > i - 3 and line < i + 3 then
+						print(i .. ": " .. s)
 					end
+					i = i + 1
 				end
 			end
 		end
 
-		local file = io.open("./lib"..ffibuild.lib_name..".lua", "wb")
-		file:write(lua) -- write output to make file
-		file:close()
-
-		assert(loadstring(lua))
 	end
 end
 

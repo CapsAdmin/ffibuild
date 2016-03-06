@@ -17,8 +17,11 @@ local header = ffibuild.BuildCHeader([[
 	#include "assimp/cexport.h"
 ]], "-I./repo/include")
 
+
 local meta_data = ffibuild.GetMetaData(header)
-local header = meta_data:BuildMinimalHeader(function(name) return name:find("^ai") end, function(name) return name:find("^ai") end, true)
+meta_data.functions.aiGetImporterDesc = nil
+
+local header = meta_data:BuildMinimalHeader(function(name) return name:find("^ai") end, function(name) return name:find("^ai") end, true, true)
 local lua = ffibuild.StartLibrary(header)
 
 lua = lua .. "library = " .. meta_data:BuildFunctions("^ai(.+)")

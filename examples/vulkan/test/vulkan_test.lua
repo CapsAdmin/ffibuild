@@ -59,7 +59,7 @@ function DEMO:Initialize()
 	do -- create glfw window
 		glfw.SetErrorCallback(function(_, str) io.write(string.format("GLFW Error: %s\n", ffi.string(str))) end)
 		glfw.Init()
-		glfw.WindowHint(glfw.e.GLFW_CLIENT_API, glfw.e.GLFW_NO_API)
+		glfw.WindowHint(glfw.e.CLIENT_API, glfw.e.NO_API)
 
 		for _, ext in ipairs(glfw.GetRequiredInstanceExtensions()) do
 			table.insert(self.InstanceExtensions, ext)
@@ -156,7 +156,7 @@ function DEMO:Initialize()
 
 	do -- setup the glfw window buffer
 		local surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
-
+print(surface, "!!!!")
 		local formats = self.PhysicalDevice:GetSurfaceFormats(surface)
 		local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(surface)
 
@@ -819,13 +819,13 @@ function DEMO:Initialize()
 		local index = self.Device:AcquireNextImage(self.SwapChain, vk.e.WHOLE_SIZE, semaphore, nil)
 		index = index + 1
 
-		if glfw.GetKey(self.Window, glfw.e.GLFW_KEY_W) == glfw.e.GLFW_PRESS then
+		if glfw.GetKey(self.Window, glfw.e.KEY_W) == glfw.e.PRESS then
 			self.ViewMatrix:Translate(0,0,0.1)
-		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_S) == glfw.e.GLFW_PRESS then
+		elseif glfw.GetKey(self.Window, glfw.e.KEY_S) == glfw.e.PRESS then
 			self.ViewMatrix:Translate(0,0,-0.1)
-		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_A) == glfw.e.GLFW_PRESS then
+		elseif glfw.GetKey(self.Window, glfw.e.KEY_A) == glfw.e.PRESS then
 			self.ViewMatrix:Translate(0.1,0,0)
-		elseif glfw.GetKey(self.Window, glfw.e.GLFW_KEY_D) == glfw.e.GLFW_PRESS then
+		elseif glfw.GetKey(self.Window, glfw.e.KEY_D) == glfw.e.PRESS then
 			self.ViewMatrix:Translate(-0.1,0,0)
 		end
 
