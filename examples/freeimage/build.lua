@@ -116,7 +116,7 @@ do
 	end
 
 	function library.LoadImage(data, flags, format)
-		local buffer = ffi.cast("const unsigned char *const ", data)
+		local buffer = ffi.cast("unsigned char *", data)
 
 		local stream = library.OpenMemory(buffer, #data)
 		local type = format or library.GetFileTypeFromMemory(stream, #data)

@@ -281,4 +281,5 @@ library.e = {
 	PEER_RELIABLE_WINDOW_SIZE = 4096,
 	PEER_FREE_RELIABLE_WINDOWS = 8,
 }
+library.clib = CLIB
 return library

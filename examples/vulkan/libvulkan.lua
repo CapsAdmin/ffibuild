@@ -2673,4 +2673,5 @@ do
 	META.__index = META
 	ffi.metatype("struct VkPhysicalDevice_T", META)
 end
+library.clib = CLIB
 return library

@@ -442,4 +442,5 @@ function library.CreateWindowSurface(instance, window, huh)
 	end
 	return nil, status
 end
+library.clib = CLIB
 return library

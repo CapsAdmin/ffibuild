@@ -1079,4 +1079,5 @@ function library.freeconsole()
 		ffi.C.FreeConsole()
 	end
 end
+library.clib = CLIB
 return library

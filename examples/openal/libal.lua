@@ -834,4 +834,5 @@ library.e = {
 	MAX_METERS_PER_UNIT = FLT_MAX,
 	DEFAULT_METERS_PER_UNIT = 1,
 }
+library.clib = CLIB
 return library

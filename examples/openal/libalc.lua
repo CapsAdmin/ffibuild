@@ -125,4 +125,5 @@ library.e = {
 	EFX_MINOR_VERSION = 0x20002,
 	MAX_AUXILIARY_SENDS = 0x20003,
 }
+library.clib = CLIB
 return library
