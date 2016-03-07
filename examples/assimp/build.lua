@@ -83,12 +83,8 @@ local header = ffibuild.BuildCHeader([[
 
 
 local meta_data = ffibuild.GetMetaData(header)
-print(meta_data.structs["struct aiFileIO"]:GetDeclaration(meta_data))
 meta_data.functions.aiGetImporterDesc = nil
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^ai") end, function(name) return name:find("^ai") end, true, true)
-local tbl = {}
-print(meta_data.functions.aiImportFileEx:FetchRequired(meta_data, tbl))
-print(meta_data.structs[tbl["struct aiFileIO"]:GetBasicType(meta_data)]:GetDeclaration(meta_data))
 local lua = ffibuild.StartLibrary(header)
 
 lua = lua .. "library = " .. meta_data:BuildFunctions("^ai(.+)")

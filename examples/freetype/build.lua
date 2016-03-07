@@ -68,16 +68,6 @@ local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^FT_") end, function(name) return name:find("^FT_") or name:find("^BDF_") end, true, true)
 local lua = ffibuild.StartLibrary(header)
 
-for basic_type, type in pairs(meta_data.structs) do
-	if basic_type:find("^struct FT.+Rec_$") then
-		for func_name, type in pairs(meta_data.functions) do
-			if type.arguments and basic_type == type.arguments[1]:GetBasicType(meta_data) then
-				print(func_name:match("FT.-_(.-)_"), basic_type, func_name)
-			end
-		end
-	end
-end
-
 lua = lua .. "library = " .. meta_data:BuildFunctions("^FT_(.+)", "Foo_Bar", "FooBar")
 lua = lua .. "library.e = " .. meta_data:BuildEnums("^FT_(.+)")
 
