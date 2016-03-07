@@ -408,7 +408,7 @@ function ffibuild.GetMetaData(header)
 		return header
 	end
 
-	function meta_data:BuildFunctions(pattern, from, to)
+	function meta_data:BuildFunctions(pattern, from, to, clib)
 		local s = "{\n"
 		for func_name, func_type in pairs(self.functions) do
 			local friendly_name
@@ -421,7 +421,7 @@ function ffibuild.GetMetaData(header)
 
 			if friendly_name then
 				if from then friendly_name = ffibuild.ChangeCase(friendly_name, from, to) end
-				s = s .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type) .. ",\n"
+				s = s .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type, nil, nil, nil, clib) .. ",\n"
 			end
 		end
 		s = s .. "}\n"
@@ -1341,6 +1341,8 @@ do -- lua helper functions
 				local ok, val = pcall(function() return clib[k] end)
 				if ok then
 					return val
+				elseif clib_index then
+					return clib_index(k)
 				end
 			end})
 		end
