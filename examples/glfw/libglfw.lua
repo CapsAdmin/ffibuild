@@ -7,6 +7,7 @@ struct GLFWgammaramp {unsigned short*red;unsigned short*green;unsigned short*blu
 struct GLFWimage {int width;int height;unsigned char*pixels;};
 void(glfwMaximizeWindow)(struct GLFWwindow*);
 void(glfwRestoreWindow)(struct GLFWwindow*);
+unsigned long(glfwGetTimerValue)();
 void(glfwDestroyCursor)(struct GLFWcursor*);
 const char*(glfwGetVersionString)();
 void(glfwGetWindowPos)(struct GLFWwindow*,int*,int*);
@@ -29,8 +30,8 @@ const char*(glfwGetMonitorName)(struct GLFWmonitor*);
 void(glfwSetWindowTitle)(struct GLFWwindow*,const char*);
 int(glfwJoystickPresent)(int);
 void(glfwGetMonitorPos)(struct GLFWmonitor*,int*,int*);
-struct GLFWmonitor*(glfwGetPrimaryMonitor)();
 int(glfwCreateWindowSurface)(void*,struct GLFWwindow*,void*,void**);
+struct GLFWmonitor*(glfwGetPrimaryMonitor)();
 void(*glfwGetInstanceProcAddress(void*,const char*))();
 const char**(glfwGetRequiredInstanceExtensions)(unsigned int*);
 int(glfwVulkanSupported)();
@@ -43,6 +44,7 @@ const char*(glfwGetClipboardString)(struct GLFWwindow*);
 const unsigned char*(glfwGetJoystickButtons)(int,int*);
 void(glfwSetWindowSize)(struct GLFWwindow*,int,int);
 void(*glfwSetMouseButtonCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,int,int)))(struct GLFWwindow*,int,int,int);
+unsigned long(glfwGetTimerFrequency)();
 void(*glfwSetKeyCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,int,int,int)))(struct GLFWwindow*,int,int,int,int);
 struct GLFWcursor*(glfwCreateStandardCursor)(int);
 struct GLFWcursor*(glfwCreateCursor)(const struct GLFWimage*,int,int);
@@ -94,12 +96,14 @@ void(*glfwSetCharModsCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*
 void(glfwSetClipboardString)(struct GLFWwindow*,const char*);
 void(*glfwSetCursorPosCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,double,double)))(struct GLFWwindow*,double,double);
 void(*glfwSetScrollCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,double,double)))(struct GLFWwindow*,double,double);
+void(glfwWaitEventsTimeout)(double);
 ]])
 local CLIB = ffi.load(_G.FFI_LIB or "glfw")
 local library = {}
 library = {
 	MaximizeWindow = CLIB.glfwMaximizeWindow,
 	RestoreWindow = CLIB.glfwRestoreWindow,
+	GetTimerValue = CLIB.glfwGetTimerValue,
 	DestroyCursor = CLIB.glfwDestroyCursor,
 	GetVersionString = CLIB.glfwGetVersionString,
 	GetWindowPos = CLIB.glfwGetWindowPos,
@@ -122,8 +126,8 @@ library = {
 	SetWindowTitle = CLIB.glfwSetWindowTitle,
 	JoystickPresent = CLIB.glfwJoystickPresent,
 	GetMonitorPos = CLIB.glfwGetMonitorPos,
-	GetPrimaryMonitor = CLIB.glfwGetPrimaryMonitor,
 	CreateWindowSurface = CLIB.glfwCreateWindowSurface,
+	GetPrimaryMonitor = CLIB.glfwGetPrimaryMonitor,
 	GetInstanceProcAddress = CLIB.glfwGetInstanceProcAddress,
 	GetRequiredInstanceExtensions = CLIB.glfwGetRequiredInstanceExtensions,
 	VulkanSupported = CLIB.glfwVulkanSupported,
@@ -136,6 +140,7 @@ library = {
 	GetJoystickButtons = CLIB.glfwGetJoystickButtons,
 	SetWindowSize = CLIB.glfwSetWindowSize,
 	SetMouseButtonCallback = CLIB.glfwSetMouseButtonCallback,
+	GetTimerFrequency = CLIB.glfwGetTimerFrequency,
 	SetKeyCallback = CLIB.glfwSetKeyCallback,
 	CreateStandardCursor = CLIB.glfwCreateStandardCursor,
 	CreateCursor = CLIB.glfwCreateCursor,
@@ -187,6 +192,7 @@ library = {
 	SetClipboardString = CLIB.glfwSetClipboardString,
 	SetCursorPosCallback = CLIB.glfwSetCursorPosCallback,
 	SetScrollCallback = CLIB.glfwSetScrollCallback,
+	WaitEventsTimeout = CLIB.glfwWaitEventsTimeout,
 }
 library.e = {
 	VERSION_MAJOR = 3,

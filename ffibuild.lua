@@ -7,7 +7,7 @@ function ffibuild.BuildSharedLibrary(name, clone, build, copy)
 		os.execute(clone)
 		os.execute(build)
 		if not copy then
-			os.execute("cp $(find . -name 'lib"..name.."*.so' -o -name 'lib"..name.."*.so.*' -type f -print -quit) lib"..name..".so")
+			os.execute("cp $(find . -name 'lib"..name.."*.so.*' -o -name 'lib"..name.."*.so' -type f -print -quit) lib"..name..".so")
 		end
 	else
 		f:close()
