@@ -7,6 +7,8 @@ ffibuild.BuildSharedLibrary(
 	"cd repo/ && ./configure --with-shared --without-normal --without-debug && make && cd ../"
 )
 
+do return end -- TODO
+
 local header = ffibuild.BuildCHeader([[
 	#include "curses.h"
 ]], "-I./repo/include")

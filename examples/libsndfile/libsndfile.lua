@@ -8,9 +8,9 @@ SF_CHANNEL_MAP_INVALID=0,SF_CHANNEL_MAP_MONO=1,SF_CHANNEL_MAP_LEFT=2,SF_CHANNEL_
 SFD_DEFAULT_LEVEL=0,SFD_CUSTOM_LEVEL=1073741824,SFD_NO_DITHER=500,SFD_WHITE=501,SFD_TRIANGULAR_PDF=502,
 SF_LOOP_NONE=800,SF_LOOP_FORWARD=801,SF_LOOP_BACKWARD=802,SF_LOOP_ALTERNATING=803,
 SF_SEEK_SET=0,SF_SEEK_CUR=1,SF_SEEK_END=2,};struct SNDFILE_tag {};
-struct SF_INFO {};
-struct SF_VIRTUAL_IO {};
-struct SF_CHUNK_INFO {};
+struct SF_INFO {long frames;int samplerate;int channels;int format;int sections;int seekable;};
+struct SF_VIRTUAL_IO {long(*get_filelen)(void*);long(*seek)(long,int,void*);long(*read)(void*,long,void*);long(*write)(const void*,long,void*);long(*tell)(void*);};
+struct SF_CHUNK_INFO {char id[64];unsigned int id_size;unsigned int datalen;void*data;};
 struct SF_CHUNK_ITERATOR {};
 struct SNDFILE_tag*(sf_open_virtual)(struct SF_VIRTUAL_IO*,int,struct SF_INFO*,void*);
 int(sf_get_chunk_data)(const struct SF_CHUNK_ITERATOR*,struct SF_CHUNK_INFO*);
