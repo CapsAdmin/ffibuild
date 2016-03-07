@@ -9,14 +9,14 @@ ffibuild.BuildSharedLibrary(
 )
 
 local header = ffibuild.BuildCHeader([[
+	#include "assimp/types.h"
+	#include "assimp/metadata.h"
 	#include "assimp/ai_assert.h"
 	#include "assimp/cexport.h"
 	#include "assimp/color4.h"
 	#include "assimp/config.h"
 	#include "assimp/matrix4x4.h"
-	#include "assimp/metadata.h"
 	#include "assimp/postprocess.h"
-	#include "assimp/types.h"
 	#include "assimp/vector3.h"
 	#include "assimp/anim.h"
 	#include "assimp/cfileio.h"
@@ -79,8 +79,11 @@ local header = ffibuild.BuildCHeader([[
             0
 	} aiGrrr;
 
+	typedef struct aiFile aiFile;
+
 ]], "-I./repo/include")
 
+header = header:gsub("(%s)AI_", "%1ai")
 
 local meta_data = ffibuild.GetMetaData(header)
 meta_data.functions.aiGetImporterDesc = nil

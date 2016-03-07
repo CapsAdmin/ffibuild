@@ -20,7 +20,7 @@ local header = meta_data:BuildMinimalHeader(function(name) return name:find("^en
 
 local lua = ffibuild.StartLibrary(header)
 
-lua = lua .. "library = " .. meta_data:BuildFunctions("^enet_(.+)")
+lua = lua .. "library = " .. meta_data:BuildFunctions("^enet_(.+)", "foo_bar", "FooBar")
 lua = lua .. "library.e = " .. meta_data:BuildEnums("^ENET_(.+)")
 
 ffibuild.EndLibrary(lua, header)

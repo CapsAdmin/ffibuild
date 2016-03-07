@@ -17,7 +17,7 @@ typedef enum tagVTFResourceEntryType{VTF_LEGACY_RSRC_LOW_RES_IMAGE=1,VTF_LEGACY_
 typedef enum tagVTFHeightConversionMethod{HEIGHT_CONVERSION_METHOD_ALPHA=0,HEIGHT_CONVERSION_METHOD_AVERAGE_RGB=1,HEIGHT_CONVERSION_METHOD_BIASED_RGB=2,HEIGHT_CONVERSION_METHOD_RED=3,HEIGHT_CONVERSION_METHOD_GREEN=4,HEIGHT_CONVERSION_METHOD_BLUE=5,HEIGHT_CONVERSION_METHOD_MAX_RGB=6,HEIGHT_CONVERSION_METHOD_COLORSPACE=7,HEIGHT_CONVERSION_METHOD_COUNT=8};
 typedef enum tagVTFNormalAlphaResult{NORMAL_ALPHA_RESULT_NOCHANGE=0,NORMAL_ALPHA_RESULT_HEIGHT=1,NORMAL_ALPHA_RESULT_BLACK=2,NORMAL_ALPHA_RESULT_WHITE=3,NORMAL_ALPHA_RESULT_COUNT=4};
 typedef enum tagVTFMipmapFilter{MIPMAP_FILTER_POINT=0,MIPMAP_FILTER_BOX=1,MIPMAP_FILTER_TRIANGLE=2,MIPMAP_FILTER_QUADRATIC=3,MIPMAP_FILTER_CUBIC=4,MIPMAP_FILTER_CATROM=5,MIPMAP_FILTER_MITCHELL=6,MIPMAP_FILTER_GAUSSIAN=7,MIPMAP_FILTER_SINC=8,MIPMAP_FILTER_BESSEL=9,MIPMAP_FILTER_HANNING=10,MIPMAP_FILTER_HAMMING=11,MIPMAP_FILTER_BLACKMAN=12,MIPMAP_FILTER_KAISER=13,MIPMAP_FILTER_COUNT=14};
-struct tagSVTFImageFormatInfo {};
+struct tagSVTFImageFormatInfo {const char*lpName;unsigned int uiBitsPerPixel;unsigned int uiBytesPerPixel;unsigned int uiRedBitsPerPixel;unsigned int uiGreenBitsPerPixel;unsigned int uiBlueBitsPerPixel;unsigned int uiAlphaBitsPerPixel;unsigned char bIsCompressed;unsigned char bIsSupported;};
 struct tagSVTFCreateOptions {unsigned int uiVersion[2];enum tagVTFImageFormat ImageFormat;unsigned int uiFlags;unsigned int uiStartFrame;float sBumpScale;float sReflectivity[3];unsigned char bMipmaps;enum tagVTFMipmapFilter MipmapFilter;enum tagVTFSharpenFilter MipmapSharpenFilter;unsigned char bThumbnail;unsigned char bReflectivity;unsigned char bResize;enum tagVTFResizeMethod ResizeMethod;enum tagVTFMipmapFilter ResizeFilter;enum tagVTFSharpenFilter ResizeSharpenFilter;unsigned int uiResizeWidth;unsigned int uiResizeHeight;unsigned char bResizeClamp;unsigned int uiResizeClampWidth;unsigned int uiResizeClampHeight;unsigned char bGammaCorrection;float sGammaCorrection;unsigned char bNormalMap;enum tagVTFKernelFilter KernelFilter;enum tagVTFHeightConversionMethod HeightConversionMethod;enum tagVTFNormalAlphaResult NormalAlphaResult;unsigned char bNormalMinimumZ;float sNormalScale;unsigned char bNormalWrap;unsigned char bNormalInvertX;unsigned char bNormalInvertY;unsigned char bNormalInvertZ;unsigned char bSphereMap;};
 unsigned int(vlImageGetThumbnailHeight)();
 unsigned char(vlImageLoadLump)(const void*,unsigned long,unsigned char);
@@ -38,17 +38,10 @@ unsigned char(vlImageIsBound)();
 unsigned char(vlImageGenerateAllNormalMaps)(enum tagVTFKernelFilter,enum tagVTFHeightConversionMethod,enum tagVTFNormalAlphaResult);
 unsigned char*(vlImageGetData)(unsigned int,unsigned int,unsigned int,unsigned int);
 void(vlImageSetFlag)(enum tagVTFImageFlag,unsigned char);
-void(vlSetFloat)(enum tagVTFLibOption,float);
-void*(vlImageSetResourceData)(unsigned int,unsigned int,void*);
-void(vlSetInteger)(enum tagVTFLibOption,signed int);
-signed int(vlGetInteger)(enum tagVTFLibOption);
-void(vlShutdown)();
-const char*(vlGetLastError)();
-unsigned int(vlGetVersion)();
-unsigned char(vlGetBoolean)(enum tagVTFLibOption);
 void(vlImageMirrorImage)(unsigned char*,unsigned int,unsigned int);
 void(vlImageCorrectImageGamma)(unsigned char*,unsigned int,unsigned int,float);
 unsigned char(vlImageResize)(unsigned char*,unsigned char*,unsigned int,unsigned int,unsigned int,unsigned int,enum tagVTFMipmapFilter,enum tagVTFSharpenFilter);
+unsigned char(vlGetBoolean)(enum tagVTFLibOption);
 unsigned char(vlImageConvertToRGBA8888)(unsigned char*,unsigned char*,unsigned int,unsigned int,enum tagVTFImageFormat);
 unsigned int(vlImageComputeMipmapSize)(unsigned int,unsigned int,unsigned int,unsigned int,enum tagVTFImageFormat);
 void(vlImageComputeMipmapDimensions)(unsigned int,unsigned int,unsigned int,unsigned int,unsigned int*,unsigned int*,unsigned int*);
@@ -59,30 +52,31 @@ unsigned char(vlImageGenerateSphereMap)();
 unsigned char(vlImageGenerateNormalMap)(unsigned int,enum tagVTFKernelFilter,enum tagVTFHeightConversionMethod,enum tagVTFNormalAlphaResult);
 unsigned char(vlImageGenerateAllMipmaps)(enum tagVTFMipmapFilter,enum tagVTFSharpenFilter);
 unsigned char(vlImageGenerateMipmaps)(unsigned int,unsigned int,enum tagVTFMipmapFilter,enum tagVTFSharpenFilter);
-float(vlGetFloat)(enum tagVTFLibOption);
+void*(vlImageSetResourceData)(unsigned int,unsigned int,void*);
 unsigned char(vlImageGetHasResource)(unsigned int);
 unsigned int(vlImageGetResourceCount)();
 void(vlImageSetThumbnailData)(unsigned char*);
 unsigned char*(vlImageGetThumbnailData)();
 enum tagVTFImageFormat(vlImageGetThumbnailFormat)();
+float(vlGetFloat)(enum tagVTFLibOption);
 void(vlImageSetData)(unsigned int,unsigned int,unsigned int,unsigned int,unsigned char*);
 enum tagVTFImageFormat(vlImageGetFormat)();
 void(vlImageSetReflectivity)(float,float,float);
 void(vlImageGetReflectivity)(float*,float*,float*);
 void(vlImageSetBumpmapScale)(float);
-unsigned char(vlImageIsLoaded)();
 float(vlImageGetBumpmapScale)();
 unsigned char(vlImageGetFlag)(enum tagVTFImageFlag);
 unsigned int(vlImageGetFlags)();
 void(vlImageSetStartFrame)(unsigned int);
 unsigned int(vlImageGetMipmapCount)();
-void(vlDeleteImage)(unsigned int);
 unsigned int(vlImageGetFaceCount)();
+unsigned char(vlImageIsLoaded)();
 unsigned int(vlImageGetFrameCount)();
 unsigned int(vlImageGetHeight)();
 unsigned int(vlImageGetWidth)();
 unsigned int(vlImageGetSize)();
 unsigned int(vlImageGetHasImage)();
+void(vlDeleteImage)(unsigned int);
 unsigned char(vlImageSaveProc)(void*);
 unsigned char(vlImageSaveLump)(void*,unsigned long,unsigned long*);
 unsigned char(vlImageSave)(const char*);
@@ -91,6 +85,12 @@ unsigned char(vlImageLoad)(const char*,unsigned char);
 unsigned char(vlImageCreateSingle)(unsigned int,unsigned int,unsigned char*,struct tagSVTFCreateOptions*);
 void(vlImageCreateDefaultCreateStructure)(struct tagSVTFCreateOptions*);
 unsigned char(vlBindImage)(unsigned int);
+void(vlSetFloat)(enum tagVTFLibOption,float);
+void(vlSetInteger)(enum tagVTFLibOption,signed int);
+signed int(vlGetInteger)(enum tagVTFLibOption);
+void(vlShutdown)();
+const char*(vlGetLastError)();
+unsigned int(vlGetVersion)();
 const char*(vlGetVersionString)();
 unsigned int(vlImageGetStartFrame)();
 unsigned int(vlImageGetThumbnailWidth)();
@@ -126,17 +126,10 @@ library = {
 	ImageGenerateAllNormalMaps = CLIB.vlImageGenerateAllNormalMaps,
 	ImageGetData = CLIB.vlImageGetData,
 	ImageSetFlag = CLIB.vlImageSetFlag,
-	SetFloat = CLIB.vlSetFloat,
-	ImageSetResourceData = CLIB.vlImageSetResourceData,
-	SetInteger = CLIB.vlSetInteger,
-	GetInteger = CLIB.vlGetInteger,
-	Shutdown = CLIB.vlShutdown,
-	GetLastError = CLIB.vlGetLastError,
-	GetVersion = CLIB.vlGetVersion,
-	GetBoolean = CLIB.vlGetBoolean,
 	ImageMirrorImage = CLIB.vlImageMirrorImage,
 	ImageCorrectImageGamma = CLIB.vlImageCorrectImageGamma,
 	ImageResize = CLIB.vlImageResize,
+	GetBoolean = CLIB.vlGetBoolean,
 	ImageConvertToRGBA8888 = CLIB.vlImageConvertToRGBA8888,
 	ImageComputeMipmapSize = CLIB.vlImageComputeMipmapSize,
 	ImageComputeMipmapDimensions = CLIB.vlImageComputeMipmapDimensions,
@@ -147,30 +140,31 @@ library = {
 	ImageGenerateNormalMap = CLIB.vlImageGenerateNormalMap,
 	ImageGenerateAllMipmaps = CLIB.vlImageGenerateAllMipmaps,
 	ImageGenerateMipmaps = CLIB.vlImageGenerateMipmaps,
-	GetFloat = CLIB.vlGetFloat,
+	ImageSetResourceData = CLIB.vlImageSetResourceData,
 	ImageGetHasResource = CLIB.vlImageGetHasResource,
 	ImageGetResourceCount = CLIB.vlImageGetResourceCount,
 	ImageSetThumbnailData = CLIB.vlImageSetThumbnailData,
 	ImageGetThumbnailData = CLIB.vlImageGetThumbnailData,
 	ImageGetThumbnailFormat = CLIB.vlImageGetThumbnailFormat,
+	GetFloat = CLIB.vlGetFloat,
 	ImageSetData = CLIB.vlImageSetData,
 	ImageGetFormat = CLIB.vlImageGetFormat,
 	ImageSetReflectivity = CLIB.vlImageSetReflectivity,
 	ImageGetReflectivity = CLIB.vlImageGetReflectivity,
 	ImageSetBumpmapScale = CLIB.vlImageSetBumpmapScale,
-	ImageIsLoaded = CLIB.vlImageIsLoaded,
 	ImageGetBumpmapScale = CLIB.vlImageGetBumpmapScale,
 	ImageGetFlag = CLIB.vlImageGetFlag,
 	ImageGetFlags = CLIB.vlImageGetFlags,
 	ImageSetStartFrame = CLIB.vlImageSetStartFrame,
 	ImageGetMipmapCount = CLIB.vlImageGetMipmapCount,
-	DeleteImage = CLIB.vlDeleteImage,
 	ImageGetFaceCount = CLIB.vlImageGetFaceCount,
+	ImageIsLoaded = CLIB.vlImageIsLoaded,
 	ImageGetFrameCount = CLIB.vlImageGetFrameCount,
 	ImageGetHeight = CLIB.vlImageGetHeight,
 	ImageGetWidth = CLIB.vlImageGetWidth,
 	ImageGetSize = CLIB.vlImageGetSize,
 	ImageGetHasImage = CLIB.vlImageGetHasImage,
+	DeleteImage = CLIB.vlDeleteImage,
 	ImageSaveProc = CLIB.vlImageSaveProc,
 	ImageSaveLump = CLIB.vlImageSaveLump,
 	ImageSave = CLIB.vlImageSave,
@@ -179,6 +173,12 @@ library = {
 	ImageCreateSingle = CLIB.vlImageCreateSingle,
 	ImageCreateDefaultCreateStructure = CLIB.vlImageCreateDefaultCreateStructure,
 	BindImage = CLIB.vlBindImage,
+	SetFloat = CLIB.vlSetFloat,
+	SetInteger = CLIB.vlSetInteger,
+	GetInteger = CLIB.vlGetInteger,
+	Shutdown = CLIB.vlShutdown,
+	GetLastError = CLIB.vlGetLastError,
+	GetVersion = CLIB.vlGetVersion,
 	GetVersionString = CLIB.vlGetVersionString,
 	ImageGetStartFrame = CLIB.vlImageGetStartFrame,
 	ImageGetThumbnailWidth = CLIB.vlImageGetThumbnailWidth,

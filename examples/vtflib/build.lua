@@ -10,21 +10,8 @@ ffibuild.BuildSharedLibrary(
 
 local header = ffibuild.BuildCHeader([[
 	typedef struct tagSVTFImageFormatInfo {} SVTFImageFormatInfo;
-	#include "VTFWrapper.h"
-	#include "VTFDXTn.h"
-	#include "VTFMathlib.h"
-	#include "VTFFormat.h"
 	#include "VTFLib.h"
-	#include "VTFFile.h"
-
-	#include "VMTFile.h"
-	#include "VMTGroupNode.h"
-	#include "VMTIntegerNode.h"
-	#include "VMTNode.h"
-	#include "VMTNodes.h"
-	#include "VMTSingleNode.h"
-	#include "VMTStringNode.h"
-	#include "VMTValueNode.h"
+	#include "VTFWrapper.h"
 	#include "VMTWrapper.h"
 ]], "-I./repo/src")
 

@@ -1,6 +1,7 @@
 local ffi = require("ffi")
 ffi.cdef([[typedef enum aiTextureType{aiTextureType_NONE=0,aiTextureType_DIFFUSE=1,aiTextureType_SPECULAR=2,aiTextureType_AMBIENT=3,aiTextureType_EMISSIVE=4,aiTextureType_HEIGHT=5,aiTextureType_NORMALS=6,aiTextureType_SHININESS=7,aiTextureType_OPACITY=8,aiTextureType_DISPLACEMENT=9,aiTextureType_LIGHTMAP=10,aiTextureType_REFLECTION=11,aiTextureType_UNKNOWN=12};
 typedef enum aiOrigin{aiOrigin_SET=0,aiOrigin_CUR=1,aiOrigin_END=2};
+typedef enum aiComponent{aiComponent_NORMALS=2,aiComponent_TANGENTS_AND_BITANGENTS=4,aiComponent_COLORS=8,aiComponent_TEXCOORDS=16,aiComponent_BONEWEIGHTS=32,aiComponent_ANIMATIONS=64,aiComponent_TEXTURES=128,aiComponent_LIGHTS=256,aiComponent_CAMERAS=512,aiComponent_MESHES=1024,aiComponent_MATERIALS=2048};
 typedef enum aiTextureMapping{aiTextureMapping_UV=0,aiTextureMapping_SPHERE=1,aiTextureMapping_CYLINDER=2,aiTextureMapping_BOX=3,aiTextureMapping_PLANE=4,aiTextureMapping_OTHER=5};
 typedef enum aiShadingMode{aiShadingMode_Flat=1,aiShadingMode_Gouraud=2,aiShadingMode_Phong=3,aiShadingMode_Blinn=4,aiShadingMode_Toon=5,aiShadingMode_OrenNayar=6,aiShadingMode_Minnaert=7,aiShadingMode_CookTorrance=8,aiShadingMode_NoShading=9,aiShadingMode_Fresnel=10};
 typedef enum aiTextureOp{aiTextureOp_Multiply=0,aiTextureOp_Add=1,aiTextureOp_Subtract=2,aiTextureOp_Divide=3,aiTextureOp_SmoothAdd=4,aiTextureOp_SignedAdd=5};
@@ -12,7 +13,7 @@ typedef enum aiTextureFlags{aiTextureFlags_Invert=1,aiTextureFlags_UseAlpha=2,ai
 typedef enum aiLightSourceType{aiLightSource_UNDEFINED=0,aiLightSource_DIRECTIONAL=1,aiLightSource_POINT=2,aiLightSource_SPOT=3,aiLightSource_AMBIENT=4};
 typedef enum aiTextureMapMode{aiTextureMapMode_Wrap=0,aiTextureMapMode_Clamp=1,aiTextureMapMode_Decal=3,aiTextureMapMode_Mirror=2};
 typedef enum aiPropertyTypeInfo{aiPTI_Float=1,aiPTI_String=3,aiPTI_Integer=4,aiPTI_Buffer=5};
-typedef enum aiComponent{aiComponent_NORMALS=2,aiComponent_TANGENTS_AND_BITANGENTS=4,aiComponent_COLORS=8,aiComponent_TEXCOORDS=16,aiComponent_BONEWEIGHTS=32,aiComponent_ANIMATIONS=64,aiComponent_TEXTURES=128,aiComponent_LIGHTS=256,aiComponent_CAMERAS=512,aiComponent_MESHES=1024,aiComponent_MATERIALS=2048};
+typedef enum aiMetadataType{aiBOOL=0,aiINT=1,aiUINT64=2,aiFLOAT=3,aiAISTRING=4,aiAIVECTOR3D=5};
 typedef enum aiDefaultLogStream{aiDefaultLogStream_FILE=1,aiDefaultLogStream_STDOUT=2,aiDefaultLogStream_STDERR=4,aiDefaultLogStream_DEBUGGER=8};
 typedef enum aiAnimBehaviour{aiAnimBehaviour_DEFAULT=0,aiAnimBehaviour_CONSTANT=1,aiAnimBehaviour_LINEAR=2,aiAnimBehaviour_REPEAT=3};
 typedef enum aiImporterFlags{aiImporterFlags_SupportTextFlavour=1,aiImporterFlags_SupportBinaryFlavour=2,aiImporterFlags_SupportCompressedFlavour=4,aiImporterFlags_LimitedSupport=8,aiImporterFlags_Experimental=16};
@@ -23,16 +24,35 @@ struct aiColor4D {union {struct {float r;float g;float b;float a;};float c[4];};
 struct aiMatrix3x3 {union {struct {float a1;float a2;float a3;float b1;float b2;float b3;float c1;float c2;float c3;};float m[3][3];float mData[9];};};
 struct aiMatrix4x4 {union {struct {float a1;float a2;float a3;float a4;float b1;float b2;float b3;float b4;float c1;float c2;float c3;float c4;float d1;float d2;float d3;float d4;};float m[4][4];float mData[16];};};
 struct aiQuaternion {float w;float x;float y;float z;};
+struct aiColor3D {float r;float g;float b;};
 struct aiString {unsigned long length;char data[1024];};
 struct aiMemoryInfo {unsigned int textures;unsigned int materials;unsigned int meshes;unsigned int nodes;unsigned int animations;unsigned int cameras;unsigned int lights;unsigned int total;};
+struct aiMetadataEntry {enum aiMetadataType mType;void*mData;};
+struct aiMetadata {unsigned int mNumProperties;struct aiString*mKeys;struct aiMetadataEntry*mValues;};
 struct aiExportFormatDesc {const char*id;const char*description;const char*fileExtension;};
 struct aiExportDataBlob {unsigned long size;void*data;struct aiString name;struct aiExportDataBlob*next;};
+struct aiVectorKey {double mTime;struct aiVector3D mValue;};
+struct aiQuatKey {double mTime;struct aiQuaternion mValue;};
+struct aiMeshKey {double mTime;unsigned int mValue;};
+struct aiNodeAnim {struct aiString mNodeName;unsigned int mNumPositionKeys;struct aiVectorKey*mPositionKeys;unsigned int mNumRotationKeys;struct aiQuatKey*mRotationKeys;unsigned int mNumScalingKeys;struct aiVectorKey*mScalingKeys;enum aiAnimBehaviour mPreState;enum aiAnimBehaviour mPostState;};
+struct aiMeshAnim {struct aiString mName;unsigned int mNumKeys;struct aiMeshKey*mKeys;};
+struct aiAnimation {struct aiString mName;double mDuration;double mTicksPerSecond;unsigned int mNumChannels;struct aiNodeAnim**mChannels;unsigned int mNumMeshChannels;struct aiMeshAnim**mMeshChannels;};
+struct aiFileIO {struct aiFile*(*OpenProc)(struct aiFileIO*,const char*,const char*);void(*CloseProc)(struct aiFileIO*,struct aiFile*);char*UserData;};
 struct aiImporterDesc {const char*mName;const char*mAuthor;const char*mMaintainer;const char*mComments;unsigned int mFlags;unsigned int mMinMajor;unsigned int mMinMinor;unsigned int mMaxMajor;unsigned int mMaxMinor;const char*mFileExtensions;};
+struct aiTexel {unsigned int b;unsigned int g;unsigned int r;unsigned int a;};
+struct aiTexture {unsigned int mWidth;unsigned int mHeight;char achFormatHint[4];struct aiTexel*pcData;};
+struct aiFace {unsigned int mNumIndices;unsigned int*mIndices;};
+struct aiVertexWeight {unsigned int mVertexId;float mWeight;};
+struct aiBone {struct aiString mName;unsigned int mNumWeights;struct aiVertexWeight*mWeights;struct aiMatrix4x4 mOffsetMatrix;};
+struct aiAnimMesh {struct aiVector3D*mVertices;struct aiVector3D*mNormals;struct aiVector3D*mTangents;struct aiVector3D*mBitangents;struct aiColor4D*mColors[0x8];struct aiVector3D*mTextureCoords[0x8];unsigned int mNumVertices;};
+struct aiMesh {unsigned int mPrimitiveTypes;unsigned int mNumVertices;unsigned int mNumFaces;struct aiVector3D*mVertices;struct aiVector3D*mNormals;struct aiVector3D*mTangents;struct aiVector3D*mBitangents;struct aiColor4D*mColors[0x8];struct aiVector3D*mTextureCoords[0x8];unsigned int mNumUVComponents[0x8];struct aiFace*mFaces;unsigned int mNumBones;struct aiBone**mBones;unsigned int mMaterialIndex;struct aiString mName;unsigned int mNumAnimMeshes;struct aiAnimMesh**mAnimMeshes;};
+struct aiLight {struct aiString mName;enum aiLightSourceType mType;struct aiVector3D mPosition;struct aiVector3D mDirection;float mAttenuationConstant;float mAttenuationLinear;float mAttenuationQuadratic;struct aiColor3D mColorDiffuse;struct aiColor3D mColorSpecular;struct aiColor3D mColorAmbient;float mAngleInnerCone;float mAngleOuterCone;};
+struct aiCamera {struct aiString mName;struct aiVector3D mPosition;struct aiVector3D mUp;struct aiVector3D mLookAt;float mHorizontalFOV;float mClipPlaneNear;float mClipPlaneFar;float mAspect;};
 struct aiUVTransform {struct aiVector2D mTranslation;struct aiVector2D mScaling;float mRotation;};
 struct aiMaterialProperty {struct aiString mKey;unsigned int mSemantic;unsigned int mIndex;unsigned int mDataLength;enum aiPropertyTypeInfo mType;char*mData;};
 struct aiMaterial {struct aiMaterialProperty**mProperties;unsigned int mNumProperties;unsigned int mNumAllocated;};
-struct aiScene {};
-struct aiFileIO {};
+struct aiNode {struct aiString mName;struct aiMatrix4x4 mTransformation;struct aiNode*mParent;unsigned int mNumChildren;struct aiNode**mChildren;unsigned int mNumMeshes;unsigned int*mMeshes;struct aiMetadata*mMetaData;};
+struct aiScene {unsigned int mFlags;struct aiNode*mRootNode;unsigned int mNumMeshes;struct aiMesh**mMeshes;unsigned int mNumMaterials;struct aiMaterial**mMaterials;unsigned int mNumAnimations;struct aiAnimation**mAnimations;unsigned int mNumTextures;struct aiTexture**mTextures;unsigned int mNumLights;struct aiLight**mLights;unsigned int mNumCameras;struct aiCamera**mCameras;char*mPrivate;};
 struct aiLogStream {void(*callback)(const char*,char*);char*user;};
 struct aiPropertyStore {char sentinel;};
 void(aiIdentityMatrix3)(struct aiMatrix3x3*);
@@ -82,13 +102,13 @@ void(aiSetImportPropertyMatrix)(struct aiPropertyStore*,const char*,const struct
 void(aiGetExtensionList)(struct aiString*);
 void(aiDetachAllLogStreams)();
 enum aiReturn(aiDetachLogStream)(const struct aiLogStream*);
-unsigned long(aiGetExportFormatCount)();
 void(aiReleaseExportFormatDescription)(const struct aiExportFormatDesc*);
 struct aiPropertyStore*(aiCreatePropertyStore)();
 unsigned int(aiGetMaterialTextureCount)(const struct aiMaterial*,enum aiTextureType);
 void(aiSetImportPropertyInteger)(struct aiPropertyStore*,const char*,int);
 const char*(aiGetErrorString)();
 const struct aiScene*(aiImportFileFromMemoryWithProperties)(const char*,unsigned int,unsigned int,const char*,const struct aiPropertyStore*);
+unsigned long(aiGetExportFormatCount)();
 enum aiReturn(aiGetMaterialIntegerArray)(const struct aiMaterial*,const char*,unsigned int,unsigned int,int*,unsigned int*);
 const struct aiScene*(aiImportFileEx)(const char*,unsigned int,struct aiFileIO*);
 ]])
@@ -142,13 +162,13 @@ library = {
 	GetExtensionList = CLIB.aiGetExtensionList,
 	DetachAllLogStreams = CLIB.aiDetachAllLogStreams,
 	DetachLogStream = CLIB.aiDetachLogStream,
-	GetExportFormatCount = CLIB.aiGetExportFormatCount,
 	ReleaseExportFormatDescription = CLIB.aiReleaseExportFormatDescription,
 	CreatePropertyStore = CLIB.aiCreatePropertyStore,
 	GetMaterialTextureCount = CLIB.aiGetMaterialTextureCount,
 	SetImportPropertyInteger = CLIB.aiSetImportPropertyInteger,
 	GetErrorString = CLIB.aiGetErrorString,
 	ImportFileFromMemoryWithProperties = CLIB.aiImportFileFromMemoryWithProperties,
+	GetExportFormatCount = CLIB.aiGetExportFormatCount,
 	GetMaterialIntegerArray = CLIB.aiGetMaterialIntegerArray,
 	ImportFileEx = CLIB.aiImportFileEx,
 }
@@ -169,6 +189,17 @@ library.e = {
 	SET = ffi.cast("enum aiOrigin", "aiOrigin_SET"),
 	CUR = ffi.cast("enum aiOrigin", "aiOrigin_CUR"),
 	END = ffi.cast("enum aiOrigin", "aiOrigin_END"),
+	NORMALS = ffi.cast("enum aiComponent", "aiComponent_NORMALS"),
+	TANGENTS_AND_BITANGENTS = ffi.cast("enum aiComponent", "aiComponent_TANGENTS_AND_BITANGENTS"),
+	COLORS = ffi.cast("enum aiComponent", "aiComponent_COLORS"),
+	TEXCOORDS = ffi.cast("enum aiComponent", "aiComponent_TEXCOORDS"),
+	BONEWEIGHTS = ffi.cast("enum aiComponent", "aiComponent_BONEWEIGHTS"),
+	ANIMATIONS = ffi.cast("enum aiComponent", "aiComponent_ANIMATIONS"),
+	TEXTURES = ffi.cast("enum aiComponent", "aiComponent_TEXTURES"),
+	LIGHTS = ffi.cast("enum aiComponent", "aiComponent_LIGHTS"),
+	CAMERAS = ffi.cast("enum aiComponent", "aiComponent_CAMERAS"),
+	MESHES = ffi.cast("enum aiComponent", "aiComponent_MESHES"),
+	MATERIALS = ffi.cast("enum aiComponent", "aiComponent_MATERIALS"),
 	UV = ffi.cast("enum aiTextureMapping", "aiTextureMapping_UV"),
 	SPHERE = ffi.cast("enum aiTextureMapping", "aiTextureMapping_SPHERE"),
 	CYLINDER = ffi.cast("enum aiTextureMapping", "aiTextureMapping_CYLINDER"),
@@ -243,17 +274,6 @@ library.e = {
 	String = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_String"),
 	Integer = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Integer"),
 	Buffer = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Buffer"),
-	NORMALS = ffi.cast("enum aiComponent", "aiComponent_NORMALS"),
-	TANGENTS_AND_BITANGENTS = ffi.cast("enum aiComponent", "aiComponent_TANGENTS_AND_BITANGENTS"),
-	COLORS = ffi.cast("enum aiComponent", "aiComponent_COLORS"),
-	TEXCOORDS = ffi.cast("enum aiComponent", "aiComponent_TEXCOORDS"),
-	BONEWEIGHTS = ffi.cast("enum aiComponent", "aiComponent_BONEWEIGHTS"),
-	ANIMATIONS = ffi.cast("enum aiComponent", "aiComponent_ANIMATIONS"),
-	TEXTURES = ffi.cast("enum aiComponent", "aiComponent_TEXTURES"),
-	LIGHTS = ffi.cast("enum aiComponent", "aiComponent_LIGHTS"),
-	CAMERAS = ffi.cast("enum aiComponent", "aiComponent_CAMERAS"),
-	MESHES = ffi.cast("enum aiComponent", "aiComponent_MESHES"),
-	MATERIALS = ffi.cast("enum aiComponent", "aiComponent_MATERIALS"),
 	FILE = ffi.cast("enum aiDefaultLogStream", "aiDefaultLogStream_FILE"),
 	STDOUT = ffi.cast("enum aiDefaultLogStream", "aiDefaultLogStream_STDOUT"),
 	STDERR = ffi.cast("enum aiDefaultLogStream", "aiDefaultLogStream_STDERR"),

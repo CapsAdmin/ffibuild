@@ -248,7 +248,9 @@ function ffibuild.GetMetaData(header)
 				end
 
 				local tbl = keyword == "struct" and meta_data.structs or meta_data.unions
-				tbl[tag] = create_type("struct", content, keyword == "union", meta_data)
+				if not tbl[tag] or tbl[tag]:GetDeclaration():find("{%s+}") then
+					tbl[tag] = create_type("struct", content, keyword == "union", meta_data)
+				end
 			elseif extern then
 				local declaration, name, array_size = match_type_declaration(line:sub(0, -2))
 
@@ -1206,7 +1208,7 @@ do -- type metatables
 					table.insert(out, ffibuild.CreateType("function", (line:gsub("%( %(", "("):gsub("%) %)", ")"))))
 				elseif line:find(" , ") then
 					local declaration, names = line:match("([%a%d_]+) (.+)")
-					for name in (names .. " , "):gmatch("(.-) , ") do
+					for name in (names .. " , "):gmatch("(%S-) , ") do
 						local type = ffibuild.CreateType("type", declaration)
 						type.name = name
 						table.insert(out, type)
