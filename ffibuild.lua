@@ -408,7 +408,7 @@ function ffibuild.GetMetaData(header)
 		return header
 	end
 
-	function meta_data:BuildFunctions(pattern)
+	function meta_data:BuildFunctions(pattern, from, to)
 		local s = "{\n"
 		for func_name, func_type in pairs(self.functions) do
 			local friendly_name
@@ -420,6 +420,7 @@ function ffibuild.GetMetaData(header)
 			end
 
 			if friendly_name then
+				if from then friendly_name = ffibuild.ChangeCase(friendly_name, from, to) end
 				s = s .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type) .. ",\n"
 			end
 		end
@@ -515,6 +516,8 @@ function ffibuild.ChangeCase(str, from, to)
 		elseif to == "fooBar" then
 			return ffibuild.ChangeCase(ffibuild.ChangeCase(str, "foo_bar", "FooBar"), "FooBar", "fooBar")
 		end
+	elseif from == "Foo_Bar" then
+		return ffibuild.ChangeCase(("_" .. str):gsub("_(%u)", function(s) return s:upper() end), "FooBar", to)
 	end
 	return str
 end
@@ -1474,6 +1477,7 @@ do -- lua helper functions
 	end
 
 	function ffibuild.EndLibrary(lua, header)
+		lua = lua .. "library.clib = CLIB\n"
 		lua = lua .. "return library\n"
 
 		local file = io.open("./lib"..ffibuild.lib_name..".lua", "wb")
