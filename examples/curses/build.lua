@@ -2,7 +2,7 @@ package.path = package.path .. ";../../?.lua"
 local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
-	"ncurses",
+	"curses",
 	"git clone git://ncurses.scripts.mit.edu/ncurses.git repo --depth 1",
 	"cd repo/ && ./configure --with-shared --without-normal --without-debug && make && cd ../"
 )
