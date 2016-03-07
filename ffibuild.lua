@@ -429,7 +429,13 @@ function ffibuild.GetMetaData(header)
 	end
 
 	do
-		local function get_enum_name(name, pattern)
+		local function get_enum_name(name, pattern, group, basic_type)
+			if not pattern and group then
+				if basic_type:find(group) then
+					return name
+				end
+			end
+
 			local key
 
 			if pattern then
@@ -451,23 +457,22 @@ function ffibuild.GetMetaData(header)
 			local s = "{\n"
 			for basic_type, type in pairs(self.enums) do
 				for _, enum in ipairs(type.enums) do
-					local key = get_enum_name(enum.key, pattern)
-
-					if not key and group and basic_type:find(group) then
-						key = enum.key
-					end
+					local key = get_enum_name(enum.key, pattern, group, basic_type)
 
 					if key then
 						s =  s .. "\t" .. key .. " = ffi.cast(\""..basic_type.."\", \""..enum.key.."\"),\n"
 					end
 				end
 			end
-			for _, enums in pairs(self.global_enums) do
-				for _, enum in ipairs(enums.enums) do
-					local key = get_enum_name(enum.key, pattern)
 
-					if key then
-						s =  s .. "\t" .. key .. " = "..enum.val..",\n"
+			if not group then
+				for _, enums in pairs(self.global_enums) do
+					for _, enum in ipairs(enums.enums) do
+						local key = get_enum_name(enum.key, pattern, group, basic_type)
+
+						if key then
+							s =  s .. "\t" .. key .. " = "..enum.val..",\n"
+						end
 					end
 				end
 			end
