@@ -4,8 +4,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"glfw",
-	"git clone https://github.com/glfw/glfw repo",
-	"cd repo && cmake -DBUILD_SHARED_LIBS=1 . && make && cd .."
+	"https://github.com/glfw/glfw.git",
+	"cmake -DBUILD_SHARED_LIBS=1 . && make"
 )
 
 local header = ffibuild.BuildCHeader([[

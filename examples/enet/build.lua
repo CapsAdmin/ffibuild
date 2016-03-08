@@ -3,8 +3,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"enet",
-	"git clone https://github.com/lsalzman/enet repo",
-	"cd repo && autoreconf -vfi && ./configure && make && cd .."
+	"https://github.com/lsalzman/enet.git",
+	"autoreconf -vfi && ./configure && make"
 )
 
 local header = ffibuild.BuildCHeader([[

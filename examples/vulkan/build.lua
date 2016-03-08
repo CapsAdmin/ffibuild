@@ -3,7 +3,7 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"vulkan",
-	"git clone https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers repo"
+	"https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers.git"
 )
 
 local extensions = {

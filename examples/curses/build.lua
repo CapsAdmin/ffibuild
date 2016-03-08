@@ -3,8 +3,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"ncurses",
-	"git clone git://ncurses.scripts.mit.edu/ncurses.git repo --depth 1",
-	"cd repo/ && ./configure --with-shared --without-normal --without-debug && make && cd ../"
+	"git://ncurses.scripts.mit.edu/ncurses.git",
+	"./configure --with-shared --without-normal --without-debug --enable-widec --enable-termcap --with-fallbacks && make"
 )
 -- TODO
 do return end

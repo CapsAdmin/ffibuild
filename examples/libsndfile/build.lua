@@ -4,8 +4,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"sndfile",
-	"git clone https://github.com/erikd/libsndfile repo",
-	"cd repo && ./autogen.sh && ./configure && make && cd .."
+	"https://github.com/erikd/libsndfile.git",
+	"./autogen.sh && ./configure && make"
 )
 
 local header = ffibuild.BuildCHeader([[

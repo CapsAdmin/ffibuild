@@ -16,6 +16,6 @@ $(LUA_DIR):
 
 clean:
 	rm -rf $(LUA_DIR)
-	for dir in $(SUBDIRS); do \
+	-for dir in $(SUBDIRS); do \
 		$(MAKE) clean -C $$dir; \
 	done

@@ -4,8 +4,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"openal",
-	"git clone https://github.com/kcat/openal-soft repo",
-	"cd repo && cmake . && make && cd .."
+	"https://github.com/kcat/openal-soft.git",
+	"cmake . && make"
 )
 
 for lib_name, enum_name in pairs({al = "AL_", alc = "ALC_"}) do

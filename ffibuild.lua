@@ -4,10 +4,26 @@ function ffibuild.BuildSharedLibrary(name, clone, build, copy)
 	--os.execute("git --git-dir=./repo/.git pull")
 	local f = io.open("lib"..name..".so", "r")
 	if not f then
-		os.execute(clone)
-		os.execute(build)
+		if clone:find("%.git$") then
+			os.execute("if [ -d ./repo ]; then git -C ./repo pull; else git clone " .. clone .. " repo --depth 1; fi")
+		elseif clone:find("hg%.") then
+			os.execute("hg clone " .. clone .. " repo")
+		else
+			os.execute(clone)
+		end
+		os.execute("cd repo && " .. build .. " && cd ..")
 		if not copy then
-			os.execute("cp $(find . -name 'lib"..name.."*.so.*' -o -name 'lib"..name.."*.so' -type f -print -quit) lib"..name..".so")
+			-- there's an -o switch for cp but depending on which one you find first it doesn't work
+			-- so screw it
+			os.execute("cp $(find . -name 'lib"..name.."*.so.*' -type f -print -quit) lib"..name..".so")
+			local f = io.open("lib"..name..".so", "r")
+			if not f then
+				os.execute("cp $(find . -name 'lib"..name.."*.so' -type f -print -quit) lib"..name..".so")
+			else
+				f:close()
+			end
+		else
+			os.execute(copy)
 		end
 	else
 		f:close()

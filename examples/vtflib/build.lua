@@ -4,8 +4,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"VTFLib",
-	"git clone https://github.com/CapsAdmin/VTFLib repo",
-	"cd repo && cmake . -DUSE_LIBTXC_DXTN=0 && make && cd .."
+	"https://github.com/CapsAdmin/VTFLib.git",
+	"cmake . -DUSE_LIBTXC_DXTN=0 && make"
 )
 
 local header = ffibuild.BuildCHeader([[

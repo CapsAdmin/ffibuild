@@ -4,8 +4,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"SDL2",
-	"hg clone http://hg.libsdl.org/SDL repo",
-	"cd repo && mkdir build && cd build && ../configure && make && cd ../../"
+	"http://hg.libsdl.org/SDL",
+	"mkdir build && cd build && ../configure && make && cd ../"
 )
 
 local header = ffibuild.BuildCHeader([[

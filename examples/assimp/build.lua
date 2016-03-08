@@ -4,8 +4,8 @@ local ffibuild = require("ffibuild")
 
 ffibuild.BuildSharedLibrary(
 	"assimp",
-	"git clone https://github.com/assimp/assimp repo",
-	"cd repo && cmake . && make && cd .."
+	"https://github.com/assimp/assimp.git",
+	"cmake . && make"
 )
 
 local header = ffibuild.BuildCHeader([[
