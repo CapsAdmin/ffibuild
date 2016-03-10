@@ -332,10 +332,6 @@ do -- struct creation helpers
 			end
 		end
 	end
-
-	lua = lua .. [[
-		function library.s.DebugReportCallbackCreateInfoEXT(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT" tbl.pNext = nil return ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl) end
-	]]
 end
 
 do -- *Create helpers so you don't have to make a boxed value

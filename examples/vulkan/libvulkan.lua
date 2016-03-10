@@ -2123,8 +2123,7 @@ function library.s.BufferImageCopy(tbl) return ffi.new("struct VkBufferImageCopy
 function library.s.MemoryBarrierArray(tbl) for i, v in ipairs(tbl) do tbl[i] = library.s.MemoryBarrier(v) end return ffi.new("struct VkMemoryBarrier[?]", #tbl, tbl) end
 function library.s.PushConstantRangeArray(tbl) return ffi.new("struct VkPushConstantRange[?]", #tbl, tbl) end
 function library.s.PushConstantRange(tbl) return ffi.new("struct VkPushConstantRange", tbl) end
-		function library.s.DebugReportCallbackCreateInfoEXT(tbl) tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT" tbl.pNext = nil return ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl) end
-	function library.CreateBufferView(device, pCreateInfo, pAllocator)
+function library.CreateBufferView(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then pCreateInfo = library.s.BufferViewCreateInfo(pCreateInfo) end
 	local box = ffi.new("struct VkBufferView_T * [1]")
 	local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)

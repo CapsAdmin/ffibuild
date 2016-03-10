@@ -11,7 +11,9 @@ function ffibuild.BuildSharedLibrary(name, clone, build, copy)
 		else
 			os.execute(clone)
 		end
-		os.execute("cd repo && " .. build .. " && cd ..")
+		if build then
+			os.execute("cd repo && " .. build .. " && cd ..")
+		end
 		if not copy then
 			-- there's an -o switch for cp but depending on which one you find first it doesn't work
 			-- so screw it
