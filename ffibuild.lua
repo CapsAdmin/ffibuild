@@ -1518,19 +1518,26 @@ do -- lua helper functions
 					key = "_" .. key
 				end
 
-				if val:sub(#val, #val) == "f" then
-					val = val:sub(0, -2)
+				if val:sub(#val-1, #val-1) == "f" then
+					val = val:sub(0, -3)
 					val = tonumber(val)
-				end
-
-				if val:sub(1, 1) == "\"" then
+				elseif val:sub(1, 1) == "\"" then
 					val = val:gsub("([%a_][%a%d_]+)", temp_enums)
 					val = val:gsub('(".-)(" ")(.-")', "%1%3")
 				else
-					val = ffibuild.ParseEnumValue(val, nil, temp_enums) or val
+					local ok, v = pcall(ffibuild.ParseEnumValue, val, nil, temp_enums)
+					if ok then
+						val = v
+					else
+						val = val:gsub("([%a_][%a%d_]+)", temp_enums)
+					end
 				end
 
-				s = s .. prepend .. key .. " = " .. tostring(val) .. append
+				if loadstring("return " .. val) then
+					s = s .. prepend .. key .. " = " .. tostring(val) .. append
+				else
+					print("unable to parse define enum: ", chunk)
+				end
 			end
 		end)
 
