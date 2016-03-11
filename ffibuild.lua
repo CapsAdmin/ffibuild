@@ -201,9 +201,7 @@ function ffibuild.GetMetaData(header)
 			if is_function(line) then
 				local type = create_type("function", line:sub(0, -2), meta_data)
 				meta_data.typedefs[type.name] = type
-				if type.func_type ~= "" then
-					line = nil
-				end
+				line = nil
 			else
 				local content, alias = line:match("^(.+) ([%a%d_]+)")
 
@@ -613,27 +611,91 @@ do -- type metatables
 		end
 
 		local function find_enum(current_meta_data, out, what)
-			for _, info in ipairs(out) do
-				if info.key == what then
-					return info.val
-				end
-			end
-
-			for _, info in pairs(current_meta_data.global_enums) do
-				for _, info in ipairs(info.enums) do
+			if out[1] then
+				for _, info in ipairs(out) do
 					if info.key == what then
 						return info.val
 					end
 				end
+			else
+				if out[what] then
+					return out[what]
+				end
 			end
 
-			for _, info in pairs(current_meta_data.enums) do
-				for _, info in ipairs(info.enums) do
-					if info.key == what then
-						return info.val
+			if current_meta_data then
+				for _, info in pairs(current_meta_data.global_enums) do
+					for _, info in ipairs(info.enums) do
+						if info.key == what then
+							return info.val
+						end
+					end
+				end
+
+				for _, info in pairs(current_meta_data.enums) do
+					for _, info in ipairs(info.enums) do
+						if info.key == what then
+							return info.val
+						end
 					end
 				end
 			end
+		end
+
+		function ffibuild.ParseEnumValue(val, current_meta_data, enums)
+			local num = tonumber(val)
+
+			if not num then
+				val = val:gsub("> >", ">>"):gsub("< <", "<<")
+
+				do
+					-- kind of hacky but removes "( unsigned long )" and the like which have space
+					val = val:gsub("(%([%s%l]-%))", "")
+
+					local found
+					local test = val:gsub("([%a_][%a%d_]+)", function(what)
+						local val = find_enum(current_meta_data, enums, what)
+
+						if val then
+							found = true
+							return val
+						end
+
+						-- don't bother with type casting
+						if current_meta_data and current_meta_data.typedefs[what] then
+							found = true
+							return "_REMOVE_ME_"
+						end
+					end)
+
+					-- remove all typecasts
+					if test:find("_REMOVE_ME_") then
+						test = test:gsub("%( _REMOVE_ME_ %) ", "")
+					end
+
+					if found then
+						val = test
+					else
+						val = find_enum(current_meta_data, enums, val) or val
+
+						if type(val) == "string" and val:sub(#val, #val) == "u" then
+							val = val:sub(0, -2)
+						end
+
+						local test = tonumber(val)
+
+						if test then
+							num = test
+						end
+					end
+				end
+			end
+
+			if not num then
+				num = parse_bit_declaration(val, "")
+			end
+
+			return num
 		end
 
 		function ENUMS:Create(declaration, current_meta_data)
@@ -646,57 +708,7 @@ do -- type metatables
 				local key, val = line:match("(.+) = (.+)")
 
 				if key and val then
-					num = tonumber(val)
-
-					if not num then
-						val = val:gsub("> >", ">>"):gsub("< <", "<<")
-
-						do
-							-- kind of hacky but removes "( unsigned long )" and the like which have space
-							val = val:gsub("(%([%s%l]-%))", "")
-
-							local found
-							local test = val:gsub("([%a_][%a%d_]+)", function(what)
-								local val = find_enum(current_meta_data, enums, what)
-
-								if val then
-									found = true
-									return val
-								end
-
-								-- don't bother with type casting
-								if current_meta_data.typedefs[what] then
-									found = true
-									return "_REMOVE_ME_"
-								end
-							end)
-
-							-- remove all typecasts
-							if test:find("_REMOVE_ME_") then
-								test = test:gsub("%( _REMOVE_ME_ %) ", "")
-							end
-
-							if found then
-								val = test
-							else
-								val = find_enum(current_meta_data, enums, val) or val
-
-								if type(val) == "string" and val:sub(#val, #val) == "u" then
-									val = val:sub(0, -2)
-								end
-
-								local test = tonumber(val)
-
-								if test then
-									num = test
-								end
-							end
-						end
-					end
-
-					if not num then
-						num = parse_bit_declaration(val, "")
-					end
+					local num = ffibuild.ParseEnumValue(val, current_meta_data, enums)
 
 					if not num then
 						error("unable to parse enum:\n\t" .. val)
@@ -1466,38 +1478,60 @@ do -- lua helper functions
 
 		raw_header = raw_header:gsub("/%*.-%*/", "")
 
-		raw_header:gsub("#define ("..starts_with..".-)\n", function(chunk)
-			local enum, found = chunk:gsub("^(%S-)(%s+)(.+)", function(key, _, val)
-				if temp_enums[val] then
-					val = temp_enums[val]
-				end
-				temp_enums[key] = val
+		raw_header:gsub("#define%s-(.-)[\n\r]", function(chunk)
+			-- process all single quote strings
+			chunk = chunk:gsub("('%S+')", function(val) return assert(loadstring("return (" .. val .. "):byte()"))() end)
+			chunk = chunk:gsub("' '", string.byte(" "))
 
-				local matched_key
+			 -- normalize everything to have equal spacing even between punctation
+			chunk = chunk:gsub("([*%(%){}&%[%],;&|<>=])", " %1 ")
+			chunk = chunk:gsub("%s+", " ")
+			chunk = chunk:gsub(" %((.+)%) ", "%1")
 
-				if pattern then
-					matched_key = key:match(pattern)
-				else
-					matched_key = key
-				end
+			local key, val = chunk:match(" (%S+) (.+)")
 
-				key = matched_key
+			if not key then
+				key = chunk:match(" (%S+)")
+				val = "1"
+			end
 
+			if temp_enums[val] then
+				val = temp_enums[val]
+			end
+
+			temp_enums[key] = val
+
+			local matched_key
+
+			if pattern then
+				matched_key = key:match(pattern)
+			else
+				matched_key = key
+			end
+
+			key = matched_key
+
+			if key then
 				-- if the prefix has been stripped the key might start with a number
 				if key:find("^%d") then
 					print("enum " .. key .. " starts with a number. prepending _")
 					key = "_" .. key
 				end
 
-				val = val:gsub("%((.+)%)", "%1")
-
 				if val:sub(#val, #val) == "f" then
 					val = val:sub(0, -2)
 					val = tonumber(val)
 				end
 
-				s = s .. prepend .. key .. " = " .. val .. append
-			end)
+				if val:sub(1, 1) == "\"" then
+					val = val:gsub("([%a_][%a%d_]+)", temp_enums)
+					val = val:gsub('(".-)(" ")(.-")', "%1%3")
+				else
+					val = ffibuild.ParseEnumValue(val, nil, temp_enums) or val
+				end
+
+				s = s .. prepend .. key .. " = " .. tostring(val) .. append
+			end
 		end)
 
 		return s
