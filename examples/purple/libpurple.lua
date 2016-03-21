@@ -7,52 +7,52 @@ typedef enum PurpleStatusPrimitive{PURPLE_STATUS_UNSET=0,PURPLE_STATUS_OFFLINE=1
 typedef enum PurpleRoomlistFieldType{PURPLE_ROOMLIST_FIELD_BOOL=0,PURPLE_ROOMLIST_FIELD_INT=1,PURPLE_ROOMLIST_FIELD_STRING=2};
 typedef enum PurpleMediaCandidateType{PURPLE_MEDIA_CANDIDATE_TYPE_HOST=0,PURPLE_MEDIA_CANDIDATE_TYPE_SRFLX=1,PURPLE_MEDIA_CANDIDATE_TYPE_PRFLX=2,PURPLE_MEDIA_CANDIDATE_TYPE_RELAY=3,PURPLE_MEDIA_CANDIDATE_TYPE_MULTICAST=4};
 typedef enum _PurplePrefType{PURPLE_PREF_NONE=0,PURPLE_PREF_BOOLEAN=1,PURPLE_PREF_INT=2,PURPLE_PREF_STRING=3,PURPLE_PREF_STRING_LIST=4,PURPLE_PREF_PATH=5,PURPLE_PREF_PATH_LIST=6};
-typedef enum PurpleLogReadFlags{PURPLE_LOG_READ_NO_NEWLINE=1};
+typedef enum PurpleLogReadFlags{PURPLE_LOG_READ_NO_NEWLINE=0};
 typedef enum PurplePounceOption{PURPLE_POUNCE_OPTION_NONE=0,PURPLE_POUNCE_OPTION_AWAY=1};
-typedef enum PurpleProxyType{PURPLE_PROXY_USE_GLOBAL=-1,PURPLE_PROXY_NONE=0,PURPLE_PROXY_HTTP=1,PURPLE_PROXY_SOCKS4=2,PURPLE_PROXY_SOCKS5=3,PURPLE_PROXY_USE_ENVVAR=4,PURPLE_PROXY_TOR=5};
-typedef enum PurpleBlistNodeType{PURPLE_BLIST_GROUP_NODE=0,PURPLE_BLIST_CONTACT_NODE=1,PURPLE_BLIST_BUDDY_NODE=2,PURPLE_BLIST_CHAT_NODE=3,PURPLE_BLIST_OTHER_NODE=4};
+typedef enum PurpleRequestType{PURPLE_REQUEST_INPUT=0,PURPLE_REQUEST_CHOICE=1,PURPLE_REQUEST_ACTION=2,PURPLE_REQUEST_FIELDS=3,PURPLE_REQUEST_FILE=4,PURPLE_REQUEST_FOLDER=5};
+typedef enum PurpleConvChatBuddyFlags{PURPLE_CBFLAGS_NONE=0,PURPLE_CBFLAGS_VOICE=1,PURPLE_CBFLAGS_HALFOP=2,PURPLE_CBFLAGS_OP=3,PURPLE_CBFLAGS_FOUNDER=4,PURPLE_CBFLAGS_TYPING=5,PURPLE_CBFLAGS_AWAY=6};
+typedef enum _PurpleCmdPriority{PURPLE_CMD_P_VERY_LOW=0,PURPLE_CMD_P_LOW=1,PURPLE_CMD_P_DEFAULT=2,PURPLE_CMD_P_PRPL=3,PURPLE_CMD_P_PLUGIN=4,PURPLE_CMD_P_ALIAS=5,PURPLE_CMD_P_HIGH=6,PURPLE_CMD_P_VERY_HIGH=7};
 typedef enum PurpleXferType{PURPLE_XFER_UNKNOWN=0,PURPLE_XFER_SEND=1,PURPLE_XFER_RECEIVE=2};
 typedef enum PurpleStringFormatType{PURPLE_STRING_FORMAT_TYPE_NONE=0,PURPLE_STRING_FORMAT_TYPE_MULTILINE=1,PURPLE_STRING_FORMAT_TYPE_HTML=2};
 typedef enum _PurpleSoundEventID{PURPLE_SOUND_BUDDY_ARRIVE=0,PURPLE_SOUND_BUDDY_LEAVE=1,PURPLE_SOUND_RECEIVE=2,PURPLE_SOUND_FIRST_RECEIVE=3,PURPLE_SOUND_SEND=4,PURPLE_SOUND_CHAT_JOIN=5,PURPLE_SOUND_CHAT_LEAVE=6,PURPLE_SOUND_CHAT_YOU_SAY=7,PURPLE_SOUND_CHAT_SAY=8,PURPLE_SOUND_POUNCE_DEFAULT=9,PURPLE_SOUND_CHAT_NICK=10,PURPLE_SOUND_GOT_ATTENTION=11,PURPLE_NUM_SOUNDS=12};
-typedef enum PurplePmpType{PURPLE_PMP_TYPE_UDP=0,PURPLE_PMP_TYPE_TCP=1};
-typedef enum PurplePluginType{PURPLE_PLUGIN_UNKNOWN=-1,PURPLE_PLUGIN_STANDARD=0,PURPLE_PLUGIN_LOADER=1,PURPLE_PLUGIN_PROTOCOL=2};
+typedef enum PurpleLogType{PURPLE_LOG_IM=0,PURPLE_LOG_CHAT=1,PURPLE_LOG_SYSTEM=2};
+typedef enum PurpleRoomlistRoomType{PURPLE_ROOMLIST_ROOMTYPE_CATEGORY=0,PURPLE_ROOMLIST_ROOMTYPE_ROOM=1};
 typedef enum PurpleRequestFieldType{PURPLE_REQUEST_FIELD_NONE=0,PURPLE_REQUEST_FIELD_STRING=1,PURPLE_REQUEST_FIELD_INTEGER=2,PURPLE_REQUEST_FIELD_BOOLEAN=3,PURPLE_REQUEST_FIELD_CHOICE=4,PURPLE_REQUEST_FIELD_LIST=5,PURPLE_REQUEST_FIELD_LABEL=6,PURPLE_REQUEST_FIELD_IMAGE=7,PURPLE_REQUEST_FIELD_ACCOUNT=8};
 typedef enum _PurpleCmdStatus{PURPLE_CMD_STATUS_OK=0,PURPLE_CMD_STATUS_FAILED=1,PURPLE_CMD_STATUS_NOT_FOUND=2,PURPLE_CMD_STATUS_WRONG_ARGS=3,PURPLE_CMD_STATUS_WRONG_PRPL=4,PURPLE_CMD_STATUS_WRONG_TYPE=5};
-typedef enum PurpleNotifyMsgType{PURPLE_NOTIFY_MSG_ERROR=0,PURPLE_NOTIFY_MSG_WARNING=1,PURPLE_NOTIFY_MSG_INFO=2};
+typedef enum PurplePresenceContext{PURPLE_PRESENCE_CONTEXT_UNSET=0,PURPLE_PRESENCE_CONTEXT_ACCOUNT=1,PURPLE_PRESENCE_CONTEXT_CONV=2,PURPLE_PRESENCE_CONTEXT_BUDDY=3};
 typedef enum PurpleConnectionError{PURPLE_CONNECTION_ERROR_NETWORK_ERROR=0,PURPLE_CONNECTION_ERROR_INVALID_USERNAME=1,PURPLE_CONNECTION_ERROR_AUTHENTICATION_FAILED=2,PURPLE_CONNECTION_ERROR_AUTHENTICATION_IMPOSSIBLE=3,PURPLE_CONNECTION_ERROR_NO_SSL_SUPPORT=4,PURPLE_CONNECTION_ERROR_ENCRYPTION_ERROR=5,PURPLE_CONNECTION_ERROR_NAME_IN_USE=6,PURPLE_CONNECTION_ERROR_INVALID_SETTINGS=7,PURPLE_CONNECTION_ERROR_CERT_NOT_PROVIDED=8,PURPLE_CONNECTION_ERROR_CERT_UNTRUSTED=9,PURPLE_CONNECTION_ERROR_CERT_EXPIRED=10,PURPLE_CONNECTION_ERROR_CERT_NOT_ACTIVATED=11,PURPLE_CONNECTION_ERROR_CERT_HOSTNAME_MISMATCH=12,PURPLE_CONNECTION_ERROR_CERT_FINGERPRINT_MISMATCH=13,PURPLE_CONNECTION_ERROR_CERT_SELF_SIGNED=14,PURPLE_CONNECTION_ERROR_CERT_OTHER_ERROR=15,PURPLE_CONNECTION_ERROR_OTHER_ERROR=16};
-typedef enum PurpleDesktopItemType{PURPLE_DESKTOP_ITEM_TYPE_NULL=0,PURPLE_DESKTOP_ITEM_TYPE_OTHER=1,PURPLE_DESKTOP_ITEM_TYPE_APPLICATION=2,PURPLE_DESKTOP_ITEM_TYPE_LINK=3,PURPLE_DESKTOP_ITEM_TYPE_FSDEVICE=4,PURPLE_DESKTOP_ITEM_TYPE_MIME_TYPE=5,PURPLE_DESKTOP_ITEM_TYPE_DIRECTORY=6,PURPLE_DESKTOP_ITEM_TYPE_SERVICE=7,PURPLE_DESKTOP_ITEM_TYPE_SERVICE_TYPE=8};
+typedef enum PurpleSslErrorType{PURPLE_SSL_HANDSHAKE_FAILED=0,PURPLE_SSL_CONNECT_FAILED=1,PURPLE_SSL_CERTIFICATE_INVALID=2};
 typedef enum PurpleMediaInfoType{PURPLE_MEDIA_INFO_HANGUP=0,PURPLE_MEDIA_INFO_ACCEPT=1,PURPLE_MEDIA_INFO_REJECT=2,PURPLE_MEDIA_INFO_MUTE=3,PURPLE_MEDIA_INFO_UNMUTE=4,PURPLE_MEDIA_INFO_PAUSE=5,PURPLE_MEDIA_INFO_UNPAUSE=6,PURPLE_MEDIA_INFO_HOLD=7,PURPLE_MEDIA_INFO_UNHOLD=8};
 typedef enum PurpleNotifySearchButtonType{PURPLE_NOTIFY_BUTTON_LABELED=0,PURPLE_NOTIFY_BUTTON_CONTINUE=1,PURPLE_NOTIFY_BUTTON_ADD=2,PURPLE_NOTIFY_BUTTON_INFO=3,PURPLE_NOTIFY_BUTTON_IM=4,PURPLE_NOTIFY_BUTTON_JOIN=5,PURPLE_NOTIFY_BUTTON_INVITE=6};
-typedef enum PurpleLogType{PURPLE_LOG_IM=0,PURPLE_LOG_CHAT=1,PURPLE_LOG_SYSTEM=2};
-typedef enum PurpleSslErrorType{PURPLE_SSL_HANDSHAKE_FAILED=1,PURPLE_SSL_CONNECT_FAILED=2,PURPLE_SSL_CERTIFICATE_INVALID=3};
-typedef enum _PurplePrivacyType{PURPLE_PRIVACY_ALLOW_ALL=1,PURPLE_PRIVACY_DENY_ALL=2,PURPLE_PRIVACY_ALLOW_USERS=3,PURPLE_PRIVACY_DENY_USERS=4,PURPLE_PRIVACY_ALLOW_BUDDYLIST=5};
+typedef enum _PurplePrivacyType{PURPLE_PRIVACY_ALLOW_ALL=0,PURPLE_PRIVACY_DENY_ALL=1,PURPLE_PRIVACY_ALLOW_USERS=2,PURPLE_PRIVACY_DENY_USERS=3,PURPLE_PRIVACY_ALLOW_BUDDYLIST=4};
 typedef enum PurpleStunNatType{PURPLE_STUN_NAT_TYPE_PUBLIC_IP=0,PURPLE_STUN_NAT_TYPE_UNKNOWN_NAT=1,PURPLE_STUN_NAT_TYPE_FULL_CONE=2,PURPLE_STUN_NAT_TYPE_RESTRICTED_CONE=3,PURPLE_STUN_NAT_TYPE_PORT_RESTRICTED_CONE=4,PURPLE_STUN_NAT_TYPE_SYMMETRIC=5};
 typedef enum PurpleType{PURPLE_TYPE_UNKNOWN=0,PURPLE_TYPE_SUBTYPE=1,PURPLE_TYPE_CHAR=2,PURPLE_TYPE_UCHAR=3,PURPLE_TYPE_BOOLEAN=4,PURPLE_TYPE_SHORT=5,PURPLE_TYPE_USHORT=6,PURPLE_TYPE_INT=7,PURPLE_TYPE_UINT=8,PURPLE_TYPE_LONG=9,PURPLE_TYPE_ULONG=10,PURPLE_TYPE_INT64=11,PURPLE_TYPE_UINT64=12,PURPLE_TYPE_STRING=13,PURPLE_TYPE_OBJECT=14,PURPLE_TYPE_POINTER=15,PURPLE_TYPE_ENUM=16,PURPLE_TYPE_BOXED=17};
-typedef enum _PurpleCmdFlag{PURPLE_CMD_FLAG_IM=1,PURPLE_CMD_FLAG_CHAT=2,PURPLE_CMD_FLAG_PRPL_ONLY=4,PURPLE_CMD_FLAG_ALLOW_WRONG_ARGS=8};
-typedef enum PurpleRequestType{PURPLE_REQUEST_INPUT=0,PURPLE_REQUEST_CHOICE=1,PURPLE_REQUEST_ACTION=2,PURPLE_REQUEST_FIELDS=3,PURPLE_REQUEST_FILE=4,PURPLE_REQUEST_FOLDER=5};
 typedef enum _PurpleCipherBatchMode{PURPLE_CIPHER_BATCH_MODE_ECB=0,PURPLE_CIPHER_BATCH_MODE_CBC=1};
 typedef enum PurpleConversationType{PURPLE_CONV_TYPE_UNKNOWN=0,PURPLE_CONV_TYPE_IM=1,PURPLE_CONV_TYPE_CHAT=2,PURPLE_CONV_TYPE_MISC=3,PURPLE_CONV_TYPE_ANY=4};
-typedef enum PurpleStunStatus{PURPLE_STUN_STATUS_UNDISCOVERED=-1,PURPLE_STUN_STATUS_UNKNOWN=0,PURPLE_STUN_STATUS_DISCOVERING=1,PURPLE_STUN_STATUS_DISCOVERED=2};
-typedef enum PurpleIconScaleRules{PURPLE_ICON_SCALE_DISPLAY=1,PURPLE_ICON_SCALE_SEND=2};
-typedef enum PurplePounceEvent{PURPLE_POUNCE_NONE=0,PURPLE_POUNCE_SIGNON=1,PURPLE_POUNCE_SIGNOFF=2,PURPLE_POUNCE_AWAY=4,PURPLE_POUNCE_AWAY_RETURN=8,PURPLE_POUNCE_IDLE=16,PURPLE_POUNCE_IDLE_RETURN=32,PURPLE_POUNCE_TYPING=64,PURPLE_POUNCE_TYPED=128,PURPLE_POUNCE_TYPING_STOPPED=256,PURPLE_POUNCE_MESSAGE_RECEIVED=512};
-typedef enum PurpleCertificateInvalidityFlags{PURPLE_CERTIFICATE_UNKNOWN_ERROR=-1,PURPLE_CERTIFICATE_NO_PROBLEMS=0,PURPLE_CERTIFICATE_NON_FATALS_MASK=65535,PURPLE_CERTIFICATE_SELF_SIGNED=1,PURPLE_CERTIFICATE_CA_UNKNOWN=2,PURPLE_CERTIFICATE_NOT_ACTIVATED=4,PURPLE_CERTIFICATE_EXPIRED=8,PURPLE_CERTIFICATE_NAME_MISMATCH=16,PURPLE_CERTIFICATE_NO_CA_POOL=32,PURPLE_CERTIFICATE_FATALS_MASK=4294901760,PURPLE_CERTIFICATE_INVALID_CHAIN=65536,PURPLE_CERTIFICATE_REVOKED=131072,PURPLE_CERTIFICATE_LAST=262144};
+typedef enum PurpleNotifyMsgType{PURPLE_NOTIFY_MSG_ERROR=0,PURPLE_NOTIFY_MSG_WARNING=1,PURPLE_NOTIFY_MSG_INFO=2};
+typedef enum PurpleIconScaleRules{PURPLE_ICON_SCALE_DISPLAY=0,PURPLE_ICON_SCALE_SEND=1};
+typedef enum PurpleCertificateInvalidityFlags{PURPLE_CERTIFICATE_UNKNOWN_ERROR=0,PURPLE_CERTIFICATE_NO_PROBLEMS=1,PURPLE_CERTIFICATE_NON_FATALS_MASK=2,PURPLE_CERTIFICATE_SELF_SIGNED=3,PURPLE_CERTIFICATE_CA_UNKNOWN=4,PURPLE_CERTIFICATE_NOT_ACTIVATED=5,PURPLE_CERTIFICATE_EXPIRED=6,PURPLE_CERTIFICATE_NAME_MISMATCH=7,PURPLE_CERTIFICATE_NO_CA_POOL=8,PURPLE_CERTIFICATE_FATALS_MASK=9,PURPLE_CERTIFICATE_INVALID_CHAIN=10,PURPLE_CERTIFICATE_REVOKED=11,PURPLE_CERTIFICATE_LAST=12};
 typedef enum PurpleNotifyType{PURPLE_NOTIFY_MESSAGE=0,PURPLE_NOTIFY_EMAIL=1,PURPLE_NOTIFY_EMAILS=2,PURPLE_NOTIFY_FORMATTED=3,PURPLE_NOTIFY_SEARCHRESULTS=4,PURPLE_NOTIFY_USERINFO=5,PURPLE_NOTIFY_URI=6};
 typedef enum PurpleCertificateVerificationStatus{PURPLE_CERTIFICATE_INVALID=0,PURPLE_CERTIFICATE_VALID=1};
 typedef enum PurpleNotifyUserInfoEntryType{PURPLE_NOTIFY_USER_INFO_ENTRY_PAIR=0,PURPLE_NOTIFY_USER_INFO_ENTRY_SECTION_BREAK=1,PURPLE_NOTIFY_USER_INFO_ENTRY_SECTION_HEADER=2};
-typedef enum PurpleRoomlistRoomType{PURPLE_ROOMLIST_ROOMTYPE_CATEGORY=1,PURPLE_ROOMLIST_ROOMTYPE_ROOM=2};
+typedef enum PurplePounceEvent{PURPLE_POUNCE_NONE=0,PURPLE_POUNCE_SIGNON=1,PURPLE_POUNCE_SIGNOFF=2,PURPLE_POUNCE_AWAY=3,PURPLE_POUNCE_AWAY_RETURN=4,PURPLE_POUNCE_IDLE=5,PURPLE_POUNCE_IDLE_RETURN=6,PURPLE_POUNCE_TYPING=7,PURPLE_POUNCE_TYPED=8,PURPLE_POUNCE_TYPING_STOPPED=9,PURPLE_POUNCE_MESSAGE_RECEIVED=10};
+typedef enum PurpleDesktopItemType{PURPLE_DESKTOP_ITEM_TYPE_NULL=0,PURPLE_DESKTOP_ITEM_TYPE_OTHER=1,PURPLE_DESKTOP_ITEM_TYPE_APPLICATION=2,PURPLE_DESKTOP_ITEM_TYPE_LINK=3,PURPLE_DESKTOP_ITEM_TYPE_FSDEVICE=4,PURPLE_DESKTOP_ITEM_TYPE_MIME_TYPE=5,PURPLE_DESKTOP_ITEM_TYPE_DIRECTORY=6,PURPLE_DESKTOP_ITEM_TYPE_SERVICE=7,PURPLE_DESKTOP_ITEM_TYPE_SERVICE_TYPE=8};
 typedef enum PurpleTypingState{PURPLE_NOT_TYPING=0,PURPLE_TYPING=1,PURPLE_TYPED=2};
-typedef enum _PurpleCmdPriority{PURPLE_CMD_P_VERY_LOW=-1000,PURPLE_CMD_P_LOW=0,PURPLE_CMD_P_DEFAULT=1000,PURPLE_CMD_P_PRPL=2000,PURPLE_CMD_P_PLUGIN=3000,PURPLE_CMD_P_ALIAS=4000,PURPLE_CMD_P_HIGH=5000,PURPLE_CMD_P_VERY_HIGH=6000};
 typedef enum PurpleDebugLevel{PURPLE_DEBUG_ALL=0,PURPLE_DEBUG_MISC=1,PURPLE_DEBUG_INFO=2,PURPLE_DEBUG_WARNING=3,PURPLE_DEBUG_ERROR=4,PURPLE_DEBUG_FATAL=5};
-typedef enum PurpleMessageFlags{PURPLE_MESSAGE_SEND=1,PURPLE_MESSAGE_RECV=2,PURPLE_MESSAGE_SYSTEM=4,PURPLE_MESSAGE_AUTO_RESP=8,PURPLE_MESSAGE_ACTIVE_ONLY=16,PURPLE_MESSAGE_NICK=32,PURPLE_MESSAGE_NO_LOG=64,PURPLE_MESSAGE_WHISPER=128,PURPLE_MESSAGE_ERROR=512,PURPLE_MESSAGE_DELAYED=1024,PURPLE_MESSAGE_RAW=2048,PURPLE_MESSAGE_IMAGES=4096,PURPLE_MESSAGE_NOTIFY=8192,PURPLE_MESSAGE_NO_LINKIFY=16384,PURPLE_MESSAGE_INVISIBLE=32768};
-typedef enum PurpleConnectionFlags{PURPLE_CONNECTION_HTML=1,PURPLE_CONNECTION_NO_BGCOLOR=2,PURPLE_CONNECTION_AUTO_RESP=4,PURPLE_CONNECTION_FORMATTING_WBFO=8,PURPLE_CONNECTION_NO_NEWLINES=16,PURPLE_CONNECTION_NO_FONTSIZE=32,PURPLE_CONNECTION_NO_URLDESC=64,PURPLE_CONNECTION_NO_IMAGES=128,PURPLE_CONNECTION_ALLOW_CUSTOM_SMILEY=256,PURPLE_CONNECTION_SUPPORT_MOODS=512,PURPLE_CONNECTION_SUPPORT_MOOD_MESSAGES=1024};
-typedef enum PurpleBlistNodeFlags{PURPLE_BLIST_NODE_FLAG_NO_SAVE=1};
-typedef enum PurpleMediaCaps{PURPLE_MEDIA_CAPS_NONE=0,PURPLE_MEDIA_CAPS_AUDIO=1,PURPLE_MEDIA_CAPS_AUDIO_SINGLE_DIRECTION=2,PURPLE_MEDIA_CAPS_VIDEO=4,PURPLE_MEDIA_CAPS_VIDEO_SINGLE_DIRECTION=8,PURPLE_MEDIA_CAPS_AUDIO_VIDEO=16,PURPLE_MEDIA_CAPS_MODIFY_SESSION=32,PURPLE_MEDIA_CAPS_CHANGE_DIRECTION=64};
+typedef enum PurpleMessageFlags{PURPLE_MESSAGE_SEND=0,PURPLE_MESSAGE_RECV=1,PURPLE_MESSAGE_SYSTEM=2,PURPLE_MESSAGE_AUTO_RESP=3,PURPLE_MESSAGE_ACTIVE_ONLY=4,PURPLE_MESSAGE_NICK=5,PURPLE_MESSAGE_NO_LOG=6,PURPLE_MESSAGE_WHISPER=7,PURPLE_MESSAGE_ERROR=8,PURPLE_MESSAGE_DELAYED=9,PURPLE_MESSAGE_RAW=10,PURPLE_MESSAGE_IMAGES=11,PURPLE_MESSAGE_NOTIFY=12,PURPLE_MESSAGE_NO_LINKIFY=13,PURPLE_MESSAGE_INVISIBLE=14};
+typedef enum PurpleConnectionFlags{PURPLE_CONNECTION_HTML=0,PURPLE_CONNECTION_NO_BGCOLOR=1,PURPLE_CONNECTION_AUTO_RESP=2,PURPLE_CONNECTION_FORMATTING_WBFO=3,PURPLE_CONNECTION_NO_NEWLINES=4,PURPLE_CONNECTION_NO_FONTSIZE=5,PURPLE_CONNECTION_NO_URLDESC=6,PURPLE_CONNECTION_NO_IMAGES=7,PURPLE_CONNECTION_ALLOW_CUSTOM_SMILEY=8,PURPLE_CONNECTION_SUPPORT_MOODS=9,PURPLE_CONNECTION_SUPPORT_MOOD_MESSAGES=10};
+typedef enum PurplePmpType{PURPLE_PMP_TYPE_UDP=0,PURPLE_PMP_TYPE_TCP=1};
+typedef enum _PurpleCmdFlag{PURPLE_CMD_FLAG_IM=0,PURPLE_CMD_FLAG_CHAT=1,PURPLE_CMD_FLAG_PRPL_ONLY=2,PURPLE_CMD_FLAG_ALLOW_WRONG_ARGS=3};
+typedef enum PurpleBlistNodeFlags{PURPLE_BLIST_NODE_FLAG_NO_SAVE=0};
+typedef enum PurpleStunStatus{PURPLE_STUN_STATUS_UNDISCOVERED=0,PURPLE_STUN_STATUS_UNKNOWN=1,PURPLE_STUN_STATUS_DISCOVERING=2,PURPLE_STUN_STATUS_DISCOVERED=3};
+typedef enum PurpleProxyType{PURPLE_PROXY_USE_GLOBAL=0,PURPLE_PROXY_NONE=1,PURPLE_PROXY_HTTP=2,PURPLE_PROXY_SOCKS4=3,PURPLE_PROXY_SOCKS5=4,PURPLE_PROXY_USE_ENVVAR=5,PURPLE_PROXY_TOR=6};
+typedef enum PurpleMediaCaps{PURPLE_MEDIA_CAPS_NONE=0,PURPLE_MEDIA_CAPS_AUDIO=1,PURPLE_MEDIA_CAPS_AUDIO_SINGLE_DIRECTION=2,PURPLE_MEDIA_CAPS_VIDEO=3,PURPLE_MEDIA_CAPS_VIDEO_SINGLE_DIRECTION=4,PURPLE_MEDIA_CAPS_AUDIO_VIDEO=5,PURPLE_MEDIA_CAPS_MODIFY_SESSION=6,PURPLE_MEDIA_CAPS_CHANGE_DIRECTION=7};
 typedef enum _XMLNodeType{XMLNODE_TYPE_TAG=0,XMLNODE_TYPE_ATTRIB=1,XMLNODE_TYPE_DATA=2};
-typedef enum PurpleConvChatBuddyFlags{PURPLE_CBFLAGS_NONE=0,PURPLE_CBFLAGS_VOICE=1,PURPLE_CBFLAGS_HALFOP=2,PURPLE_CBFLAGS_OP=4,PURPLE_CBFLAGS_FOUNDER=8,PURPLE_CBFLAGS_TYPING=16,PURPLE_CBFLAGS_AWAY=32};
-typedef enum PurplePresenceContext{PURPLE_PRESENCE_CONTEXT_UNSET=0,PURPLE_PRESENCE_CONTEXT_ACCOUNT=1,PURPLE_PRESENCE_CONTEXT_CONV=2,PURPLE_PRESENCE_CONTEXT_BUDDY=3};
-typedef enum PurpleInputCondition{PURPLE_INPUT_READ=1,PURPLE_INPUT_WRITE=2};
-typedef enum PurpleMediaSessionType{PURPLE_MEDIA_NONE=0,PURPLE_MEDIA_RECV_AUDIO=1,PURPLE_MEDIA_SEND_AUDIO=2,PURPLE_MEDIA_RECV_VIDEO=4,PURPLE_MEDIA_SEND_VIDEO=8,PURPLE_MEDIA_AUDIO=3,PURPLE_MEDIA_VIDEO=12};
+typedef enum PurpleBlistNodeType{PURPLE_BLIST_GROUP_NODE=0,PURPLE_BLIST_CONTACT_NODE=1,PURPLE_BLIST_BUDDY_NODE=2,PURPLE_BLIST_CHAT_NODE=3,PURPLE_BLIST_OTHER_NODE=4};
+typedef enum PurpleInputCondition{PURPLE_INPUT_READ=0,PURPLE_INPUT_WRITE=1};
+typedef enum PurpleMediaSessionType{PURPLE_MEDIA_NONE=0,PURPLE_MEDIA_RECV_AUDIO=1,PURPLE_MEDIA_SEND_AUDIO=2,PURPLE_MEDIA_RECV_VIDEO=3,PURPLE_MEDIA_SEND_VIDEO=4,PURPLE_MEDIA_AUDIO=5,PURPLE_MEDIA_VIDEO=6};
 typedef enum PurpleConnectionState{PURPLE_DISCONNECTED=0,PURPLE_CONNECTED=1,PURPLE_CONNECTING=2};
+typedef enum PurplePluginType{PURPLE_PLUGIN_UNKNOWN=0,PURPLE_PLUGIN_STANDARD=1,PURPLE_PLUGIN_LOADER=2,PURPLE_PLUGIN_PROTOCOL=3};
 struct tm {int tm_sec;int tm_min;int tm_hour;int tm_mday;int tm_mon;int tm_year;int tm_wday;int tm_yday;int tm_isdst;long tm_gmtoff;const char*tm_zone;};
 struct _GByteArray {unsigned char*data;unsigned int len;};
 struct _GData {};
@@ -198,980 +198,976 @@ void(purple_debug_warning)(const char*,const char*,...);
 void(purple_conv_send_confirm)(struct _PurpleConversation*,const char*);
 void(purple_theme_manager_for_each_theme)(void(*func)(struct _PurpleTheme*));
 int(purple_str_has_suffix)(const char*,const char*);
+void(purple_contact_invalidate_priority_buddy)(struct _PurpleContact*);
 const char*(purple_version_check)(unsigned int,unsigned int,unsigned int);
 struct _UPnPMappingAddRemove*(purple_upnp_remove_port_mapping)(unsigned short,const char*,void(*cb)(int,void*),void*);
-void(purple_contact_invalidate_priority_buddy)(struct _PurpleContact*);
-struct _PurpleGroup*(purple_find_group)(const char*);
-void(purple_upnp_cancel_port_mapping)(struct _UPnPMappingAddRemove*);
-int(purple_request_field_bool_get_value)(const struct _PurpleRequestField*);
-struct _PurplePresence*(purple_presence_new)(enum PurplePresenceContext);
 struct _GList*(purple_conv_chat_set_users)(struct _PurpleConvChat*,struct _GList*);
 void(purple_plugin_pref_set_format_type)(struct _PurplePluginPref*,enum PurpleStringFormatType);
-struct _PurpleStatus*(purple_account_get_active_status)(const struct _PurpleAccount*);
+struct _PurpleGroup*(purple_chat_get_group)(struct _PurpleChat*);
+void(purple_upnp_cancel_port_mapping)(struct _UPnPMappingAddRemove*);
+void(purple_request_field_choice_set_value)(struct _PurpleRequestField*,int);
+void(purple_blist_set_ui_data)(void*);
+struct _PurplePresence*(purple_presence_new_for_buddy)(struct _PurpleBuddy*);
+void(purple_conversation_set_name)(struct _PurpleConversation*,const char*);
 struct _PurpleTheme*(purple_theme_manager_load_theme)(const char*,const char*);
 void(purple_theme_manager_unregister_type)(struct _PurpleThemeLoader*);
-void(purple_blist_set_ui_data)(void*);
 void(purple_theme_manager_register_type)(struct _PurpleThemeLoader*);
-void(purple_status_set_attr_int)(struct _PurpleStatus*,const char*,int);
+struct _PurpleStatusType*(purple_status_get_type)(const struct _PurpleStatus*);
 void(purple_theme_manager_add_theme)(struct _PurpleTheme*);
 struct _PurpleTheme*(purple_theme_manager_find_theme)(const char*,const char*);
+struct _GList*(purple_conv_chat_get_ignored)(const struct _PurpleConvChat*);
 void(purple_theme_manager_uninit)();
 unsigned long(purple_theme_manager_get_type)();
 void(purple_stun_init)();
 struct _PurpleStunNatDiscovery*(purple_stun_discover)(void(*cb)(struct _PurpleStunNatDiscovery*));
 unsigned long(purple_stringref_len)(const struct _PurpleStringref*);
+const char*(purple_date_format_long)(const struct tm*);
 int(purple_stringref_cmp)(const struct _PurpleStringref*,const struct _PurpleStringref*);
 const char*(purple_stringref_value)(const struct _PurpleStringref*);
 void(purple_stringref_unref)(struct _PurpleStringref*);
-const char*(purple_date_format_long)(const struct tm*);
-void(purple_marshal_VOID__POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
-struct _PurpleStringref*(purple_stringref_new_noref)(const char*);
 void(purple_value_set_int)(struct PurpleValue*,int);
 void(purple_status_attr_destroy)(struct _PurpleStatusAttr*);
+struct _PurpleCertificate*(purple_certificate_import)(struct _PurpleCertificateScheme*,const char*);
+void(purple_marshal_VOID__POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
+struct _PurpleStringref*(purple_stringref_new_noref)(const char*);
 unsigned long(purple_sound_theme_loader_get_type)();
-void(purple_media_add_remote_candidates)(struct _PurpleMedia*,const char*,const char*,struct _GList*);
+unsigned long(purple_xfer_get_bytes_remaining)(const struct _PurpleXfer*);
+struct _GList*(purple_media_get_active_remote_candidates)(struct _PurpleMedia*,const char*,const char*);
 const char*(purple_theme_loader_get_type_string)(struct _PurpleThemeLoader*);
 unsigned long(purple_theme_loader_get_type)();
-void(purple_sound_theme_set_file)(struct _PurpleSoundTheme*,const char*,const char*);
-unsigned long(purple_xfer_get_bytes_remaining)(const struct _PurpleXfer*);
-void(purple_blist_request_add_buddy)(struct _PurpleAccount*,const char*,const char*,const char*);
-struct _GList*(purple_request_fields_get_required)(const struct PurpleRequestFields*);
 unsigned int(purple_timeout_add_seconds)(unsigned int,int(*function)(void*),void*);
-void(purple_theme_set_image)(struct _PurpleTheme*,const char*);
+void(purple_sound_theme_set_file)(struct _PurpleSoundTheme*,const char*,const char*);
 int(purple_running_kde)();
-char*(purple_theme_get_image_full)(struct _PurpleTheme*);
-const char*(purple_theme_get_image)(struct _PurpleTheme*);
-void(purple_theme_set_dir)(struct _PurpleTheme*,const char*);
-unsigned int(purple_prefs_connect_callback)(void*,const char*,void(*cb)(const char*,enum _PurplePrefType,const void*,void*),void*);
+const char*(purple_url_encode)(const char*);
+void(purple_theme_set_image)(struct _PurpleTheme*,const char*);
 void(purple_marshal_POINTER__POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
 struct _PurpleSrvTxtQueryData*(purple_srv_resolve_account)(struct _PurpleAccount*,const char*,const char*,const char*,void(*cb)(struct _PurpleSrvResponse*,int,void*),void*);
-void(purple_theme_set_author)(struct _PurpleTheme*,const char*);
+char*(purple_theme_get_image_full)(struct _PurpleTheme*);
+const char*(purple_theme_get_image)(struct _PurpleTheme*);
 void(purple_presence_add_status)(struct _PurplePresence*,struct _PurpleStatus*);
 void(purple_plugins_unload_all)();
-int(purple_privacy_permit_add)(struct _PurpleAccount*,const char*,int);
+void(purple_theme_set_dir)(struct _PurpleTheme*,const char*);
 void(purple_account_set_proxy_info)(struct _PurpleAccount*,struct PurpleProxyInfo*);
 void*(purple_notify_userinfo)(struct _PurpleConnection*,const char*,struct _PurpleNotifyUserInfo*,void(*cb)(void*),void*);
-void(purple_media_manager_remove_media)(struct _PurpleMediaManager*,struct _PurpleMedia*);
+unsigned int(purple_prefs_connect_callback)(void*,const char*,void(*cb)(const char*,enum _PurplePrefType,const void*,void*),void*);
 unsigned long(purple_imgstore_get_size)(struct _PurpleStoredImage*);
-char*(purple_util_get_image_checksum)(const void*,unsigned long);
-void(purple_theme_set_name)(struct _PurpleTheme*,const char*);
+void(purple_theme_set_author)(struct _PurpleTheme*,const char*);
 unsigned long(purple_xfer_get_bytes_sent)(const struct _PurpleXfer*);
-unsigned long(purple_theme_get_type)();
-void*(purple_sounds_get_handle)();
+int(purple_media_manager_remove_output_window)(struct _PurpleMediaManager*,unsigned long);
+struct _PurpleLogLogger*(purple_log_logger_get)();
 void(purple_idle_set)(long);
 void(purple_marshal_POINTER__POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
 void(purple_conv_chat_user_set_flags)(struct _PurpleConvChat*,const char*,enum PurpleConvChatBuddyFlags);
-void(purple_buddy_set_protocol_data)(struct _PurpleBuddy*,void*);
-void(purple_sound_init)();
+void(purple_theme_set_name)(struct _PurpleTheme*,const char*);
 char*(purple_strreplace)(const char*,const char*,const char*);
 struct _PurpleRoomlistField*(purple_roomlist_field_new)(enum PurpleRoomlistFieldType,const char*,const char*,int);
 struct _PurpleSrvTxtQueryData*(purple_srv_resolve)(const char*,const char*,const char*,void(*cb)(struct _PurpleSrvResponse*,int,void*),void*);
-struct _PurpleSoundUiOps*(purple_sound_get_ui_ops)();
+unsigned long(purple_theme_get_type)();
 struct _GList*(purple_log_common_lister)(enum PurpleLogType,const char*,struct _PurpleAccount*,const char*,struct _PurpleLogLogger*);
 char*(purple_fd_get_ip)(int);
-void(purple_sound_set_ui_ops)(struct _PurpleSoundUiOps*);
+void*(purple_sounds_get_handle)();
 void(purple_request_field_bool_set_value)(struct _PurpleRequestField*,int);
-void(purple_sound_play_event)(enum _PurpleSoundEventID,const struct _PurpleAccount*);
+enum PurpleMediaCaps(purple_buddy_get_media_caps)(const struct _PurpleBuddy*);
+void(purple_sound_init)();
+struct _PurpleSoundUiOps*(purple_sound_get_ui_ops)();
 void(purple_marshal_VOID__POINTER_POINTER_POINTER_POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
 void(purple_account_set_enabled)(struct _PurpleAccount*,const char*,int);
 void(purple_whiteboard_draw_line)(struct _PurpleWhiteboard*,int,int,int,int,int,int);
+void(purple_sound_set_ui_ops)(struct _PurpleSoundUiOps*);
+void(purple_sound_play_event)(enum _PurpleSoundEventID,const struct _PurpleAccount*);
 void(purple_smileys_init)();
 const char*(purple_smileys_get_storing_dir)();
-void(purple_blist_rename_group)(struct _PurpleGroup*,const char*);
 struct _PurpleSmiley*(purple_smileys_find_by_shortcut)(const char*);
 struct _GList*(purple_smileys_get_all)();
-void(purple_attention_type_set_incoming_desc)(struct _PurpleAttentionType*,const char*);
-const char*(purple_smiley_get_extension)(const struct _PurpleSmiley*);
-const void*(purple_smiley_get_data)(const struct _PurpleSmiley*,unsigned long*);
-struct PurpleValue*(purple_status_get_attr_value)(const struct _PurpleStatus*,const char*);
+void(purple_attention_type_set_icon_name)(struct _PurpleAttentionType*,const char*);
 void(purple_account_set_protocol_id)(struct _PurpleAccount*,const char*);
 struct _PurpleProxyConnectData*(purple_proxy_connect_udp)(void*,struct _PurpleAccount*,const char*,int,void(*connect_cb)(void*,int,const char*),void*);
+const char*(purple_smiley_get_extension)(const struct _PurpleSmiley*);
+const void*(purple_smiley_get_data)(const struct _PurpleSmiley*,unsigned long*);
+int(purple_status_get_attr_int)(const struct _PurpleStatus*,const char*);
 const char*(purple_smiley_get_shortcut)(const struct _PurpleSmiley*);
-enum PurplePounceOption(purple_pounce_get_options)(const struct _PurplePounce*);
-int(purple_request_field_string_is_multiline)(const struct _PurpleRequestField*);
-const struct _PurpleStatusType*(purple_savedstatus_substatus_get_type)(const struct _PurpleSavedStatusSub*);
-struct _PurpleSmiley*(purple_smiley_new_from_file)(const char*,const char*);
-void(purple_xfer_ui_ready)(struct _PurpleXfer*);
+int(purple_certificate_check_subject_name)(struct _PurpleCertificate*,const char*);
 void(purple_xfer_set_filename)(struct _PurpleXfer*,const char*);
+void*(purple_savedstatuses_get_handle)();
+struct _PurpleSmiley*(purple_smiley_new_from_file)(const char*,const char*);
+const void*(purple_xfer_get_thumbnail)(const struct _PurpleXfer*,unsigned long*);
+struct PurpleRequestFieldGroup*(purple_request_field_get_group)(const struct _PurpleRequestField*);
 void(purple_savedstatuses_uninit)();
 void(purple_savedstatuses_init)();
-void*(purple_savedstatuses_get_handle)();
+void(purple_smiley_delete)(struct _PurpleSmiley*);
 void(purple_savedstatus_activate_for_account)(const struct _PurpleSavedStatus*,struct _PurpleAccount*);
 void(purple_savedstatus_activate)(struct _PurpleSavedStatus*);
 const char*(purple_savedstatus_substatus_get_message)(const struct _PurpleSavedStatusSub*);
-void(purple_smiley_delete)(struct _PurpleSmiley*);
+void(purple_signal_get_values)(void*,const char*,struct PurpleValue**,int*,struct PurpleValue***);
+const struct _PurpleStatusType*(purple_savedstatus_substatus_get_type)(const struct _PurpleSavedStatusSub*);
 struct _PurpleSavedStatusSub*(purple_savedstatus_get_substatus)(const struct _PurpleSavedStatus*,const struct _PurpleAccount*);
 int(purple_savedstatus_has_substatuses)(const struct _PurpleSavedStatus*);
-long(purple_savedstatus_get_creation_time)(const struct _PurpleSavedStatus*);
-void(purple_signal_get_values)(void*,const char*,struct PurpleValue**,int*,struct PurpleValue***);
-const char*(purple_savedstatus_get_message)(const struct _PurpleSavedStatus*);
-enum PurpleStatusPrimitive(purple_savedstatus_get_type)(const struct _PurpleSavedStatus*);
-const char*(purple_savedstatus_get_title)(const struct _PurpleSavedStatus*);
 void(purple_marshal_INT__POINTER_POINTER_POINTER_POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
 unsigned long(purple_circ_buffer_get_max_read)(const struct _PurpleCircBuffer*);
 void(purple_cipher_context_set_iv)(struct _PurpleCipherContext*,unsigned char*,unsigned long);
-unsigned short(purple_network_get_port_from_fd)(int);
+long(purple_savedstatus_get_creation_time)(const struct _PurpleSavedStatus*);
+const char*(purple_savedstatus_get_message)(const struct _PurpleSavedStatus*);
+enum PurpleStatusPrimitive(purple_savedstatus_get_type)(const struct _PurpleSavedStatus*);
+const char*(purple_savedstatus_get_title)(const struct _PurpleSavedStatus*);
+void(purple_network_set_stun_server)(const char*);
+struct _PurpleStoredImage*(purple_imgstore_unref)(struct _PurpleStoredImage*);
 struct _PurpleSavedStatus*(purple_savedstatus_find_transient_by_type_and_message)(enum PurpleStatusPrimitive,const char*);
 struct _PurpleSavedStatus*(purple_savedstatus_find_by_creation_time)(long);
-struct _PurpleConvChatBuddy*(purple_conv_chat_cb_find)(struct _PurpleConvChat*,const char*);
+void(purple_blist_node_set_string)(struct _PurpleBlistNode*,const char*,const char*);
 struct _PurpleSavedStatus*(purple_savedstatus_get_startup)();
-struct _PurpleStoredImage*(purple_imgstore_unref)(struct _PurpleStoredImage*);
-void(purple_savedstatus_set_idleaway)(int);
-enum PurpleType(purple_value_get_type)(const struct PurpleValue*);
-struct _PurpleSavedStatus*(purple_savedstatus_get_default)();
 void(purple_marshal_VOID__INT)(void(*cb)(),__builtin_va_list,void*,void**);
+void(purple_savedstatus_set_idleaway)(int);
+void(purple_account_user_split_set_reverse)(struct PurpleAccountUserSplit*,int);
+struct _PurpleSavedStatus*(purple_savedstatus_get_default)();
 struct _PurpleSavedStatus*(purple_savedstatus_get_current)();
 struct _GList*(purple_savedstatuses_get_popular)(unsigned int);
-void(purple_connection_error)(struct _PurpleConnection*,const char*);
+int(purple_connection_error_is_fatal)(enum PurpleConnectionError);
 void(purple_savedstatus_delete_by_status)(struct _PurpleSavedStatus*);
+int(purple_markup_find_tag)(const char*,const char*,const char**,const char**,struct _GData**);
 int(purple_savedstatus_delete)(const char*);
 void(purple_savedstatus_unset_substatus)(struct _PurpleSavedStatus*,const struct _PurpleAccount*);
-void(purple_request_field_account_set_default_value)(struct _PurpleRequestField*,struct _PurpleAccount*);
-void(purple_savedstatus_set_message)(struct _PurpleSavedStatus*,const char*);
-int(purple_markup_find_tag)(const char*,const char*,const char**,const char**,struct _GData**);
-void(purple_savedstatus_set_type)(struct _PurpleSavedStatus*,enum PurpleStatusPrimitive);
 void(purple_plugin_ipc_unregister)(struct _PurplePlugin*,const char*);
-struct PurpleRequestUiOps*(purple_request_get_ui_ops)();
+struct _PurpleAccount*(purple_request_field_account_get_default_value)(const struct _PurpleRequestField*);
+void(purple_savedstatus_set_message)(struct _PurpleSavedStatus*,const char*);
 void(purple_conversation_autoset_title)(struct _PurpleConversation*);
-void(purple_request_field_list_clear_selected)(struct _PurpleRequestField*);
+void(purple_savedstatus_set_type)(struct _PurpleSavedStatus*,enum PurpleStatusPrimitive);
 void(purple_cipher_context_append)(struct _PurpleCipherContext*,const unsigned char*,unsigned long);
-void*(purple_request_folder)(void*,const char*,const char*,void(*ok_cb)(),void(*cancel_cb)(),struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*);
+enum PurpleMediaSessionType(purple_media_get_session_type)(struct _PurpleMedia*,const char*);
 char*(purple_markup_strip_html)(const char*);
+struct PurpleRequestUiOps*(purple_request_get_ui_ops)();
+struct _GList*(purple_request_field_list_get_items)(const struct _PurpleRequestField*);
+void*(purple_request_folder)(void*,const char*,const char*,void(*ok_cb)(),void(*cancel_cb)(),struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*);
 void*(purple_request_file)(void*,const char*,const char*,int,void(*ok_cb)(),void(*cancel_cb)(),struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*);
 void(purple_request_close_with_handle)(void*);
 void(purple_request_close)(enum PurpleRequestType,void*);
 void*(purple_request_fields)(void*,const char*,const char*,const char*,struct PurpleRequestFields*,const char*,void(*ok_cb)(),const char*,void(*cancel_cb)(),struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*);
+void(purple_pounce_set_save)(struct _PurplePounce*,int);
 void*(purple_request_action_with_icon_varg)(void*,const char*,const char*,const char*,int,struct _PurpleAccount*,const char*,struct _PurpleConversation*,const void*,unsigned long,void*,unsigned long,__builtin_va_list);
 void*(purple_request_action_with_icon)(void*,const char*,const char*,const char*,int,struct _PurpleAccount*,const char*,struct _PurpleConversation*,const void*,unsigned long,void*,unsigned long,...);
 void*(purple_request_action_varg)(void*,const char*,const char*,const char*,int,struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*,unsigned long,__builtin_va_list);
 void*(purple_request_action)(void*,const char*,const char*,const char*,int,struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*,unsigned long,...);
-void(purple_pounce_set_save)(struct _PurplePounce*,int);
 void*(purple_request_choice_varg)(void*,const char*,const char*,const char*,int,const char*,void(*ok_cb)(),const char*,void(*cancel_cb)(),struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*,__builtin_va_list);
 void*(purple_request_choice)(void*,const char*,const char*,const char*,int,const char*,void(*ok_cb)(),const char*,void(*cancel_cb)(),struct _PurpleAccount*,const char*,struct _PurpleConversation*,void*,...);
 int(*purple_request_field_account_get_filter(const struct _PurpleRequestField*))(struct _PurpleAccount*);
-int(purple_request_field_account_get_show_all)(const struct _PurpleRequestField*);
-struct _PurpleAccount*(purple_request_field_account_get_value)(const struct _PurpleRequestField*);
-struct _PurpleAccount*(purple_request_field_account_get_default_value)(const struct _PurpleRequestField*);
-void(purple_request_field_account_set_filter)(struct _PurpleRequestField*,int(*filter_func)(struct _PurpleAccount*));
 void(purple_menu_action_free)(struct _PurpleMenuAction*);
 unsigned long(purple_ssl_write)(struct _PurpleSslConnection*,const void*,unsigned long);
+int(purple_request_field_account_get_show_all)(const struct _PurpleRequestField*);
 long(purple_str_to_time)(const char*,int,struct tm*,long*,const char**);
-void(purple_request_field_account_set_value)(struct _PurpleRequestField*,struct _PurpleAccount*);
+struct _PurpleAccount*(purple_request_field_account_get_value)(const struct _PurpleRequestField*);
 char*(purple_media_codec_to_string)(const struct _PurpleMediaCodec*);
 void(purple_savedstatus_set_substatus)(struct _PurpleSavedStatus*,const struct _PurpleAccount*,const struct _PurpleStatusType*,const char*);
+void(purple_request_field_account_set_filter)(struct _PurpleRequestField*,int(*filter_func)(struct _PurpleAccount*));
+void(purple_request_field_account_set_value)(struct _PurpleRequestField*,struct _PurpleAccount*);
+void(purple_request_field_set_visible)(struct _PurpleRequestField*,int);
+void(purple_request_field_account_set_default_value)(struct _PurpleRequestField*,struct _PurpleAccount*);
 unsigned int(purple_request_field_image_get_scale_y)(struct _PurpleRequestField*);
 unsigned int(purple_request_field_image_get_scale_x)(struct _PurpleRequestField*);
-void(purple_request_field_set_visible)(struct _PurpleRequestField*,int);
+struct _PurpleRoomlistUiOps*(purple_roomlist_get_ui_ops)();
 const char*(purple_request_field_image_get_buffer)(struct _PurpleRequestField*);
 void(purple_request_field_image_set_scale)(struct _PurpleRequestField*,unsigned int,unsigned int);
-struct _PurpleRequestField*(purple_request_field_image_new)(const char*,const char*,const char*,unsigned long);
-struct _PurpleRequestField*(purple_request_field_label_new)(const char*,const char*);
-struct _GList*(purple_request_field_list_get_icons)(const struct _PurpleRequestField*);
-struct _GList*(purple_request_field_list_get_items)(const struct _PurpleRequestField*);
 struct _GList*(purple_conversation_get_message_history)(struct _PurpleConversation*);
 void(purple_account_option_destroy)(struct PurpleAccountOption*);
 void(purple_whiteboard_draw_point)(struct _PurpleWhiteboard*,int,int,int,int);
-struct _GList*(purple_request_field_list_get_selected)(const struct _PurpleRequestField*);
-const char*(purple_connection_get_password)(const struct _PurpleConnection*);
-void(purple_request_field_list_set_selected)(struct _PurpleRequestField*,struct _GList*);
+struct _PurpleRequestField*(purple_request_field_image_new)(const char*,const char*,const char*,unsigned long);
+struct _PurpleRequestField*(purple_request_field_label_new)(const char*,const char*);
+struct _GList*(purple_request_field_list_get_icons)(const struct _PurpleRequestField*);
 void(purple_request_set_ui_ops)(struct PurpleRequestUiOps*);
-void(purple_request_field_list_add_selected)(struct _PurpleRequestField*,const char*);
+struct _GList*(purple_request_field_list_get_selected)(const struct _PurpleRequestField*);
+void(purple_connection_update_progress)(struct _PurpleConnection*,const char*,unsigned long,unsigned long);
 void(purple_marshal_VOID__POINTER_POINTER_UINT_UINT)(void(*cb)(),__builtin_va_list,void*,void**);
 void(purple_notify_searchresults_new_rows)(struct _PurpleConnection*,struct PurpleNotifySearchResults*,void*);
-void(purple_request_field_list_add)(struct _PurpleRequestField*,const char*,void*);
-int(purple_account_get_ui_bool)(const struct _PurpleAccount*,const char*,const char*,int);
+void(purple_request_field_list_set_selected)(struct _PurpleRequestField*,struct _GList*);
+void(purple_request_field_list_clear_selected)(struct _PurpleRequestField*);
 const char*(purple_conv_chat_get_ignored_user)(const struct _PurpleConvChat*,const char*);
 void(purple_plugin_pref_frame_add)(struct _PurplePluginPrefFrame*,struct _PurplePluginPref*);
+void(purple_request_field_list_add_selected)(struct _PurpleRequestField*,const char*);
+void(purple_request_field_list_add)(struct _PurpleRequestField*,const char*,void*);
+void(purple_account_add_buddy)(struct _PurpleAccount*,struct _PurpleBuddy*);
 int(purple_request_field_list_get_multi_select)(const struct _PurpleRequestField*);
-void*(purple_log_get_handle)();
-struct _PurpleRequestField*(purple_request_field_list_new)(const char*,const char*);
-unsigned long(purple_signal_connect)(void*,const char*,void*,void(*func)(),void*);
-int(purple_request_field_choice_get_value)(const struct _PurpleRequestField*);
-int(purple_request_field_choice_get_default_value)(const struct _PurpleRequestField*);
 struct _PurpleDnsQueryData*(purple_dnsquery_a_account)(struct _PurpleAccount*,const char*,int,void(*callback)(struct _GSList*,void*,const char*),void*);
-void(purple_request_field_choice_set_value)(struct _PurpleRequestField*,int);
+struct _PurpleRequestField*(purple_request_field_list_new)(const char*,const char*);
 void(purple_value_set_string)(struct PurpleValue*,const char*);
 int(purple_log_common_total_sizer)(enum PurpleLogType,const char*,struct _PurpleAccount*,const char*);
 int(purple_buddy_icons_node_has_custom_icon)(struct _PurpleBlistNode*);
 const char*(purple_primitive_get_id_from_type)(enum PurpleStatusPrimitive);
-void(purple_conv_im_update_typing)(struct _PurpleConvIm*);
+unsigned long(purple_signal_connect)(void*,const char*,void*,void(*func)(),void*);
+int(purple_request_field_choice_get_value)(const struct _PurpleRequestField*);
 void(purple_blist_remove_account)(struct _PurpleAccount*);
-struct _PurpleRequestField*(purple_request_field_choice_new)(const char*,const char*,int);
+int(purple_request_field_choice_get_default_value)(const struct _PurpleRequestField*);
 char*(purple_markup_slice)(const char*,unsigned int,unsigned int);
 const char*(purple_upnp_get_public_ip)();
-int(purple_request_field_bool_get_default_value)(const struct _PurpleRequestField*);
-struct _GList*(purple_media_codec_get_optional_parameters)(struct _PurpleMediaCodec*);
+int(purple_conv_present_error)(const char*,struct _PurpleAccount*,const char*);
+struct _PurpleUtilFetchUrlData*(purple_util_fetch_url_request_len_with_account)(struct _PurpleAccount*,const char*,int,const char*,int,const char*,int,signed long,void(*callback)(struct _PurpleUtilFetchUrlData*,void*,const char*,unsigned long,const char*),void*);
+struct _PurpleRequestField*(purple_request_field_choice_new)(const char*,const char*,int);
 void*(purple_accounts_get_handle)();
+int(purple_request_field_bool_get_value)(const struct _PurpleRequestField*);
+int(purple_request_field_bool_get_default_value)(const struct _PurpleRequestField*);
+void(purple_media_codec_remove_optional_parameter)(struct _PurpleMediaCodec*,struct _PurpleKeyValuePair*);
 int(purple_request_field_int_get_value)(const struct _PurpleRequestField*);
 int(purple_request_field_int_get_default_value)(const struct _PurpleRequestField*);
 void(purple_request_field_int_set_value)(struct _PurpleRequestField*,int);
-struct _PurpleRequestField*(purple_request_field_int_new)(const char*,const char*,int);
-int(purple_ipv6_address_is_valid)(const char*);
-int(purple_request_field_string_is_masked)(const struct _PurpleRequestField*);
 int(purple_smiley_set_shortcut)(struct _PurpleSmiley*,const char*);
-const char*(purple_request_field_string_get_value)(const struct _PurpleRequestField*);
+struct _PurpleRequestField*(purple_request_field_int_new)(const char*,const char*,int);
 int(purple_blist_get_group_online_count)(struct _PurpleGroup*);
 void(purple_blist_alias_chat)(struct _PurpleChat*,const char*);
+int(purple_request_field_string_is_masked)(const struct _PurpleRequestField*);
+int(purple_request_field_string_is_multiline)(const struct _PurpleRequestField*);
+const char*(purple_request_field_string_get_value)(const struct _PurpleRequestField*);
+int(purple_socket_speaks_ipv4)(int);
+char*(purple_mime_decode_field)(const char*);
 const char*(purple_request_field_string_get_default_value)(const struct _PurpleRequestField*);
 void(purple_request_field_string_set_editable)(struct _PurpleRequestField*,int);
 void(purple_request_field_string_set_masked)(struct _PurpleRequestField*,int);
 void(purple_request_field_string_set_value)(struct _PurpleRequestField*,const char*);
-int(purple_socket_speaks_ipv4)(int);
-char*(purple_mime_decode_field)(const char*);
 struct _PurpleRequestField*(purple_request_field_string_new)(const char*,const char*,const char*,int);
 void(purple_request_field_set_ui_data)(struct _PurpleRequestField*,void*);
 void*(purple_request_field_get_ui_data)(const struct _PurpleRequestField*);
-const char*(purple_request_field_get_type_hint)(const struct _PurpleRequestField*);
-int(purple_log_set_compare)(const void*,const void*);
-const char*(purple_request_field_get_label)(const struct _PurpleRequestField*);
-void(purple_notify_user_info_add_pair)(struct _PurpleNotifyUserInfo*,const char*,const char*);
 struct _PurpleStatusType*(purple_status_type_new_full)(enum PurpleStatusPrimitive,const char*,const char*,int,int,int);
-struct PurpleRequestFieldGroup*(purple_request_field_get_group)(const struct _PurpleRequestField*);
-enum PurpleRequestFieldType(purple_request_field_get_type)(const struct _PurpleRequestField*);
-void(purple_request_field_set_type_hint)(struct _PurpleRequestField*,const char*);
+const char*(purple_request_field_get_type_hint)(const struct _PurpleRequestField*);
+const char*(purple_request_field_get_label)(const struct _PurpleRequestField*);
 unsigned long(purple_smiley_get_type)();
-struct _PurpleRequestField*(purple_request_field_new)(const char*,const char*,enum PurpleRequestFieldType);
+enum PurpleRequestFieldType(purple_request_field_get_type)(const struct _PurpleRequestField*);
+struct _PurpleGroup*(purple_group_new)(const char*);
 void(purple_account_destroy)(struct _PurpleAccount*);
-void(purple_account_set_ui_int)(struct _PurpleAccount*,const char*,const char*,int);
-const char*(purple_request_field_group_get_title)(const struct PurpleRequestFieldGroup*);
-void(purple_request_field_group_destroy)(struct PurpleRequestFieldGroup*);
+void(purple_request_field_set_type_hint)(struct _PurpleRequestField*,const char*);
+struct _PurpleStoredImage*(purple_buddy_icons_set_account_icon)(struct _PurpleAccount*,unsigned char*,unsigned long);
+struct _PurpleRequestField*(purple_request_field_new)(const char*,const char*,enum PurpleRequestFieldType);
 unsigned int(purple_media_candidate_get_component_id)(struct _PurpleMediaCandidate*);
-struct PurpleRequestFieldGroup*(purple_request_field_group_new)(const char*);
+int(purple_account_is_connecting)(const struct _PurpleAccount*);
 int(purple_log_compare)(const void*,const void*);
 void(purple_marshal_POINTER__POINTER_INT64)(void(*cb)(),__builtin_va_list,void*,void**);
-struct _PurpleAccount*(purple_request_fields_get_account)(const struct PurpleRequestFields*,const char*);
+const char*(purple_request_field_group_get_title)(const struct PurpleRequestFieldGroup*);
 void(purple_prefs_add_string_list)(const char*,struct _GList*);
+void(purple_request_field_group_destroy)(struct PurpleRequestFieldGroup*);
+struct PurpleRequestFieldGroup*(purple_request_field_group_new)(const char*);
+struct _PurpleAccount*(purple_request_fields_get_account)(const struct PurpleRequestFields*,const char*);
 int(purple_request_fields_get_choice)(const struct PurpleRequestFields*,const char*);
-int(purple_request_fields_get_integer)(const struct PurpleRequestFields*,const char*);
-void(purple_util_fetch_url_cancel)(struct _PurpleUtilFetchUrlData*);
 struct _PurpleBuddy*(purple_find_buddy)(struct _PurpleAccount*,const char*);
-int(purple_request_fields_all_required_filled)(const struct PurpleRequestFields*);
-int(purple_request_fields_is_field_required)(const struct PurpleRequestFields*,const char*);
+int(purple_request_fields_get_integer)(const struct PurpleRequestFields*,const char*);
 const char*(purple_sound_theme_get_file)(struct _PurpleSoundTheme*,const char*);
-int(purple_request_fields_exists)(const struct PurpleRequestFields*,const char*);
+int(purple_request_fields_all_required_filled)(const struct PurpleRequestFields*);
 void(purple_marshal_BOOLEAN__INT_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
+int(purple_request_fields_is_field_required)(const struct PurpleRequestFields*,const char*);
+struct _GList*(purple_request_fields_get_required)(const struct PurpleRequestFields*);
+int(purple_request_fields_exists)(const struct PurpleRequestFields*,const char*);
+void(purple_contact_set_alias)(struct _PurpleContact*,const char*);
+struct _PurplePluginPref*(purple_plugin_pref_new_with_label)(const char*);
+int(purple_account_is_connected)(const struct _PurpleAccount*);
 void(purple_request_fields_destroy)(struct PurpleRequestFields*);
 struct PurpleRequestFields*(purple_request_fields_new)();
-void(purple_pounces_uninit)();
-struct _PurplePluginPref*(purple_plugin_pref_new_with_label)(const char*);
-void(purple_pounces_init)();
-int(purple_account_is_connected)(const struct _PurpleAccount*);
-const char*(purple_date_format_short)(const struct tm*);
-struct _GList*(purple_pounces_get_all_for_ui)(const char*);
 const char*(purple_util_get_image_extension)(const void*,unsigned long);
+void(purple_pounces_uninit)();
+void(purple_pounces_init)();
+void(purple_conv_chat_set_nick)(struct _PurpleConvChat*,const char*);
+struct _GList*(purple_pounces_get_all_for_ui)(const char*);
 struct _GList*(purple_pounces_get_all)();
 void(purple_pounces_unregister_handler)(const char*);
-void(purple_conv_chat_set_nick)(struct _PurpleConvChat*,const char*);
-struct _PurplePounce*(purple_find_pounce)(const struct _PurpleAccount*,const char*,enum PurplePounceEvent);
-void*(purple_pounce_get_data)(const struct _PurplePounce*);
-const char*(purple_pounce_action_get_attribute)(const struct _PurplePounce*,const char*,const char*);
+void*(purple_buddy_get_protocol_data)(const struct _PurpleBuddy*);
 void(purple_xfers_uninit)();
-char*(purple_certificate_get_unique_id)(struct _PurpleCertificate*);
+struct _PurplePounce*(purple_find_pounce)(const struct _PurpleAccount*,const char*,enum PurplePounceEvent);
 unsigned int(purple_cmd_register)(const char*,const char*,enum _PurpleCmdPriority,enum _PurpleCmdFlag,const char*,enum _PurpleCmdRet(*func)(struct _PurpleConversation*,const char*,char**,char**,void*),const char*,void*);
 void(purple_signal_unregister)(void*,const char*);
-int(purple_pounce_get_save)(const struct _PurplePounce*);
+int(purple_cipher_context_decrypt)(struct _PurpleCipherContext*,const unsigned char,unsigned long,unsigned char,unsigned long*);
 void(purple_attention_type_set_unlocalized_name)(struct _PurpleAttentionType*,const char*);
 void(purple_cmds_init)();
-const char*(purple_pounce_get_pouncee)(const struct _PurplePounce*);
+void*(purple_pounce_get_data)(const struct _PurplePounce*);
 void(purple_certificate_add_ca_search_path)(const char*);
 int(purple_media_is_initiator)(struct _PurpleMedia*,const char*,const char*);
-struct _PurpleAccount*(purple_pounce_get_pouncer)(const struct _PurplePounce*);
+const char*(purple_pounce_action_get_attribute)(const struct _PurplePounce*,const char*,const char*);
 void(purple_smiley_set_data)(struct _PurpleSmiley*,unsigned char*,unsigned long);
+int(purple_pounce_get_save)(const struct _PurplePounce*);
+const char*(purple_pounce_get_pouncee)(const struct _PurplePounce*);
+struct _PurpleAccount*(purple_pounce_get_pouncer)(const struct _PurplePounce*);
+enum PurplePounceOption(purple_pounce_get_options)(const struct _PurplePounce*);
 enum PurplePounceEvent(purple_pounce_get_events)(const struct _PurplePounce*);
+void(purple_conv_chat_clear_users)(struct _PurpleConvChat*);
 void(purple_pounce_action_set_attribute)(struct _PurplePounce*,const char*,const char*,const char*);
 void(purple_pounce_action_set_enabled)(struct _PurplePounce*,const char*,int);
-void(purple_pounce_action_register)(struct _PurplePounce*,const char*);
-void(purple_conv_chat_clear_users)(struct _PurpleConvChat*);
-void(purple_pounce_set_pouncee)(struct _PurplePounce*,const char*);
-void(purple_pounce_set_pouncer)(struct _PurplePounce*,struct _PurpleAccount*);
 int(purple_xfer_is_completed)(const struct _PurpleXfer*);
 void(purple_imgstore_uninit)();
+void(purple_pounce_action_register)(struct _PurplePounce*,const char*);
+void(purple_pounce_set_pouncee)(struct _PurplePounce*,const char*);
+void(purple_pounce_set_pouncer)(struct _PurplePounce*,struct _PurpleAccount*);
 void(purple_pounce_set_events)(struct _PurplePounce*,enum PurplePounceEvent);
 void(purple_pounce_destroy_all_by_buddy)(struct _PurpleBuddy*);
 void(purple_pounce_destroy_all_by_account)(struct _PurpleAccount*);
 void(purple_pounce_destroy)(struct _PurplePounce*);
 struct _PurplePounce*(purple_pounce_new)(const char*,struct _PurpleAccount*,const char*,enum PurplePounceEvent,enum PurplePounceOption);
 char*(purple_ntlm_gen_type3)(const char*,const char*,const char*,const char*,const unsigned char*,unsigned int*);
-struct _PurplePresence*(purple_presence_new_for_conv)(struct _PurpleConversation*);
+int(purple_account_get_silence_suppression)(const struct _PurpleAccount*);
+void(purple_marshal_VOID__POINTER_UINT)(void(*cb)(),__builtin_va_list,void*,void**);
 char*(purple_ntlm_gen_type1)(const char*,const char*);
+void(purple_account_set_username)(struct _PurpleAccount*,const char*);
 void(purple_network_uninit)();
 void(purple_network_init)();
-int(purple_account_get_silence_suppression)(const struct _PurpleAccount*);
 int(purple_network_convert_idn_to_ascii)(const char*,char**);
 void(purple_network_remove_port_mapping)(int);
-void(purple_account_set_username)(struct _PurpleAccount*,const char*);
+void(purple_notify_searchresults_button_add_labeled)(struct PurpleNotifySearchResults*,const char*,void(*cb)(struct _PurpleConnection*,struct _GList*,void*));
 const char*(purple_network_get_turn_ip)();
 void(purple_network_set_turn_server)(const char*);
-const char*(purple_network_get_stun_ip)();
-void(purple_network_set_stun_server)(const char*);
-void(purple_notify_searchresults_button_add_labeled)(struct PurpleNotifySearchResults*,const char*,void(*cb)(struct _PurpleConnection*,struct _GList*,void*));
-void*(purple_network_get_handle)();
 struct _PurpleStatus*(purple_presence_get_active_status)(const struct _PurplePresence*);
-int(purple_network_is_available)();
+const char*(purple_network_get_stun_ip)();
 int(purple_savedstatus_is_transient)(const struct _PurpleSavedStatus*);
-void(purple_network_listen_cancel)(struct _PurpleNetworkListenData*);
+void*(purple_network_get_handle)();
 int(purple_core_ensure_single_instance)();
-int(purple_certificate_signed_by)(struct _PurpleCertificate*,struct _PurpleCertificate*);
-struct _PurpleConversation*(purple_find_chat)(const struct _PurpleConnection*,int);
+unsigned short(purple_network_get_port_from_fd)(int);
+int(purple_network_is_available)();
 void(purple_network_force_online)();
-struct _PurpleNetworkListenData*(purple_network_listen)(unsigned short,int,void(*cb)(int,void*),void*);
+void(purple_network_listen_cancel)(struct _PurpleNetworkListenData*);
 struct _PurpleStringref*(purple_stringref_ref)(struct _PurpleStringref*);
-const char*(purple_network_get_my_ip)(int);
 struct PurpleProxyInfo*(purple_global_proxy_get_info)();
+void(purple_blist_set_visible)(int);
+struct _PurpleNetworkListenData*(purple_network_listen)(unsigned short,int,void(*cb)(int,void*),void*);
+const char*(purple_network_get_my_ip)(int);
 struct _GList*(purple_network_get_all_local_system_ips)();
 const char*(purple_network_get_local_system_ip)(int);
 void(purple_log_uninit)();
-int(purple_pmp_create_map)(enum PurplePmpType,unsigned short,unsigned short,int);
 struct _PurpleStoredImage*(purple_buddy_icons_node_find_custom_icon)(struct _PurpleBlistNode*);
 void(purple_conversation_write)(struct _PurpleConversation*,const char*,const char*,enum PurpleMessageFlags,long);
 void(purple_xfer_error)(enum PurpleXferType,struct _PurpleAccount*,const char*,const char*);
-char*(purple_pmp_get_public_ip)();
-void(purple_pmp_init)();
-void(purple_mime_part_set_data)(struct _PurpleMimePart*,const char*);
-unsigned long(purple_mime_part_get_length)(struct _PurpleMimePart*);
+int(purple_pmp_create_map)(enum PurplePmpType,unsigned short,unsigned short,int);
 void(purple_xfer_add)(struct _PurpleXfer*);
 void(purple_whiteboard_set_prpl_ops)(struct _PurpleWhiteboard*,struct _PurpleWhiteboardPrplOps*);
+char*(purple_pmp_get_public_ip)();
 int(purple_certificate_unregister_verifier)(struct _PurpleCertificateVerifier*);
+void(purple_pmp_init)();
 void(purple_account_add_buddies)(struct _PurpleAccount*,struct _GList*);
 int(purple_privacy_deny_add)(struct _PurpleAccount*,const char*,int);
+void(purple_mime_part_set_data)(struct _PurpleMimePart*,const char*);
+unsigned long(purple_mime_part_get_length)(struct _PurpleMimePart*);
+char*(purple_sound_theme_get_file_full)(struct _PurpleSoundTheme*,const char*);
 void(purple_mime_part_set_field)(struct _PurpleMimePart*,const char*,const char*);
 const char*(purple_mime_part_get_field)(struct _PurpleMimePart*,const char*);
-char*(purple_sound_theme_get_file_full)(struct _PurpleSoundTheme*,const char*);
+int(purple_blist_node_get_bool)(struct _PurpleBlistNode*,const char*);
 struct _PurpleMimePart*(purple_mime_part_new)(struct _PurpleMimeDocument*);
+void(purple_certificate_uninit)();
 struct _GList*(purple_mime_document_get_parts)(struct _PurpleMimeDocument*);
 void(purple_mime_document_set_field)(struct _PurpleMimeDocument*,const char*,const char*);
 const char*(purple_mime_document_get_field)(struct _PurpleMimeDocument*,const char*);
 struct _GList*(purple_mime_document_get_fields)(struct _PurpleMimeDocument*);
-void(purple_certificate_uninit)();
-struct _PurpleMimeDocument*(purple_mime_document_parsen)(const char*,unsigned long);
-void(purple_idle_uninit)();
-void(purple_mime_document_free)(struct _PurpleMimeDocument*);
 const char*(purple_imgstore_get_extension)(struct _PurpleStoredImage*);
+struct _PurpleMimeDocument*(purple_mime_document_parsen)(const char*,unsigned long);
+struct _PurpleMedia*(purple_media_manager_create_media)(struct _PurpleMediaManager*,struct _PurpleAccount*,const char*,const char*,int);
+void(purple_mime_document_free)(struct _PurpleMimeDocument*);
 struct _PurpleMimeDocument*(purple_mime_document_new)();
 unsigned long(purple_media_manager_get_backend_type)(struct _PurpleMediaManager*);
 void(purple_media_manager_set_backend_type)(struct _PurpleMediaManager*,unsigned long);
 enum PurpleMediaCaps(purple_media_manager_get_ui_caps)(struct _PurpleMediaManager*);
 void(purple_media_manager_set_ui_caps)(struct _PurpleMediaManager*,enum PurpleMediaCaps);
 void(purple_media_manager_remove_output_windows)(struct _PurpleMediaManager*,struct _PurpleMedia*,const char*,const char*);
-int(purple_media_manager_remove_output_window)(struct _PurpleMediaManager*,unsigned long);
-int(purple_media_manager_create_output_window)(struct _PurpleMediaManager*,struct _PurpleMedia*,const char*,const char*);
 void(purple_theme_set_description)(struct _PurpleTheme*,const char*);
+void(purple_prpl_got_user_status_deactive)(struct _PurpleAccount*,const char*,const char*);
+int(purple_media_manager_create_output_window)(struct _PurpleMediaManager*,struct _PurpleMedia*,const char*,const char*);
+void(purple_plugin_pref_frame_destroy)(struct _PurplePluginPrefFrame*);
+void(purple_media_manager_remove_media)(struct _PurpleMediaManager*,struct _PurpleMedia*);
 struct PurpleValue*(purple_value_dup)(const struct PurpleValue*);
 struct _GList*(purple_media_manager_get_media)(struct _PurpleMediaManager*);
-void(purple_plugin_pref_frame_destroy)(struct _PurplePluginPrefFrame*);
-struct _PurpleMedia*(purple_media_manager_create_media)(struct _PurpleMediaManager*,struct _PurpleAccount*,const char*,const char*,int);
+struct _PurpleMimeDocument*(purple_mime_document_parse)(const char*);
 struct _PurpleMediaManager*(purple_media_manager_get)();
 unsigned long(purple_media_manager_get_type)();
-struct _PurpleMimeDocument*(purple_mime_document_parse)(const char*);
+void(purple_idle_uninit)();
 struct PurpleIdleUiOps*(purple_idle_get_ui_ops)();
-int(purple_ipv4_address_is_valid)(const char*);
-struct _GList*(purple_media_get_codecs)(struct _PurpleMedia*,const char*);
+struct _GList*(purple_uri_list_extract_uris)(const char*);
+struct _GList*(purple_media_get_active_local_candidates)(struct _PurpleMedia*,const char*,const char*);
 char*(purple_srv_txt_query_get_query)(struct _PurpleSrvTxtQueryData*);
 struct PurpleSrvTxtQueryUiOps*(purple_srv_txt_query_get_ui_ops)();
 void(purple_srv_txt_query_set_ui_ops)(struct PurpleSrvTxtQueryUiOps*);
 void(purple_srv_txt_query_destroy)(struct _PurpleSrvTxtQueryData*);
-void(purple_conversation_close_logs)(struct _PurpleConversation*);
+void(purple_conversation_set_data)(struct _PurpleConversation*,const char*,void*);
 void(purple_txt_cancel)(struct _PurpleSrvTxtQueryData*);
 struct _PurpleSrvTxtQueryData*(purple_txt_resolve)(const char*,const char*,void(*cb)(struct _GList*,void*),void*);
 struct _PurpleSrvTxtQueryData*(purple_txt_resolve_account)(struct _PurpleAccount*,const char*,const char*,void(*cb)(struct _GList*,void*),void*);
 void(purple_srv_cancel)(struct _PurpleSrvTxtQueryData*);
-void(purple_dnsquery_uninit)();
-void(purple_dnsquery_init)();
-unsigned short(purple_dnsquery_get_port)(struct _PurpleDnsQueryData*);
 void(purple_notify_user_info_add_section_header)(struct _PurpleNotifyUserInfo*,const char*);
 struct _PurpleLog*(purple_log_new)(enum PurpleLogType,const char*,struct _PurpleAccount*,struct _PurpleConversation*,long,const struct tm*);
 void(purple_plugin_pref_set_bounds)(struct _PurplePluginPref*,int,int);
+void(purple_dnsquery_uninit)();
+void(purple_dnsquery_init)();
+struct _PurpleRoomlist*(purple_roomlist_get_list)(struct _PurpleConnection*);
+unsigned short(purple_dnsquery_get_port)(struct _PurpleDnsQueryData*);
 char*(purple_dnsquery_get_host)(struct _PurpleDnsQueryData*);
 struct PurpleDnsQueryUiOps*(purple_dnsquery_get_ui_ops)();
-struct _PurpleRoomlist*(purple_roomlist_get_list)(struct _PurpleConnection*);
 void(purple_dnsquery_set_ui_ops)(struct PurpleDnsQueryUiOps*);
 struct _PurpleDnsQueryData*(purple_dnsquery_a)(const char*,int,void(*callback)(struct _GSList*,void*,const char*),void*);
 void(purple_desktop_item_unref)(struct _PurpleDesktopItem*);
 struct _PurpleDesktopItem*(purple_desktop_item_copy)(const struct _PurpleDesktopItem*);
 const char*(purple_desktop_item_get_string)(const struct _PurpleDesktopItem*,const char*);
-void(purple_prpl_got_attention_in_chat)(struct _PurpleConnection*,int,const char*,unsigned int);
+int(purple_cipher_context_digest_to_str)(struct _PurpleCipherContext*,unsigned long,char,unsigned long*);
 struct _PurpleDesktopItem*(purple_desktop_item_new_from_file)(const char*);
 unsigned long(purple_desktop_item_get_type)();
 void(purple_debug_init)();
 struct PurpleDebugUiOps*(purple_debug_get_ui_ops)();
 void(purple_debug_set_ui_ops)(struct PurpleDebugUiOps*);
 int(purple_debug_is_unsafe)();
+const char*(purple_plugin_get_name)(const struct _PurplePlugin*);
 void(purple_debug_set_unsafe)(int);
 struct _PurplePlugin*(purple_plugins_find_with_name)(const char*);
 void(purple_debug_set_verbose)(int);
-const char*(purple_plugin_get_name)(const struct _PurplePlugin*);
 int(purple_debug_is_enabled)();
 void(purple_debug_set_enabled)(int);
 void(purple_debug_fatal)(const char*,const char*,...);
-void(purple_debug_error)(const char*,const char*,...);
-void(purple_debug_info)(const char*,const char*,...);
-void(purple_debug_misc)(const char*,const char*,...);
 int(purple_conv_chat_has_left)(struct _PurpleConvChat*);
-void(purple_plugin_pref_set_label)(struct _PurplePluginPref*,const char*);
+void(purple_debug_error)(const char*,const char*,...);
 void(purple_account_request_change_password)(struct _PurpleAccount*);
-struct _GHashTable*(purple_core_get_ui_info)();
+void(purple_debug_info)(const char*,const char*,...);
 struct _PurpleConvIm*(purple_conversation_get_im_data)(const struct _PurpleConversation*);
-int(purple_core_migrate)();
+void(purple_debug_misc)(const char*,const char*,...);
 struct _PurplePluginPref*(purple_plugin_pref_new_with_name_and_label)(const char*,const char*);
 int(purple_input_remove)(unsigned int);
+void(purple_plugin_pref_set_label)(struct _PurplePluginPref*,const char*);
+struct _GHashTable*(purple_core_get_ui_info)();
+int(purple_core_migrate)();
 struct PurpleCoreUiOps*(purple_core_get_ui_ops)();
 void(purple_core_set_ui_ops)(struct PurpleCoreUiOps*);
 const char*(purple_core_get_ui)();
+char*(purple_unescape_html)(const char*);
 const char*(purple_core_get_version)();
 int(purple_core_quit_cb)(void*);
-void(purple_core_quit)();
-char*(purple_unescape_html)(const char*);
-void(purple_cmds_uninit)();
 void(purple_prefs_disconnect_by_handle)(void*);
 void(purple_imgstore_unref_by_id)(int);
+void(purple_core_quit)();
+void(purple_cmds_uninit)();
 void*(purple_cmds_get_handle)();
-unsigned short(purple_value_get_ushort)(const struct PurpleValue*);
 struct _IO_FILE*(purple_mkstemp)(char**,int);
-const char*(purple_plugin_get_version)(const struct _PurplePlugin*);
+unsigned short(purple_value_get_ushort)(const struct PurpleValue*);
 void(purple_circ_buffer_append)(struct _PurpleCircBuffer*,const void*,unsigned long);
 void(purple_circ_buffer_destroy)(struct _PurpleCircBuffer*);
-void(purple_conv_im_send)(struct _PurpleConvIm*,const char*);
+const char*(purple_buddy_icon_get_checksum)(const struct _PurpleBuddyIcon*);
 char*(purple_cipher_http_digest_calculate_response)(const char*,const char*,const char*,const char*,const char*,const char*,const char*,const char*,const char*);
+char*(purple_log_read)(struct _PurpleLog*,enum PurpleLogReadFlags*);
 char*(purple_cipher_http_digest_calculate_session_key)(const char*,const char*,const char*,const char*,const char*,const char*);
 void*(purple_cipher_context_get_data)(struct _PurpleCipherContext*);
-int(purple_conv_present_error)(const char*,struct _PurpleAccount*,const char*);
-char*(purple_log_read)(struct _PurpleLog*,enum PurpleLogReadFlags*);
+void(purple_conv_im_send_with_flags)(struct _PurpleConvIm*,const char*,enum PurpleMessageFlags);
 void(purple_cipher_context_set_key_with_len)(struct _PurpleCipherContext*,const unsigned char*,unsigned long);
-const char*(purple_normalize_nocase)(const struct _PurpleAccount*,const char*);
+const char*(purple_status_type_get_name)(const struct _PurpleStatusType*);
 enum _PurpleCipherBatchMode(purple_cipher_context_get_batch_mode)(struct _PurpleCipherContext*);
 void(purple_cipher_context_set_batch_mode)(struct _PurpleCipherContext*,enum _PurpleCipherBatchMode);
+struct _PurpleMediaCodec*(purple_media_codec_copy)(struct _PurpleMediaCodec*);
 unsigned long(purple_cipher_context_get_key_size)(struct _PurpleCipherContext*);
 void(purple_cipher_context_set_key)(struct _PurpleCipherContext*,const unsigned char*);
 unsigned long(purple_cipher_context_get_salt_size)(struct _PurpleCipherContext*);
-struct _PurpleMediaCodec*(purple_media_codec_copy)(struct _PurpleMediaCodec*);
 void(purple_cipher_context_set_salt)(struct _PurpleCipherContext*,unsigned char*);
-int(purple_cipher_context_decrypt)(struct _PurpleCipherContext*,const unsigned char,unsigned long,unsigned char,unsigned long*);
-int(purple_cipher_context_digest_to_str)(struct _PurpleCipherContext*,unsigned long,char,unsigned long*);
-int(purple_cipher_context_digest)(struct _PurpleCipherContext*,unsigned long,unsigned char,unsigned long*);
 void(purple_status_destroy)(struct _PurpleStatus*);
 void(purple_pounce_execute)(const struct _PurpleAccount*,const char*,enum PurplePounceEvent);
 enum PurpleDesktopItemType(purple_desktop_item_get_entry_type)(const struct _PurpleDesktopItem*);
+int(purple_cipher_context_digest)(struct _PurpleCipherContext*,unsigned long,unsigned char,unsigned long*);
+const char*(purple_notify_user_info_entry_get_label)(struct _PurpleNotifyUserInfoEntry*);
+unsigned long(purple_value_get_uint64)(const struct PurpleValue*);
 struct _PurpleCipherContext*(purple_cipher_context_new_by_name)(const char*,void*);
-struct _GList*(purple_media_codec_list_copy)(struct _GList*);
+struct _PurpleAccount*(purple_media_get_account)(struct _PurpleMedia*);
+struct _PurpleBuddyIcon*(purple_buddy_icon_ref)(struct _PurpleBuddyIcon*);
 void*(purple_cipher_context_get_option)(struct _PurpleCipherContext*,const char*);
+struct _GList*(purple_plugin_pref_frame_get_prefs)(struct _PurplePluginPrefFrame*);
 void(purple_cipher_context_set_option)(struct _PurpleCipherContext*,const char*,void*);
 void(purple_ciphers_uninit)();
-struct _PurpleBuddyIcon*(purple_buddy_icon_ref)(struct _PurpleBuddyIcon*);
 void(purple_ciphers_init)();
-struct _GList*(purple_plugin_pref_frame_get_prefs)(struct _PurplePluginPrefFrame*);
 void*(purple_ciphers_get_handle)();
+int(purple_utf8_has_word)(const char*,const char*);
 struct _GList*(purple_ciphers_get_ciphers)();
+void(purple_value_set_pointer)(struct PurpleValue*,void*);
 int(purple_ciphers_unregister_cipher)(struct _PurpleCipher*);
 struct _PurpleCipher*(purple_ciphers_register_cipher)(const char*,struct _PurpleCipherOps*);
-int(purple_utf8_has_word)(const char*,const char*);
-void(purple_value_set_pointer)(struct PurpleValue*,void*);
-struct _GList*(purple_prefs_get_path_list)(const char*);
 long(purple_presence_get_login_time)(const struct _PurplePresence*);
+struct _GList*(purple_prefs_get_path_list)(const char*);
 void(purple_account_set_privacy_type)(struct _PurpleAccount*,enum _PurplePrivacyType);
 void(purple_request_field_destroy)(struct _PurpleRequestField*);
 void(purple_accounts_restore_current_statuses)();
 void(purple_connection_notice)(struct _PurpleConnection*,const char*);
 const char*(purple_account_option_get_default_list_value)(const struct PurpleAccountOption*);
-struct _PurpleBuddyIcon*(purple_buddy_icon_new)(struct _PurpleAccount*,const char*,void*,unsigned long,const char*);
 void(purple_signals_unregister_by_instance)(void*);
-const char*(purple_buddy_icons_get_cache_dir)();
+void(purple_buddy_icon_set_data)(struct _PurpleBuddyIcon*,unsigned char*,unsigned long,const char*);
 struct _PurpleRequestField*(purple_request_field_bool_new)(const char*,const char*,int);
-struct _GList*(purple_presence_get_statuses)(const struct _PurplePresence*);
+int(purple_account_get_remember_password)(const struct _PurpleAccount*);
 void(purple_plugin_pref_set_masked)(struct _PurplePluginPref*,int);
+int(purple_presence_is_online)(const struct _PurplePresence*);
 int(purple_markup_extract_info_field)(const char*,int,struct _PurpleNotifyUserInfo*,const char*,int,const char*,char,const char*,const char*,int,const char*,char*(*format_cb)(const char*,unsigned long));
-struct _PurpleCertificateScheme*(purple_certificate_pool_get_scheme)(struct _PurpleCertificatePool*);
+int(purple_certificate_pool_store)(struct _PurpleCertificatePool*,const char*,struct _PurpleCertificate*);
 int(purple_roomlist_get_in_progress)(struct _PurpleRoomlist*);
 int(purple_running_gnome)();
 const char*(purple_imgstore_get_filename)(const struct _PurpleStoredImage*);
 void(purple_util_set_user_dir)(const char*);
+struct _PurplePresence*(purple_presence_new_for_conv)(struct _PurpleConversation*);
 void(purple_value_set_ulong)(struct PurpleValue*,unsigned long);
 void(purple_privacy_deny)(struct _PurpleAccount*,const char*,int,int);
 void(purple_mime_document_write)(struct _PurpleMimeDocument*,struct _GString*);
 void(purple_blist_rename_buddy)(struct _PurpleBuddy*,const char*);
 void(purple_idle_init)();
+enum PurpleConversationType(purple_conversation_get_type)(const struct _PurpleConversation*);
 void(purple_accounts_reorder)(struct _PurpleAccount*,int);
-void(purple_account_user_split_set_reverse)(struct PurpleAccountUserSplit*,int);
-char(purple_account_user_split_get_separator)(const struct PurpleAccountUserSplit*);
 const char*(purple_group_get_name)(struct _PurpleGroup*);
 struct _PurplePresence*(purple_buddy_get_presence)(const struct _PurpleBuddy*);
 struct _PurpleSavedStatus*(purple_savedstatus_get_idleaway)();
-const char*(purple_account_user_split_get_text)(const struct PurpleAccountUserSplit*);
+char(purple_account_user_split_get_separator)(const struct PurpleAccountUserSplit*);
 struct _PurpleUtilFetchUrlData*(purple_util_fetch_url_request)(const char*,int,const char*,int,const char*,int,void(*callback)(struct _PurpleUtilFetchUrlData*,void*,const char*,unsigned long,const char*),void*);
+enum PurpleType(purple_value_get_type)(const struct PurpleValue*);
+const char*(purple_account_user_split_get_text)(const struct PurpleAccountUserSplit*);
+int(purple_ipv6_address_is_valid)(const char*);
 struct PurpleAccountUserSplit*(purple_account_user_split_new)(const char*,const char*,char);
 struct _GList*(purple_account_option_get_list)(const struct PurpleAccountOption*);
 int(purple_account_option_get_masked)(const struct PurpleAccountOption*);
 const char*(purple_account_option_get_default_string)(const struct PurpleAccountOption*);
 int(purple_account_option_get_default_int)(const struct PurpleAccountOption*);
 int(purple_account_option_get_default_bool)(const struct PurpleAccountOption*);
-struct _PurpleProxyConnectData*(purple_proxy_connect)(void*,struct _PurpleAccount*,const char*,int,void(*connect_cb)(void*,int,const char*),void*);
-char*(purple_utf8_try_convert)(const char*);
-enum _PurplePrefType(purple_account_option_get_type)(const struct PurpleAccountOption*);
 char*(purple_str_binary_to_ascii)(const unsigned char*,unsigned int);
+struct _PurpleProxyConnectData*(purple_proxy_connect_socks5)(void*,struct PurpleProxyInfo*,const char*,int,void(*connect_cb)(void*,int,const char*),void*);
+int(purple_plugin_reload)(struct _PurplePlugin*);
+enum _PurplePrefType(purple_account_option_get_type)(const struct PurpleAccountOption*);
 void(purple_account_option_add_list_item)(struct PurpleAccountOption*,const char*,const char*);
 void(purple_account_option_set_list)(struct PurpleAccountOption*,struct _GList*);
-void(purple_ssl_set_ops)(struct PurpleSslOps*);
+void(purple_ssl_uninit)();
 void(purple_account_option_set_default_string)(struct PurpleAccountOption*,const char*);
 void(purple_account_option_set_default_int)(struct PurpleAccountOption*,int);
-struct _PurpleAccountUiOps*(purple_accounts_get_ui_ops)();
+struct PurpleAccountOption*(purple_account_option_new)(enum _PurplePrefType,const char*,const char*);
 struct PurpleAccountOption*(purple_account_option_list_new)(const char*,const char*,struct _GList*);
-struct _PurpleRoomlistUiOps*(purple_roomlist_get_ui_ops)();
+void(purple_whiteboard_destroy)(struct _PurpleWhiteboard*);
 struct PurpleAccountOption*(purple_account_option_int_new)(const char*,const char*,int);
 struct PurpleAccountOption*(purple_account_option_bool_new)(const char*,const char*,int);
-struct PurpleAccountOption*(purple_account_option_new)(enum _PurplePrefType,const char*,const char*);
+void(purple_account_option_set_default_bool)(struct PurpleAccountOption*,int);
 void(purple_accounts_uninit)();
 void(purple_accounts_init)();
-void(purple_account_option_set_default_bool)(struct PurpleAccountOption*,int);
-void(purple_prpl_got_user_status_deactive)(struct _PurpleAccount*,const char*,const char*);
-void*(purple_connections_get_handle)();
 struct PurpleNotifySearchColumn*(purple_notify_searchresults_column_new)(const char*);
+struct _PurpleAccountUiOps*(purple_accounts_get_ui_ops)();
 void(purple_prefs_set_path)(const char*,const char*);
 struct _GList*(purple_accounts_get_all)();
+int(purple_media_set_remote_codecs)(struct _PurpleMedia*,const char*,const char*,struct _GList*);
 void(purple_accounts_remove)(struct _PurpleAccount*);
 void(purple_account_clear_current_error)(struct _PurpleAccount*);
-int(purple_media_set_remote_codecs)(struct _PurpleMedia*,const char*,const char*,struct _GList*);
+void(purple_status_set_attr_boolean)(struct _PurpleStatus*,const char*,int);
 int(purple_account_supports_offline_message)(struct _PurpleAccount*,struct _PurpleBuddy*);
 void(purple_account_change_password)(struct _PurpleAccount*,const char*,const char*);
-void(purple_status_set_attr_boolean)(struct _PurpleStatus*,const char*,int);
-const char*(purple_utf8_strftime)(const char*,const struct tm*);
+const char*(purple_date_format_short)(const struct tm*);
 void(purple_account_remove_buddies)(struct _PurpleAccount*,struct _GList*,struct _GList*);
 void(purple_account_add_buddies_with_invite)(struct _PurpleAccount*,struct _GList*,const char*);
-void(purple_value_set_enum)(struct PurpleValue*,int);
-void(purple_account_add_buddy)(struct _PurpleAccount*,struct _PurpleBuddy*);
-void(purple_account_destroy_log)(struct _PurpleAccount*);
 void(purple_roomlist_ref)(struct _PurpleRoomlist*);
-struct _PurpleLog*(purple_account_get_log)(struct _PurpleAccount*,int);
+void(purple_value_set_enum)(struct PurpleValue*,int);
 void*(purple_request_field_list_get_data)(const struct _PurpleRequestField*,const char*);
+void(purple_account_destroy_log)(struct _PurpleAccount*);
+struct _PurpleLog*(purple_account_get_log)(struct _PurpleAccount*,int);
+int(purple_account_get_ui_bool)(const struct _PurpleAccount*,const char*,const char*,int);
 const char*(purple_account_get_ui_string)(const struct _PurpleAccount*,const char*,const char*,const char*);
 int(purple_account_get_ui_int)(const struct _PurpleAccount*,const char*,const char*,int);
 int(purple_account_get_bool)(const struct _PurpleAccount*,const char*,int);
 const char*(purple_account_get_string)(const struct _PurpleAccount*,const char*,const char*);
 int(purple_account_get_int)(const struct _PurpleAccount*,const char*,int);
-void(purple_conv_chat_ignore)(struct _PurpleConvChat*,const char*);
-int(purple_account_is_status_active)(const struct _PurpleAccount*,const char*);
-unsigned short(purple_media_candidate_get_port)(struct _PurpleMediaCandidate*);
 void(purple_prefs_add_int)(const char*,int);
 void(purple_prefs_destroy)();
-void*(purple_blist_node_get_ui_data)(const struct _PurpleBlistNode*);
-void(purple_conv_im_send_with_flags)(struct _PurpleConvIm*,const char*,enum PurpleMessageFlags);
-struct _PurpleStatus*(purple_account_get_status)(const struct _PurpleAccount*,const char*);
+int(purple_account_is_status_active)(const struct _PurpleAccount*,const char*);
+unsigned short(purple_media_candidate_get_base_port)(struct _PurpleMediaCandidate*);
 void(purple_upnp_init)();
-enum _PurplePrivacyType(purple_account_get_privacy_type)(const struct _PurpleAccount*);
-struct PurpleProxyInfo*(purple_account_get_proxy_info)(const struct _PurpleAccount*);
+struct _PurpleStoredImage*(purple_imgstore_new_from_file)(const char*);
+struct _PurpleStatus*(purple_account_get_status)(const struct _PurpleAccount*,const char*);
 int(purple_log_is_deletable)(struct _PurpleLog*);
-int(purple_account_get_enabled)(const struct _PurpleAccount*,const char*);
+struct _PurpleStatus*(purple_account_get_active_status)(const struct _PurpleAccount*);
 void(purple_log_common_writer)(struct _PurpleLog*,const char*);
 void(purple_plugins_register_unload_notify_cb)(void(*func)(struct _PurplePlugin*,void*),void*);
 int(purple_conversation_do_command)(struct _PurpleConversation*,const char*,const char*,char**);
-int(purple_account_get_check_mail)(const struct _PurpleAccount*);
-int(purple_account_get_remember_password)(const struct _PurpleAccount*);
+enum _PurplePrivacyType(purple_account_get_privacy_type)(const struct _PurpleAccount*);
+struct PurpleProxyInfo*(purple_account_get_proxy_info)(const struct _PurpleAccount*);
 int(purple_log_get_activity_score)(enum PurpleLogType,const char*,struct _PurpleAccount*);
 void(purple_account_disconnect)(struct _PurpleAccount*);
+int(purple_account_get_enabled)(const struct _PurpleAccount*,const char*);
+int(purple_account_get_check_mail)(const struct _PurpleAccount*);
 const char*(purple_account_get_name_for_display)(const struct _PurpleAccount*);
 struct _PurpleConnection*(purple_account_get_connection)(const struct _PurpleAccount*);
+void(purple_proxy_info_set_password)(struct PurpleProxyInfo*,const char*);
 const char*(purple_account_get_buddy_icon_path)(const struct _PurpleAccount*);
 const char*(purple_account_get_user_info)(const struct _PurpleAccount*);
+int(purple_log_get_total_size)(enum PurpleLogType,const char*,struct _PurpleAccount*);
 const char*(purple_account_get_alias)(const struct _PurpleAccount*);
 const char*(purple_account_get_password)(const struct _PurpleAccount*);
-const char*(purple_account_get_username)(const struct _PurpleAccount*);
-int(purple_log_get_total_size)(enum PurpleLogType,const char*,struct _PurpleAccount*);
-int(purple_account_is_disconnected)(const struct _PurpleAccount*);
-int(purple_account_is_connecting)(const struct _PurpleAccount*);
 struct _PurpleBuddy*(purple_buddy_new)(struct _PurpleAccount*,const char*,const char*);
-void(purple_account_set_ui_bool)(struct _PurpleAccount*,const char*,const char*,int);
-void(purple_account_set_ui_string)(struct _PurpleAccount*,const char*,const char*,const char*);
+const char*(purple_account_get_username)(const struct _PurpleAccount*);
+int(purple_account_is_disconnected)(const struct _PurpleAccount*);
 unsigned long(purple_media_get_type)();
 struct _GList*(purple_request_field_group_get_fields)(const struct PurpleRequestFieldGroup*);
 struct _PurpleLogLogger*(purple_log_logger_new)(const char*,const char*,int,...);
-struct _PurpleMenuAction*(purple_menu_action_new)(const char*,void(*callback)(),void*,struct _GList*);
+void(purple_account_set_ui_bool)(struct _PurpleAccount*,const char*,const char*,int);
+void(purple_account_set_ui_string)(struct _PurpleAccount*,const char*,const char*,const char*);
+void(purple_account_set_ui_int)(struct _PurpleAccount*,const char*,const char*,int);
+char*(purple_util_format_song_info)(const char*,const char*,const char*,void*);
 void(purple_account_set_string)(struct _PurpleAccount*,const char*,const char*);
-void(purple_str_strip_char)(char*,char);
+char*(purple_utf8_ncr_encode)(const char*);
 void(purple_account_remove_setting)(struct _PurpleAccount*,const char*);
 void(purple_account_clear_settings)(struct _PurpleAccount*);
+void(purple_log_logger_remove)(struct _PurpleLogLogger*);
 void(purple_account_set_silence_suppression)(struct _PurpleAccount*,int);
 void(purple_account_get_public_alias)(struct _PurpleAccount*,void(*success_cb)(struct _PurpleAccount*,const char*),void(*failure_cb)(struct _PurpleAccount*,const char*));
-void(purple_log_logger_remove)(struct _PurpleLogLogger*);
 void(purple_account_set_status_list)(struct _PurpleAccount*,const char*,int,struct _GList*);
-struct _PurpleGroup*(purple_group_new)(const char*);
+void(purple_media_candidate_list_free)(struct _GList*);
+void(purple_roomlist_set_ui_ops)(struct _PurpleRoomlistUiOps*);
 void(purple_account_set_status_types)(struct _PurpleAccount*,struct _GList*);
 void(purple_account_set_check_mail)(struct _PurpleAccount*,int);
-void(purple_media_candidate_list_free)(struct _GList*);
 void(purple_account_set_remember_password)(struct _PurpleAccount*,int);
 void(purple_account_set_connection)(struct _PurpleAccount*,struct _PurpleConnection*);
+void(purple_buddy_icon_update)(struct _PurpleBuddyIcon*);
 void(purple_account_set_buddy_icon_path)(struct _PurpleAccount*,const char*);
 void(purple_account_set_user_info)(struct _PurpleAccount*,const char*);
 void(purple_account_set_alias)(struct _PurpleAccount*,const char*);
-void(purple_buddy_icon_update)(struct _PurpleBuddyIcon*);
 void(purple_account_set_password)(struct _PurpleAccount*,const char*);
 void(purple_account_request_change_user_info)(struct _PurpleAccount*);
 void(purple_account_request_password)(struct _PurpleAccount*,void(*ok_cb)(),void(*cancel_cb)(),void*);
+char*(purple_notify_user_info_get_text_with_newline)(struct _PurpleNotifyUserInfo*,const char*);
+void(purple_roomlist_unref)(struct _PurpleRoomlist*);
 void(purple_account_request_close_with_account)(struct _PurpleAccount*);
 void*(purple_account_request_authorization)(struct _PurpleAccount*,const char*,const char*,const char*,const char*,int,void(*auth_cb)(void*),void(*deny_cb)(void*),void*);
 void(purple_account_request_add)(struct _PurpleAccount*,const char*,const char*,const char*,const char*);
-char*(purple_notify_user_info_get_text_with_newline)(struct _PurpleNotifyUserInfo*,const char*);
-void(purple_roomlist_unref)(struct _PurpleRoomlist*);
 void(purple_account_notify_added)(struct _PurpleAccount*,const char*,const char*,const char*,const char*);
 void(purple_conv_im_stop_typing_timeout)(struct _PurpleConvIm*);
+void(purple_prefs_add_string)(const char*,const char*);
 void(purple_account_connect)(struct _PurpleAccount*);
 struct _PurpleAccount*(purple_account_new)(const char*,const char*);
 struct _PurplePluginPrefFrame*(purple_plugin_pref_frame_new)();
-void(purple_prefs_add_string)(const char*,const char*);
+struct _PurpleWhiteboard*(purple_whiteboard_create)(struct _PurpleAccount*,const char*,int);
 struct PurplePrivacyUiOps*(purple_privacy_get_ui_ops)();
 void(purple_privacy_set_ui_ops)(struct PurplePrivacyUiOps*);
-struct _PurpleWhiteboard*(purple_whiteboard_create)(struct _PurpleAccount*,const char*,int);
 struct _GHashTable*(purple_chat_get_components)(struct _PurpleChat*);
-int(purple_privacy_permit_remove)(struct _PurpleAccount*,const char*,int);
 const char*(purple_theme_get_author)(struct _PurpleTheme*);
 struct _PurpleAccount*(purple_accounts_find)(const char*,const char*);
 void(purple_presence_switch_status)(struct _PurplePresence*,const char*);
+int(purple_privacy_permit_remove)(struct _PurpleAccount*,const char*,int);
+int(purple_privacy_permit_add)(struct _PurpleAccount*,const char*,int);
+void*(purple_connections_get_handle)();
+void(purple_prpl_change_account_status)(struct _PurpleAccount*,struct _PurpleStatus*,struct _PurpleStatus*);
 void(purple_connections_init)();
+const char*(purple_markup_unescape_entity)(const char*,int*);
 struct PurpleConnectionUiOps*(purple_connections_get_ui_ops)();
 void(purple_connections_set_ui_ops)(struct PurpleConnectionUiOps*);
-void(purple_prpl_change_account_status)(struct _PurpleAccount*,struct _PurpleStatus*,struct _PurpleStatus*);
 struct _GList*(purple_connections_get_connecting)();
-const char*(purple_markup_unescape_entity)(const char*,int*);
 struct _GList*(purple_connections_get_all)();
 void(purple_connections_disconnect_all)();
-int(purple_connection_error_is_fatal)(enum PurpleConnectionError);
-char*(purple_markup_get_tag_name)(const char*);
-enum PurpleMediaNetworkProtocol(purple_media_candidate_get_protocol)(struct _PurpleMediaCandidate*);
 void(purple_xfer_ref)(struct _PurpleXfer*);
 struct _GList*(purple_savedstatuses_get_all)();
-void(purple_connection_update_progress)(struct _PurpleConnection*,const char*,unsigned long,unsigned long);
-void*(purple_connection_get_protocol_data)(const struct _PurpleConnection*);
+int(purple_markup_is_rtl)(const char*);
 void(purple_value_set_int64)(struct PurpleValue*,signed long);
-const char*(purple_connection_get_display_name)(const struct _PurpleConnection*);
+void(purple_connection_error)(struct _PurpleConnection*,const char*);
 int(purple_request_field_list_is_selected)(const struct _PurpleRequestField*,const char*);
+void*(purple_connection_get_protocol_data)(const struct _PurpleConnection*);
+const char*(purple_connection_get_display_name)(const struct _PurpleConnection*);
+const char*(purple_connection_get_password)(const struct _PurpleConnection*);
 struct _PurplePlugin*(purple_connection_get_prpl)(const struct _PurpleConnection*);
 struct _PurpleAccount*(purple_connection_get_account)(const struct _PurpleConnection*);
-enum PurpleConnectionState(purple_connection_get_state)(const struct _PurpleConnection*);
-const char*(purple_roomlist_field_get_label)(struct _PurpleRoomlistField*);
 void(purple_blist_uninit)();
-void(purple_connection_set_account)(struct _PurpleConnection*,struct _PurpleAccount*);
+enum PurpleConnectionState(purple_connection_get_state)(const struct _PurpleConnection*);
 void(purple_account_set_status)(struct _PurpleAccount*,const char*,int,...);
-void(purple_connection_destroy)(struct _PurpleConnection*);
-unsigned int(purple_xfer_get_local_port)(const struct _PurpleXfer*);
+void(purple_connection_set_account)(struct _PurpleConnection*,struct _PurpleAccount*);
 void(purple_buddy_set_icon)(struct _PurpleBuddy*,struct _PurpleBuddyIcon*);
+void(purple_connection_destroy)(struct _PurpleConnection*);
+unsigned int(purple_xfer_get_remote_port)(const struct _PurpleXfer*);
 void(purple_connection_new)(struct _PurpleAccount*,int,const char*);
-void(purple_ssl_uninit)();
+void(purple_account_option_set_masked)(struct PurpleAccountOption*,int);
 void(purple_ssl_init)();
 struct PurpleSslOps*(purple_ssl_get_ops)();
-void(purple_account_option_set_masked)(struct PurpleAccountOption*,int);
+void(purple_ssl_set_ops)(struct PurpleSslOps*);
+char*(purple_unescape_text)(const char*);
 struct _GList*(purple_ssl_get_peer_certificates)(struct _PurpleSslConnection*);
 unsigned long(purple_ssl_read)(struct _PurpleSslConnection*,void*,unsigned long);
 void(purple_ssl_close)(struct _PurpleSslConnection*);
-char*(purple_unescape_text)(const char*);
 void(purple_ssl_input_add)(struct _PurpleSslConnection*,void(*func)(void*,struct _PurpleSslConnection*,enum PurpleInputCondition),void*);
-struct _PurpleSslConnection*(purple_ssl_connect_with_host_fd)(struct _PurpleAccount*,int,void(*func)(void*,struct _PurpleSslConnection*,enum PurpleInputCondition),void(*error_func)(struct _PurpleSslConnection*,enum PurpleSslErrorType,void*),const char*,void*);
-struct _PurpleSslConnection*(purple_ssl_connect_with_ssl_cn)(struct _PurpleAccount*,const char*,int,void(*func)(void*,struct _PurpleSslConnection*,enum PurpleInputCondition),void(*error_func)(struct _PurpleSslConnection*,enum PurpleSslErrorType,void*),const char*,void*);
 struct _GSList*(purple_find_buddies)(struct _PurpleAccount*,const char*);
-struct _PurpleSslConnection*(purple_ssl_connect)(struct _PurpleAccount*,const char*,int,void(*func)(void*,struct _PurpleSslConnection*,enum PurpleInputCondition),void(*error_func)(struct _PurpleSslConnection*,enum PurpleSslErrorType,void*),void*);
+struct _PurpleSslConnection*(purple_ssl_connect_with_host_fd)(struct _PurpleAccount*,int,void(*func)(void*,struct _PurpleSslConnection*,enum PurpleInputCondition),void(*error_func)(struct _PurpleSslConnection*,enum PurpleSslErrorType,void*),const char*,void*);
 unsigned int(purple_conv_im_get_typing_timeout)(const struct _PurpleConvIm*);
 struct _PurpleUtilFetchUrlData*(purple_util_fetch_url_request_len)(const char*,int,const char*,int,const char*,int,signed long,void(*callback)(struct _PurpleUtilFetchUrlData*,void*,const char*,unsigned long,const char*),void*);
-int(purple_xfer_is_canceled)(const struct _PurpleXfer*);
+struct _PurpleSslConnection*(purple_ssl_connect_with_ssl_cn)(struct _PurpleAccount*,const char*,int,void(*func)(void*,struct _PurpleSslConnection*,enum PurpleInputCondition),void(*error_func)(struct _PurpleSslConnection*,enum PurpleSslErrorType,void*),const char*,void*);
+struct _PurpleSslConnection*(purple_ssl_connect)(struct _PurpleAccount*,const char*,int,void(*func)(void*,struct _PurpleSslConnection*,enum PurpleInputCondition),void(*error_func)(struct _PurpleSslConnection*,enum PurpleSslErrorType,void*),void*);
+const char*(purple_xfer_get_local_filename)(const struct _PurpleXfer*);
 int(purple_ssl_is_supported)();
 int(purple_certificate_unregister_pool)(struct _PurpleCertificatePool*);
-void(purple_blist_node_set_int)(struct _PurpleBlistNode*,const char*,int);
-struct PurpleXferUiOps*(purple_xfers_get_ui_ops)();
 struct _PurpleSavedStatus*(purple_savedstatus_find)(const char*);
+unsigned long(purple_media_info_type_get_type)();
+void(purple_conversations_init)();
 struct _GList*(purple_certificate_get_verifiers)();
+void(purple_prefs_add_bool)(const char*,int);
 struct _PurpleCertificateVerifier*(purple_certificate_find_verifier)(const char*,const char*);
+int(purple_status_compare)(const struct _PurpleStatus*,const struct _PurpleStatus*);
 int(purple_certificate_unregister_scheme)(struct _PurpleCertificateScheme*);
 int(purple_certificate_register_scheme)(struct _PurpleCertificateScheme*);
-void(purple_prefs_add_bool)(const char*,int);
-int(purple_status_compare)(const struct _PurpleStatus*,const struct _PurpleStatus*);
-char*(purple_utf8_ncr_decode)(const char*);
+struct _PurpleKeyValuePair*(purple_media_codec_get_optional_parameter)(struct _PurpleMediaCodec*,const char*,const char*);
 void*(purple_certificate_get_handle)();
 void(purple_certificate_init)();
-void(purple_certificate_pool_destroy_idlist)(struct _GList*);
-int(purple_certificate_pool_store)(struct _PurpleCertificatePool*,const char*,struct _PurpleCertificate*);
 void(purple_print_utf8_to_console)(struct _IO_FILE*,char*);
+void(purple_certificate_pool_destroy_idlist)(struct _GList*);
+struct _PurpleStatusAttr*(purple_status_type_get_attr)(const struct _PurpleStatusType*,const char*);
+void(purple_plugins_init)();
 struct _PurpleCertificate*(purple_certificate_pool_retrieve)(struct _PurpleCertificatePool*,const char*);
 int(purple_certificate_pool_contains)(struct _PurpleCertificatePool*,const char*);
-void(purple_plugins_init)();
-int(purple_certificate_pool_usable)(struct _PurpleCertificatePool*);
+struct _PurpleCertificateScheme*(purple_certificate_pool_get_scheme)(struct _PurpleCertificatePool*);
 int(purple_status_is_online)(const struct _PurpleStatus*);
 const char*(purple_buddy_get_alias)(struct _PurpleBuddy*);
-int(purple_certificate_check_subject_name)(struct _PurpleCertificate*,const char*);
-char*(purple_certificate_get_subject_name)(struct _PurpleCertificate*);
-char*(purple_certificate_get_issuer_unique_id)(struct _PurpleCertificate*);
+int(purple_certificate_pool_usable)(struct _PurpleCertificatePool*);
 int(purple_pounce_action_is_enabled)(const struct _PurplePounce*,const char*);
-struct _GByteArray*(purple_certificate_get_fingerprint_sha1)(struct _PurpleCertificate*);
+char*(purple_certificate_get_subject_name)(struct _PurpleCertificate*);
 void(purple_blist_alias_contact)(struct _PurpleContact*,const char*);
-int(purple_certificate_export)(const char*,struct _PurpleCertificate*);
-struct _GSList*(purple_certificates_import)(struct _PurpleCertificateScheme*,const char*);
+char*(purple_certificate_get_issuer_unique_id)(struct _PurpleCertificate*);
+char*(purple_certificate_get_unique_id)(struct _PurpleCertificate*);
 void(purple_marshal_BOOLEAN__POINTER_POINTER_POINTER_POINTER_POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
 void(purple_value_set_ushort)(struct PurpleValue*,unsigned short);
-struct _PurpleCertificate*(purple_certificate_import)(struct _PurpleCertificateScheme*,const char*);
-int(purple_certificate_check_signature_chain_with_failing)(struct _GList*,struct _PurpleCertificate**);
+struct _GByteArray*(purple_certificate_get_fingerprint_sha1)(struct _PurpleCertificate*);
+int(purple_certificate_export)(const char*,struct _PurpleCertificate*);
+struct _GSList*(purple_certificates_import)(struct _PurpleCertificateScheme*,const char*);
 void(purple_blist_node_set_bool)(struct _PurpleBlistNode*,const char*,int);
 struct _PurpleRoomlistRoom*(purple_roomlist_room_new)(enum PurpleRoomlistRoomType,const char*,struct _PurpleRoomlistRoom*);
 void(purple_blist_request_add_group)();
 struct _PurpleNetworkListenData*(purple_network_listen_range_family)(unsigned short,unsigned short,int,int,void(*cb)(int,void*),void*);
 struct _PurpleNetworkListenData*(purple_network_listen_range)(unsigned short,unsigned short,int,void(*cb)(int,void*),void*);
-struct _GList*(purple_certificate_copy_list)(struct _GList*);
+int(purple_certificate_check_signature_chain_with_failing)(struct _GList*,struct _PurpleCertificate**);
+int(purple_certificate_signed_by)(struct _PurpleCertificate*,struct _PurpleCertificate*);
 struct _PurplePlugin*(purple_plugin_new)(int,const char*);
-struct PurpleNotifyUiOps*(purple_notify_get_ui_ops)();
-unsigned long(purple_media_candidate_get_type)();
-int(purple_proxy_info_get_port)(const struct PurpleProxyInfo*);
+void(purple_conv_chat_invite_user)(struct _PurpleConvChat*,const char*,const char*,int);
+struct _GList*(purple_certificate_copy_list)(struct _GList*);
+void(purple_notify_init)();
+unsigned char*(purple_base64_decode)(const char*,unsigned long*);
+const char*(purple_proxy_info_get_password)(const struct PurpleProxyInfo*);
 void(purple_status_init)();
 void*(purple_status_get_handle)();
-struct _PurpleBuddy*(purple_presence_get_buddy)(const struct _PurplePresence*);
+int(purple_presence_is_available)(const struct _PurplePresence*);
 long(purple_presence_get_idle_time)(const struct _PurplePresence*);
+void(purple_imgstore_init)();
 int(purple_presence_is_idle)(const struct _PurplePresence*);
+void(purple_plugin_disable)(struct _PurplePlugin*);
 int(purple_presence_is_status_primitive_active)(const struct _PurplePresence*,enum PurpleStatusPrimitive);
 int(purple_presence_is_status_active)(const struct _PurplePresence*,const char*);
-void(purple_imgstore_init)();
-int(purple_presence_is_online)(const struct _PurplePresence*);
-void(purple_plugin_disable)(struct _PurplePlugin*);
-int(purple_presence_is_available)(const struct _PurplePresence*);
-struct _PurpleStatus*(purple_presence_get_status)(const struct _PurplePresence*,const char*);
 int(purple_presence_compare)(const struct _PurplePresence*,const struct _PurplePresence*);
 struct _PurpleBlistNode*(purple_blist_get_root)();
-const char*(purple_presence_get_chat_user)(const struct _PurplePresence*);
+struct _PurpleStatus*(purple_presence_get_status)(const struct _PurplePresence*,const char*);
 struct _GList*(purple_media_get_session_ids)(struct _PurpleMedia*);
 void(purple_media_remove_output_windows)(struct _PurpleMedia*);
-struct _PurpleConversation*(purple_presence_get_conversation)(const struct _PurplePresence*);
+struct _GList*(purple_presence_get_statuses)(const struct _PurplePresence*);
+struct _PurpleBuddy*(purple_presence_get_buddy)(const struct _PurplePresence*);
 void(purple_xfer_set_message)(struct _PurpleXfer*,const char*);
+const char*(purple_presence_get_chat_user)(const struct _PurplePresence*);
+struct _PurpleConversation*(purple_presence_get_conversation)(const struct _PurplePresence*);
 enum PurplePresenceContext(purple_presence_get_context)(const struct _PurplePresence*);
 void(purple_presence_set_login_time)(struct _PurplePresence*,long);
 void(purple_presence_set_status_active)(struct _PurplePresence*,const char*,int);
-struct _PurplePresence*(purple_presence_new_for_buddy)(struct _PurpleBuddy*);
 unsigned char*(purple_ntlm_parse_type2)(const char*,unsigned int*);
-void(purple_conv_chat_left)(struct _PurpleConvChat*);
 void(purple_upnp_discover)(void(*cb)(int,void*),void*);
+struct _PurpleConvChatBuddy*(purple_conv_chat_cb_find)(struct _PurpleConvChat*,const char*);
+struct _PurplePresence*(purple_presence_new)(enum PurplePresenceContext);
 const char*(purple_status_get_attr_string)(const struct _PurpleStatus*,const char*);
-int(purple_status_get_attr_int)(const struct _PurpleStatus*,const char*);
-unsigned long(purple_value_get_uint64)(const struct PurpleValue*);
 struct _PurpleStoredImage*(purple_smiley_get_stored_image)(const struct _PurpleSmiley*);
 void(purple_cipher_context_reset)(struct _PurpleCipherContext*,void*);
+struct PurpleValue*(purple_status_get_attr_value)(const struct _PurpleStatus*,const char*);
+int(purple_prpl_initiate_media)(struct _PurpleAccount*,const char*,enum PurpleMediaSessionType);
 int(purple_status_is_available)(const struct _PurpleStatus*);
 int(purple_status_is_exclusive)(const struct _PurpleStatus*);
-const char*(purple_conv_chat_get_topic)(const struct _PurpleConvChat*);
 void(purple_conv_im_set_typing_state)(struct _PurpleConvIm*,enum PurpleTypingState);
 void(purple_marshal_BOOLEAN__POINTER_POINTER_POINTER_UINT)(void(*cb)(),__builtin_va_list,void*,void**);
+int(purple_conv_chat_get_id)(const struct _PurpleConvChat*);
 struct _PurplePresence*(purple_status_get_presence)(const struct _PurpleStatus*);
-struct _PurpleStatusType*(purple_status_get_type)(const struct _PurpleStatus*);
-void(purple_status_set_attr_string)(struct _PurpleStatus*,const char*,const char*);
 void(purple_whiteboard_clear)(struct _PurpleWhiteboard*);
 void(purple_notify_user_info_add_pair_plaintext)(struct _PurpleNotifyUserInfo*,const char*,const char*);
 int(purple_timeout_remove)(unsigned int);
 void(purple_theme_manager_remove_theme)(struct _PurpleTheme*);
-void(purple_status_set_active_with_attrs)(struct _PurpleStatus*,int,__builtin_va_list);
+void(purple_status_set_attr_string)(struct _PurpleStatus*,const char*,const char*);
+void(purple_status_set_attr_int)(struct _PurpleStatus*,const char*,int);
 struct _PurpleConversation*(purple_conv_im_get_conversation)(const struct _PurpleConvIm*);
+void(purple_status_set_active_with_attrs)(struct _PurpleStatus*,int,__builtin_va_list);
 struct _PurpleStatus*(purple_status_new)(struct _PurpleStatusType*,struct _PurplePresence*);
-void*(purple_buddy_get_protocol_data)(const struct _PurpleBuddy*);
+struct _PurpleContact*(purple_buddy_get_contact)(struct _PurpleBuddy*);
 const char*(purple_status_attr_get_name)(const struct _PurpleStatusAttr*);
 const char*(purple_status_attr_get_id)(const struct _PurpleStatusAttr*);
 struct _PurpleStatusAttr*(purple_status_attr_new)(const char*,const char*,struct PurpleValue*);
 const struct _PurpleStatusType*(purple_status_type_find_with_id)(struct _GList*,const char*);
 struct _GList*(purple_status_type_get_attrs)(const struct _PurpleStatusType*);
-struct _PurpleStatusAttr*(purple_status_type_get_attr)(const struct _PurpleStatusType*,const char*);
-const char*(purple_status_type_get_primary_attr)(const struct _PurpleStatusType*);
 struct _GList*(purple_certificate_pool_get_idlist)(struct _PurpleCertificatePool*);
+const char*(purple_status_type_get_primary_attr)(const struct _PurpleStatusType*);
 int(purple_status_type_is_exclusive)(const struct _PurpleStatusType*);
-int(purple_status_type_is_independent)(const struct _PurpleStatusType*);
 void(purple_xfer_set_thumbnail)(struct _PurpleXfer*,const void*,unsigned long,const char*);
+int(purple_status_type_is_independent)(const struct _PurpleStatusType*);
 int(purple_status_type_is_saveable)(const struct _PurpleStatusType*);
-const char*(purple_status_type_get_name)(const struct _PurpleStatusType*);
 struct PurpleProxyInfo*(purple_proxy_info_new)();
 unsigned long(purple_cipher_context_get_block_size)(struct _PurpleCipherContext*);
-void(purple_status_type_add_attrs)(struct _PurpleStatusType*,const char*,const char*,struct PurpleValue*,...);
+char*(purple_media_candidate_get_base_ip)(struct _PurpleMediaCandidate*);
 void(purple_notify_close)(enum PurpleNotifyType,void*);
 void(purple_notify_user_info_prepend_section_break)(struct _PurpleNotifyUserInfo*);
+void(purple_status_type_add_attrs)(struct _PurpleStatusType*,const char*,const char*,struct PurpleValue*,...);
 void(purple_status_type_set_primary_attr)(struct _PurpleStatusType*,const char*);
 void(purple_status_type_destroy)(struct _PurpleStatusType*);
+const char*(purple_get_host_name)();
 struct _PurpleStatusType*(purple_status_type_new_with_attrs)(enum PurpleStatusPrimitive,const char*,const char*,int,int,int,const char*,const char*,struct PurpleValue*,...);
 struct _PurpleStatusType*(purple_status_type_new)(enum PurpleStatusPrimitive,const char*,const char*,int);
-const char*(purple_get_host_name)();
 enum PurpleStatusPrimitive(purple_primitive_get_type_from_id)(const char*);
-const char*(purple_gai_strerror)(int);
-unsigned char*(purple_base64_decode)(const char*,unsigned long*);
+int(purple_message_meify)(char*,signed long);
+const char*(purple_utf8_strftime)(const char*,const struct tm*);
+void(purple_restore_default_signal_handlers)();
 struct _PurpleBlistUiOps*(purple_blist_get_ui_ops)();
 void(purple_blist_set_ui_ops)(struct _PurpleBlistUiOps*);
 struct _GList*(purple_blist_node_get_extended_menu)(struct _PurpleBlistNode*);
 enum PurpleBlistNodeType(purple_blist_node_get_type)(struct _PurpleBlistNode*);
 enum PurpleBlistNodeFlags(purple_blist_node_get_flags)(struct _PurpleBlistNode*);
-void(purple_media_set_params)(struct _PurpleMedia*,unsigned int,struct _GParameter*);
 const char*(purple_blist_node_get_string)(struct _PurpleBlistNode*,const char*);
-void(purple_blist_node_set_string)(struct _PurpleBlistNode*,const char*,const char*);
-int(purple_blist_node_get_int)(struct _PurpleBlistNode*,const char*);
 int(purple_certificate_register_pool)(struct _PurpleCertificatePool*);
 int(purple_blist_get_group_size)(struct _PurpleGroup*,int);
 void*(purple_notify_formatted)(void*,const char*,const char*,const char*,const char*,void(*cb)(void*),void*);
-int(purple_blist_node_get_bool)(struct _PurpleBlistNode*,const char*);
-void(purple_blist_request_add_chat)(struct _PurpleAccount*,struct _PurpleGroup*,const char*,const char*);
+int(purple_blist_node_get_int)(struct _PurpleBlistNode*,const char*);
+void(purple_blist_node_set_int)(struct _PurpleBlistNode*,const char*,int);
 unsigned int(purple_value_get_subtype)(const struct PurpleValue*);
 void(purple_prefs_uninit)();
 struct _GList*(purple_mime_part_get_fields)(struct _PurpleMimePart*);
+void(purple_blist_request_add_chat)(struct _PurpleAccount*,struct _PurpleGroup*,const char*,const char*);
+void(purple_blist_request_add_buddy)(struct _PurpleAccount*,const char*,const char*,const char*);
 void(purple_blist_schedule_save)();
 void(purple_blist_add_account)(struct _PurpleAccount*);
-char*(purple_markup_get_css_property)(const char*,const char*);
+const char*(purple_home_dir)();
 struct _GSList*(purple_group_get_accounts)(struct _PurpleGroup*);
-struct _PurpleGroup*(purple_buddy_get_group)(struct _PurpleBuddy*);
 struct _PurpleConversation*(purple_find_conversation_with_account)(enum PurpleConversationType,const char*,const struct _PurpleAccount*);
-struct _PurpleGroup*(purple_chat_get_group)(struct _PurpleChat*);
-void(purple_whiteboard_set_ui_ops)(struct _PurpleWhiteboardUiOps*);
+struct _PurpleGroup*(purple_buddy_get_group)(struct _PurpleBuddy*);
 struct _UPnPMappingAddRemove*(purple_upnp_set_port_mapping)(unsigned short,const char*,void(*cb)(int,void*),void*);
+void(purple_xfer_set_completed)(struct _PurpleXfer*,int);
 enum PurpleXferType(purple_xfer_get_type)(const struct _PurpleXfer*);
+struct _PurpleGroup*(purple_find_group)(const char*);
 const char*(purple_chat_get_name)(struct _PurpleChat*);
 int(purple_plugin_unload)(struct _PurplePlugin*);
 const char*(purple_buddy_get_local_alias)(struct _PurpleBuddy*);
-void(purple_restore_default_signal_handlers)();
-struct _PurpleAccount*(purple_conversation_get_account)(const struct _PurpleConversation*);
-void*(purple_signal_emit_return_1)(void*,const char*,...);
 void(purple_prefs_add_none)(const char*);
+void*(purple_signal_emit_return_1)(void*,const char*,...);
 void(purple_blist_remove_group)(struct _PurpleGroup*);
 struct _PurpleStoredImage*(purple_imgstore_add)(void*,unsigned long,const char*);
 void(purple_blist_remove_contact)(struct _PurpleContact*);
 void(purple_blist_remove_buddy)(struct _PurpleBuddy*);
-int(purple_contact_on_account)(struct _PurpleContact*,struct _PurpleAccount*);
-const char*(purple_contact_get_alias)(struct _PurpleContact*);
 const char*(purple_roomlist_room_get_name)(struct _PurpleRoomlistRoom*);
 void(purple_conversation_clear_message_history)(struct _PurpleConversation*);
-void(purple_contact_set_alias)(struct _PurpleContact*,const char*);
-struct _PurpleBuddy*(purple_contact_get_priority_buddy)(struct _PurpleContact*);
+int(purple_contact_on_account)(struct _PurpleContact*,struct _PurpleAccount*);
+const char*(purple_contact_get_alias)(struct _PurpleContact*);
 struct _GList*(purple_request_fields_get_groups)(const struct PurpleRequestFields*);
+struct _PurpleBuddy*(purple_contact_get_priority_buddy)(struct _PurpleContact*);
 void(purple_blist_add_contact)(struct _PurpleContact*,struct _PurpleGroup*,struct _PurpleBlistNode*);
 void(purple_contact_destroy)(struct _PurpleContact*);
-void(purple_blist_add_group)(struct _PurpleGroup*,struct _PurpleBlistNode*);
 void(purple_connection_set_state)(struct _PurpleConnection*,enum PurpleConnectionState);
-void(purple_blist_add_buddy)(struct _PurpleBuddy*,struct _PurpleContact*,struct _PurpleGroup*,struct _PurpleBlistNode*);
+void(purple_blist_add_group)(struct _PurpleGroup*,struct _PurpleBlistNode*);
 void(purple_request_field_set_required)(struct _PurpleRequestField*,int);
-enum PurpleMediaCaps(purple_buddy_get_media_caps)(const struct _PurpleBuddy*);
-struct _PurpleContact*(purple_buddy_get_contact)(struct _PurpleBuddy*);
+void(purple_blist_add_buddy)(struct _PurpleBuddy*,struct _PurpleContact*,struct _PurpleGroup*,struct _PurpleBlistNode*);
 void(purple_sound_uninit)();
 struct PurpleValue*(purple_status_attr_get_value)(const struct _PurpleStatusAttr*);
-struct _PurpleBuddyIcon*(purple_buddy_get_icon)(const struct _PurpleBuddy*);
+void(purple_buddy_set_protocol_data)(struct _PurpleBuddy*,void*);
 int(purple_pounces_load)();
-void(purple_blist_add_chat)(struct _PurpleChat*,struct _PurpleGroup*,struct _PurpleBlistNode*);
+struct _PurpleBuddyIcon*(purple_buddy_get_icon)(const struct _PurpleBuddy*);
 struct _PurpleAccount*(purple_buddy_get_account)(const struct _PurpleBuddy*);
-struct _PurpleAccount*(purple_buddy_icon_get_account)(const struct _PurpleBuddyIcon*);
+void(purple_blist_add_chat)(struct _PurpleChat*,struct _PurpleGroup*,struct _PurpleBlistNode*);
 struct _PurpleSmiley*(purple_smileys_find_by_checksum)(const char*);
 struct _PurpleCircBuffer*(purple_circ_buffer_new)(unsigned long);
+void(purple_blist_rename_group)(struct _PurpleGroup*,const char*);
 void(purple_blist_alias_buddy)(struct _PurpleBuddy*,const char*);
 void(purple_blist_update_buddy_icon)(struct _PurpleBuddy*);
 void(purple_blist_update_node_icon)(struct _PurpleBlistNode*);
 void(purple_blist_update_buddy_status)(struct _PurpleBuddy*,struct _PurpleStatus*);
-void(purple_blist_set_visible)(int);
-void(purple_blist_destroy)();
 struct _PurpleNetworkListenData*(purple_network_listen_family)(unsigned short,int,int,void(*cb)(int,void*),void*);
-void(purple_blist_node_set_ui_data)(struct _PurpleBlistNode*,void*);
+void(purple_blist_destroy)();
 struct _PurpleStatusType*(purple_account_get_status_type_with_primitive)(const struct _PurpleAccount*,enum PurpleStatusPrimitive);
+void(purple_blist_node_set_ui_data)(struct _PurpleBlistNode*,void*);
+void*(purple_blist_node_get_ui_data)(const struct _PurpleBlistNode*);
 struct _PurpleBlistNode*(purple_blist_node_get_sibling_prev)(struct _PurpleBlistNode*);
 struct _PurpleBlistNode*(purple_blist_node_get_first_child)(struct _PurpleBlistNode*);
 struct _PurpleBlistNode*(purple_blist_node_get_parent)(struct _PurpleBlistNode*);
 struct _PurpleBlistNode*(purple_blist_node_next)(struct _PurpleBlistNode*,int);
 struct _GSList*(purple_blist_get_buddies)();
 struct _PurpleBuddyList*(purple_get_blist)();
-struct _GList*(purple_conv_chat_cb_get_attribute_keys)(struct _PurpleConvChatBuddy*);
+void(purple_marshal_INT__INT)(void(*cb)(),__builtin_va_list,void*,void**);
 struct _PurpleBuddyList*(purple_blist_new)();
 void(purple_buddy_icon_get_scale_size)(struct _PurpleBuddyIconSpec*,int*,int*);
-const char*(purple_plugin_pref_get_label)(struct _PurplePluginPref*);
 const char*(purple_account_get_protocol_name)(const struct _PurpleAccount*);
 void(purple_plugins_save_loaded)(const char*);
+const char*(purple_plugin_pref_get_label)(struct _PurplePluginPref*);
+const char*(purple_buddy_icons_get_cache_dir)();
 void(purple_buddy_icons_set_cache_dir)(const char*);
-int(purple_buddy_icons_is_caching)();
-void(purple_buddy_icons_set_caching)(int);
 struct _PurpleWhiteboard*(purple_whiteboard_get_session)(const struct _PurpleAccount*,const char*);
-struct _PurpleStoredImage*(purple_buddy_icons_set_custom_icon)(struct _PurpleContact*,unsigned char*,unsigned long);
+int(purple_buddy_icons_is_caching)();
 enum PurpleRoomlistRoomType(purple_roomlist_room_get_type)(struct _PurpleRoomlistRoom*);
 struct _GList*(purple_media_get_local_candidates)(struct _PurpleMedia*,const char*,const char*);
+void(purple_buddy_icons_set_caching)(int);
+struct _PurpleStoredImage*(purple_buddy_icons_set_custom_icon)(struct _PurpleContact*,unsigned char*,unsigned long);
 struct _PurpleStoredImage*(purple_buddy_icons_find_custom_icon)(struct _PurpleContact*);
 struct _GList*(purple_plugin_pref_get_choices)(struct _PurplePluginPref*);
 struct _PurpleStoredImage*(purple_buddy_icons_node_set_custom_icon)(struct _PurpleBlistNode*,unsigned char*,unsigned long);
-struct _PurpleStoredImage*(purple_buddy_icons_set_account_icon)(struct _PurpleAccount*,unsigned char*,unsigned long);
-struct _PurpleStoredImage*(purple_buddy_icons_find_account_icon)(struct _PurpleAccount*);
 void(purple_request_field_set_label)(struct _PurpleRequestField*,const char*);
+struct _PurpleStoredImage*(purple_buddy_icons_find_account_icon)(struct _PurpleAccount*);
+void*(purple_notify_message)(void*,enum PurpleNotifyMsgType,const char*,const char*,const char*,void(*cb)(void*),void*);
 const char*(purple_buddy_icons_get_checksum_for_user)(struct _PurpleBuddy*);
-unsigned int(purple_xfer_get_remote_port)(const struct _PurpleXfer*);
+long(purple_xfer_get_end_time)(const struct _PurpleXfer*);
 const char*(purple_buddy_icon_get_extension)(const struct _PurpleBuddyIcon*);
 const void*(purple_buddy_icon_get_data)(const struct _PurpleBuddyIcon*,unsigned long*);
-const char*(purple_buddy_icon_get_checksum)(const struct _PurpleBuddyIcon*);
-const char*(purple_buddy_icon_get_username)(const struct _PurpleBuddyIcon*);
 struct _PurpleChat*(purple_chat_new)(struct _PurpleAccount*,const char*,struct _GHashTable*);
-void(purple_buddy_icon_set_data)(struct _PurpleBuddyIcon*,unsigned char*,unsigned long,const char*);
+const char*(purple_buddy_icon_get_username)(const struct _PurpleBuddyIcon*);
+struct _PurpleAccount*(purple_buddy_icon_get_account)(const struct _PurpleBuddyIcon*);
 struct _GList*(purple_prefs_get_string_list)(const char*);
-int(purple_prpl_initiate_media)(struct _PurpleAccount*,const char*,enum PurpleMediaSessionType);
+struct _PurpleBuddyIcon*(purple_buddy_icon_new)(struct _PurpleAccount*,const char*,void*,unsigned long,const char*);
 unsigned long(purple_signal_connect_priority_vargs)(void*,const char*,void*,void(*func)(),void*,int);
-enum PurpleMediaCandidateType(purple_media_candidate_get_candidate_type)(struct _PurpleMediaCandidate*);
 int(purple_status_is_active)(const struct _PurpleStatus*);
 void(purple_conv_chat_cb_destroy)(struct _PurpleConvChatBuddy*);
-struct _GList*(purple_prpl_get_statuses)(struct _PurpleAccount*,struct _PurplePresence*);
+unsigned int(purple_media_candidate_get_ttl)(struct _PurpleMediaCandidate*);
+void(purple_prpl_got_attention_in_chat)(struct _PurpleConnection*,int,const char*,unsigned int);
 void(purple_accounts_set_ui_ops)(struct _PurpleAccountUiOps*);
 void(purple_notify_user_info_destroy)(struct _PurpleNotifyUserInfo*);
-void(purple_prpl_got_user_status)(struct _PurpleAccount*,const char*,const char*,...);
+struct _GList*(purple_prpl_get_statuses)(struct _PurpleAccount*,struct _PurplePresence*);
 unsigned long(purple_media_manager_set_output_window)(struct _PurpleMediaManager*,struct _PurpleMedia*,const char*,const char*,unsigned long);
-void(purple_prpl_got_user_idle)(struct _PurpleAccount*,const char*,int,long);
+void(purple_prpl_got_user_status)(struct _PurpleAccount*,const char*,const char*,...);
 void(purple_log_init)();
 void(purple_plugin_pref_set_name)(struct _PurplePluginPref*,const char*);
+void(purple_prpl_got_user_idle)(struct _PurpleAccount*,const char*,int,long);
 void(purple_prpl_got_account_status)(struct _PurpleAccount*,const char*,...);
 void(purple_prpl_got_account_login_time)(struct _PurpleAccount*,long);
 void(purple_prpl_got_account_idle)(struct _PurpleAccount*,int,long);
+void(purple_log_write)(struct _PurpleLog*,enum PurpleMessageFlags,const char*,long,const char*);
 const char*(purple_attention_type_get_unlocalized_name)(const struct _PurpleAttentionType*);
 const char*(purple_attention_type_get_icon_name)(const struct _PurpleAttentionType*);
-void(purple_log_write)(struct _PurpleLog*,enum PurpleMessageFlags,const char*,long,const char*);
-const char*(purple_attention_type_get_outgoing_desc)(const struct _PurpleAttentionType*);
-const char*(purple_attention_type_get_incoming_desc)(const struct _PurpleAttentionType*);
 void(purple_imgstore_ref_by_id)(int);
 struct _PurpleMediaCandidate*(purple_media_candidate_copy)(struct _PurpleMediaCandidate*);
 int(purple_plugin_is_unloadable)(const struct _PurplePlugin*);
+const char*(purple_attention_type_get_outgoing_desc)(const struct _PurpleAttentionType*);
+const char*(purple_attention_type_get_incoming_desc)(const struct _PurpleAttentionType*);
 const char*(purple_attention_type_get_name)(const struct _PurpleAttentionType*);
-void(purple_attention_type_set_icon_name)(struct _PurpleAttentionType*,const char*);
-void(purple_attention_type_set_outgoing_desc)(struct _PurpleAttentionType*,const char*);
 char*(purple_smiley_get_full_path)(struct _PurpleSmiley*);
-void(purple_attention_type_set_name)(struct _PurpleAttentionType*,const char*);
+void(purple_attention_type_set_outgoing_desc)(struct _PurpleAttentionType*,const char*);
 void(purple_roomlist_room_add)(struct _PurpleRoomlist*,struct _PurpleRoomlistRoom*);
 void(purple_whiteboard_send_brush)(struct _PurpleWhiteboard*,int,int);
-void(purple_xfer_set_local_filename)(struct _PurpleXfer*,const char*);
-void(purple_whiteboard_set_brush)(struct _PurpleWhiteboard*,int,int);
+void(purple_attention_type_set_incoming_desc)(struct _PurpleAttentionType*,const char*);
+void(purple_attention_type_set_name)(struct _PurpleAttentionType*,const char*);
 void(purple_theme_manager_refresh)();
+void(purple_whiteboard_set_brush)(struct _PurpleWhiteboard*,int,int);
 void(purple_whiteboard_send_draw_list)(struct _PurpleWhiteboard*,struct _GList*);
 void(purple_whiteboard_set_dimensions)(struct _PurpleWhiteboard*,int,int);
 int(purple_whiteboard_get_dimensions)(const struct _PurpleWhiteboard*,int*,int*);
-void(purple_whiteboard_draw_list_destroy)(struct _GList*);
-long(purple_xfer_get_start_time)(const struct _PurpleXfer*);
 void(purple_proxy_init)();
-void(purple_whiteboard_destroy)(struct _PurpleWhiteboard*);
+void(purple_whiteboard_draw_list_destroy)(struct _GList*);
 struct _PurpleChat*(purple_blist_find_chat)(struct _PurpleAccount*,const char*);
 struct PurpleAccountOption*(purple_account_option_string_new)(const char*,const char*,const char*);
-void(purple_roomlist_set_ui_ops)(struct _PurpleRoomlistUiOps*);
+void(purple_whiteboard_set_ui_ops)(struct _PurpleWhiteboardUiOps*);
 unsigned long(purple_request_field_image_get_size)(struct _PurpleRequestField*);
 void(purple_connection_set_protocol_data)(struct _PurpleConnection*,void*);
+const char*(purple_roomlist_field_get_label)(struct _PurpleRoomlistField*);
 enum PurpleRoomlistFieldType(purple_roomlist_field_get_type)(struct _PurpleRoomlistField*);
 struct _GList*(purple_roomlist_room_get_fields)(struct _PurpleRoomlistRoom*);
 struct _PurpleRoomlistRoom*(purple_roomlist_room_get_parent)(struct _PurpleRoomlistRoom*);
-const char*(purple_proxy_info_get_host)(const struct PurpleProxyInfo*);
+const char*(purple_proxy_info_get_username)(const struct PurpleProxyInfo*);
 void(purple_roomlist_room_add_field)(struct _PurpleRoomlist*,struct _PurpleRoomlistRoom*,const void*);
 struct _GList*(purple_roomlist_get_fields)(struct _PurpleRoomlist*);
+void(purple_util_uninit)();
 void(purple_roomlist_set_in_progress)(struct _PurpleRoomlist*,int);
 struct _PurpleRoomlist*(purple_roomlist_new)(struct _PurpleAccount*);
-void(purple_util_uninit)();
 void(purple_roomlist_show_with_account)(struct _PurpleAccount*);
 void(purple_proxy_connect_cancel_with_handle)(void*);
 void(purple_proxy_connect_cancel)(struct _PurpleProxyConnectData*);
-struct _PurpleProxyConnectData*(purple_proxy_connect_socks5)(void*,struct PurpleProxyInfo*,const char*,int,void(*connect_cb)(void*,int,const char*),void*);
-struct _PurpleProxyConnectData*(purple_proxy_connect_socks5_account)(void*,struct _PurpleAccount*,struct PurpleProxyInfo*,const char*,int,void(*connect_cb)(void*,int,const char*),void*);
 const char*(purple_account_option_get_setting)(const struct PurpleAccountOption*);
+struct _PurpleProxyConnectData*(purple_proxy_connect_socks5_account)(void*,struct _PurpleAccount*,struct PurpleProxyInfo*,const char*,int,void(*connect_cb)(void*,int,const char*),void*);
+struct _PurpleProxyConnectData*(purple_proxy_connect)(void*,struct _PurpleAccount*,const char*,int,void(*connect_cb)(void*,int,const char*),void*);
+void(purple_conversation_set_features)(struct _PurpleConversation*,enum PurpleConnectionFlags);
 struct PurpleProxyInfo*(purple_proxy_get_setup)(struct _PurpleAccount*);
 void(purple_proxy_uninit)();
-void(purple_conversation_set_features)(struct _PurpleConversation*,enum PurpleConnectionFlags);
 void*(purple_proxy_get_handle)();
 void(purple_global_proxy_set_info)(struct PurpleProxyInfo*);
-const char*(purple_proxy_info_get_password)(const struct PurpleProxyInfo*);
-const char*(purple_proxy_info_get_username)(const struct PurpleProxyInfo*);
 void(purple_status_uninit)();
 double(purple_xfer_get_progress)(const struct _PurpleXfer*);
 void(purple_roomlist_room_join)(struct _PurpleRoomlist*,struct _PurpleRoomlistRoom*);
+int(purple_proxy_info_get_port)(const struct PurpleProxyInfo*);
+const char*(purple_proxy_info_get_host)(const struct PurpleProxyInfo*);
 enum PurpleProxyType(purple_proxy_info_get_type)(const struct PurpleProxyInfo*);
-void(purple_proxy_info_set_password)(struct PurpleProxyInfo*,const char*);
 const char*(purple_account_get_protocol_id)(const struct _PurpleAccount*);
 void(purple_marshal_VOID)(void(*cb)(),__builtin_va_list,void*,void**);
 void(purple_notify_user_info_prepend_section_header)(struct _PurpleNotifyUserInfo*,const char*);
-void(purple_proxy_info_set_host)(struct PurpleProxyInfo*,const char*);
 void(purple_certificate_verify)(struct _PurpleCertificateVerifier*,const char*,struct _GList*,void(*cb)(enum PurpleCertificateVerificationStatus,void*),void*);
-void(purple_notify_searchresults_column_add)(struct PurpleNotifySearchResults*,struct PurpleNotifySearchColumn*);
+void(purple_proxy_info_set_host)(struct PurpleProxyInfo*,const char*);
+char*(purple_media_candidate_get_foundation)(struct _PurpleMediaCandidate*);
 struct _PurpleEventLoopUiOps*(purple_eventloop_get_ui_ops)();
-const char*(purple_home_dir)();
 unsigned int(purple_input_add)(int,enum PurpleInputCondition,void(*func)(void*,int,enum PurpleInputCondition),void*);
 unsigned int(purple_timeout_add)(unsigned int,int(*function)(void*),void*);
 unsigned long(purple_media_set_output_window)(struct _PurpleMedia*,const char*,const char*,unsigned long);
@@ -1179,141 +1175,143 @@ void(purple_media_set_output_volume)(struct _PurpleMedia*,const char*,const char
 void(purple_media_set_input_volume)(struct _PurpleMedia*,const char*,double);
 int(purple_media_accepted)(struct _PurpleMedia*,const char*,const char*);
 int(purple_media_codecs_ready)(struct _PurpleMedia*,const char*);
-struct _GList*(purple_media_get_active_remote_candidates)(struct _PurpleMedia*,const char*,const char*);
-struct _GList*(purple_media_get_active_local_candidates)(struct _PurpleMedia*,const char*,const char*);
+void(purple_conversation_set_ui_ops)(struct _PurpleConversation*,struct _PurpleConversationUiOps*);
 struct _PurpleTheme*(purple_theme_loader_build)(struct _PurpleThemeLoader*,const char*);
 int(purple_srv_txt_query_get_type)(struct _PurpleSrvTxtQueryData*);
-enum PurpleMediaSessionType(purple_media_get_session_type)(struct _PurpleMedia*,const char*);
-int(purple_media_add_stream)(struct _PurpleMedia*,const char*,const char*,enum PurpleMediaSessionType,int,const char*,unsigned int,struct _GParameter*);
+void(purple_media_add_remote_candidates)(struct _PurpleMedia*,const char*,const char*,struct _GList*);
+struct _GList*(purple_media_get_codecs)(struct _PurpleMedia*,const char*);
 void(purple_conv_im_set_icon)(struct _PurpleConvIm*,struct _PurpleBuddyIcon*);
 void(purple_savedstatus_set_title)(struct _PurpleSavedStatus*,const char*);
-const char**(purple_media_get_available_params)(struct _PurpleMedia*);
+int(purple_media_add_stream)(struct _PurpleMedia*,const char*,const char*,enum PurpleMediaSessionType,int,const char*,unsigned int,struct _GParameter*);
 unsigned long(purple_signal_connect_vargs)(void*,const char*,void*,void(*func)(),void*);
 void(purple_blist_node_set_flags)(struct _PurpleBlistNode*,enum PurpleBlistNodeFlags);
+const char**(purple_media_get_available_params)(struct _PurpleMedia*);
+void(purple_media_set_params)(struct _PurpleMedia*,unsigned int,struct _GParameter*);
 void(purple_media_end)(struct _PurpleMedia*,const char*,const char*);
-void(purple_media_set_prpl_data)(struct _PurpleMedia*,void*);
 int(purple_log_common_deleter)(struct _PurpleLog*);
+void(purple_media_set_prpl_data)(struct _PurpleMedia*,void*);
 void*(purple_media_get_prpl_data)(struct _PurpleMedia*);
-struct _PurpleAccount*(purple_media_get_account)(struct _PurpleMedia*);
 struct _PurpleCipherContext*(purple_cipher_context_new)(struct _PurpleCipher*,void*);
 char*(purple_text_strip_mnemonic)(const char*);
-struct _PurpleKeyValuePair*(purple_media_codec_get_optional_parameter)(struct _PurpleMediaCodec*,const char*,const char*);
-void(purple_media_codec_remove_optional_parameter)(struct _PurpleMediaCodec*,struct _PurpleKeyValuePair*);
+void*(purple_notify_searchresults)(struct _PurpleConnection*,const char*,const char*,const char*,struct PurpleNotifySearchResults*,void(*cb)(void*),void*);
+struct _GList*(purple_media_codec_list_copy)(struct _GList*);
 struct _PurpleCertificateScheme*(purple_certificate_find_scheme)(const char*);
 void(purple_request_field_bool_set_default_value)(struct _PurpleRequestField*,int);
+const char*(purple_strcasestr)(const char*,const char*);
+struct _GList*(purple_media_codec_get_optional_parameters)(struct _PurpleMediaCodec*);
 unsigned int(purple_media_codec_get_channels)(struct _PurpleMediaCodec*);
 char*(purple_media_codec_get_encoding_name)(struct _PurpleMediaCodec*);
 unsigned int(purple_media_codec_get_id)(struct _PurpleMediaCodec*);
 struct _PurpleMediaCodec*(purple_media_codec_new)(int,const char*,enum PurpleMediaSessionType,unsigned int);
-char*(purple_uuid_random)();
 const char*(purple_buddy_get_contact_alias)(struct _PurpleBuddy*);
+char*(purple_uuid_random)();
 void*(purple_blist_get_handle)();
 const char*(purple_unescape_filename)(const char*);
-int(purple_message_meify)(char*,signed long);
-int(purple_utf8_strcasecmp)(const char*,const char*);
 const char*(purple_primitive_get_name_from_type)(enum PurpleStatusPrimitive);
-struct _GList*(purple_plugins_get_protocols)();
+int(purple_utf8_strcasecmp)(const char*,const char*);
 void(purple_conv_im_start_send_typed_timeout)(struct _PurpleConvIm*);
-char*(purple_utf8_salvage)(const char*);
+const char*(purple_gai_strerror)(int);
 const char*(purple_account_option_get_text)(const struct PurpleAccountOption*);
-struct _GList*(purple_uri_list_extract_uris)(const char*);
+char*(purple_utf8_salvage)(const char*);
+char*(purple_utf8_try_convert)(const char*);
 int(purple_request_field_string_is_editable)(const struct _PurpleRequestField*);
 void(purple_idle_set_ui_ops)(struct PurpleIdleUiOps*);
 void(purple_account_user_split_destroy)(struct PurpleAccountUserSplit*);
-int(purple_email_is_valid)(const char*);
+int(purple_ipv4_address_is_valid)(const char*);
 void(purple_plugins_register_probe_notify_cb)(void(*func)(void*),void*);
-const char*(purple_url_encode)(const char*);
 void(purple_notify_user_info_add_section_break)(struct _PurpleNotifyUserInfo*);
-const char*(purple_url_decode)(const char*);
+int(purple_email_is_valid)(const char*);
 void*(purple_notify_uri)(void*,const char*);
 const char*(purple_request_fields_get_string)(const struct PurpleRequestFields*,const char*);
-struct _PurpleUtilFetchUrlData*(purple_util_fetch_url_request_len_with_account)(struct _PurpleAccount*,const char*,int,const char*,int,const char*,int,signed long,void(*callback)(struct _PurpleUtilFetchUrlData*,void*,const char*,unsigned long,const char*),void*);
-int(purple_url_parse)(const char*,char**,int*,char**,char**,char**);
+const char*(purple_url_decode)(const char*);
+void(purple_util_fetch_url_cancel)(struct _PurpleUtilFetchUrlData*);
 void(purple_request_field_choice_add)(struct _PurpleRequestField*,const char*);
+int(purple_url_parse)(const char*,char**,int*,char**,char**,char**);
 char*(purple_str_seconds_to_string)(unsigned int);
 char*(purple_str_size_to_units)(unsigned long);
-const char*(purple_strcasestr)(const char*,const char*);
 void(purple_serv_got_private_alias)(struct _PurpleConnection*,const char*,const char*);
 void(purple_media_codec_add_optional_parameter)(struct _PurpleMediaCodec*,const char*,const char*);
-char*(purple_utf8_ncr_encode)(const char*);
-void(purple_util_chrreplace)(char*,char,char);
+char*(purple_utf8_ncr_decode)(const char*);
 void(purple_account_set_int)(struct _PurpleAccount*,const char*,int);
 void(purple_markup_html_to_xhtml)(const char*,char**,char**);
-char*(purple_str_add_cr)(const char*);
+void(purple_util_chrreplace)(char*,char,char);
 void(purple_marshal_BOOLEAN__POINTER_POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
-int(purple_str_has_prefix)(const char*,const char*);
+void(purple_str_strip_char)(char*,char);
+char*(purple_str_add_cr)(const char*);
 enum PurpleStatusPrimitive(purple_status_type_get_primitive)(const struct _PurpleStatusType*);
+int(purple_str_has_prefix)(const char*,const char*);
+const char*(purple_normalize_nocase)(const struct _PurpleAccount*,const char*);
 const char*(purple_normalize)(const struct _PurpleAccount*,const char*);
 int(purple_strequal)(const char*,const char*);
 int(purple_socket_get_family)(int);
 int(purple_running_osx)();
-void(purple_log_logger_free)(struct _PurpleLogLogger*);
-char*(purple_util_get_image_filename)(const void*,unsigned long);
 const char*(purple_theme_get_description)(struct _PurpleTheme*);
-struct _xmlnode*(purple_util_read_xml_from_file)(const char*,const char*);
+char*(purple_util_get_image_filename)(const void*,unsigned long);
 void(purple_plugin_pref_add_choice)(struct _PurplePluginPref*,const char*,void*);
+char*(purple_util_get_image_checksum)(const void*,unsigned long);
+struct _xmlnode*(purple_util_read_xml_from_file)(const char*,const char*);
 int(purple_util_write_data_to_file)(const char*,const char*,signed long);
-const char*(purple_user_dir)();
 void(purple_eventloop_set_ui_ops)(struct _PurpleEventLoopUiOps*);
 void(purple_value_destroy)(struct PurpleValue*);
-int(purple_markup_is_rtl)(const char*);
+const char*(purple_user_dir)();
 int(purple_group_on_account)(struct _PurpleGroup*,struct _PurpleAccount*);
 void(purple_connection_ssl_error)(struct _PurpleConnection*,enum PurpleSslErrorType);
+char*(purple_markup_get_css_property)(const char*,const char*);
+char*(purple_markup_get_tag_name)(const char*);
 char*(purple_markup_linkify)(const char*);
 char*(purple_markup_escape_text)(const char*,signed long);
 long(purple_time_build)(int,int,int,int,int,int);
-const char*(purple_date_format_full)(const struct tm*);
 void*(purple_pounces_get_handle)();
-const char*(purple_get_tzoff_str)(const struct tm*,int);
+const char*(purple_date_format_full)(const struct tm*);
 void(purple_account_remove_group)(struct _PurpleAccount*,struct _PurpleGroup*);
-unsigned char*(purple_quotedp_decode)(const char*,unsigned long*);
+const char*(purple_get_tzoff_str)(const struct tm*,int);
 void(purple_conv_chat_unignore)(struct _PurpleConvChat*,const char*);
 void(purple_blist_init)();
+unsigned char*(purple_quotedp_decode)(const char*,unsigned long*);
 void(purple_proxy_info_set_port)(struct PurpleProxyInfo*,int);
 unsigned char*(purple_base16_decode)(const char*,unsigned long*);
 void(purple_util_init)();
-char*(purple_util_format_song_info)(const char*,const char*,const char*,void*);
-void(purple_util_set_current_song)(const char*,const char*,const char*);
 void(purple_account_set_bool)(struct _PurpleAccount*,const char*,int);
-void(purple_notify_init)();
-void*(purple_notify_get_handle)();
+void(purple_util_set_current_song)(const char*,const char*,const char*);
+struct _PurpleMenuAction*(purple_menu_action_new)(const char*,void(*callback)(),void*,struct _GList*);
 struct _PurpleCertificate*(purple_certificate_copy)(struct _PurpleCertificate*);
-const char*(purple_conv_chat_cb_get_name)(struct _PurpleConvChatBuddy*);
+void*(purple_notify_get_handle)();
 struct _PurpleMediaCandidate*(purple_media_candidate_new)(const char*,unsigned int,enum PurpleMediaCandidateType,enum PurpleMediaNetworkProtocol,const char*,unsigned int);
 void(purple_conversation_present)(struct _PurpleConversation*);
+struct PurpleNotifyUiOps*(purple_notify_get_ui_ops)();
 void(purple_notify_close_with_handle)(void*);
 void(purple_notify_user_info_entry_set_type)(struct _PurpleNotifyUserInfoEntry*,enum PurpleNotifyUserInfoEntryType);
 void(purple_notify_user_info_entry_set_value)(struct _PurpleNotifyUserInfoEntry*,const char*);
 const char*(purple_notify_user_info_entry_get_value)(struct _PurpleNotifyUserInfoEntry*);
-void(purple_notify_user_info_entry_set_label)(struct _PurpleNotifyUserInfoEntry*,const char*);
-const char*(purple_notify_user_info_entry_get_label)(struct _PurpleNotifyUserInfoEntry*);
 struct _GList*(purple_conversation_get_extended_menu)(struct _PurpleConversation*);
+void(purple_notify_user_info_entry_set_label)(struct _PurpleNotifyUserInfoEntry*,const char*);
 void(purple_cipher_context_destroy)(struct _PurpleCipherContext*);
 void(purple_conversation_update)(struct _PurpleConversation*,enum PurpleConvUpdateType);
 const char*(purple_request_field_get_id)(const struct _PurpleRequestField*);
-struct _GList*(purple_notify_user_info_get_entries)(struct _PurpleNotifyUserInfo*);
 struct _PurpleStoredImage*(purple_imgstore_ref)(struct _PurpleStoredImage*);
 unsigned long(purple_media_candidate_type_get_type)();
 const char*(purple_plugin_get_homepage)(const struct _PurplePlugin*);
+void(purple_notify_user_info_add_pair)(struct _PurpleNotifyUserInfo*,const char*,const char*);
+struct _GList*(purple_notify_user_info_get_entries)(struct _PurpleNotifyUserInfo*);
+void(purple_log_logger_add)(struct _PurpleLogLogger*);
 struct _PurpleNotifyUserInfo*(purple_notify_user_info_new)();
 void*(purple_notify_emails)(void*,unsigned long,int,const char**,const char**,const char**,const char**,void(*cb)(void*),void*);
-void(purple_log_logger_add)(struct _PurpleLogLogger*);
-void*(purple_notify_message)(void*,enum PurpleNotifyMsgType,const char*,const char*,const char*,void(*cb)(void*),void*);
 struct _PurpleBuddyIcon*(purple_buddy_icons_find)(struct _PurpleAccount*,const char*);
 void(purple_media_error)(struct _PurpleMedia*,const char*,...);
-void(purple_notify_searchresults_row_add)(struct PurpleNotifySearchResults*,struct _GList*);
 void(purple_proxy_info_destroy)(struct PurpleProxyInfo*);
+void(purple_notify_searchresults_row_add)(struct PurpleNotifySearchResults*,struct _GList*);
+void(purple_notify_searchresults_column_add)(struct PurpleNotifySearchResults*,struct PurpleNotifySearchColumn*);
 struct PurpleNotifySearchResults*(purple_notify_searchresults_new)();
-void(purple_notify_searchresults_button_add)(struct PurpleNotifySearchResults*,enum PurpleNotifySearchButtonType,void(*cb)(struct _PurpleConnection*,struct _GList*,void*));
 void(purple_marshal_INT__INT_INT)(void(*cb)(),__builtin_va_list,void*,void**);
 void(purple_marshal_VOID__POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
-void*(purple_notify_searchresults)(struct _PurpleConnection*,const char*,const char*,const char*,struct PurpleNotifySearchResults*,void(*cb)(void*),void*);
+void(purple_notify_searchresults_button_add)(struct PurpleNotifySearchResults*,enum PurpleNotifySearchButtonType,void(*cb)(struct _PurpleConnection*,struct _GList*,void*));
 unsigned long(purple_signal_register)(void*,const char*,void(*marshal)(void(*cb)(),__builtin_va_list,void*,void**),struct PurpleValue*,int,...);
 void(purple_media_codec_list_free)(struct _GList*);
 struct _GList*(purple_plugins_get_loaded)();
 void(purple_value_set_uint)(struct PurpleValue*,unsigned int);
 char*(purple_media_candidate_get_username)(struct _PurpleMediaCandidate*);
 char*(purple_notify_searchresults_column_get_title)(struct PurpleNotifySearchResults*,unsigned int);
+void(purple_conv_im_stop_send_typed_timeout)(struct _PurpleConvIm*);
 int(purple_certificate_get_times)(struct _PurpleCertificate*,long*,long*);
 void(purple_marshal_INT__POINTER_POINTER_POINTER)(void(*cb)(),__builtin_va_list,void*,void**);
 char*(purple_buddy_icon_get_full_path)(struct _PurpleBuddyIcon*);
@@ -1323,8 +1321,8 @@ unsigned int(purple_media_candidate_get_priority)(struct _PurpleMediaCandidate*)
 char(purple_value_get_char)(const struct PurpleValue*);
 const char*(purple_status_type_get_id)(const struct _PurpleStatusType*);
 char*(purple_strcasereplace)(const char*,const char*,const char*);
-struct _PurplePlugin*(purple_plugins_find_with_basename)(const char*);
 char*(purple_base16_encode_chunked)(const unsigned char*,unsigned long);
+struct _PurplePlugin*(purple_plugins_find_with_basename)(const char*);
 void(purple_buddy_icons_init)();
 void(purple_xfer_end)(struct _PurpleXfer*);
 struct _PurpleGroup*(purple_contact_get_group)(const struct _PurpleContact*);
@@ -1335,72 +1333,74 @@ int(purple_privacy_check)(struct _PurpleAccount*,const char*);
 struct _PurpleConvChatBuddy*(purple_conv_chat_cb_new)(const char*,const char*,enum PurpleConvChatBuddyFlags);
 void(purple_theme_manager_init)();
 struct _PurpleContact*(purple_contact_new)();
+void(purple_conv_custom_smiley_close)(struct _PurpleConversation*,const char*);
 void(purple_request_field_group_add_field)(struct PurpleRequestFieldGroup*,struct _PurpleRequestField*);
 char*(purple_log_get_log_dir)(enum PurpleLogType,const char*,struct _PurpleAccount*);
-unsigned long(purple_media_caps_get_type)();
 void*(purple_conversations_get_handle)();
+unsigned long(purple_media_network_protocol_get_type)();
 void(purple_prefs_rename_boolean_toggle)(const char*,const char*);
 int(purple_log_delete)(struct _PurpleLog*);
 struct _PurpleAccount*(purple_chat_get_account)(struct _PurpleChat*);
 long(purple_conversation_message_get_timestamp)(struct _PurpleConvMessage*);
-void(purple_conv_chat_set_id)(struct _PurpleConvChat*,int);
-unsigned int(purple_media_candidate_get_ttl)(struct _PurpleMediaCandidate*);
+void(purple_conv_chat_write)(struct _PurpleConvChat*,const char*,const char*,enum PurpleMessageFlags,long);
 void(purple_certificate_destroy)(struct _PurpleCertificate*);
 enum PurpleMediaCaps(purple_prpl_get_media_caps)(struct _PurpleAccount*,const char*);
 void(purple_connection_error_reason)(struct _PurpleConnection*,enum PurpleConnectionError,const char*);
-unsigned short(purple_media_candidate_get_base_port)(struct _PurpleMediaCandidate*);
-char*(purple_media_candidate_get_base_ip)(struct _PurpleMediaCandidate*);
+enum PurpleMediaCandidateType(purple_media_candidate_get_candidate_type)(struct _PurpleMediaCandidate*);
+enum PurpleMediaNetworkProtocol(purple_media_candidate_get_protocol)(struct _PurpleMediaCandidate*);
 struct _PurplePresence*(purple_account_get_presence)(const struct _PurpleAccount*);
 char*(purple_strdup_withhtml)(const char*);
-char*(purple_media_candidate_get_foundation)(struct _PurpleMediaCandidate*);
-struct _GList*(purple_media_candidate_list_copy)(struct _GList*);
+unsigned short(purple_media_candidate_get_port)(struct _PurpleMediaCandidate*);
 void(purple_proxy_info_set_type)(struct PurpleProxyInfo*,enum PurpleProxyType);
-unsigned long(purple_media_state_changed_get_type)();
+struct _GList*(purple_media_candidate_list_copy)(struct _GList*);
 void(purple_xfer_cancel_remote)(struct _PurpleXfer*);
+unsigned long(purple_media_candidate_get_type)();
+unsigned long(purple_media_state_changed_get_type)();
 unsigned long(purple_media_session_type_get_type)();
-unsigned long(purple_media_network_protocol_get_type)();
-unsigned long(purple_media_info_type_get_type)();
 void(purple_xfer_unref)(struct _PurpleXfer*);
 struct _PurpleCertificatePool*(purple_certificate_find_pool)(const char*,const char*);
-void(purple_marshal_VOID__POINTER_UINT)(void(*cb)(),__builtin_va_list,void*,void**);
+unsigned long(purple_media_caps_get_type)();
+struct PurpleXferUiOps*(purple_xfers_get_ui_ops)();
 void(purple_presence_add_list)(struct _PurplePresence*,struct _GList*);
-const char*(purple_xfer_get_thumbnail_mimetype)(const struct _PurpleXfer*);
-const void*(purple_xfer_get_thumbnail)(const struct _PurpleXfer*,unsigned long*);
+int(purple_xfer_is_canceled)(const struct _PurpleXfer*);
 void(purple_xfer_update_progress)(struct _PurpleXfer*);
+const char*(purple_xfer_get_thumbnail_mimetype)(const struct _PurpleXfer*);
 struct _PurpleSmiley*(purple_smiley_new)(struct _PurpleStoredImage*,const char*);
+void(purple_xfer_ui_ready)(struct _PurpleXfer*);
 void(purple_xfer_conversation_write)(struct _PurpleXfer*,char*,int);
 void(purple_xfer_cancel_local)(struct _PurpleXfer*);
 void(purple_xfer_start)(struct _PurpleXfer*,int,const char*,unsigned int);
 signed long(purple_xfer_write)(struct _PurpleXfer*,const unsigned char*,unsigned long);
 signed long(purple_xfer_read)(struct _PurpleXfer*,unsigned char**);
 struct _GList*(purple_account_get_status_types)(const struct _PurpleAccount*);
-void(purple_xfer_set_size)(struct _PurpleXfer*,unsigned long);
 void(purple_value_set_uchar)(struct PurpleValue*,unsigned char);
 struct _PurpleAttentionType*(purple_attention_type_new)(const char*,const char*,const char*,const char*);
-void(purple_xfer_set_completed)(struct _PurpleXfer*,int);
-long(purple_xfer_get_end_time)(const struct _PurpleXfer*);
+void(purple_xfer_set_size)(struct _PurpleXfer*,unsigned long);
+void(purple_xfer_set_local_filename)(struct _PurpleXfer*,const char*);
 void(purple_whiteboard_start)(struct _PurpleWhiteboard*);
 void(purple_buddy_icons_set_for_user)(struct _PurpleAccount*,const char*,void*,unsigned long,const char*);
 void(purple_marshal_VOID__POINTER_INT_INT)(void(*cb)(),__builtin_va_list,void*,void**);
-const char*(purple_xfer_get_remote_ip)(const struct _PurpleXfer*);
+long(purple_xfer_get_start_time)(const struct _PurpleXfer*);
 void(purple_connection_new_unregister)(struct _PurpleAccount*,const char*,void(*cb)(struct _PurpleAccount*,int,void*),void*);
+const char*(purple_xfer_get_remote_ip)(const struct _PurpleXfer*);
+unsigned int(purple_xfer_get_local_port)(const struct _PurpleXfer*);
 unsigned long(purple_xfer_get_size)(const struct _PurpleXfer*);
-const char*(purple_xfer_get_local_filename)(const struct _PurpleXfer*);
-const char*(purple_xfer_get_filename)(const struct _PurpleXfer*);
 const char*(purple_ssl_strerror)(enum PurpleSslErrorType);
+const char*(purple_xfer_get_filename)(const struct _PurpleXfer*);
 void*(purple_xfers_get_handle)();
 struct _PurpleAccount*(purple_xfer_get_account)(const struct _PurpleXfer*);
 void(purple_xfer_request_denied)(struct _PurpleXfer*);
 void(purple_xfer_request_accepted)(struct _PurpleXfer*,const char*);
 struct _GList*(purple_xfers_get_all)();
 struct _PurpleXfer*(purple_xfer_new)(struct _PurpleAccount*,enum PurpleXferType,const char*);
-void(purple_conversations_init)();
 void(purple_notify_set_ui_ops)(struct PurpleNotifyUiOps*);
 struct _PurplePluginPref*(purple_plugin_pref_new_with_name)(const char*);
 int(purple_certificate_register_verifier)(struct _PurpleCertificateVerifier*);
-void(purple_conv_chat_invite_user)(struct _PurpleConvChat*,const char*,const char*,int);
+const char*(purple_conv_chat_cb_get_name)(struct _PurpleConvChatBuddy*);
 struct _PurplePresence*(purple_presence_new_for_account)(struct _PurpleAccount*);
 void(purple_certificate_destroy_list)(struct _GList*);
+void(purple_conv_chat_left)(struct _PurpleConvChat*);
+struct _PurpleConversation*(purple_find_chat)(const struct _PurpleConnection*,int);
 const char*(purple_conv_chat_get_nick)(struct _PurpleConvChat*);
 enum PurpleConvChatBuddyFlags(purple_conv_chat_user_get_flags)(struct _PurpleConvChat*,const char*);
 int(purple_conv_chat_find_user)(struct _PurpleConvChat*,const char*);
@@ -1408,32 +1408,31 @@ void(purple_conv_chat_remove_users)(struct _PurpleConvChat*,struct _GList*,const
 void(purple_conv_chat_remove_user)(struct _PurpleConvChat*,const char*,const char*);
 void(purple_prefs_set_int)(const char*,int);
 void(purple_conv_chat_add_users)(struct _PurpleConvChat*,struct _GList*,struct _GList*,struct _GList*,int);
+void(purple_value_set_boxed)(struct PurpleValue*,void*);
 void(purple_conv_chat_add_user)(struct _PurpleConvChat*,const char*,const char*,enum PurpleConvChatBuddyFlags,int);
 void(purple_conv_chat_send_with_flags)(struct _PurpleConvChat*,const char*,enum PurpleMessageFlags);
-void(purple_value_set_boxed)(struct PurpleValue*,void*);
-void(purple_conv_chat_write)(struct _PurpleConvChat*,const char*,const char*,enum PurpleMessageFlags,long);
-int(purple_conv_chat_get_id)(const struct _PurpleConvChat*);
 const char*(purple_status_get_id)(const struct _PurpleStatus*);
+void(purple_conv_chat_set_id)(struct _PurpleConvChat*,int);
+const char*(purple_conv_chat_get_topic)(const struct _PurpleConvChat*);
 int(purple_conv_chat_is_user_ignored)(const struct _PurpleConvChat*,const char*);
-struct _GList*(purple_conv_chat_get_ignored)(const struct _PurpleConvChat*);
-struct _GList*(purple_conv_chat_set_ignored)(struct _PurpleConvChat*,struct _GList*);
 void(purple_xfer_set_bytes_sent)(struct _PurpleXfer*,unsigned long);
-struct _GList*(purple_conv_chat_get_users)(const struct _PurpleConvChat*);
-struct _PurpleConversation*(purple_conv_chat_get_conversation)(const struct _PurpleConvChat*);
+struct _GList*(purple_conv_chat_set_ignored)(struct _PurpleConvChat*,struct _GList*);
+void(purple_conv_chat_ignore)(struct _PurpleConvChat*,const char*);
 void(purple_prefs_add_path)(const char*,const char*);
-void(purple_conv_custom_smiley_close)(struct _PurpleConversation*,const char*);
+struct _GList*(purple_conv_chat_get_users)(const struct _PurpleConvChat*);
 void(purple_value_set_boolean)(struct PurpleValue*,int);
-struct _PurpleStoredImage*(purple_imgstore_new_from_file)(const char*);
+struct _PurpleConversation*(purple_conv_chat_get_conversation)(const struct _PurpleConvChat*);
 struct _PurpleStatusType*(purple_account_get_status_type)(const struct _PurpleAccount*,const char*);
 void(purple_blist_server_alias_buddy)(struct _PurpleBuddy*,const char*);
 void(purple_plugin_destroy)(struct _PurplePlugin*);
 void(purple_cipher_context_set_data)(struct _PurpleCipherContext*,void*);
-void(purple_conv_im_write)(struct _PurpleConvIm*,const char*,const char*,enum PurpleMessageFlags,long);
+void(purple_conv_im_send)(struct _PurpleConvIm*,const char*);
 void(purple_request_field_choice_set_default_value)(struct _PurpleRequestField*,int);
+void(purple_conv_im_write)(struct _PurpleConvIm*,const char*,const char*,enum PurpleMessageFlags,long);
+void(purple_conv_im_update_typing)(struct _PurpleConvIm*);
 unsigned int(purple_conv_im_get_send_typed_timeout)(const struct _PurpleConvIm*);
-void(purple_conv_im_stop_send_typed_timeout)(struct _PurpleConvIm*);
-long(purple_conv_im_get_type_again)(const struct _PurpleConvIm*);
 struct _PurplePlugin*(purple_plugins_find_with_filename)(const char*);
+long(purple_conv_im_get_type_again)(const struct _PurpleConvIm*);
 void(purple_conv_im_start_typing_timeout)(struct _PurpleConvIm*,int);
 enum PurpleTypingState(purple_conv_im_get_typing_state)(const struct _PurpleConvIm*);
 struct _PurpleBuddyIcon*(purple_conv_im_get_icon)(const struct _PurpleConvIm*);
@@ -1446,26 +1445,24 @@ struct _GList*(purple_get_chats)();
 void*(purple_prefs_get_handle)();
 struct _GList*(purple_get_conversations)();
 void*(purple_conversation_get_data)(struct _PurpleConversation*,const char*);
-void(purple_conversation_set_data)(struct _PurpleConversation*,const char*,void*);
 void(purple_txt_response_destroy)(struct _PurpleTxtResponse*);
+void(purple_conversation_close_logs)(struct _PurpleConversation*);
 void(purple_conversation_set_logging)(struct _PurpleConversation*,int);
-void(purple_marshal_INT__INT)(void(*cb)(),__builtin_va_list,void*,void**);
-void(purple_conv_chat_cb_set_attribute)(struct _PurpleConvChat*,struct _PurpleConvChatBuddy*,const char*,const char*);
 void(purple_set_blist)(struct _PurpleBuddyList*);
+void(purple_conv_chat_cb_set_attribute)(struct _PurpleConvChat*,struct _PurpleConvChatBuddy*,const char*,const char*);
+struct _GList*(purple_conv_chat_cb_get_attribute_keys)(struct _PurpleConvChatBuddy*);
 const char*(purple_conv_chat_cb_get_attribute)(struct _PurpleConvChatBuddy*,const char*);
 const char*(purple_conversation_get_name)(const struct _PurpleConversation*);
-void(purple_conversation_set_name)(struct _PurpleConversation*,const char*);
-const char*(purple_conversation_get_title)(const struct _PurpleConversation*);
 void(purple_blist_show)();
-struct _PurpleConnection*(purple_conversation_get_gc)(const struct _PurpleConversation*);
+const char*(purple_conversation_get_title)(const struct _PurpleConversation*);
 struct _PurplePlugin*(purple_plugin_probe)(const char*);
 int(purple_prefs_exists)(const char*);
 const char*(purple_buddy_get_server_alias)(struct _PurpleBuddy*);
+struct _PurpleConnection*(purple_conversation_get_gc)(const struct _PurpleConversation*);
+struct _PurpleAccount*(purple_conversation_get_account)(const struct _PurpleConversation*);
 void(purple_conversation_set_account)(struct _PurpleConversation*,struct _PurpleAccount*);
 struct _PurpleConversationUiOps*(purple_conversation_get_ui_ops)(const struct _PurpleConversation*);
 void(purple_conversations_set_ui_ops)(struct _PurpleConversationUiOps*);
-void(purple_conversation_set_ui_ops)(struct _PurpleConversation*,struct _PurpleConversationUiOps*);
-enum PurpleConversationType(purple_conversation_get_type)(const struct _PurpleConversation*);
 int(purple_media_candidates_prepared)(struct _PurpleMedia*,const char*,const char*);
 void*(purple_plugin_ipc_call)(struct _PurplePlugin*,const char*,int*,...);
 void(purple_serv_got_join_chat_failed)(struct _PurpleConnection*,struct _GHashTable*);
@@ -1479,19 +1476,21 @@ char*(purple_certificate_pool_mkpath)(struct _PurpleCertificatePool*,const char*
 unsigned long(purple_media_codec_get_type)();
 void(purple_request_field_list_set_multi_select)(struct _PurpleRequestField*,int);
 void(purple_conv_chat_set_topic)(struct _PurpleConvChat*,const char*,const char*);
-struct _PurpleLogLogger*(purple_log_logger_get)();
-void(purple_log_logger_set)(struct _PurpleLogLogger*);
+void*(purple_log_get_handle)();
 int(purple_program_is_valid)(const char*);
-const char*(purple_value_get_string)(const struct PurpleValue*);
+void(purple_log_logger_set)(struct _PurpleLogLogger*);
+void(purple_log_logger_free)(struct _PurpleLogLogger*);
 int(purple_request_field_is_visible)(const struct _PurpleRequestField*);
+const char*(purple_value_get_string)(const struct PurpleValue*);
+int(purple_log_set_compare)(const void*,const void*);
 int(purple_log_get_size)(struct _PurpleLog*);
 struct _GList*(purple_log_get_system_logs)(struct _PurpleAccount*);
 struct _GHashTable*(purple_log_get_log_sets)();
 struct _GList*(purple_log_get_logs)(enum PurpleLogType,const char*,struct _PurpleAccount*);
 int(purple_util_write_data_to_file_absolute)(const char*,const char*,signed long);
 void(purple_request_field_int_set_default_value)(struct _PurpleRequestField*,int);
-int(purple_plugin_reload)(struct _PurplePlugin*);
 char*(purple_utf8_strip_unprintables)(const char*);
+struct _GList*(purple_plugins_get_protocols)();
 void(purple_roomlist_expand_category)(struct _PurpleRoomlist*,struct _PurpleRoomlistRoom*);
 void(purple_marshal_BOOLEAN__POINTER_BOOLEAN)(void(*cb)(),__builtin_va_list,void*,void**);
 void(purple_plugins_add_search_path)(const char*);
@@ -1503,6 +1502,7 @@ struct _PurpleAccount*(purple_presence_get_account)(const struct _PurplePresence
 const char*(purple_plugin_get_id)(const struct _PurplePlugin*);
 struct _GList*(purple_cmd_list)(struct _PurpleConversation*);
 int(purple_circ_buffer_mark_read)(struct _PurpleCircBuffer*,unsigned long);
+const char*(purple_plugin_get_version)(const struct _PurplePlugin*);
 void(purple_conversation_set_title)(struct _PurpleConversation*,const char*);
 void(purple_notify_user_info_prepend_pair)(struct _PurpleNotifyUserInfo*,const char*,const char*);
 int(purple_plugin_register)(struct _PurplePlugin*);
@@ -1893,14 +1893,14 @@ do
 		GetConversation = function(self) local v = CLIB.purple_conv_im_get_conversation(self.ptr) v = wrap_pointer(v, "Conversation") return v end,
 		GetIcon = function(self) local v = CLIB.purple_conv_im_get_icon(self.ptr) v = wrap_pointer(v, "BuddyIcon") return v end,
 		UpdateTyping = function(self) local v = CLIB.purple_conv_im_update_typing(self.ptr)  return v end,
-		GetTypingState = function(self) local v = CLIB.purple_conv_im_get_typing_state(self.ptr)  return v end,
-		SetTypeAgain = function(self, val) local v = CLIB.purple_conv_im_set_type_again(self.ptr, val)  return v end,
 		StopSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_stop_send_typed_timeout(self.ptr)  return v end,
+		StartTypingTimeout = function(self, timeout) local v = CLIB.purple_conv_im_start_typing_timeout(self.ptr, timeout)  return v end,
 		SetIcon = function(self, icon) local v = CLIB.purple_conv_im_set_icon(self.ptr, icon.ptr)  return v end,
 		StartSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_start_send_typed_timeout(self.ptr)  return v end,
+		SetTypeAgain = function(self, val) local v = CLIB.purple_conv_im_set_type_again(self.ptr, val)  return v end,
 		Send = function(self, message) local v = CLIB.purple_conv_im_send(self.ptr, message)  return v end,
 		SetTypingState = function(self, state) local v = CLIB.purple_conv_im_set_typing_state(self.ptr, state)  return v end,
-		StartTypingTimeout = function(self, timeout) local v = CLIB.purple_conv_im_start_typing_timeout(self.ptr, timeout)  return v end,
+		GetTypingState = function(self) local v = CLIB.purple_conv_im_get_typing_state(self.ptr)  return v end,
 	}
 	META.__index = META
 	metatables.ConvIm = META
@@ -1944,9 +1944,9 @@ do
 	local META = {
 		ctype = ffi.typeof("struct _PurpleConvChat"),
 		Unignore = function(self, name) local v = CLIB.purple_conv_chat_unignore(self.ptr, name)  return v end,
-		SetTopic = function(self, who, topic) local v = CLIB.purple_conv_chat_set_topic(self.ptr, who, topic)  return v end,
+		GetId = function(self) local v = CLIB.purple_conv_chat_get_id(self.ptr)  return v end,
 		GetIgnored = function(selfcast_type) local v = CLIB.purple_conv_chat_get_ignored(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		SetNick = function(self, nick) local v = CLIB.purple_conv_chat_set_nick(self.ptr, nick)  return v end,
+		GetNick = function(self) local v = CLIB.purple_conv_chat_get_nick(self.ptr) v = chars_to_string(v) return v end,
 		GetUsers = function(selfcast_type) local v = CLIB.purple_conv_chat_get_users(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		UserGetFlags = function(self, user) local v = CLIB.purple_conv_chat_user_get_flags(self.ptr, user)  return v end,
 		RenameUser = function(self, old_user, new_user) local v = CLIB.purple_conv_chat_rename_user(self.ptr, old_user, new_user)  return v end,
@@ -1970,11 +1970,11 @@ do
 		CbFind = function(self, name) local v = CLIB.purple_conv_chat_cb_find(self.ptr, name)  return v end,
 		GetIgnoredUser = function(self, user) local v = CLIB.purple_conv_chat_get_ignored_user(self.ptr, user) v = chars_to_string(v) return v end,
 		Ignore = function(self, name) local v = CLIB.purple_conv_chat_ignore(self.ptr, name)  return v end,
+		SetTopic = function(self, who, topic) local v = CLIB.purple_conv_chat_set_topic(self.ptr, who, topic)  return v end,
 		SetUsers = function(self, users, cast_type) local v = CLIB.purple_conv_chat_set_users(self.ptr, table_to_glist(users)) v = glist_to_table(v, cast_type) return v end,
-		GetNick = function(self) local v = CLIB.purple_conv_chat_get_nick(self.ptr) v = chars_to_string(v) return v end,
-		CbSetAttribute = function(self, cb, key, value) local v = CLIB.purple_conv_chat_cb_set_attribute(self.ptr, cb, key, value)  return v end,
+		SetNick = function(self, nick) local v = CLIB.purple_conv_chat_set_nick(self.ptr, nick)  return v end,
 		FindUser = function(self, user) local v = CLIB.purple_conv_chat_find_user(self.ptr, user)  return v end,
-		GetId = function(self) local v = CLIB.purple_conv_chat_get_id(self.ptr)  return v end,
+		CbSetAttribute = function(self, cb, key, value) local v = CLIB.purple_conv_chat_cb_set_attribute(self.ptr, cb, key, value)  return v end,
 		InviteUser = function(self, user, message, confirm) local v = CLIB.purple_conv_chat_invite_user(self.ptr, user, message, confirm)  return v end,
 	}
 	META.__index = META
@@ -2007,7 +2007,7 @@ end
 do
 	local META = {
 		ctype = ffi.typeof("struct _PurpleBlistNode"),
-		SetBool = function(self, key, value) local v = CLIB.purple_blist_node_set_bool(self.ptr, key, value)  return v end,
+		GetBool = function(self, key) local v = CLIB.purple_blist_node_get_bool(self.ptr, key)  return v end,
 		SetUiData = function(self, ui_data) local v = CLIB.purple_blist_node_set_ui_data(self.ptr, ui_data)  return v end,
 		GetType = function(self) local v = CLIB.purple_blist_node_get_type(self.ptr)  return v end,
 		GetSiblingNext = function(self) local v = CLIB.purple_blist_node_get_sibling_next(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
@@ -2016,15 +2016,15 @@ do
 		GetSiblingPrev = function(self) local v = CLIB.purple_blist_node_get_sibling_prev(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
 		GetFlags = function(self) local v = CLIB.purple_blist_node_get_flags(self.ptr)  return v end,
 		SetString = function(self, key, value) local v = CLIB.purple_blist_node_set_string(self.ptr, key, value)  return v end,
-		GetBool = function(self, key) local v = CLIB.purple_blist_node_get_bool(self.ptr, key)  return v end,
 		GetInt = function(self, key) local v = CLIB.purple_blist_node_get_int(self.ptr, key)  return v end,
+		SetInt = function(self, key, value) local v = CLIB.purple_blist_node_set_int(self.ptr, key, value)  return v end,
 		GetUiData = function(self) local v = CLIB.purple_blist_node_get_ui_data(self.ptr)  return v end,
 		GetExtendedMenu = function(selfcast_type) local v = CLIB.purple_blist_node_get_extended_menu(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		SetFlags = function(self, flags) local v = CLIB.purple_blist_node_set_flags(self.ptr, flags)  return v end,
 		Next = function(self, offline) local v = CLIB.purple_blist_node_next(self.ptr, offline) v = wrap_pointer(v, "BlistNode") return v end,
 		GetParent = function(self) local v = CLIB.purple_blist_node_get_parent(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
 		RemoveSetting = function(self, key) local v = CLIB.purple_blist_node_remove_setting(self.ptr, key)  return v end,
-		SetInt = function(self, key, value) local v = CLIB.purple_blist_node_set_int(self.ptr, key, value)  return v end,
+		SetBool = function(self, key, value) local v = CLIB.purple_blist_node_set_bool(self.ptr, key, value)  return v end,
 	}
 	META.__index = META
 	metatables.BlistNode = META
@@ -2061,64 +2061,64 @@ end
 do
 	local META = {
 		ctype = ffi.typeof("struct _PurpleRequestField"),
-		ChoiceGetLabels = function(selfcast_type) local v = CLIB.purple_request_field_choice_get_labels(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		ListGetItems = function(selfcast_type) local v = CLIB.purple_request_field_list_get_items(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		ImageGetScaleY = function(self) local v = CLIB.purple_request_field_image_get_scale_y(self.ptr)  return v end,
-		BoolSetValue = function(self, value) local v = CLIB.purple_request_field_bool_set_value(self.ptr, value)  return v end,
+		BoolGetValue = function(self) local v = CLIB.purple_request_field_bool_get_value(self.ptr)  return v end,
 		ChoiceSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_choice_set_default_value(self.ptr, default_value)  return v end,
 		GetType = function(self) local v = CLIB.purple_request_field_get_type(self.ptr)  return v end,
 		StringGetDefaultValue = function(self) local v = CLIB.purple_request_field_string_get_default_value(self.ptr) v = chars_to_string(v) return v end,
 		GetGroup = function(self) local v = CLIB.purple_request_field_get_group(self.ptr) v = wrap_pointer(v, "RequestFieldGroup") return v end,
-		ListAdd = function(self, item, data) local v = CLIB.purple_request_field_list_add(self.ptr, item, data)  return v end,
+		ListAddSelected = function(self, item) local v = CLIB.purple_request_field_list_add_selected(self.ptr, item)  return v end,
 		IsRequired = function(self) local v = CLIB.purple_request_field_is_required(self.ptr)  return v end,
 		ChoiceAdd = function(self, label) local v = CLIB.purple_request_field_choice_add(self.ptr, label)  return v end,
-		ListGetSelected = function(selfcast_type) local v = CLIB.purple_request_field_list_get_selected(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		StringSetValue = function(self, value) local v = CLIB.purple_request_field_string_set_value(self.ptr, value)  return v end,
 		StringGetValue = function(self) local v = CLIB.purple_request_field_string_get_value(self.ptr) v = chars_to_string(v) return v end,
-		ListAddSelected = function(self, item) local v = CLIB.purple_request_field_list_add_selected(self.ptr, item)  return v end,
-		BoolSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_bool_set_default_value(self.ptr, default_value)  return v end,
 		ImageSetScale = function(self, x, y) local v = CLIB.purple_request_field_image_set_scale(self.ptr, x, y)  return v end,
+		BoolSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_bool_set_default_value(self.ptr, default_value)  return v end,
+		GetUiData = function(self) local v = CLIB.purple_request_field_get_ui_data(self.ptr)  return v end,
 		ListSetMultiSelect = function(self, multi_select) local v = CLIB.purple_request_field_list_set_multi_select(self.ptr, multi_select)  return v end,
 		AccountGetShowAll = function(self) local v = CLIB.purple_request_field_account_get_show_all(self.ptr)  return v end,
-		StringSetValue = function(self, value) local v = CLIB.purple_request_field_string_set_value(self.ptr, value)  return v end,
+		ChoiceSetValue = function(self, value) local v = CLIB.purple_request_field_choice_set_value(self.ptr, value)  return v end,
 		ListAddIcon = function(self, item, icon_path, data) local v = CLIB.purple_request_field_list_add_icon(self.ptr, item, icon_path, data)  return v end,
 		AccountGetFilter = function(self) local v = CLIB.purple_request_field_account_get_filter(self.ptr)  return v end,
 		SetLabel = function(self, label) local v = CLIB.purple_request_field_set_label(self.ptr, label)  return v end,
-		AccountSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_account_set_default_value(self.ptr, default_value.ptr)  return v end,
-		ListGetItems = function(selfcast_type) local v = CLIB.purple_request_field_list_get_items(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		AccountGetDefaultValue = function(self) local v = CLIB.purple_request_field_account_get_default_value(self.ptr) v = wrap_pointer(v, "Account") return v end,
+		ListGetSelected = function(selfcast_type) local v = CLIB.purple_request_field_list_get_selected(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		SetRequired = function(self, required) local v = CLIB.purple_request_field_set_required(self.ptr, required)  return v end,
 		GetLabel = function(self) local v = CLIB.purple_request_field_get_label(self.ptr) v = chars_to_string(v) return v end,
 		ListGetIcons = function(selfcast_type) local v = CLIB.purple_request_field_list_get_icons(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		StringSetEditable = function(self, editable) local v = CLIB.purple_request_field_string_set_editable(self.ptr, editable)  return v end,
 		ListGetData = function(self, text) local v = CLIB.purple_request_field_list_get_data(self.ptr, text)  return v end,
-		SetVisible = function(self, visible) local v = CLIB.purple_request_field_set_visible(self.ptr, visible)  return v end,
-		Destroy = function(self) local v = CLIB.purple_request_field_destroy(self.ptr)  return v end,
+		ChoiceGetDefaultValue = function(self) local v = CLIB.purple_request_field_choice_get_default_value(self.ptr)  return v end,
+		ListAdd = function(self, item, data) local v = CLIB.purple_request_field_list_add(self.ptr, item, data)  return v end,
 		AccountGetValue = function(self) local v = CLIB.purple_request_field_account_get_value(self.ptr) v = wrap_pointer(v, "Account") return v end,
 		ListClearSelected = function(self) local v = CLIB.purple_request_field_list_clear_selected(self.ptr)  return v end,
-		BoolGetValue = function(self) local v = CLIB.purple_request_field_bool_get_value(self.ptr)  return v end,
-		ChoiceGetDefaultValue = function(self) local v = CLIB.purple_request_field_choice_get_default_value(self.ptr)  return v end,
+		SetVisible = function(self, visible) local v = CLIB.purple_request_field_set_visible(self.ptr, visible)  return v end,
 		IsVisible = function(self) local v = CLIB.purple_request_field_is_visible(self.ptr)  return v end,
-		SetUiData = function(self, ui_data) local v = CLIB.purple_request_field_set_ui_data(self.ptr, ui_data)  return v end,
 		StringIsEditable = function(self) local v = CLIB.purple_request_field_string_is_editable(self.ptr)  return v end,
-		ImageGetBuffer = function(self) local v = CLIB.purple_request_field_image_get_buffer(self.ptr) v = chars_to_string(v) return v end,
-		StringIsMasked = function(self) local v = CLIB.purple_request_field_string_is_masked(self.ptr)  return v end,
-		IntSetValue = function(self, value) local v = CLIB.purple_request_field_int_set_value(self.ptr, value)  return v end,
+		SetUiData = function(self, ui_data) local v = CLIB.purple_request_field_set_ui_data(self.ptr, ui_data)  return v end,
 		AccountSetValue = function(self, value) local v = CLIB.purple_request_field_account_set_value(self.ptr, value.ptr)  return v end,
+		StringIsMasked = function(self) local v = CLIB.purple_request_field_string_is_masked(self.ptr)  return v end,
+		GetId = function(self) local v = CLIB.purple_request_field_get_id(self.ptr) v = chars_to_string(v) return v end,
+		IntSetValue = function(self, value) local v = CLIB.purple_request_field_int_set_value(self.ptr, value)  return v end,
+		ImageGetBuffer = function(self) local v = CLIB.purple_request_field_image_get_buffer(self.ptr) v = chars_to_string(v) return v end,
 		IntGetDefaultValue = function(self) local v = CLIB.purple_request_field_int_get_default_value(self.ptr)  return v end,
 		AccountSetFilter = function(self, filter_func) local v = CLIB.purple_request_field_account_set_filter(self.ptr, filter_func)  return v end,
 		ChoiceGetValue = function(self) local v = CLIB.purple_request_field_choice_get_value(self.ptr)  return v end,
-		GetUiData = function(self) local v = CLIB.purple_request_field_get_ui_data(self.ptr)  return v end,
+		SetTypeHint = function(self, type_hint) local v = CLIB.purple_request_field_set_type_hint(self.ptr, type_hint)  return v end,
 		StringIsMultiline = function(self) local v = CLIB.purple_request_field_string_is_multiline(self.ptr)  return v end,
 		ImageGetSize = function(self) local v = CLIB.purple_request_field_image_get_size(self.ptr)  return v end,
-		ChoiceSetValue = function(self, value) local v = CLIB.purple_request_field_choice_set_value(self.ptr, value)  return v end,
-		SetTypeHint = function(self, type_hint) local v = CLIB.purple_request_field_set_type_hint(self.ptr, type_hint)  return v end,
-		StringSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_string_set_default_value(self.ptr, default_value)  return v end,
-		AccountGetDefaultValue = function(self) local v = CLIB.purple_request_field_account_get_default_value(self.ptr) v = wrap_pointer(v, "Account") return v end,
-		IntGetValue = function(self) local v = CLIB.purple_request_field_int_get_value(self.ptr)  return v end,
+		Destroy = function(self) local v = CLIB.purple_request_field_destroy(self.ptr)  return v end,
 		ListGetMultiSelect = function(self) local v = CLIB.purple_request_field_list_get_multi_select(self.ptr)  return v end,
+		StringSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_string_set_default_value(self.ptr, default_value)  return v end,
+		AccountSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_account_set_default_value(self.ptr, default_value.ptr)  return v end,
+		IntGetValue = function(self) local v = CLIB.purple_request_field_int_get_value(self.ptr)  return v end,
+		ChoiceGetLabels = function(selfcast_type) local v = CLIB.purple_request_field_choice_get_labels(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		AccountSetShowAll = function(self, show_all) local v = CLIB.purple_request_field_account_set_show_all(self.ptr, show_all)  return v end,
-		GetId = function(self) local v = CLIB.purple_request_field_get_id(self.ptr) v = chars_to_string(v) return v end,
-		ImageGetScaleX = function(self) local v = CLIB.purple_request_field_image_get_scale_x(self.ptr)  return v end,
-		ListSetSelected = function(self, items) local v = CLIB.purple_request_field_list_set_selected(self.ptr, table_to_glist(items))  return v end,
 		ListIsSelected = function(self, item) local v = CLIB.purple_request_field_list_is_selected(self.ptr, item)  return v end,
+		ImageGetScaleX = function(self) local v = CLIB.purple_request_field_image_get_scale_x(self.ptr)  return v end,
+		BoolSetValue = function(self, value) local v = CLIB.purple_request_field_bool_set_value(self.ptr, value)  return v end,
+		ListSetSelected = function(self, items) local v = CLIB.purple_request_field_list_set_selected(self.ptr, table_to_glist(items))  return v end,
 		BoolGetDefaultValue = function(self) local v = CLIB.purple_request_field_bool_get_default_value(self.ptr)  return v end,
 		StringSetMasked = function(self, masked) local v = CLIB.purple_request_field_string_set_masked(self.ptr, masked)  return v end,
 		GetTypeHint = function(self) local v = CLIB.purple_request_field_get_type_hint(self.ptr) v = chars_to_string(v) return v end,
@@ -2133,7 +2133,7 @@ do
 		GetBatchMode = function(self) local v = CLIB.purple_cipher_context_get_batch_mode(self.ptr)  return v end,
 		SetKeyWithLen = function(self, key, len) local v = CLIB.purple_cipher_context_set_key_with_len(self.ptr, key, len)  return v end,
 		Reset = function(self, extra) local v = CLIB.purple_cipher_context_reset(self.ptr, extra)  return v end,
-		SetKey = function(self, key) local v = CLIB.purple_cipher_context_set_key(self.ptr, key)  return v end,
+		Decrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_decrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
 		GetSaltSize = function(self) local v = CLIB.purple_cipher_context_get_salt_size(self.ptr)  return v end,
 		DigestToStr = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest_to_str(self.ptr, in_len, unknown_3, out_len)  return v end,
 		GetKeySize = function(self) local v = CLIB.purple_cipher_context_get_key_size(self.ptr)  return v end,
@@ -2142,13 +2142,13 @@ do
 		Digest = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest(self.ptr, in_len, unknown_3, out_len)  return v end,
 		SetData = function(self, data) local v = CLIB.purple_cipher_context_set_data(self.ptr, data)  return v end,
 		Destroy = function(self) local v = CLIB.purple_cipher_context_destroy(self.ptr)  return v end,
-		Decrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_decrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
+		Encrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_encrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
 		SetSalt = function(self, salt) local v = CLIB.purple_cipher_context_set_salt(self.ptr, salt)  return v end,
 		GetBlockSize = function(self) local v = CLIB.purple_cipher_context_get_block_size(self.ptr)  return v end,
-		SetOption = function(self, name, value) local v = CLIB.purple_cipher_context_set_option(self.ptr, name, value)  return v end,
+		SetKey = function(self, key) local v = CLIB.purple_cipher_context_set_key(self.ptr, key)  return v end,
 		GetOption = function(self, name) local v = CLIB.purple_cipher_context_get_option(self.ptr, name)  return v end,
+		SetOption = function(self, name, value) local v = CLIB.purple_cipher_context_set_option(self.ptr, name, value)  return v end,
 		GetData = function(self) local v = CLIB.purple_cipher_context_get_data(self.ptr)  return v end,
-		Encrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_encrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
 		SetBatchMode = function(self, mode) local v = CLIB.purple_cipher_context_set_batch_mode(self.ptr, mode)  return v end,
 	}
 	META.__index = META
@@ -2198,18 +2198,18 @@ do
 	local META = {
 		ctype = ffi.typeof("struct _PurpleMediaCandidate"),
 		GetBasePort = function(self) local v = CLIB.purple_media_candidate_get_base_port(self.ptr)  return v end,
-		GetFoundation = function(self) local v = CLIB.purple_media_candidate_get_foundation(self.ptr) v = chars_to_string(v) return v end,
 		GetProtocol = function(self) local v = CLIB.purple_media_candidate_get_protocol(self.ptr)  return v end,
-		GetComponentId = function(self) local v = CLIB.purple_media_candidate_get_component_id(self.ptr)  return v end,
+		GetBaseIp = function(self) local v = CLIB.purple_media_candidate_get_base_ip(self.ptr) v = chars_to_string(v) return v end,
+		Copy = function(self) local v = CLIB.purple_media_candidate_copy(self.ptr) v = wrap_pointer(v, "MediaCandidate") return v end,
 		GetPriority = function(self) local v = CLIB.purple_media_candidate_get_priority(self.ptr)  return v end,
 		GetTtl = function(self) local v = CLIB.purple_media_candidate_get_ttl(self.ptr)  return v end,
 		GetIp = function(self) local v = CLIB.purple_media_candidate_get_ip(self.ptr) v = chars_to_string(v) return v end,
 		GetUsername = function(self) local v = CLIB.purple_media_candidate_get_username(self.ptr) v = chars_to_string(v) return v end,
-		GetBaseIp = function(self) local v = CLIB.purple_media_candidate_get_base_ip(self.ptr) v = chars_to_string(v) return v end,
-		Copy = function(self) local v = CLIB.purple_media_candidate_copy(self.ptr) v = wrap_pointer(v, "MediaCandidate") return v end,
+		GetPort = function(self) local v = CLIB.purple_media_candidate_get_port(self.ptr)  return v end,
+		GetComponentId = function(self) local v = CLIB.purple_media_candidate_get_component_id(self.ptr)  return v end,
 		GetCandidateType = function(self) local v = CLIB.purple_media_candidate_get_candidate_type(self.ptr)  return v end,
 		GetPassword = function(self) local v = CLIB.purple_media_candidate_get_password(self.ptr) v = chars_to_string(v) return v end,
-		GetPort = function(self) local v = CLIB.purple_media_candidate_get_port(self.ptr)  return v end,
+		GetFoundation = function(self) local v = CLIB.purple_media_candidate_get_foundation(self.ptr) v = chars_to_string(v) return v end,
 	}
 	META.__index = META
 	metatables.MediaCandidate = META
@@ -2249,21 +2249,21 @@ do
 		GetEnabled = function(self, ui) local v = CLIB.purple_account_get_enabled(self.ptr, ui)  return v end,
 		SetCheckMail = function(self, value) local v = CLIB.purple_account_set_check_mail(self.ptr, value)  return v end,
 		SetBool = function(self, name, value) local v = CLIB.purple_account_set_bool(self.ptr, name, value)  return v end,
-		ClearCurrentError = function(self) local v = CLIB.purple_account_clear_current_error(self.ptr)  return v end,
+		IsStatusActive = function(self, status_id) local v = CLIB.purple_account_is_status_active(self.ptr, status_id)  return v end,
 		GetPassword = function(self) local v = CLIB.purple_account_get_password(self.ptr) v = chars_to_string(v) return v end,
 		SetEnabled = function(self, ui, value) local v = CLIB.purple_account_set_enabled(self.ptr, ui, value)  return v end,
 		SetUserInfo = function(self, user_info) local v = CLIB.purple_account_set_user_info(self.ptr, user_info)  return v end,
 		NotifyAdded = function(self, remote_user, id, alias, message) local v = CLIB.purple_account_notify_added(self.ptr, remote_user, id, alias, message)  return v end,
 		GetPrivacyType = function(self) local v = CLIB.purple_account_get_privacy_type(self.ptr)  return v end,
-		GetProxyInfo = function(self) local v = CLIB.purple_account_get_proxy_info(self.ptr) v = wrap_pointer(v, "ProxyInfo") return v end,
-		SetStatusList = function(self, status_id, active, attrs) local v = CLIB.purple_account_set_status_list(self.ptr, status_id, active, table_to_glist(attrs))  return v end,
+		Register = function(self) local v = CLIB.purple_account_register(self.ptr)  return v end,
+		RemoveBuddy = function(self, buddy, group) local v = CLIB.purple_account_remove_buddy(self.ptr, buddy.ptr, group.ptr)  return v end,
 		Destroy = function(self) local v = CLIB.purple_account_destroy(self.ptr)  return v end,
 		GetStatusTypes = function(selfcast_type) local v = CLIB.purple_account_get_status_types(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		RemoveSetting = function(self, setting) local v = CLIB.purple_account_remove_setting(self.ptr, setting)  return v end,
+		GetProtocolName = function(self) local v = CLIB.purple_account_get_protocol_name(self.ptr) v = chars_to_string(v) return v end,
 		SetStatus = function(self, status_id, active, _4) local v = CLIB.purple_account_set_status(self.ptr, status_id, active, _4)  return v end,
 		GetCurrentError = function(self) local v = CLIB.purple_account_get_current_error(self.ptr)  return v end,
 		IsConnected = function(self) local v = CLIB.purple_account_is_connected(self.ptr)  return v end,
-		SetPublicAlias = function(self, alias, success_cb, failure_cb) local v = CLIB.purple_account_set_public_alias(self.ptr, alias, success_cb, failure_cb)  return v end,
+		GetConnection = function(self) local v = CLIB.purple_account_get_connection(self.ptr) v = wrap_pointer(v, "Connection") return v end,
 		RequestChangePassword = function(self) local v = CLIB.purple_account_request_change_password(self.ptr)  return v end,
 		SetUsername = function(self, username) local v = CLIB.purple_account_set_username(self.ptr, username)  return v end,
 		DestroyLog = function(self) local v = CLIB.purple_account_destroy_log(self.ptr)  return v end,
@@ -2275,51 +2275,51 @@ do
 		Disconnect = function(self) local v = CLIB.purple_account_disconnect(self.ptr)  return v end,
 		RemoveGroup = function(self, group) local v = CLIB.purple_account_remove_group(self.ptr, group.ptr)  return v end,
 		RequestAdd = function(self, remote_user, id, alias, message) local v = CLIB.purple_account_request_add(self.ptr, remote_user, id, alias, message)  return v end,
-		GetProtocolName = function(self) local v = CLIB.purple_account_get_protocol_name(self.ptr) v = chars_to_string(v) return v end,
 		GetBool = function(self, name, default_value) local v = CLIB.purple_account_get_bool(self.ptr, name, default_value)  return v end,
-		GetNameForDisplay = function(self) local v = CLIB.purple_account_get_name_for_display(self.ptr) v = chars_to_string(v) return v end,
-		GetPublicAlias = function(self, success_cb, failure_cb) local v = CLIB.purple_account_get_public_alias(self.ptr, success_cb, failure_cb)  return v end,
-		RemoveBuddies = function(self, buddies, groups) local v = CLIB.purple_account_remove_buddies(self.ptr, table_to_glist(buddies), table_to_glist(groups))  return v end,
 		SetPassword = function(self, password) local v = CLIB.purple_account_set_password(self.ptr, password)  return v end,
-		GetInt = function(self, name, default_value) local v = CLIB.purple_account_get_int(self.ptr, name, default_value)  return v end,
+		GetNameForDisplay = function(self) local v = CLIB.purple_account_get_name_for_display(self.ptr) v = chars_to_string(v) return v end,
 		SetUiString = function(self, ui, name, value) local v = CLIB.purple_account_set_ui_string(self.ptr, ui, name, value)  return v end,
+		RemoveBuddies = function(self, buddies, groups) local v = CLIB.purple_account_remove_buddies(self.ptr, table_to_glist(buddies), table_to_glist(groups))  return v end,
+		SetStatusList = function(self, status_id, active, attrs) local v = CLIB.purple_account_set_status_list(self.ptr, status_id, active, table_to_glist(attrs))  return v end,
 		GetCheckMail = function(self) local v = CLIB.purple_account_get_check_mail(self.ptr)  return v end,
+		GetBuddyIconPath = function(self) local v = CLIB.purple_account_get_buddy_icon_path(self.ptr) v = chars_to_string(v) return v end,
+		GetPublicAlias = function(self, success_cb, failure_cb) local v = CLIB.purple_account_get_public_alias(self.ptr, success_cb, failure_cb)  return v end,
 		AddBuddies = function(self, buddies) local v = CLIB.purple_account_add_buddies(self.ptr, table_to_glist(buddies))  return v end,
-		RemoveBuddy = function(self, buddy, group) local v = CLIB.purple_account_remove_buddy(self.ptr, buddy.ptr, group.ptr)  return v end,
+		GetAlias = function(self) local v = CLIB.purple_account_get_alias(self.ptr) v = chars_to_string(v) return v end,
 		SetRememberPassword = function(self, value) local v = CLIB.purple_account_set_remember_password(self.ptr, value)  return v end,
 		SetPrivacyType = function(self, privacy_type) local v = CLIB.purple_account_set_privacy_type(self.ptr, privacy_type)  return v end,
-		GetAlias = function(self) local v = CLIB.purple_account_get_alias(self.ptr) v = chars_to_string(v) return v end,
 		RequestPassword = function(self, ok_cb, cancel_cb, user_data) local v = CLIB.purple_account_request_password(self.ptr, ok_cb, cancel_cb, user_data)  return v end,
+		GetString = function(self, name, default_value) local v = CLIB.purple_account_get_string(self.ptr, name, default_value) v = chars_to_string(v) return v end,
 		GetPresence = function(self) local v = CLIB.purple_account_get_presence(self.ptr) v = wrap_pointer(v, "Presence") return v end,
 		GetStatusTypeWithPrimitive = function(self, primitive) local v = CLIB.purple_account_get_status_type_with_primitive(self.ptr, primitive) v = wrap_pointer(v, "StatusType") return v end,
 		SetUiBool = function(self, ui, name, value) local v = CLIB.purple_account_set_ui_bool(self.ptr, ui, name, value)  return v end,
-		GetConnection = function(self) local v = CLIB.purple_account_get_connection(self.ptr) v = wrap_pointer(v, "Connection") return v end,
 		SetSilenceSuppression = function(self, value) local v = CLIB.purple_account_set_silence_suppression(self.ptr, value)  return v end,
+		ClearCurrentError = function(self) local v = CLIB.purple_account_clear_current_error(self.ptr)  return v end,
 		SetInt = function(self, name, value) local v = CLIB.purple_account_set_int(self.ptr, name, value)  return v end,
+		GetInt = function(self, name, default_value) local v = CLIB.purple_account_get_int(self.ptr, name, default_value)  return v end,
+		GetProtocolId = function(self) local v = CLIB.purple_account_get_protocol_id(self.ptr) v = chars_to_string(v) return v end,
 		GetRememberPassword = function(self) local v = CLIB.purple_account_get_remember_password(self.ptr)  return v end,
-		GetStatus = function(self, status_id) local v = CLIB.purple_account_get_status(self.ptr, status_id) v = wrap_pointer(v, "Status") return v end,
-		GetActiveStatus = function(self) local v = CLIB.purple_account_get_active_status(self.ptr) v = wrap_pointer(v, "Status") return v end,
-		GetString = function(self, name, default_value) local v = CLIB.purple_account_get_string(self.ptr, name, default_value) v = chars_to_string(v) return v end,
+		RemoveSetting = function(self, setting) local v = CLIB.purple_account_remove_setting(self.ptr, setting)  return v end,
 		AddBuddyWithInvite = function(self, buddy, message) local v = CLIB.purple_account_add_buddy_with_invite(self.ptr, buddy.ptr, message)  return v end,
 		GetUserInfo = function(self) local v = CLIB.purple_account_get_user_info(self.ptr) v = chars_to_string(v) return v end,
 		SetStatusTypes = function(self, status_types) local v = CLIB.purple_account_set_status_types(self.ptr, table_to_glist(status_types))  return v end,
 		SetAlias = function(self, alias) local v = CLIB.purple_account_set_alias(self.ptr, alias)  return v end,
 		AddBuddiesWithInvite = function(self, buddies, message) local v = CLIB.purple_account_add_buddies_with_invite(self.ptr, table_to_glist(buddies), message)  return v end,
-		Unregister = function(self, cb, user_data) local v = CLIB.purple_account_unregister(self.ptr, cb, user_data)  return v end,
-		Register = function(self) local v = CLIB.purple_account_register(self.ptr)  return v end,
-		GetSilenceSuppression = function(self) local v = CLIB.purple_account_get_silence_suppression(self.ptr)  return v end,
-		GetBuddyIconPath = function(self) local v = CLIB.purple_account_get_buddy_icon_path(self.ptr) v = chars_to_string(v) return v end,
+		GetProxyInfo = function(self) local v = CLIB.purple_account_get_proxy_info(self.ptr) v = wrap_pointer(v, "ProxyInfo") return v end,
 		SupportsOfflineMessage = function(self, buddy) local v = CLIB.purple_account_supports_offline_message(self.ptr, buddy.ptr)  return v end,
+		GetSilenceSuppression = function(self) local v = CLIB.purple_account_get_silence_suppression(self.ptr)  return v end,
+		SetPublicAlias = function(self, alias, success_cb, failure_cb) local v = CLIB.purple_account_set_public_alias(self.ptr, alias, success_cb, failure_cb)  return v end,
+		SetConnection = function(self, gc) local v = CLIB.purple_account_set_connection(self.ptr, gc.ptr)  return v end,
 		GetLog = function(self, create) local v = CLIB.purple_account_get_log(self.ptr, create) v = wrap_pointer(v, "Log") return v end,
 		Connect = function(self) local v = CLIB.purple_account_connect(self.ptr)  return v end,
-		GetStatusType = function(self, id) local v = CLIB.purple_account_get_status_type(self.ptr, id) v = wrap_pointer(v, "StatusType") return v end,
+		GetActiveStatus = function(self) local v = CLIB.purple_account_get_active_status(self.ptr) v = wrap_pointer(v, "Status") return v end,
 		RequestChangeUserInfo = function(self) local v = CLIB.purple_account_request_change_user_info(self.ptr)  return v end,
-		GetProtocolId = function(self) local v = CLIB.purple_account_get_protocol_id(self.ptr) v = chars_to_string(v) return v end,
-		IsStatusActive = function(self, status_id) local v = CLIB.purple_account_is_status_active(self.ptr, status_id)  return v end,
+		Unregister = function(self, cb, user_data) local v = CLIB.purple_account_unregister(self.ptr, cb, user_data)  return v end,
+		GetStatusType = function(self, id) local v = CLIB.purple_account_get_status_type(self.ptr, id) v = wrap_pointer(v, "StatusType") return v end,
 		RequestAuthorization = function(self, remote_user, id, alias, message, on_list, auth_cb, deny_cb, user_data) local v = CLIB.purple_account_request_authorization(self.ptr, remote_user, id, alias, message, on_list, auth_cb, deny_cb, user_data)  return v end,
 		RequestCloseWithAccount = function(self) local v = CLIB.purple_account_request_close_with_account(self.ptr)  return v end,
-		SetConnection = function(self, gc) local v = CLIB.purple_account_set_connection(self.ptr, gc.ptr)  return v end,
 		IsDisconnected = function(self) local v = CLIB.purple_account_is_disconnected(self.ptr)  return v end,
+		GetStatus = function(self, status_id) local v = CLIB.purple_account_get_status(self.ptr, status_id) v = wrap_pointer(v, "Status") return v end,
 	}
 	META.__index = META
 	metatables.Account = META
@@ -2344,7 +2344,7 @@ do
 		HasFocus = function(self) local v = CLIB.purple_conversation_has_focus(self.ptr)  return v end,
 		CloseLogs = function(self) local v = CLIB.purple_conversation_close_logs(self.ptr)  return v end,
 		CustomSmileyAdd = function(self, smile, cksum_type, chksum, remote) local v = CLIB.purple_conv_custom_smiley_add(self.ptr, smile, cksum_type, chksum, remote)  return v end,
-		SetTitle = function(self, title) local v = CLIB.purple_conversation_set_title(self.ptr, title)  return v end,
+		GetUiOps = function(self) local v = CLIB.purple_conversation_get_ui_ops(self.ptr)  return v end,
 		GetExtendedMenu = function(selfcast_type) local v = CLIB.purple_conversation_get_extended_menu(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		GetTitle = function(self) local v = CLIB.purple_conversation_get_title(self.ptr) v = chars_to_string(v) return v end,
 		Write = function(self, who, message, flags, mtime) local v = CLIB.purple_conversation_write(self.ptr, who, message, flags, mtime)  return v end,
@@ -2359,7 +2359,7 @@ do
 		GetAccount = function(self) local v = CLIB.purple_conversation_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
 		CustomSmileyClose = function(self, smile) local v = CLIB.purple_conv_custom_smiley_close(self.ptr, smile)  return v end,
 		SetData = function(self, key, data) local v = CLIB.purple_conversation_set_data(self.ptr, key, data)  return v end,
-		GetUiOps = function(self) local v = CLIB.purple_conversation_get_ui_ops(self.ptr)  return v end,
+		SetTitle = function(self, title) local v = CLIB.purple_conversation_set_title(self.ptr, title)  return v end,
 	}
 	META.__index = META
 	metatables.Conversation = META
@@ -2404,7 +2404,7 @@ do
 		GetPrplData = function(self) local v = CLIB.purple_media_get_prpl_data(self.ptr)  return v end,
 		SetOutputWindow = function(self, session_id, participant, window_id) local v = CLIB.purple_media_set_output_window(self.ptr, session_id, participant, window_id)  return v end,
 		GetAvailableParams = function(self) local v = CLIB.purple_media_get_available_params(self.ptr)  return v end,
-		SetPrplData = function(self, prpl_data) local v = CLIB.purple_media_set_prpl_data(self.ptr, prpl_data)  return v end,
+		GetActiveLocalCandidates = function(self, sess_id, participant, cast_type) local v = CLIB.purple_media_get_active_local_candidates(self.ptr, sess_id, participant) v = glist_to_table(v, cast_type) return v end,
 		SetSendCodec = function(self, sess_id, codec) local v = CLIB.purple_media_set_send_codec(self.ptr, sess_id, codec.ptr)  return v end,
 		CandidatesPrepared = function(self, session_id, participant) local v = CLIB.purple_media_candidates_prepared(self.ptr, session_id, participant)  return v end,
 		AddStream = function(self, sess_id, who, type, initiator, transmitter, num_params, params) local v = CLIB.purple_media_add_stream(self.ptr, sess_id, who, type, initiator, transmitter, num_params, params)  return v end,
@@ -2412,23 +2412,23 @@ do
 		GetLocalCandidates = function(self, sess_id, participant, cast_type) local v = CLIB.purple_media_get_local_candidates(self.ptr, sess_id, participant) v = glist_to_table(v, cast_type) return v end,
 		GetSessionIds = function(selfcast_type) local v = CLIB.purple_media_get_session_ids(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		Accepted = function(self, sess_id, participant) local v = CLIB.purple_media_accepted(self.ptr, sess_id, participant)  return v end,
-		GetManager = function(self) local v = CLIB.purple_media_get_manager(self.ptr) v = wrap_pointer(v, "MediaManager") return v end,
+		CodecsReady = function(self, sess_id) local v = CLIB.purple_media_codecs_ready(self.ptr, sess_id)  return v end,
 		SetOutputVolume = function(self, session_id, participant, level) local v = CLIB.purple_media_set_output_volume(self.ptr, session_id, participant, level)  return v end,
 		ParamIsSupported = function(self, param) local v = CLIB.purple_media_param_is_supported(self.ptr, param)  return v end,
-		CodecsReady = function(self, sess_id) local v = CLIB.purple_media_codecs_ready(self.ptr, sess_id)  return v end,
-		SetParams = function(self, num_params, params) local v = CLIB.purple_media_set_params(self.ptr, num_params, params)  return v end,
-		AddRemoteCandidates = function(self, sess_id, participant, remote_candidates) local v = CLIB.purple_media_add_remote_candidates(self.ptr, sess_id, participant, table_to_glist(remote_candidates))  return v end,
+		SetRemoteCodecs = function(self, sess_id, participant, codecs) local v = CLIB.purple_media_set_remote_codecs(self.ptr, sess_id, participant, table_to_glist(codecs))  return v end,
+		RemoveOutputWindows = function(self) local v = CLIB.purple_media_remove_output_windows(self.ptr)  return v end,
+		IsInitiator = function(self, sess_id, participant) local v = CLIB.purple_media_is_initiator(self.ptr, sess_id, participant)  return v end,
 		GetCodecs = function(self, sess_id, cast_type) local v = CLIB.purple_media_get_codecs(self.ptr, sess_id) v = glist_to_table(v, cast_type) return v end,
-		GetSessionType = function(self, sess_id) local v = CLIB.purple_media_get_session_type(self.ptr, sess_id)  return v end,
 		Error = function(self, error, _3) local v = CLIB.purple_media_error(self.ptr, error, _3)  return v end,
+		SetParams = function(self, num_params, params) local v = CLIB.purple_media_set_params(self.ptr, num_params, params)  return v end,
 		GetAccount = function(self) local v = CLIB.purple_media_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
 		SetInputVolume = function(self, session_id, level) local v = CLIB.purple_media_set_input_volume(self.ptr, session_id, level)  return v end,
-		RemoveOutputWindows = function(self) local v = CLIB.purple_media_remove_output_windows(self.ptr)  return v end,
-		SetRemoteCodecs = function(self, sess_id, participant, codecs) local v = CLIB.purple_media_set_remote_codecs(self.ptr, sess_id, participant, table_to_glist(codecs))  return v end,
+		AddRemoteCandidates = function(self, sess_id, participant, remote_candidates) local v = CLIB.purple_media_add_remote_candidates(self.ptr, sess_id, participant, table_to_glist(remote_candidates))  return v end,
+		GetManager = function(self) local v = CLIB.purple_media_get_manager(self.ptr) v = wrap_pointer(v, "MediaManager") return v end,
 		StreamInfo = function(self, type, session_id, participant, local_) local v = CLIB.purple_media_stream_info(self.ptr, type, session_id, participant, local_)  return v end,
-		GetActiveLocalCandidates = function(self, sess_id, participant, cast_type) local v = CLIB.purple_media_get_active_local_candidates(self.ptr, sess_id, participant) v = glist_to_table(v, cast_type) return v end,
+		SetPrplData = function(self, prpl_data) local v = CLIB.purple_media_set_prpl_data(self.ptr, prpl_data)  return v end,
 		End = function(self, session_id, participant) local v = CLIB.purple_media_end(self.ptr, session_id, participant)  return v end,
-		IsInitiator = function(self, sess_id, participant) local v = CLIB.purple_media_is_initiator(self.ptr, sess_id, participant)  return v end,
+		GetSessionType = function(self, sess_id) local v = CLIB.purple_media_get_session_type(self.ptr, sess_id)  return v end,
 	}
 	META.__index = META
 	metatables.Media = META
@@ -2512,11 +2512,11 @@ do
 		SendDrawList = function(self, list) local v = CLIB.purple_whiteboard_send_draw_list(self.ptr, table_to_glist(list))  return v end,
 		Destroy = function(self) local v = CLIB.purple_whiteboard_destroy(self.ptr)  return v end,
 		GetDimensions = function(self, width, height) local v = CLIB.purple_whiteboard_get_dimensions(self.ptr, width, height)  return v end,
-		SetPrplOps = function(self, ops) local v = CLIB.purple_whiteboard_set_prpl_ops(self.ptr, ops)  return v end,
-		Start = function(self) local v = CLIB.purple_whiteboard_start(self.ptr)  return v end,
-		SendClear = function(self) local v = CLIB.purple_whiteboard_send_clear(self.ptr)  return v end,
-		SendBrush = function(self, size, color) local v = CLIB.purple_whiteboard_send_brush(self.ptr, size, color)  return v end,
 		SetBrush = function(self, size, color) local v = CLIB.purple_whiteboard_set_brush(self.ptr, size, color)  return v end,
+		Start = function(self) local v = CLIB.purple_whiteboard_start(self.ptr)  return v end,
+		SetPrplOps = function(self, ops) local v = CLIB.purple_whiteboard_set_prpl_ops(self.ptr, ops)  return v end,
+		SendBrush = function(self, size, color) local v = CLIB.purple_whiteboard_send_brush(self.ptr, size, color)  return v end,
+		SendClear = function(self) local v = CLIB.purple_whiteboard_send_clear(self.ptr)  return v end,
 		GetBrush = function(self, size, color) local v = CLIB.purple_whiteboard_get_brush(self.ptr, size, color)  return v end,
 		DrawLine = function(self, x1, y1, x2, y2, color, size) local v = CLIB.purple_whiteboard_draw_line(self.ptr, x1, y1, x2, y2, color, size)  return v end,
 		Clear = function(self) local v = CLIB.purple_whiteboard_clear(self.ptr)  return v end,
@@ -2620,7 +2620,7 @@ do
 		IsStatusActive = function(self, status_id) local v = CLIB.purple_presence_is_status_active(self.ptr, status_id)  return v end,
 		IsAvailable = function(self) local v = CLIB.purple_presence_is_available(self.ptr)  return v end,
 		GetContext = function(self) local v = CLIB.purple_presence_get_context(self.ptr)  return v end,
-		GetStatuses = function(selfcast_type) local v = CLIB.purple_presence_get_statuses(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		SetLoginTime = function(self, login_time) local v = CLIB.purple_presence_set_login_time(self.ptr, login_time)  return v end,
 		AddList = function(self, source_list) local v = CLIB.purple_presence_add_list(self.ptr, table_to_glist(source_list))  return v end,
 		GetActiveStatus = function(self) local v = CLIB.purple_presence_get_active_status(self.ptr) v = wrap_pointer(v, "Status") return v end,
 		SwitchStatus = function(self, status_id) local v = CLIB.purple_presence_switch_status(self.ptr, status_id)  return v end,
@@ -2633,11 +2633,11 @@ do
 		Destroy = function(self) local v = CLIB.purple_presence_destroy(self.ptr)  return v end,
 		GetAccount = function(self) local v = CLIB.purple_presence_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
 		IsIdle = function(self) local v = CLIB.purple_presence_is_idle(self.ptr)  return v end,
-		SetStatusActive = function(self, status_id, active) local v = CLIB.purple_presence_set_status_active(self.ptr, status_id, active)  return v end,
+		GetStatuses = function(selfcast_type) local v = CLIB.purple_presence_get_statuses(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		GetLoginTime = function(self) local v = CLIB.purple_presence_get_login_time(self.ptr)  return v end,
+		SetStatusActive = function(self, status_id, active) local v = CLIB.purple_presence_set_status_active(self.ptr, status_id, active)  return v end,
 		Compare = function(self, presence2) local v = CLIB.purple_presence_compare(self.ptr, presence2.ptr)  return v end,
 		AddStatus = function(self, status) local v = CLIB.purple_presence_add_status(self.ptr, status.ptr)  return v end,
-		SetLoginTime = function(self, login_time) local v = CLIB.purple_presence_set_login_time(self.ptr, login_time)  return v end,
 		GetChatUser = function(self) local v = CLIB.purple_presence_get_chat_user(self.ptr) v = chars_to_string(v) return v end,
 	}
 	META.__index = META
@@ -2711,7 +2711,7 @@ do
 	local META = {
 		ctype = ffi.typeof("struct _PurplePlugin"),
 		Disable = function(self) local v = CLIB.purple_plugin_disable(self.ptr)  return v end,
-		GetId = function(self) local v = CLIB.purple_plugin_get_id(self.ptr) v = chars_to_string(v) return v end,
+		Reload = function(self) local v = CLIB.purple_plugin_reload(self.ptr)  return v end,
 		IpcCall = function(self, command, ok, _4) local v = CLIB.purple_plugin_ipc_call(self.ptr, command, ok, _4)  return v end,
 		IpcRegister = function(self, command, func, marshal, ret_value, num_params, _7) local v = CLIB.purple_plugin_ipc_register(self.ptr, command, func, marshal, ret_value.ptr, num_params, _7)  return v end,
 		GetVersion = function(self) local v = CLIB.purple_plugin_get_version(self.ptr) v = chars_to_string(v) return v end,
@@ -2724,12 +2724,12 @@ do
 		GetHomepage = function(self) local v = CLIB.purple_plugin_get_homepage(self.ptr) v = chars_to_string(v) return v end,
 		Destroy = function(self) local v = CLIB.purple_plugin_destroy(self.ptr)  return v end,
 		GetSummary = function(self) local v = CLIB.purple_plugin_get_summary(self.ptr) v = chars_to_string(v) return v end,
-		Reload = function(self) local v = CLIB.purple_plugin_reload(self.ptr)  return v end,
 		GetName = function(self) local v = CLIB.purple_plugin_get_name(self.ptr) v = chars_to_string(v) return v end,
-		GetDescription = function(self) local v = CLIB.purple_plugin_get_description(self.ptr) v = chars_to_string(v) return v end,
 		GetAuthor = function(self) local v = CLIB.purple_plugin_get_author(self.ptr) v = chars_to_string(v) return v end,
+		GetDescription = function(self) local v = CLIB.purple_plugin_get_description(self.ptr) v = chars_to_string(v) return v end,
 		IpcUnregister = function(self, command) local v = CLIB.purple_plugin_ipc_unregister(self.ptr, command)  return v end,
 		IsLoaded = function(self) local v = CLIB.purple_plugin_is_loaded(self.ptr)  return v end,
+		GetId = function(self) local v = CLIB.purple_plugin_get_id(self.ptr) v = chars_to_string(v) return v end,
 	}
 	META.__index = META
 	metatables.Plugin = META
@@ -2749,14 +2749,14 @@ do
 		AddAttrs = function(self, id, name, value, _5) local v = CLIB.purple_status_type_add_attrs(self.ptr, id, name, value.ptr, _5)  return v end,
 		AddAttr = function(self, id, name, value) local v = CLIB.purple_status_type_add_attr(self.ptr, id, name, value.ptr)  return v end,
 		GetPrimitive = function(self) local v = CLIB.purple_status_type_get_primitive(self.ptr)  return v end,
-		GetPrimaryAttr = function(self) local v = CLIB.purple_status_type_get_primary_attr(self.ptr) v = chars_to_string(v) return v end,
+		GetAttr = function(self, id) local v = CLIB.purple_status_type_get_attr(self.ptr, id) v = wrap_pointer(v, "StatusAttr") return v end,
 		IsAvailable = function(self) local v = CLIB.purple_status_type_is_available(self.ptr)  return v end,
 		GetAttrs = function(selfcast_type) local v = CLIB.purple_status_type_get_attrs(self.ptr) v = glist_to_table(v, cast_type) return v end,
 		SetPrimaryAttr = function(self, attr_id) local v = CLIB.purple_status_type_set_primary_attr(self.ptr, attr_id)  return v end,
 		Destroy = function(self) local v = CLIB.purple_status_type_destroy(self.ptr)  return v end,
-		IsExclusive = function(self) local v = CLIB.purple_status_type_is_exclusive(self.ptr)  return v end,
+		GetPrimaryAttr = function(self) local v = CLIB.purple_status_type_get_primary_attr(self.ptr) v = chars_to_string(v) return v end,
 		GetName = function(self) local v = CLIB.purple_status_type_get_name(self.ptr) v = chars_to_string(v) return v end,
-		GetAttr = function(self, id) local v = CLIB.purple_status_type_get_attr(self.ptr, id) v = wrap_pointer(v, "StatusAttr") return v end,
+		IsExclusive = function(self) local v = CLIB.purple_status_type_is_exclusive(self.ptr)  return v end,
 		IsIndependent = function(self) local v = CLIB.purple_status_type_is_independent(self.ptr)  return v end,
 		AddAttrsVargs = function(self, args) local v = CLIB.purple_status_type_add_attrs_vargs(self.ptr, args)  return v end,
 		IsSaveable = function(self) local v = CLIB.purple_status_type_is_saveable(self.ptr)  return v end,
@@ -2783,9 +2783,9 @@ do
 		SetValue = function(self, value) local v = CLIB.purple_notify_user_info_entry_set_value(self.ptr, value)  return v end,
 		GetLabel = function(self) local v = CLIB.purple_notify_user_info_entry_get_label(self.ptr) v = chars_to_string(v) return v end,
 		GetValue = function(self) local v = CLIB.purple_notify_user_info_entry_get_value(self.ptr) v = chars_to_string(v) return v end,
-		GetType = function(self) local v = CLIB.purple_notify_user_info_entry_get_type(self.ptr)  return v end,
-		SetLabel = function(self, label) local v = CLIB.purple_notify_user_info_entry_set_label(self.ptr, label)  return v end,
 		SetType = function(self, type) local v = CLIB.purple_notify_user_info_entry_set_type(self.ptr, type)  return v end,
+		SetLabel = function(self, label) local v = CLIB.purple_notify_user_info_entry_set_label(self.ptr, label)  return v end,
+		GetType = function(self) local v = CLIB.purple_notify_user_info_entry_get_type(self.ptr)  return v end,
 	}
 	META.__index = META
 	metatables.NotifyUserInfoEntry = META
@@ -2845,25 +2845,25 @@ do
 		End = function(self) local v = CLIB.purple_xfer_end(self.ptr)  return v end,
 		GetSize = function(self) local v = CLIB.purple_xfer_get_size(self.ptr)  return v end,
 		SetCompleted = function(self, completed) local v = CLIB.purple_xfer_set_completed(self.ptr, completed)  return v end,
-		GetUiOps = function(self) local v = CLIB.purple_xfer_get_ui_ops(self.ptr)  return v end,
-		GetEndTime = function(self) local v = CLIB.purple_xfer_get_end_time(self.ptr)  return v end,
 		SetMessage = function(self, message) local v = CLIB.purple_xfer_set_message(self.ptr, message)  return v end,
+		GetEndTime = function(self) local v = CLIB.purple_xfer_get_end_time(self.ptr)  return v end,
+		SetFilename = function(self, filename) local v = CLIB.purple_xfer_set_filename(self.ptr, filename)  return v end,
 		RequestAccepted = function(self, filename) local v = CLIB.purple_xfer_request_accepted(self.ptr, filename)  return v end,
 		Unref = function(self) local v = CLIB.purple_xfer_unref(self.ptr)  return v end,
 		CancelLocal = function(self) local v = CLIB.purple_xfer_cancel_local(self.ptr)  return v end,
 		GetStartTime = function(self) local v = CLIB.purple_xfer_get_start_time(self.ptr)  return v end,
 		Write = function(self, buffer, size) local v = CLIB.purple_xfer_write(self.ptr, buffer, size)  return v end,
-		SetFilename = function(self, filename) local v = CLIB.purple_xfer_set_filename(self.ptr, filename)  return v end,
+		GetAccount = function(self) local v = CLIB.purple_xfer_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
 		Ref = function(self) local v = CLIB.purple_xfer_ref(self.ptr)  return v end,
 		UiReady = function(self) local v = CLIB.purple_xfer_ui_ready(self.ptr)  return v end,
+		GetLocalFilename = function(self) local v = CLIB.purple_xfer_get_local_filename(self.ptr) v = chars_to_string(v) return v end,
 		SetThumbnail = function(self, thumbnail, size, mimetype) local v = CLIB.purple_xfer_set_thumbnail(self.ptr, thumbnail, size, mimetype)  return v end,
-		GetRemoteUser = function(self) local v = CLIB.purple_xfer_get_remote_user(self.ptr) v = chars_to_string(v) return v end,
 		PrepareThumbnail = function(self, formats) local v = CLIB.purple_xfer_prepare_thumbnail(self.ptr, formats)  return v end,
-		GetAccount = function(self) local v = CLIB.purple_xfer_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
+		GetUiOps = function(self) local v = CLIB.purple_xfer_get_ui_ops(self.ptr)  return v end,
 		SetBytesSent = function(self, bytes_sent) local v = CLIB.purple_xfer_set_bytes_sent(self.ptr, bytes_sent)  return v end,
 		GetRemotePort = function(self) local v = CLIB.purple_xfer_get_remote_port(self.ptr)  return v end,
 		GetProgress = function(self) local v = CLIB.purple_xfer_get_progress(self.ptr)  return v end,
-		GetLocalFilename = function(self) local v = CLIB.purple_xfer_get_local_filename(self.ptr) v = chars_to_string(v) return v end,
+		GetRemoteUser = function(self) local v = CLIB.purple_xfer_get_remote_user(self.ptr) v = chars_to_string(v) return v end,
 		Start = function(self, fd, ip, port) local v = CLIB.purple_xfer_start(self.ptr, fd, ip, port)  return v end,
 		Request = function(self) local v = CLIB.purple_xfer_request(self.ptr)  return v end,
 	}
@@ -2886,10 +2886,10 @@ do
 		ctype = ffi.typeof("struct _PurpleContact"),
 		GetGroup = function(self) local v = CLIB.purple_contact_get_group(self.ptr) v = wrap_pointer(v, "Group") return v end,
 		GetPriorityBuddy = function(self) local v = CLIB.purple_contact_get_priority_buddy(self.ptr) v = wrap_pointer(v, "Buddy") return v end,
-		SetAlias = function(self, alias) local v = CLIB.purple_contact_set_alias(self.ptr, alias)  return v end,
+		GetAlias = function(self) local v = CLIB.purple_contact_get_alias(self.ptr) v = chars_to_string(v) return v end,
 		OnAccount = function(self, account) local v = CLIB.purple_contact_on_account(self.ptr, account.ptr)  return v end,
 		InvalidatePriorityBuddy = function(self) local v = CLIB.purple_contact_invalidate_priority_buddy(self.ptr)  return v end,
-		GetAlias = function(self) local v = CLIB.purple_contact_get_alias(self.ptr) v = chars_to_string(v) return v end,
+		SetAlias = function(self, alias) local v = CLIB.purple_contact_set_alias(self.ptr, alias)  return v end,
 		Destroy = function(self) local v = CLIB.purple_contact_destroy(self.ptr)  return v end,
 	}
 	META.__index = META
@@ -2926,15 +2926,15 @@ do
 		SslError = function(self, ssl_error) local v = CLIB.purple_connection_ssl_error(self.ptr, ssl_error)  return v end,
 		SetState = function(self, state) local v = CLIB.purple_connection_set_state(self.ptr, state)  return v end,
 		GetPrpl = function(self) local v = CLIB.purple_connection_get_prpl(self.ptr) v = wrap_pointer(v, "Plugin") return v end,
-		SetAccount = function(self, account) local v = CLIB.purple_connection_set_account(self.ptr, account.ptr)  return v end,
+		Error = function(self, reason) local v = CLIB.purple_connection_error(self.ptr, reason)  return v end,
 		GetPassword = function(self) local v = CLIB.purple_connection_get_password(self.ptr) v = chars_to_string(v) return v end,
 		SetProtocolData = function(self, proto_data) local v = CLIB.purple_connection_set_protocol_data(self.ptr, proto_data)  return v end,
 		GetAccount = function(self) local v = CLIB.purple_connection_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
 		Destroy = function(self) local v = CLIB.purple_connection_destroy(self.ptr)  return v end,
 		ErrorReason = function(self, reason, description) local v = CLIB.purple_connection_error_reason(self.ptr, reason, description)  return v end,
 		GetProtocolData = function(self) local v = CLIB.purple_connection_get_protocol_data(self.ptr)  return v end,
-		Error = function(self, reason) local v = CLIB.purple_connection_error(self.ptr, reason)  return v end,
 		GetDisplayName = function(self) local v = CLIB.purple_connection_get_display_name(self.ptr) v = chars_to_string(v) return v end,
+		SetAccount = function(self, account) local v = CLIB.purple_connection_set_account(self.ptr, account.ptr)  return v end,
 		UpdateProgress = function(self, text, step, count) local v = CLIB.purple_connection_update_progress(self.ptr, text, step, count)  return v end,
 		Notice = function(self, text) local v = CLIB.purple_connection_notice(self.ptr, text)  return v end,
 		GetState = function(self) local v = CLIB.purple_connection_get_state(self.ptr)  return v end,
@@ -3016,13 +3016,13 @@ do
 		ctype = ffi.typeof("struct _PurpleAttentionType"),
 		GetIconName = function(self) local v = CLIB.purple_attention_type_get_icon_name(self.ptr) v = chars_to_string(v) return v end,
 		GetName = function(self) local v = CLIB.purple_attention_type_get_name(self.ptr) v = chars_to_string(v) return v end,
-		SetIconName = function(self, name) local v = CLIB.purple_attention_type_set_icon_name(self.ptr, name)  return v end,
-		SetName = function(self, name) local v = CLIB.purple_attention_type_set_name(self.ptr, name)  return v end,
 		GetIncomingDesc = function(self) local v = CLIB.purple_attention_type_get_incoming_desc(self.ptr) v = chars_to_string(v) return v end,
+		SetIconName = function(self, name) local v = CLIB.purple_attention_type_set_icon_name(self.ptr, name)  return v end,
 		SetUnlocalizedName = function(self, ulname) local v = CLIB.purple_attention_type_set_unlocalized_name(self.ptr, ulname)  return v end,
-		GetUnlocalizedName = function(self) local v = CLIB.purple_attention_type_get_unlocalized_name(self.ptr) v = chars_to_string(v) return v end,
-		GetOutgoingDesc = function(self) local v = CLIB.purple_attention_type_get_outgoing_desc(self.ptr) v = chars_to_string(v) return v end,
+		SetName = function(self, name) local v = CLIB.purple_attention_type_set_name(self.ptr, name)  return v end,
 		SetIncomingDesc = function(self, desc) local v = CLIB.purple_attention_type_set_incoming_desc(self.ptr, desc)  return v end,
+		GetOutgoingDesc = function(self) local v = CLIB.purple_attention_type_get_outgoing_desc(self.ptr) v = chars_to_string(v) return v end,
+		GetUnlocalizedName = function(self) local v = CLIB.purple_attention_type_get_unlocalized_name(self.ptr) v = chars_to_string(v) return v end,
 		SetOutgoingDesc = function(self, desc) local v = CLIB.purple_attention_type_set_outgoing_desc(self.ptr, desc)  return v end,
 	}
 	META.__index = META
@@ -3090,11 +3090,11 @@ library.accounts = {
 	Reorder = function(account, new_index) local v = CLIB.purple_accounts_reorder(account.ptr, new_index)  return v end,
 	SetUiOps = function(ops) local v = CLIB.purple_accounts_set_ui_ops(ops)  return v end,
 	Remove = function(account) local v = CLIB.purple_accounts_remove(account.ptr)  return v end,
-	GetUiOps = function() local v = CLIB.purple_accounts_get_ui_ops()  return v end,
+	GetHandle = function() local v = CLIB.purple_accounts_get_handle()  return v end,
 	GetAll = function(cast_type) local v = CLIB.purple_accounts_get_all() v = glist_to_table(v, cast_type) return v end,
 	RestoreCurrentStatuses = function() local v = CLIB.purple_accounts_restore_current_statuses()  return v end,
 	Uninit = function() local v = CLIB.purple_accounts_uninit()  return v end,
-	GetHandle = function() local v = CLIB.purple_accounts_get_handle()  return v end,
+	GetUiOps = function() local v = CLIB.purple_accounts_get_ui_ops()  return v end,
 }
 library.buddy = {
 	IconsFindCustomIcon = function(contact) local v = CLIB.purple_buddy_icons_find_custom_icon(contact.ptr) v = wrap_pointer(v, "StoredImage") return v end,
@@ -3105,7 +3105,7 @@ library.buddy = {
 	IconsNodeFindCustomIcon = function(node) local v = CLIB.purple_buddy_icons_node_find_custom_icon(node.ptr) v = wrap_pointer(v, "StoredImage") return v end,
 	IconsSetCustomIcon = function(contact, icon_data, icon_len) local v = CLIB.purple_buddy_icons_set_custom_icon(contact.ptr, icon_data, icon_len) v = wrap_pointer(v, "StoredImage") return v end,
 	IconsFindAccountIcon = function(account) local v = CLIB.purple_buddy_icons_find_account_icon(account.ptr) v = wrap_pointer(v, "StoredImage") return v end,
-	IconsIsCaching = function() local v = CLIB.purple_buddy_icons_is_caching()  return v end,
+	IconsSetAccountIcon = function(account, icon_data, icon_len) local v = CLIB.purple_buddy_icons_set_account_icon(account.ptr, icon_data, icon_len) v = wrap_pointer(v, "StoredImage") return v end,
 	IconsSetCacheDir = function(cache_dir) local v = CLIB.purple_buddy_icons_set_cache_dir(cache_dir)  return v end,
 	IconsSetCaching = function(caching) local v = CLIB.purple_buddy_icons_set_caching(caching)  return v end,
 	IconsGetHandle = function() local v = CLIB.purple_buddy_icons_get_handle()  return v end,
@@ -3114,7 +3114,7 @@ library.buddy = {
 	IconsNodeSetCustomIcon = function(node, icon_data, icon_len) local v = CLIB.purple_buddy_icons_node_set_custom_icon(node.ptr, icon_data, icon_len) v = wrap_pointer(v, "StoredImage") return v end,
 	IconsNodeHasCustomIcon = function(node) local v = CLIB.purple_buddy_icons_node_has_custom_icon(node.ptr)  return v end,
 	IconsNodeSetCustomIconFromFile = function(node, filename) local v = CLIB.purple_buddy_icons_node_set_custom_icon_from_file(node.ptr, filename) v = wrap_pointer(v, "StoredImage") return v end,
-	IconsSetAccountIcon = function(account, icon_data, icon_len) local v = CLIB.purple_buddy_icons_set_account_icon(account.ptr, icon_data, icon_len) v = wrap_pointer(v, "StoredImage") return v end,
+	IconsIsCaching = function() local v = CLIB.purple_buddy_icons_is_caching()  return v end,
 	IconsHasCustomIcon = function(contact) local v = CLIB.purple_buddy_icons_has_custom_icon(contact.ptr)  return v end,
 	IconsInit = function() local v = CLIB.purple_buddy_icons_init()  return v end,
 	IconsGetCacheDir = function() local v = CLIB.purple_buddy_icons_get_cache_dir() v = chars_to_string(v) return v end,
@@ -3136,14 +3136,13 @@ library.txt = {
 library.ipv4 = {
 	AddressIsValid = function(ip) local v = CLIB.purple_ipv4_address_is_valid(ip)  return v end,
 }
-library.roomlist = {
-	SetUiOps = function(ops) local v = CLIB.purple_roomlist_set_ui_ops(ops)  return v end,
-	New = function(account) local v = CLIB.purple_roomlist_new(account.ptr) v = wrap_pointer(v, "Roomlist") return v end,
-	RoomNew = function(type, name, parent) local v = CLIB.purple_roomlist_room_new(type, name, parent.ptr) v = wrap_pointer(v, "RoomlistRoom") return v end,
-	FieldNew = function(type, label, name, hidden) local v = CLIB.purple_roomlist_field_new(type, label, name, hidden) v = wrap_pointer(v, "RoomlistField") return v end,
-	ShowWithAccount = function(account) local v = CLIB.purple_roomlist_show_with_account(account.ptr)  return v end,
-	GetList = function(gc) local v = CLIB.purple_roomlist_get_list(gc.ptr) v = wrap_pointer(v, "Roomlist") return v end,
-	GetUiOps = function() local v = CLIB.purple_roomlist_get_ui_ops()  return v end,
+library.conv = {
+	ChatCbGetName = function(cb) local v = CLIB.purple_conv_chat_cb_get_name(cb) v = chars_to_string(v) return v end,
+	ChatCbGetAttribute = function(cb, key) local v = CLIB.purple_conv_chat_cb_get_attribute(cb, key) v = chars_to_string(v) return v end,
+	PresentError = function(who, account, what) local v = CLIB.purple_conv_present_error(who, account.ptr, what)  return v end,
+	ChatCbDestroy = function(cb) local v = CLIB.purple_conv_chat_cb_destroy(cb)  return v end,
+	ChatCbGetAttributeKeys = function(cbcast_type) local v = CLIB.purple_conv_chat_cb_get_attribute_keys(cb) v = glist_to_table(v, cast_type) return v end,
+	ChatCbNew = function(name, alias, flags) local v = CLIB.purple_conv_chat_cb_new(name, alias, flags)  return v end,
 }
 library.xfer = {
 	New = function(account, type, who) local v = CLIB.purple_xfer_new(account.ptr, type, who) v = wrap_pointer(v, "Xfer") return v end,
@@ -3189,10 +3188,10 @@ library.savedstatuses = {
 	GetPopular = function(how_manycast_type) local v = CLIB.purple_savedstatuses_get_popular(how_many) v = glist_to_table(v, cast_type) return v end,
 }
 library.conversations = {
-	GetHandle = function() local v = CLIB.purple_conversations_get_handle()  return v end,
+	Init = function() local v = CLIB.purple_conversations_init()  return v end,
 	SetUiOps = function(ops) local v = CLIB.purple_conversations_set_ui_ops(ops)  return v end,
 	Uninit = function() local v = CLIB.purple_conversations_uninit()  return v end,
-	Init = function() local v = CLIB.purple_conversations_init()  return v end,
+	GetHandle = function() local v = CLIB.purple_conversations_get_handle()  return v end,
 }
 library.normalize = {
 	Nocase = function(account, str) local v = CLIB.purple_normalize_nocase(account.ptr, str) v = chars_to_string(v) return v end,
@@ -3204,13 +3203,13 @@ library.input = {
 }
 library.find = {
 	Prpl = function(id) local v = CLIB.purple_find_prpl(id) v = wrap_pointer(v, "Plugin") return v end,
-	Pounce = function(pouncer, pouncee, events) local v = CLIB.purple_find_pounce(pouncer.ptr, pouncee, events) v = wrap_pointer(v, "Pounce") return v end,
+	ConversationWithAccount = function(type, name, account) local v = CLIB.purple_find_conversation_with_account(type, name, account.ptr) v = wrap_pointer(v, "Conversation") return v end,
 	Buddies = function(account, name) local v = CLIB.purple_find_buddies(account.ptr, name)  return v end,
 	BuddyInGroup = function(account, name, group) local v = CLIB.purple_find_buddy_in_group(account.ptr, name, group.ptr) v = wrap_pointer(v, "Buddy") return v end,
 	Chat = function(gc, id) local v = CLIB.purple_find_chat(gc.ptr, id) v = wrap_pointer(v, "Conversation") return v end,
-	ConversationWithAccount = function(type, name, account) local v = CLIB.purple_find_conversation_with_account(type, name, account.ptr) v = wrap_pointer(v, "Conversation") return v end,
-	Buddy = function(account, name) local v = CLIB.purple_find_buddy(account.ptr, name) v = wrap_pointer(v, "Buddy") return v end,
 	Group = function(name) local v = CLIB.purple_find_group(name) v = wrap_pointer(v, "Group") return v end,
+	Pounce = function(pouncer, pouncee, events) local v = CLIB.purple_find_pounce(pouncer.ptr, pouncee, events) v = wrap_pointer(v, "Pounce") return v end,
+	Buddy = function(account, name) local v = CLIB.purple_find_buddy(account.ptr, name) v = wrap_pointer(v, "Buddy") return v end,
 }
 library.privacy = {
 	Init = function() local v = CLIB.purple_privacy_init()  return v end,
@@ -3219,10 +3218,10 @@ library.privacy = {
 	Check = function(account, who) local v = CLIB.purple_privacy_check(account.ptr, who)  return v end,
 	Deny = function(account, who, local_, restore) local v = CLIB.purple_privacy_deny(account.ptr, who, local_, restore)  return v end,
 	DenyAdd = function(account, name, local_only) local v = CLIB.purple_privacy_deny_add(account.ptr, name, local_only)  return v end,
-	PermitAdd = function(account, name, local_only) local v = CLIB.purple_privacy_permit_add(account.ptr, name, local_only)  return v end,
+	PermitRemove = function(account, name, local_only) local v = CLIB.purple_privacy_permit_remove(account.ptr, name, local_only)  return v end,
 	GetUiOps = function() local v = CLIB.purple_privacy_get_ui_ops()  return v end,
 	SetUiOps = function(ops) local v = CLIB.purple_privacy_set_ui_ops(ops)  return v end,
-	PermitRemove = function(account, name, local_only) local v = CLIB.purple_privacy_permit_remove(account.ptr, name, local_only)  return v end,
+	PermitAdd = function(account, name, local_only) local v = CLIB.purple_privacy_permit_add(account.ptr, name, local_only)  return v end,
 }
 library.request = {
 	Input = function(handle, title, primary, secondary, default_value, multiline, masked, hint, ok_text, ok_cb, cancel_text, cancel_cb, account, who, conv, user_data) local v = CLIB.purple_request_input(handle, title, primary, secondary, default_value, multiline, masked, hint, ok_text, ok_cb, cancel_text, cancel_cb, account.ptr, who, conv.ptr, user_data)  return v end,
@@ -3294,32 +3293,25 @@ library.plugins = {
 	GetLoaded = function(cast_type) local v = CLIB.purple_plugins_get_loaded() v = glist_to_table(v, cast_type) return v end,
 	Unload = function(type) local v = CLIB.purple_plugins_unload(type)  return v end,
 	LoadSaved = function(key) local v = CLIB.purple_plugins_load_saved(key)  return v end,
-	FindWithBasename = function(basename) local v = CLIB.purple_plugins_find_with_basename(basename) v = wrap_pointer(v, "Plugin") return v end,
 	GetProtocols = function(cast_type) local v = CLIB.purple_plugins_get_protocols() v = glist_to_table(v, cast_type) return v end,
 	SaveLoaded = function(key) local v = CLIB.purple_plugins_save_loaded(key)  return v end,
+	FindWithBasename = function(basename) local v = CLIB.purple_plugins_find_with_basename(basename) v = wrap_pointer(v, "Plugin") return v end,
 	GetHandle = function() local v = CLIB.purple_plugins_get_handle()  return v end,
 	Enabled = function() local v = CLIB.purple_plugins_enabled()  return v end,
 	Uninit = function() local v = CLIB.purple_plugins_uninit()  return v end,
 	AddSearchPath = function(path) local v = CLIB.purple_plugins_add_search_path(path)  return v end,
 }
-library.gai = {
-	Strerror = function(errnum) local v = CLIB.purple_gai_strerror(errnum) v = chars_to_string(v) return v end,
+library.base64 = {
+	Encode = function(data, len) local v = CLIB.purple_base64_encode(data, len) v = chars_to_string(v) return v end,
+	Decode = function(str, ret_len) local v = CLIB.purple_base64_decode(str, ret_len)  return v end,
 }
-library.debug = {
-	Init = function() local v = CLIB.purple_debug_init()  return v end,
-	Misc = function(category, format, _3) local v = CLIB.purple_debug_misc(category, format, _3)  return v end,
-	SetVerbose = function(verbose) local v = CLIB.purple_debug_set_verbose(verbose)  return v end,
-	IsUnsafe = function() local v = CLIB.purple_debug_is_unsafe()  return v end,
-	IsVerbose = function() local v = CLIB.purple_debug_is_verbose()  return v end,
-	Info = function(category, format, _3) local v = CLIB.purple_debug_info(category, format, _3)  return v end,
-	Warning = function(category, format, _3) local v = CLIB.purple_debug_warning(category, format, _3)  return v end,
-	IsEnabled = function() local v = CLIB.purple_debug_is_enabled()  return v end,
-	SetUnsafe = function(unsafe) local v = CLIB.purple_debug_set_unsafe(unsafe)  return v end,
-	Error = function(category, format, _3) local v = CLIB.purple_debug_error(category, format, _3)  return v end,
-	GetUiOps = function() local v = CLIB.purple_debug_get_ui_ops()  return v end,
-	SetUiOps = function(ops) local v = CLIB.purple_debug_set_ui_ops(ops)  return v end,
-	SetEnabled = function(enabled) local v = CLIB.purple_debug_set_enabled(enabled)  return v end,
-	Fatal = function(category, format, _3) local v = CLIB.purple_debug_fatal(category, format, _3)  return v end,
+library.upnp = {
+	RemovePortMapping = function(portmap, protocol, cb, cb_data) local v = CLIB.purple_upnp_remove_port_mapping(portmap, protocol, cb, cb_data)  return v end,
+	SetPortMapping = function(portmap, protocol, cb, cb_data) local v = CLIB.purple_upnp_set_port_mapping(portmap, protocol, cb, cb_data)  return v end,
+	Discover = function(cb, cb_data) local v = CLIB.purple_upnp_discover(cb, cb_data)  return v end,
+	CancelPortMapping = function(mapping_data) local v = CLIB.purple_upnp_cancel_port_mapping(mapping_data)  return v end,
+	Init = function() local v = CLIB.purple_upnp_init()  return v end,
+	GetPublicIp = function() local v = CLIB.purple_upnp_get_public_ip() v = chars_to_string(v) return v end,
 }
 library.dnsquery = {
 	Init = function() local v = CLIB.purple_dnsquery_init()  return v end,
@@ -3332,12 +3324,22 @@ library.dnsquery = {
 	Uninit = function() local v = CLIB.purple_dnsquery_uninit()  return v end,
 	GetHost = function(query_data) local v = CLIB.purple_dnsquery_get_host(query_data) v = chars_to_string(v) return v end,
 }
-library.menu = {
-	ActionNew = function(label, callback, data, children) local v = CLIB.purple_menu_action_new(label, callback, data, table_to_glist(children)) v = wrap_pointer(v, "MenuAction") return v end,
+library.signals = {
+	Init = function() local v = CLIB.purple_signals_init()  return v end,
+	Uninit = function() local v = CLIB.purple_signals_uninit()  return v end,
+	UnregisterByInstance = function(instance) local v = CLIB.purple_signals_unregister_by_instance(instance)  return v end,
+	DisconnectByHandle = function(handle) local v = CLIB.purple_signals_disconnect_by_handle(handle)  return v end,
 }
-library.desktop = {
-	ItemNewFromFile = function(filename) local v = CLIB.purple_desktop_item_new_from_file(filename) v = wrap_pointer(v, "DesktopItem") return v end,
-	ItemGetType = function() local v = CLIB.purple_desktop_item_get_type()  return v end,
+library.status = {
+	Init = function() local v = CLIB.purple_status_init()  return v end,
+	TypeFindWithId = function(status_types, id) local v = CLIB.purple_status_type_find_with_id(table_to_glist(status_types), id) v = wrap_pointer(v, "StatusType") return v end,
+	New = function(status_type, presence) local v = CLIB.purple_status_new(status_type.ptr, presence.ptr) v = wrap_pointer(v, "Status") return v end,
+	TypeNewFull = function(primitive, id, name, saveable, user_settable, independent) local v = CLIB.purple_status_type_new_full(primitive, id, name, saveable, user_settable, independent) v = wrap_pointer(v, "StatusType") return v end,
+	TypeNewWithAttrs = function(primitive, id, name, saveable, user_settable, independent, attr_id, attr_name, attr_value, _10) local v = CLIB.purple_status_type_new_with_attrs(primitive, id, name, saveable, user_settable, independent, attr_id, attr_name, attr_value.ptr, _10) v = wrap_pointer(v, "StatusType") return v end,
+	AttrNew = function(id, name, value_type) local v = CLIB.purple_status_attr_new(id, name, value_type.ptr) v = wrap_pointer(v, "StatusAttr") return v end,
+	TypeNew = function(primitive, id, name, user_settable) local v = CLIB.purple_status_type_new(primitive, id, name, user_settable) v = wrap_pointer(v, "StatusType") return v end,
+	GetHandle = function() local v = CLIB.purple_status_get_handle()  return v end,
+	Uninit = function() local v = CLIB.purple_status_uninit()  return v end,
 }
 library.chat = {
 	New = function(account, alias, components) local v = CLIB.purple_chat_new(account.ptr, alias, components) v = wrap_pointer(v, "Chat") return v end,
@@ -3379,8 +3381,8 @@ library.marshal = {
 	_VOID__POINTER_INT_INT = function(cb, args, data, return_val) local v = CLIB.purple_marshal_VOID__POINTER_INT_INT(cb, args, data, return_val)  return v end,
 	_VOID = function(cb, args, data, return_val) local v = CLIB.purple_marshal_VOID(cb, args, data, return_val)  return v end,
 	_BOOLEAN__INT_POINTER = function(cb, args, data, return_val) local v = CLIB.purple_marshal_BOOLEAN__INT_POINTER(cb, args, data, return_val)  return v end,
-	_BOOLEAN__POINTER_POINTER_POINTER_POINTER_POINTER_POINTER = function(cb, args, data, return_val) local v = CLIB.purple_marshal_BOOLEAN__POINTER_POINTER_POINTER_POINTER_POINTER_POINTER(cb, args, data, return_val)  return v end,
 	_VOID__POINTER = function(cb, args, data, return_val) local v = CLIB.purple_marshal_VOID__POINTER(cb, args, data, return_val)  return v end,
+	_BOOLEAN__POINTER_POINTER_POINTER_POINTER_POINTER_POINTER = function(cb, args, data, return_val) local v = CLIB.purple_marshal_BOOLEAN__POINTER_POINTER_POINTER_POINTER_POINTER_POINTER(cb, args, data, return_val)  return v end,
 	_BOOLEAN__POINTER_BOOLEAN = function(cb, args, data, return_val) local v = CLIB.purple_marshal_BOOLEAN__POINTER_BOOLEAN(cb, args, data, return_val)  return v end,
 	_VOID__INT_INT = function(cb, args, data, return_val) local v = CLIB.purple_marshal_VOID__INT_INT(cb, args, data, return_val)  return v end,
 	_BOOLEAN__POINTER_POINTER_POINTER_POINTER = function(cb, args, data, return_val) local v = CLIB.purple_marshal_BOOLEAN__POINTER_POINTER_POINTER_POINTER(cb, args, data, return_val)  return v end,
@@ -3392,14 +3394,14 @@ library.value = {
 library.ssl = {
 	Init = function() local v = CLIB.purple_ssl_init()  return v end,
 	ConnectWithHostFd = function(account, fd, func, error_func, host, data) local v = CLIB.purple_ssl_connect_with_host_fd(account.ptr, fd, func, error_func, host, data) v = wrap_pointer(v, "SslConnection") return v end,
-	GetOps = function() local v = CLIB.purple_ssl_get_ops()  return v end,
+	SetOps = function(ops) local v = CLIB.purple_ssl_set_ops(ops)  return v end,
 	ConnectFd = function(account, fd, func, error_func, data) local v = CLIB.purple_ssl_connect_fd(account.ptr, fd, func, error_func, data) v = wrap_pointer(v, "SslConnection") return v end,
 	Connect = function(account, host, port, func, error_func, data) local v = CLIB.purple_ssl_connect(account.ptr, host, port, func, error_func, data) v = wrap_pointer(v, "SslConnection") return v end,
 	IsSupported = function() local v = CLIB.purple_ssl_is_supported()  return v end,
 	ConnectWithSslCn = function(account, host, port, func, error_func, ssl_host, data) local v = CLIB.purple_ssl_connect_with_ssl_cn(account.ptr, host, port, func, error_func, ssl_host, data) v = wrap_pointer(v, "SslConnection") return v end,
 	Strerror = function(error) local v = CLIB.purple_ssl_strerror(error) v = chars_to_string(v) return v end,
 	Uninit = function() local v = CLIB.purple_ssl_uninit()  return v end,
-	SetOps = function(ops) local v = CLIB.purple_ssl_set_ops(ops)  return v end,
+	GetOps = function() local v = CLIB.purple_ssl_get_ops()  return v end,
 }
 library.pounces = {
 	Init = function() local v = CLIB.purple_pounces_init()  return v end,
@@ -3420,6 +3422,265 @@ library.imgstore = {
 	Add = function(data, size, filename) local v = CLIB.purple_imgstore_add(data, size, filename) v = wrap_pointer(v, "StoredImage") return v end,
 	Uninit = function() local v = CLIB.purple_imgstore_uninit()  return v end,
 	AddWithId = function(data, size, filename) local v = CLIB.purple_imgstore_add_with_id(data, size, filename)  return v end,
+}
+library.pmp = {
+	Init = function() local v = CLIB.purple_pmp_init()  return v end,
+	CreateMap = function(type, privateport, publicport, lifetime) local v = CLIB.purple_pmp_create_map(type, privateport, publicport, lifetime)  return v end,
+	DestroyMap = function(type, privateport) local v = CLIB.purple_pmp_destroy_map(type, privateport)  return v end,
+	GetPublicIp = function() local v = CLIB.purple_pmp_get_public_ip() v = chars_to_string(v) return v end,
+}
+library.menu = {
+	ActionNew = function(label, callback, data, children) local v = CLIB.purple_menu_action_new(label, callback, data, table_to_glist(children)) v = wrap_pointer(v, "MenuAction") return v end,
+}
+library.util = {
+	FetchUrlRequest = function(url, full, user_agent, http11, request, include_headers, callback, data) local v = CLIB.purple_util_fetch_url_request(url, full, user_agent, http11, request, include_headers, callback, data)  return v end,
+	Chrreplace = function(string, delimiter, replacement) local v = CLIB.purple_util_chrreplace(string, delimiter, replacement)  return v end,
+	GetImageExtension = function(data, len) local v = CLIB.purple_util_get_image_extension(data, len) v = chars_to_string(v) return v end,
+	WriteDataToFileAbsolute = function(filename_full, data, size) local v = CLIB.purple_util_write_data_to_file_absolute(filename_full, data, size)  return v end,
+	FetchUrlCancel = function(url_data) local v = CLIB.purple_util_fetch_url_cancel(url_data)  return v end,
+	SetUserDir = function(dir) local v = CLIB.purple_util_set_user_dir(dir)  return v end,
+	SetCurrentSong = function(title, artist, album) local v = CLIB.purple_util_set_current_song(title, artist, album)  return v end,
+	Init = function() local v = CLIB.purple_util_init()  return v end,
+	FetchUrlRequestLen = function(url, full, user_agent, http11, request, include_headers, max_len, callback, data) local v = CLIB.purple_util_fetch_url_request_len(url, full, user_agent, http11, request, include_headers, max_len, callback, data)  return v end,
+	FormatSongInfo = function(title, artist, album, unused) local v = CLIB.purple_util_format_song_info(title, artist, album, unused) v = chars_to_string(v) return v end,
+	WriteDataToFile = function(filename, data, size) local v = CLIB.purple_util_write_data_to_file(filename, data, size)  return v end,
+	ReadXmlFromFile = function(filename, description) local v = CLIB.purple_util_read_xml_from_file(filename, description)  return v end,
+	FetchUrlRequestLenWithAccount = function(account, url, full, user_agent, http11, request, include_headers, max_len, callback, data) local v = CLIB.purple_util_fetch_url_request_len_with_account(account.ptr, url, full, user_agent, http11, request, include_headers, max_len, callback, data)  return v end,
+	GetImageChecksum = function(image_data, image_len) local v = CLIB.purple_util_get_image_checksum(image_data, image_len) v = chars_to_string(v) return v end,
+	Uninit = function() local v = CLIB.purple_util_uninit()  return v end,
+	GetImageFilename = function(image_data, image_len) local v = CLIB.purple_util_get_image_filename(image_data, image_len) v = chars_to_string(v) return v end,
+}
+library.media = {
+	CandidateListCopy = function(candidatescast_type) local v = CLIB.purple_media_candidate_list_copy(table_to_glist(candidates)) v = glist_to_table(v, cast_type) return v end,
+	CodecListFree = function(codecs) local v = CLIB.purple_media_codec_list_free(table_to_glist(codecs))  return v end,
+	CodecGetType = function() local v = CLIB.purple_media_codec_get_type()  return v end,
+	CandidateNew = function(foundation, component_id, type, proto, ip, port) local v = CLIB.purple_media_candidate_new(foundation, component_id, type, proto, ip, port) v = wrap_pointer(v, "MediaCandidate") return v end,
+	ManagerGet = function() local v = CLIB.purple_media_manager_get() v = wrap_pointer(v, "MediaManager") return v end,
+	InfoTypeGetType = function() local v = CLIB.purple_media_info_type_get_type()  return v end,
+	SessionTypeGetType = function() local v = CLIB.purple_media_session_type_get_type()  return v end,
+	CandidateGetType = function() local v = CLIB.purple_media_candidate_get_type()  return v end,
+	NetworkProtocolGetType = function() local v = CLIB.purple_media_network_protocol_get_type()  return v end,
+	CapsGetType = function() local v = CLIB.purple_media_caps_get_type()  return v end,
+	CandidateListFree = function(candidates) local v = CLIB.purple_media_candidate_list_free(table_to_glist(candidates))  return v end,
+	CodecNew = function(id, encoding_name, media_type, clock_rate) local v = CLIB.purple_media_codec_new(id, encoding_name, media_type, clock_rate) v = wrap_pointer(v, "MediaCodec") return v end,
+	ManagerGetType = function() local v = CLIB.purple_media_manager_get_type()  return v end,
+	StateChangedGetType = function() local v = CLIB.purple_media_state_changed_get_type()  return v end,
+	GetType = function() local v = CLIB.purple_media_get_type()  return v end,
+	CodecListCopy = function(codecscast_type) local v = CLIB.purple_media_codec_list_copy(table_to_glist(codecs)) v = glist_to_table(v, cast_type) return v end,
+	CandidateTypeGetType = function() local v = CLIB.purple_media_candidate_type_get_type()  return v end,
+}
+library.plugin = {
+	PrefNewWithLabel = function(label) local v = CLIB.purple_plugin_pref_new_with_label(label) v = wrap_pointer(v, "PluginPref") return v end,
+	New = function(native, path) local v = CLIB.purple_plugin_new(native, path) v = wrap_pointer(v, "Plugin") return v end,
+	PrefNewWithName = function(name) local v = CLIB.purple_plugin_pref_new_with_name(name) v = wrap_pointer(v, "PluginPref") return v end,
+	PrefNew = function() local v = CLIB.purple_plugin_pref_new() v = wrap_pointer(v, "PluginPref") return v end,
+	Probe = function(filename) local v = CLIB.purple_plugin_probe(filename) v = wrap_pointer(v, "Plugin") return v end,
+	PrefNewWithNameAndLabel = function(name, label) local v = CLIB.purple_plugin_pref_new_with_name_and_label(name, label) v = wrap_pointer(v, "PluginPref") return v end,
+	PrefFrameNew = function() local v = CLIB.purple_plugin_pref_frame_new() v = wrap_pointer(v, "PluginPrefFrame") return v end,
+}
+library.base16 = {
+	EncodeChunked = function(data, len) local v = CLIB.purple_base16_encode_chunked(data, len) v = chars_to_string(v) return v end,
+	Encode = function(data, len) local v = CLIB.purple_base16_encode(data, len) v = chars_to_string(v) return v end,
+	Decode = function(str, ret_len) local v = CLIB.purple_base16_decode(str, ret_len)  return v end,
+}
+library.quotedp = {
+	Decode = function(str, ret_len) local v = CLIB.purple_quotedp_decode(str, ret_len)  return v end,
+}
+library.core = {
+	Init = function(ui) local v = CLIB.purple_core_init(ui)  return v end,
+	GetUiInfo = function() local v = CLIB.purple_core_get_ui_info()  return v end,
+	EnsureSingleInstance = function() local v = CLIB.purple_core_ensure_single_instance()  return v end,
+	GetVersion = function() local v = CLIB.purple_core_get_version() v = chars_to_string(v) return v end,
+	Migrate = function() local v = CLIB.purple_core_migrate()  return v end,
+	SetUiOps = function(ops) local v = CLIB.purple_core_set_ui_ops(ops)  return v end,
+	QuitCb = function(unused) local v = CLIB.purple_core_quit_cb(unused)  return v end,
+	GetUi = function() local v = CLIB.purple_core_get_ui() v = chars_to_string(v) return v end,
+	GetUiOps = function() local v = CLIB.purple_core_get_ui_ops()  return v end,
+	Quit = function() local v = CLIB.purple_core_quit()  return v end,
+}
+library.utf8 = {
+	NcrEncode = function(in_) local v = CLIB.purple_utf8_ncr_encode(in_) v = chars_to_string(v) return v end,
+	HasWord = function(haystack, needle) local v = CLIB.purple_utf8_has_word(haystack, needle)  return v end,
+	NcrDecode = function(in_) local v = CLIB.purple_utf8_ncr_decode(in_) v = chars_to_string(v) return v end,
+	Strcasecmp = function(a, b) local v = CLIB.purple_utf8_strcasecmp(a, b)  return v end,
+	StripUnprintables = function(str) local v = CLIB.purple_utf8_strip_unprintables(str) v = chars_to_string(v) return v end,
+	Strftime = function(format, tm) local v = CLIB.purple_utf8_strftime(format, tm) v = chars_to_string(v) return v end,
+	TryConvert = function(str) local v = CLIB.purple_utf8_try_convert(str) v = chars_to_string(v) return v end,
+	Salvage = function(str) local v = CLIB.purple_utf8_salvage(str) v = chars_to_string(v) return v end,
+}
+library.time = {
+	Format = function(tm) local v = CLIB.purple_time_format(tm) v = chars_to_string(v) return v end,
+	Build = function(year, month, day, hour, min, sec) local v = CLIB.purple_time_build(year, month, day, hour, min, sec)  return v end,
+}
+library.cmd = {
+	List = function(convcast_type) local v = CLIB.purple_cmd_list(conv.ptr) v = glist_to_table(v, cast_type) return v end,
+	Register = function(cmd, args, p, f, prpl_id, func, helpstr, data) local v = CLIB.purple_cmd_register(cmd, args, p, f, prpl_id, func, helpstr, data)  return v end,
+	DoCommand = function(conv, cmdline, markup, errormsg) local v = CLIB.purple_cmd_do_command(conv.ptr, cmdline, markup, errormsg)  return v end,
+	Unregister = function(id) local v = CLIB.purple_cmd_unregister(id)  return v end,
+	Help = function(conv, cmd, cast_type) local v = CLIB.purple_cmd_help(conv.ptr, cmd) v = glist_to_table(v, cast_type) return v end,
+}
+library.markup = {
+	UnescapeEntity = function(text, length) local v = CLIB.purple_markup_unescape_entity(text, length) v = chars_to_string(v) return v end,
+	FindTag = function(needle, haystack, start, end_, attributes) local v = CLIB.purple_markup_find_tag(needle, haystack, start, end_, attributes)  return v end,
+	GetCssProperty = function(style, opt) local v = CLIB.purple_markup_get_css_property(style, opt) v = chars_to_string(v) return v end,
+	IsRtl = function(html) local v = CLIB.purple_markup_is_rtl(html)  return v end,
+	Linkify = function(str) local v = CLIB.purple_markup_linkify(str) v = chars_to_string(v) return v end,
+	HtmlToXhtml = function(html, dest_xhtml, dest_plain) local v = CLIB.purple_markup_html_to_xhtml(html, dest_xhtml, dest_plain)  return v end,
+	Slice = function(str, x, y) local v = CLIB.purple_markup_slice(str, x, y) v = chars_to_string(v) return v end,
+	ExtractInfoField = function(str, len, user_info, start_token, skip, end_token, check_value, no_value_token, display_name, is_link, link_prefix, format_cb) local v = CLIB.purple_markup_extract_info_field(str, len, user_info.ptr, start_token, skip, end_token, check_value, no_value_token, display_name, is_link, link_prefix, format_cb)  return v end,
+	EscapeText = function(text, length) local v = CLIB.purple_markup_escape_text(text, length) v = chars_to_string(v) return v end,
+	GetTagName = function(tag) local v = CLIB.purple_markup_get_tag_name(tag) v = chars_to_string(v) return v end,
+	StripHtml = function(str) local v = CLIB.purple_markup_strip_html(str) v = chars_to_string(v) return v end,
+}
+library.serv = {
+	GotPrivateAlias = function(gc, who, alias) local v = CLIB.purple_serv_got_private_alias(gc.ptr, who, alias)  return v end,
+	GotJoinChatFailed = function(gc, data) local v = CLIB.purple_serv_got_join_chat_failed(gc.ptr, data)  return v end,
+}
+library.blist = {
+	RenameGroup = function(group, name) local v = CLIB.purple_blist_rename_group(group.ptr, name)  return v end,
+	AliasContact = function(contact, alias) local v = CLIB.purple_blist_alias_contact(contact.ptr, alias)  return v end,
+	MergeContact = function(source, node) local v = CLIB.purple_blist_merge_contact(source.ptr, node.ptr)  return v end,
+	UpdateNodeIcon = function(node) local v = CLIB.purple_blist_update_node_icon(node.ptr)  return v end,
+	AddAccount = function(account) local v = CLIB.purple_blist_add_account(account.ptr)  return v end,
+	Show = function() local v = CLIB.purple_blist_show()  return v end,
+	GetGroupSize = function(group, offline) local v = CLIB.purple_blist_get_group_size(group.ptr, offline)  return v end,
+	AddGroup = function(group, node) local v = CLIB.purple_blist_add_group(group.ptr, node.ptr)  return v end,
+	RequestAddChat = function(account, group, alias, name) local v = CLIB.purple_blist_request_add_chat(account.ptr, group.ptr, alias, name)  return v end,
+	RemoveAccount = function(account) local v = CLIB.purple_blist_remove_account(account.ptr)  return v end,
+	RemoveGroup = function(group) local v = CLIB.purple_blist_remove_group(group.ptr)  return v end,
+	AliasChat = function(chat, alias) local v = CLIB.purple_blist_alias_chat(chat.ptr, alias)  return v end,
+	UpdateBuddyStatus = function(buddy, old_status) local v = CLIB.purple_blist_update_buddy_status(buddy.ptr, old_status.ptr)  return v end,
+	FindChat = function(account, name) local v = CLIB.purple_blist_find_chat(account.ptr, name) v = wrap_pointer(v, "Chat") return v end,
+	SetUiOps = function(ops) local v = CLIB.purple_blist_set_ui_ops(ops)  return v end,
+	AddChat = function(chat, group, node) local v = CLIB.purple_blist_add_chat(chat.ptr, group.ptr, node.ptr)  return v end,
+	RemoveChat = function(chat) local v = CLIB.purple_blist_remove_chat(chat.ptr)  return v end,
+	New = function() local v = CLIB.purple_blist_new()  return v end,
+	GetBuddies = function() local v = CLIB.purple_blist_get_buddies()  return v end,
+	UpdateBuddyIcon = function(buddy) local v = CLIB.purple_blist_update_buddy_icon(buddy.ptr)  return v end,
+	RemoveContact = function(contact) local v = CLIB.purple_blist_remove_contact(contact.ptr)  return v end,
+	GetUiOps = function() local v = CLIB.purple_blist_get_ui_ops()  return v end,
+	RequestAddGroup = function() local v = CLIB.purple_blist_request_add_group()  return v end,
+	Load = function() local v = CLIB.purple_blist_load()  return v end,
+	ServerAliasBuddy = function(buddy, alias) local v = CLIB.purple_blist_server_alias_buddy(buddy.ptr, alias)  return v end,
+	RenameBuddy = function(buddy, name) local v = CLIB.purple_blist_rename_buddy(buddy.ptr, name)  return v end,
+	RemoveBuddy = function(buddy) local v = CLIB.purple_blist_remove_buddy(buddy.ptr)  return v end,
+	GetGroupOnlineCount = function(group) local v = CLIB.purple_blist_get_group_online_count(group.ptr)  return v end,
+	Init = function() local v = CLIB.purple_blist_init()  return v end,
+	AliasBuddy = function(buddy, alias) local v = CLIB.purple_blist_alias_buddy(buddy.ptr, alias)  return v end,
+	GetRoot = function() local v = CLIB.purple_blist_get_root() v = wrap_pointer(v, "BlistNode") return v end,
+	RequestAddBuddy = function(account, username, group, alias) local v = CLIB.purple_blist_request_add_buddy(account.ptr, username, group, alias)  return v end,
+	Destroy = function() local v = CLIB.purple_blist_destroy()  return v end,
+	SetUiData = function(ui_data) local v = CLIB.purple_blist_set_ui_data(ui_data)  return v end,
+	GetUiData = function() local v = CLIB.purple_blist_get_ui_data()  return v end,
+	AddContact = function(contact, group, node) local v = CLIB.purple_blist_add_contact(contact.ptr, group.ptr, node.ptr)  return v end,
+	AddBuddy = function(buddy, contact, group, node) local v = CLIB.purple_blist_add_buddy(buddy.ptr, contact.ptr, group.ptr, node.ptr)  return v end,
+	GetHandle = function() local v = CLIB.purple_blist_get_handle()  return v end,
+	ScheduleSave = function() local v = CLIB.purple_blist_schedule_save()  return v end,
+	Uninit = function() local v = CLIB.purple_blist_uninit()  return v end,
+	SetVisible = function(show) local v = CLIB.purple_blist_set_visible(show)  return v end,
+}
+library.mime = {
+	DecodeField = function(str) local v = CLIB.purple_mime_decode_field(str) v = chars_to_string(v) return v end,
+	DocumentParsen = function(buf, len) local v = CLIB.purple_mime_document_parsen(buf, len) v = wrap_pointer(v, "MimeDocument") return v end,
+	DocumentNew = function() local v = CLIB.purple_mime_document_new() v = wrap_pointer(v, "MimeDocument") return v end,
+	DocumentParse = function(buf) local v = CLIB.purple_mime_document_parse(buf) v = wrap_pointer(v, "MimeDocument") return v end,
+	PartNew = function(doc) local v = CLIB.purple_mime_part_new(doc.ptr) v = wrap_pointer(v, "MimePart") return v end,
+}
+library.notify = {
+	SearchresultsColumnAdd = function(results, column) local v = CLIB.purple_notify_searchresults_column_add(results, column)  return v end,
+	Emails = function(handle, count, detailed, subjects, froms, tos, urls, cb, user_data) local v = CLIB.purple_notify_emails(handle, count, detailed, subjects, froms, tos, urls, cb, user_data)  return v end,
+	SearchresultsGetColumnsCount = function(results) local v = CLIB.purple_notify_searchresults_get_columns_count(results)  return v end,
+	SearchresultsButtonAddLabeled = function(results, label, cb) local v = CLIB.purple_notify_searchresults_button_add_labeled(results, label, cb)  return v end,
+	Userinfo = function(gc, who, user_info, cb, user_data) local v = CLIB.purple_notify_userinfo(gc.ptr, who, user_info.ptr, cb, user_data)  return v end,
+	Formatted = function(handle, title, primary, secondary, text, cb, user_data) local v = CLIB.purple_notify_formatted(handle, title, primary, secondary, text, cb, user_data)  return v end,
+	SearchresultsGetRowsCount = function(results) local v = CLIB.purple_notify_searchresults_get_rows_count(results)  return v end,
+	SearchresultsNew = function() local v = CLIB.purple_notify_searchresults_new()  return v end,
+	GetUiOps = function() local v = CLIB.purple_notify_get_ui_ops()  return v end,
+	CloseWithHandle = function(handle) local v = CLIB.purple_notify_close_with_handle(handle)  return v end,
+	SearchresultsColumnNew = function(title) local v = CLIB.purple_notify_searchresults_column_new(title)  return v end,
+	SearchresultsColumnGetTitle = function(results, column_id) local v = CLIB.purple_notify_searchresults_column_get_title(results, column_id) v = chars_to_string(v) return v end,
+	Init = function() local v = CLIB.purple_notify_init()  return v end,
+	SearchresultsButtonAdd = function(results, type, cb) local v = CLIB.purple_notify_searchresults_button_add(results, type, cb)  return v end,
+	UserInfoEntryNew = function(label, value) local v = CLIB.purple_notify_user_info_entry_new(label, value) v = wrap_pointer(v, "NotifyUserInfoEntry") return v end,
+	SearchresultsRowAdd = function(results, row) local v = CLIB.purple_notify_searchresults_row_add(results, table_to_glist(row))  return v end,
+	SearchresultsRowGet = function(results, row_id, cast_type) local v = CLIB.purple_notify_searchresults_row_get(results, row_id) v = glist_to_table(v, cast_type) return v end,
+	SearchresultsFree = function(results) local v = CLIB.purple_notify_searchresults_free(results)  return v end,
+	UserInfoNew = function() local v = CLIB.purple_notify_user_info_new() v = wrap_pointer(v, "NotifyUserInfo") return v end,
+	Close = function(type, ui_handle) local v = CLIB.purple_notify_close(type, ui_handle)  return v end,
+	SetUiOps = function(ops) local v = CLIB.purple_notify_set_ui_ops(ops)  return v end,
+	Email = function(handle, subject, from, to, url, cb, user_data) local v = CLIB.purple_notify_email(handle, subject, from, to, url, cb, user_data)  return v end,
+	Uri = function(handle, uri) local v = CLIB.purple_notify_uri(handle, uri)  return v end,
+	Searchresults = function(gc, title, primary, secondary, results, cb, user_data) local v = CLIB.purple_notify_searchresults(gc.ptr, title, primary, secondary, results, cb, user_data)  return v end,
+	GetHandle = function() local v = CLIB.purple_notify_get_handle()  return v end,
+	Message = function(handle, type, title, primary, secondary, cb, user_data) local v = CLIB.purple_notify_message(handle, type, title, primary, secondary, cb, user_data)  return v end,
+	Uninit = function() local v = CLIB.purple_notify_uninit()  return v end,
+	SearchresultsNewRows = function(gc, results, data) local v = CLIB.purple_notify_searchresults_new_rows(gc.ptr, results, data)  return v end,
+}
+library.theme = {
+	ManagerRegisterType = function(loader) local v = CLIB.purple_theme_manager_register_type(loader.ptr)  return v end,
+	ManagerRefresh = function() local v = CLIB.purple_theme_manager_refresh()  return v end,
+	GetType = function() local v = CLIB.purple_theme_get_type()  return v end,
+	ManagerFindTheme = function(name, type) local v = CLIB.purple_theme_manager_find_theme(name, type) v = wrap_pointer(v, "Theme") return v end,
+	ManagerInit = function() local v = CLIB.purple_theme_manager_init()  return v end,
+	ManagerForEachTheme = function(func) local v = CLIB.purple_theme_manager_for_each_theme(func)  return v end,
+	ManagerUnregisterType = function(loader) local v = CLIB.purple_theme_manager_unregister_type(loader.ptr)  return v end,
+	ManagerGetType = function() local v = CLIB.purple_theme_manager_get_type()  return v end,
+	LoaderGetType = function() local v = CLIB.purple_theme_loader_get_type()  return v end,
+	ManagerUninit = function() local v = CLIB.purple_theme_manager_uninit()  return v end,
+	ManagerLoadTheme = function(theme_dir, type) local v = CLIB.purple_theme_manager_load_theme(theme_dir, type) v = wrap_pointer(v, "Theme") return v end,
+}
+library.gai = {
+	Strerror = function(errnum) local v = CLIB.purple_gai_strerror(errnum) v = chars_to_string(v) return v end,
+}
+library.text = {
+	StripMnemonic = function(in_) local v = CLIB.purple_text_strip_mnemonic(in_) v = chars_to_string(v) return v end,
+}
+library.eventloop = {
+	GetUiOps = function() local v = CLIB.purple_eventloop_get_ui_ops()  return v end,
+	SetUiOps = function(ops) local v = CLIB.purple_eventloop_set_ui_ops(ops)  return v end,
+}
+library.circ = {
+	BufferNew = function(growsize) local v = CLIB.purple_circ_buffer_new(growsize) v = wrap_pointer(v, "CircBuffer") return v end,
+}
+library.home = {
+	Dir = function() local v = CLIB.purple_home_dir() v = chars_to_string(v) return v end,
+}
+library.desktop = {
+	ItemNewFromFile = function(filename) local v = CLIB.purple_desktop_item_new_from_file(filename) v = wrap_pointer(v, "DesktopItem") return v end,
+	ItemGetType = function() local v = CLIB.purple_desktop_item_get_type()  return v end,
+}
+library.connection = {
+	NewUnregister = function(account, password, cb, user_data) local v = CLIB.purple_connection_new_unregister(account.ptr, password, cb, user_data)  return v end,
+	ErrorIsFatal = function(reason) local v = CLIB.purple_connection_error_is_fatal(reason)  return v end,
+	New = function(account, regist, password) local v = CLIB.purple_connection_new(account.ptr, regist, password)  return v end,
+}
+library.attention = {
+	TypeNew = function(ulname, name, inc_desc, out_desc) local v = CLIB.purple_attention_type_new(ulname, name, inc_desc, out_desc) v = wrap_pointer(v, "AttentionType") return v end,
+}
+library.program = {
+	IsValid = function(program) local v = CLIB.purple_program_is_valid(program)  return v end,
+}
+library.whiteboard = {
+	SetUiOps = function(ops) local v = CLIB.purple_whiteboard_set_ui_ops(ops)  return v end,
+	DrawListDestroy = function(draw_list) local v = CLIB.purple_whiteboard_draw_list_destroy(table_to_glist(draw_list))  return v end,
+	Create = function(account, who, state) local v = CLIB.purple_whiteboard_create(account.ptr, who, state) v = wrap_pointer(v, "Whiteboard") return v end,
+	GetSession = function(account, who) local v = CLIB.purple_whiteboard_get_session(account.ptr, who) v = wrap_pointer(v, "Whiteboard") return v end,
+}
+library.global = {
+	ProxySetInfo = function(info) local v = CLIB.purple_global_proxy_set_info(info.ptr)  return v end,
+	ProxyGetInfo = function() local v = CLIB.purple_global_proxy_get_info() v = wrap_pointer(v, "ProxyInfo") return v end,
+}
+library.ipv6 = {
+	AddressIsValid = function(ip) local v = CLIB.purple_ipv6_address_is_valid(ip)  return v end,
+}
+library.pounce = {
+	DestroyAllByBuddy = function(buddy) local v = CLIB.purple_pounce_destroy_all_by_buddy(buddy.ptr)  return v end,
+	DestroyAllByAccount = function(account) local v = CLIB.purple_pounce_destroy_all_by_account(account.ptr)  return v end,
+	New = function(ui_type, pouncer, pouncee, event, option) local v = CLIB.purple_pounce_new(ui_type, pouncer.ptr, pouncee, event, option) v = wrap_pointer(v, "Pounce") return v end,
+	Execute = function(pouncer, pouncee, events) local v = CLIB.purple_pounce_execute(pouncer.ptr, pouncee, events)  return v end,
+}
+library.contact = {
+	New = function() local v = CLIB.purple_contact_new() v = wrap_pointer(v, "Contact") return v end,
 }
 library.network = {
 	ForceOnline = function() local v = CLIB.purple_network_force_online()  return v end,
@@ -3446,275 +3707,6 @@ library.network = {
 	SetTurnServer = function(turn_server) local v = CLIB.purple_network_set_turn_server(turn_server)  return v end,
 	Uninit = function() local v = CLIB.purple_network_uninit()  return v end,
 	RemovePortMapping = function(fd) local v = CLIB.purple_network_remove_port_mapping(fd)  return v end,
-}
-library.base16 = {
-	EncodeChunked = function(data, len) local v = CLIB.purple_base16_encode_chunked(data, len) v = chars_to_string(v) return v end,
-	Encode = function(data, len) local v = CLIB.purple_base16_encode(data, len) v = chars_to_string(v) return v end,
-	Decode = function(str, ret_len) local v = CLIB.purple_base16_decode(str, ret_len)  return v end,
-}
-library.util = {
-	FetchUrlRequest = function(url, full, user_agent, http11, request, include_headers, callback, data) local v = CLIB.purple_util_fetch_url_request(url, full, user_agent, http11, request, include_headers, callback, data)  return v end,
-	GetImageChecksum = function(image_data, image_len) local v = CLIB.purple_util_get_image_checksum(image_data, image_len) v = chars_to_string(v) return v end,
-	GetImageExtension = function(data, len) local v = CLIB.purple_util_get_image_extension(data, len) v = chars_to_string(v) return v end,
-	WriteDataToFileAbsolute = function(filename_full, data, size) local v = CLIB.purple_util_write_data_to_file_absolute(filename_full, data, size)  return v end,
-	FetchUrlCancel = function(url_data) local v = CLIB.purple_util_fetch_url_cancel(url_data)  return v end,
-	SetUserDir = function(dir) local v = CLIB.purple_util_set_user_dir(dir)  return v end,
-	SetCurrentSong = function(title, artist, album) local v = CLIB.purple_util_set_current_song(title, artist, album)  return v end,
-	Init = function() local v = CLIB.purple_util_init()  return v end,
-	FetchUrlRequestLen = function(url, full, user_agent, http11, request, include_headers, max_len, callback, data) local v = CLIB.purple_util_fetch_url_request_len(url, full, user_agent, http11, request, include_headers, max_len, callback, data)  return v end,
-	FormatSongInfo = function(title, artist, album, unused) local v = CLIB.purple_util_format_song_info(title, artist, album, unused) v = chars_to_string(v) return v end,
-	WriteDataToFile = function(filename, data, size) local v = CLIB.purple_util_write_data_to_file(filename, data, size)  return v end,
-	ReadXmlFromFile = function(filename, description) local v = CLIB.purple_util_read_xml_from_file(filename, description)  return v end,
-	FetchUrlRequestLenWithAccount = function(account, url, full, user_agent, http11, request, include_headers, max_len, callback, data) local v = CLIB.purple_util_fetch_url_request_len_with_account(account.ptr, url, full, user_agent, http11, request, include_headers, max_len, callback, data)  return v end,
-	GetImageFilename = function(image_data, image_len) local v = CLIB.purple_util_get_image_filename(image_data, image_len) v = chars_to_string(v) return v end,
-	Uninit = function() local v = CLIB.purple_util_uninit()  return v end,
-	Chrreplace = function(string, delimiter, replacement) local v = CLIB.purple_util_chrreplace(string, delimiter, replacement)  return v end,
-}
-library.media = {
-	CandidateListCopy = function(candidatescast_type) local v = CLIB.purple_media_candidate_list_copy(table_to_glist(candidates)) v = glist_to_table(v, cast_type) return v end,
-	CodecListFree = function(codecs) local v = CLIB.purple_media_codec_list_free(table_to_glist(codecs))  return v end,
-	CodecGetType = function() local v = CLIB.purple_media_codec_get_type()  return v end,
-	GetType = function() local v = CLIB.purple_media_get_type()  return v end,
-	ManagerGet = function() local v = CLIB.purple_media_manager_get() v = wrap_pointer(v, "MediaManager") return v end,
-	InfoTypeGetType = function() local v = CLIB.purple_media_info_type_get_type()  return v end,
-	SessionTypeGetType = function() local v = CLIB.purple_media_session_type_get_type()  return v end,
-	CandidateGetType = function() local v = CLIB.purple_media_candidate_get_type()  return v end,
-	NetworkProtocolGetType = function() local v = CLIB.purple_media_network_protocol_get_type()  return v end,
-	CapsGetType = function() local v = CLIB.purple_media_caps_get_type()  return v end,
-	CandidateListFree = function(candidates) local v = CLIB.purple_media_candidate_list_free(table_to_glist(candidates))  return v end,
-	ManagerGetType = function() local v = CLIB.purple_media_manager_get_type()  return v end,
-	CandidateTypeGetType = function() local v = CLIB.purple_media_candidate_type_get_type()  return v end,
-	StateChangedGetType = function() local v = CLIB.purple_media_state_changed_get_type()  return v end,
-	CodecNew = function(id, encoding_name, media_type, clock_rate) local v = CLIB.purple_media_codec_new(id, encoding_name, media_type, clock_rate) v = wrap_pointer(v, "MediaCodec") return v end,
-	CodecListCopy = function(codecscast_type) local v = CLIB.purple_media_codec_list_copy(table_to_glist(codecs)) v = glist_to_table(v, cast_type) return v end,
-	CandidateNew = function(foundation, component_id, type, proto, ip, port) local v = CLIB.purple_media_candidate_new(foundation, component_id, type, proto, ip, port) v = wrap_pointer(v, "MediaCandidate") return v end,
-}
-library.plugin = {
-	PrefNewWithLabel = function(label) local v = CLIB.purple_plugin_pref_new_with_label(label) v = wrap_pointer(v, "PluginPref") return v end,
-	New = function(native, path) local v = CLIB.purple_plugin_new(native, path) v = wrap_pointer(v, "Plugin") return v end,
-	PrefNewWithName = function(name) local v = CLIB.purple_plugin_pref_new_with_name(name) v = wrap_pointer(v, "PluginPref") return v end,
-	PrefNew = function() local v = CLIB.purple_plugin_pref_new() v = wrap_pointer(v, "PluginPref") return v end,
-	Probe = function(filename) local v = CLIB.purple_plugin_probe(filename) v = wrap_pointer(v, "Plugin") return v end,
-	PrefNewWithNameAndLabel = function(name, label) local v = CLIB.purple_plugin_pref_new_with_name_and_label(name, label) v = wrap_pointer(v, "PluginPref") return v end,
-	PrefFrameNew = function() local v = CLIB.purple_plugin_pref_frame_new() v = wrap_pointer(v, "PluginPrefFrame") return v end,
-}
-library.quotedp = {
-	Decode = function(str, ret_len) local v = CLIB.purple_quotedp_decode(str, ret_len)  return v end,
-}
-library.time = {
-	Format = function(tm) local v = CLIB.purple_time_format(tm) v = chars_to_string(v) return v end,
-	Build = function(year, month, day, hour, min, sec) local v = CLIB.purple_time_build(year, month, day, hour, min, sec)  return v end,
-}
-library.core = {
-	Init = function(ui) local v = CLIB.purple_core_init(ui)  return v end,
-	GetUiInfo = function() local v = CLIB.purple_core_get_ui_info()  return v end,
-	EnsureSingleInstance = function() local v = CLIB.purple_core_ensure_single_instance()  return v end,
-	GetVersion = function() local v = CLIB.purple_core_get_version() v = chars_to_string(v) return v end,
-	Migrate = function() local v = CLIB.purple_core_migrate()  return v end,
-	SetUiOps = function(ops) local v = CLIB.purple_core_set_ui_ops(ops)  return v end,
-	QuitCb = function(unused) local v = CLIB.purple_core_quit_cb(unused)  return v end,
-	GetUi = function() local v = CLIB.purple_core_get_ui() v = chars_to_string(v) return v end,
-	GetUiOps = function() local v = CLIB.purple_core_get_ui_ops()  return v end,
-	Quit = function() local v = CLIB.purple_core_quit()  return v end,
-}
-library.utf8 = {
-	NcrEncode = function(in_) local v = CLIB.purple_utf8_ncr_encode(in_) v = chars_to_string(v) return v end,
-	HasWord = function(haystack, needle) local v = CLIB.purple_utf8_has_word(haystack, needle)  return v end,
-	NcrDecode = function(in_) local v = CLIB.purple_utf8_ncr_decode(in_) v = chars_to_string(v) return v end,
-	TryConvert = function(str) local v = CLIB.purple_utf8_try_convert(str) v = chars_to_string(v) return v end,
-	StripUnprintables = function(str) local v = CLIB.purple_utf8_strip_unprintables(str) v = chars_to_string(v) return v end,
-	Strftime = function(format, tm) local v = CLIB.purple_utf8_strftime(format, tm) v = chars_to_string(v) return v end,
-	Strcasecmp = function(a, b) local v = CLIB.purple_utf8_strcasecmp(a, b)  return v end,
-	Salvage = function(str) local v = CLIB.purple_utf8_salvage(str) v = chars_to_string(v) return v end,
-}
-library.cmd = {
-	List = function(convcast_type) local v = CLIB.purple_cmd_list(conv.ptr) v = glist_to_table(v, cast_type) return v end,
-	Register = function(cmd, args, p, f, prpl_id, func, helpstr, data) local v = CLIB.purple_cmd_register(cmd, args, p, f, prpl_id, func, helpstr, data)  return v end,
-	DoCommand = function(conv, cmdline, markup, errormsg) local v = CLIB.purple_cmd_do_command(conv.ptr, cmdline, markup, errormsg)  return v end,
-	Unregister = function(id) local v = CLIB.purple_cmd_unregister(id)  return v end,
-	Help = function(conv, cmd, cast_type) local v = CLIB.purple_cmd_help(conv.ptr, cmd) v = glist_to_table(v, cast_type) return v end,
-}
-library.serv = {
-	GotPrivateAlias = function(gc, who, alias) local v = CLIB.purple_serv_got_private_alias(gc.ptr, who, alias)  return v end,
-	GotJoinChatFailed = function(gc, data) local v = CLIB.purple_serv_got_join_chat_failed(gc.ptr, data)  return v end,
-}
-library.markup = {
-	UnescapeEntity = function(text, length) local v = CLIB.purple_markup_unescape_entity(text, length) v = chars_to_string(v) return v end,
-	FindTag = function(needle, haystack, start, end_, attributes) local v = CLIB.purple_markup_find_tag(needle, haystack, start, end_, attributes)  return v end,
-	GetCssProperty = function(style, opt) local v = CLIB.purple_markup_get_css_property(style, opt) v = chars_to_string(v) return v end,
-	IsRtl = function(html) local v = CLIB.purple_markup_is_rtl(html)  return v end,
-	Linkify = function(str) local v = CLIB.purple_markup_linkify(str) v = chars_to_string(v) return v end,
-	HtmlToXhtml = function(html, dest_xhtml, dest_plain) local v = CLIB.purple_markup_html_to_xhtml(html, dest_xhtml, dest_plain)  return v end,
-	Slice = function(str, x, y) local v = CLIB.purple_markup_slice(str, x, y) v = chars_to_string(v) return v end,
-	ExtractInfoField = function(str, len, user_info, start_token, skip, end_token, check_value, no_value_token, display_name, is_link, link_prefix, format_cb) local v = CLIB.purple_markup_extract_info_field(str, len, user_info.ptr, start_token, skip, end_token, check_value, no_value_token, display_name, is_link, link_prefix, format_cb)  return v end,
-	EscapeText = function(text, length) local v = CLIB.purple_markup_escape_text(text, length) v = chars_to_string(v) return v end,
-	StripHtml = function(str) local v = CLIB.purple_markup_strip_html(str) v = chars_to_string(v) return v end,
-	GetTagName = function(tag) local v = CLIB.purple_markup_get_tag_name(tag) v = chars_to_string(v) return v end,
-}
-library.url = {
-	Parse = function(url, ret_host, ret_port, ret_path, ret_user, ret_passwd) local v = CLIB.purple_url_parse(url, ret_host, ret_port, ret_path, ret_user, ret_passwd)  return v end,
-	Encode = function(str) local v = CLIB.purple_url_encode(str) v = chars_to_string(v) return v end,
-	Decode = function(str) local v = CLIB.purple_url_decode(str) v = chars_to_string(v) return v end,
-}
-library.blist = {
-	RenameGroup = function(group, name) local v = CLIB.purple_blist_rename_group(group.ptr, name)  return v end,
-	AliasContact = function(contact, alias) local v = CLIB.purple_blist_alias_contact(contact.ptr, alias)  return v end,
-	MergeContact = function(source, node) local v = CLIB.purple_blist_merge_contact(source.ptr, node.ptr)  return v end,
-	UpdateNodeIcon = function(node) local v = CLIB.purple_blist_update_node_icon(node.ptr)  return v end,
-	AddAccount = function(account) local v = CLIB.purple_blist_add_account(account.ptr)  return v end,
-	Show = function() local v = CLIB.purple_blist_show()  return v end,
-	GetGroupSize = function(group, offline) local v = CLIB.purple_blist_get_group_size(group.ptr, offline)  return v end,
-	AddBuddy = function(buddy, contact, group, node) local v = CLIB.purple_blist_add_buddy(buddy.ptr, contact.ptr, group.ptr, node.ptr)  return v end,
-	RequestAddChat = function(account, group, alias, name) local v = CLIB.purple_blist_request_add_chat(account.ptr, group.ptr, alias, name)  return v end,
-	RemoveAccount = function(account) local v = CLIB.purple_blist_remove_account(account.ptr)  return v end,
-	RemoveGroup = function(group) local v = CLIB.purple_blist_remove_group(group.ptr)  return v end,
-	AddContact = function(contact, group, node) local v = CLIB.purple_blist_add_contact(contact.ptr, group.ptr, node.ptr)  return v end,
-	UpdateBuddyStatus = function(buddy, old_status) local v = CLIB.purple_blist_update_buddy_status(buddy.ptr, old_status.ptr)  return v end,
-	FindChat = function(account, name) local v = CLIB.purple_blist_find_chat(account.ptr, name) v = wrap_pointer(v, "Chat") return v end,
-	SetUiOps = function(ops) local v = CLIB.purple_blist_set_ui_ops(ops)  return v end,
-	AddChat = function(chat, group, node) local v = CLIB.purple_blist_add_chat(chat.ptr, group.ptr, node.ptr)  return v end,
-	RemoveChat = function(chat) local v = CLIB.purple_blist_remove_chat(chat.ptr)  return v end,
-	New = function() local v = CLIB.purple_blist_new()  return v end,
-	GetBuddies = function() local v = CLIB.purple_blist_get_buddies()  return v end,
-	UpdateBuddyIcon = function(buddy) local v = CLIB.purple_blist_update_buddy_icon(buddy.ptr)  return v end,
-	AddGroup = function(group, node) local v = CLIB.purple_blist_add_group(group.ptr, node.ptr)  return v end,
-	GetUiOps = function() local v = CLIB.purple_blist_get_ui_ops()  return v end,
-	RequestAddGroup = function() local v = CLIB.purple_blist_request_add_group()  return v end,
-	Load = function() local v = CLIB.purple_blist_load()  return v end,
-	ServerAliasBuddy = function(buddy, alias) local v = CLIB.purple_blist_server_alias_buddy(buddy.ptr, alias)  return v end,
-	RenameBuddy = function(buddy, name) local v = CLIB.purple_blist_rename_buddy(buddy.ptr, name)  return v end,
-	RemoveBuddy = function(buddy) local v = CLIB.purple_blist_remove_buddy(buddy.ptr)  return v end,
-	GetGroupOnlineCount = function(group) local v = CLIB.purple_blist_get_group_online_count(group.ptr)  return v end,
-	Init = function() local v = CLIB.purple_blist_init()  return v end,
-	AliasChat = function(chat, alias) local v = CLIB.purple_blist_alias_chat(chat.ptr, alias)  return v end,
-	GetRoot = function() local v = CLIB.purple_blist_get_root() v = wrap_pointer(v, "BlistNode") return v end,
-	RequestAddBuddy = function(account, username, group, alias) local v = CLIB.purple_blist_request_add_buddy(account.ptr, username, group, alias)  return v end,
-	Destroy = function() local v = CLIB.purple_blist_destroy()  return v end,
-	SetVisible = function(show) local v = CLIB.purple_blist_set_visible(show)  return v end,
-	GetUiData = function() local v = CLIB.purple_blist_get_ui_data()  return v end,
-	RemoveContact = function(contact) local v = CLIB.purple_blist_remove_contact(contact.ptr)  return v end,
-	AliasBuddy = function(buddy, alias) local v = CLIB.purple_blist_alias_buddy(buddy.ptr, alias)  return v end,
-	GetHandle = function() local v = CLIB.purple_blist_get_handle()  return v end,
-	ScheduleSave = function() local v = CLIB.purple_blist_schedule_save()  return v end,
-	Uninit = function() local v = CLIB.purple_blist_uninit()  return v end,
-	SetUiData = function(ui_data) local v = CLIB.purple_blist_set_ui_data(ui_data)  return v end,
-}
-library.mime = {
-	DecodeField = function(str) local v = CLIB.purple_mime_decode_field(str) v = chars_to_string(v) return v end,
-	DocumentParsen = function(buf, len) local v = CLIB.purple_mime_document_parsen(buf, len) v = wrap_pointer(v, "MimeDocument") return v end,
-	DocumentNew = function() local v = CLIB.purple_mime_document_new() v = wrap_pointer(v, "MimeDocument") return v end,
-	DocumentParse = function(buf) local v = CLIB.purple_mime_document_parse(buf) v = wrap_pointer(v, "MimeDocument") return v end,
-	PartNew = function(doc) local v = CLIB.purple_mime_part_new(doc.ptr) v = wrap_pointer(v, "MimePart") return v end,
-}
-library.notify = {
-	SearchresultsColumnAdd = function(results, column) local v = CLIB.purple_notify_searchresults_column_add(results, column)  return v end,
-	Emails = function(handle, count, detailed, subjects, froms, tos, urls, cb, user_data) local v = CLIB.purple_notify_emails(handle, count, detailed, subjects, froms, tos, urls, cb, user_data)  return v end,
-	SearchresultsGetColumnsCount = function(results) local v = CLIB.purple_notify_searchresults_get_columns_count(results)  return v end,
-	Formatted = function(handle, title, primary, secondary, text, cb, user_data) local v = CLIB.purple_notify_formatted(handle, title, primary, secondary, text, cb, user_data)  return v end,
-	Message = function(handle, type, title, primary, secondary, cb, user_data) local v = CLIB.purple_notify_message(handle, type, title, primary, secondary, cb, user_data)  return v end,
-	Email = function(handle, subject, from, to, url, cb, user_data) local v = CLIB.purple_notify_email(handle, subject, from, to, url, cb, user_data)  return v end,
-	SearchresultsGetRowsCount = function(results) local v = CLIB.purple_notify_searchresults_get_rows_count(results)  return v end,
-	SearchresultsButtonAdd = function(results, type, cb) local v = CLIB.purple_notify_searchresults_button_add(results, type, cb)  return v end,
-	GetUiOps = function() local v = CLIB.purple_notify_get_ui_ops()  return v end,
-	CloseWithHandle = function(handle) local v = CLIB.purple_notify_close_with_handle(handle)  return v end,
-	SearchresultsColumnNew = function(title) local v = CLIB.purple_notify_searchresults_column_new(title)  return v end,
-	SearchresultsColumnGetTitle = function(results, column_id) local v = CLIB.purple_notify_searchresults_column_get_title(results, column_id) v = chars_to_string(v) return v end,
-	Init = function() local v = CLIB.purple_notify_init()  return v end,
-	Userinfo = function(gc, who, user_info, cb, user_data) local v = CLIB.purple_notify_userinfo(gc.ptr, who, user_info.ptr, cb, user_data)  return v end,
-	UserInfoEntryNew = function(label, value) local v = CLIB.purple_notify_user_info_entry_new(label, value) v = wrap_pointer(v, "NotifyUserInfoEntry") return v end,
-	SearchresultsNew = function() local v = CLIB.purple_notify_searchresults_new()  return v end,
-	SearchresultsRowAdd = function(results, row) local v = CLIB.purple_notify_searchresults_row_add(results, table_to_glist(row))  return v end,
-	SearchresultsFree = function(results) local v = CLIB.purple_notify_searchresults_free(results)  return v end,
-	UserInfoNew = function() local v = CLIB.purple_notify_user_info_new() v = wrap_pointer(v, "NotifyUserInfo") return v end,
-	SearchresultsRowGet = function(results, row_id, cast_type) local v = CLIB.purple_notify_searchresults_row_get(results, row_id) v = glist_to_table(v, cast_type) return v end,
-	SetUiOps = function(ops) local v = CLIB.purple_notify_set_ui_ops(ops)  return v end,
-	Close = function(type, ui_handle) local v = CLIB.purple_notify_close(type, ui_handle)  return v end,
-	Uri = function(handle, uri) local v = CLIB.purple_notify_uri(handle, uri)  return v end,
-	Searchresults = function(gc, title, primary, secondary, results, cb, user_data) local v = CLIB.purple_notify_searchresults(gc.ptr, title, primary, secondary, results, cb, user_data)  return v end,
-	GetHandle = function() local v = CLIB.purple_notify_get_handle()  return v end,
-	SearchresultsButtonAddLabeled = function(results, label, cb) local v = CLIB.purple_notify_searchresults_button_add_labeled(results, label, cb)  return v end,
-	Uninit = function() local v = CLIB.purple_notify_uninit()  return v end,
-	SearchresultsNewRows = function(gc, results, data) local v = CLIB.purple_notify_searchresults_new_rows(gc.ptr, results, data)  return v end,
-}
-library.theme = {
-	ManagerRegisterType = function(loader) local v = CLIB.purple_theme_manager_register_type(loader.ptr)  return v end,
-	ManagerRefresh = function() local v = CLIB.purple_theme_manager_refresh()  return v end,
-	GetType = function() local v = CLIB.purple_theme_get_type()  return v end,
-	ManagerFindTheme = function(name, type) local v = CLIB.purple_theme_manager_find_theme(name, type) v = wrap_pointer(v, "Theme") return v end,
-	ManagerInit = function() local v = CLIB.purple_theme_manager_init()  return v end,
-	ManagerForEachTheme = function(func) local v = CLIB.purple_theme_manager_for_each_theme(func)  return v end,
-	ManagerUnregisterType = function(loader) local v = CLIB.purple_theme_manager_unregister_type(loader.ptr)  return v end,
-	ManagerGetType = function() local v = CLIB.purple_theme_manager_get_type()  return v end,
-	LoaderGetType = function() local v = CLIB.purple_theme_loader_get_type()  return v end,
-	ManagerUninit = function() local v = CLIB.purple_theme_manager_uninit()  return v end,
-	ManagerLoadTheme = function(theme_dir, type) local v = CLIB.purple_theme_manager_load_theme(theme_dir, type) v = wrap_pointer(v, "Theme") return v end,
-}
-library.text = {
-	StripMnemonic = function(in_) local v = CLIB.purple_text_strip_mnemonic(in_) v = chars_to_string(v) return v end,
-}
-library.home = {
-	Dir = function() local v = CLIB.purple_home_dir() v = chars_to_string(v) return v end,
-}
-library.eventloop = {
-	GetUiOps = function() local v = CLIB.purple_eventloop_get_ui_ops()  return v end,
-	SetUiOps = function(ops) local v = CLIB.purple_eventloop_set_ui_ops(ops)  return v end,
-}
-library.circ = {
-	BufferNew = function(growsize) local v = CLIB.purple_circ_buffer_new(growsize) v = wrap_pointer(v, "CircBuffer") return v end,
-}
-library.signals = {
-	Init = function() local v = CLIB.purple_signals_init()  return v end,
-	Uninit = function() local v = CLIB.purple_signals_uninit()  return v end,
-	UnregisterByInstance = function(instance) local v = CLIB.purple_signals_unregister_by_instance(instance)  return v end,
-	DisconnectByHandle = function(handle) local v = CLIB.purple_signals_disconnect_by_handle(handle)  return v end,
-}
-library.base64 = {
-	Encode = function(data, len) local v = CLIB.purple_base64_encode(data, len) v = chars_to_string(v) return v end,
-	Decode = function(str, ret_len) local v = CLIB.purple_base64_decode(str, ret_len)  return v end,
-}
-library.str = {
-	StripChar = function(str, thechar) local v = CLIB.purple_str_strip_char(str, thechar)  return v end,
-	HasPrefix = function(s, p) local v = CLIB.purple_str_has_prefix(s, p)  return v end,
-	HasSuffix = function(s, x) local v = CLIB.purple_str_has_suffix(s, x)  return v end,
-	ToTime = function(timestamp, utc, tm, tz_off, rest) local v = CLIB.purple_str_to_time(timestamp, utc, tm, tz_off, rest)  return v end,
-	BinaryToAscii = function(binary, len) local v = CLIB.purple_str_binary_to_ascii(binary, len) v = chars_to_string(v) return v end,
-	SecondsToString = function(sec) local v = CLIB.purple_str_seconds_to_string(sec) v = chars_to_string(v) return v end,
-	AddCr = function(str) local v = CLIB.purple_str_add_cr(str) v = chars_to_string(v) return v end,
-	SizeToUnits = function(size) local v = CLIB.purple_str_size_to_units(size) v = chars_to_string(v) return v end,
-}
-library.attention = {
-	TypeNew = function(ulname, name, inc_desc, out_desc) local v = CLIB.purple_attention_type_new(ulname, name, inc_desc, out_desc) v = wrap_pointer(v, "AttentionType") return v end,
-}
-library.program = {
-	IsValid = function(program) local v = CLIB.purple_program_is_valid(program)  return v end,
-}
-library.connection = {
-	NewUnregister = function(account, password, cb, user_data) local v = CLIB.purple_connection_new_unregister(account.ptr, password, cb, user_data)  return v end,
-	ErrorIsFatal = function(reason) local v = CLIB.purple_connection_error_is_fatal(reason)  return v end,
-	New = function(account, regist, password) local v = CLIB.purple_connection_new(account.ptr, regist, password)  return v end,
-}
-library.whiteboard = {
-	SetUiOps = function(ops) local v = CLIB.purple_whiteboard_set_ui_ops(ops)  return v end,
-	DrawListDestroy = function(draw_list) local v = CLIB.purple_whiteboard_draw_list_destroy(table_to_glist(draw_list))  return v end,
-	Create = function(account, who, state) local v = CLIB.purple_whiteboard_create(account.ptr, who, state) v = wrap_pointer(v, "Whiteboard") return v end,
-	GetSession = function(account, who) local v = CLIB.purple_whiteboard_get_session(account.ptr, who) v = wrap_pointer(v, "Whiteboard") return v end,
-}
-library.group = {
-	New = function(name) local v = CLIB.purple_group_new(name) v = wrap_pointer(v, "Group") return v end,
-}
-library.pounce = {
-	DestroyAllByBuddy = function(buddy) local v = CLIB.purple_pounce_destroy_all_by_buddy(buddy.ptr)  return v end,
-	DestroyAllByAccount = function(account) local v = CLIB.purple_pounce_destroy_all_by_account(account.ptr)  return v end,
-	New = function(ui_type, pouncer, pouncee, event, option) local v = CLIB.purple_pounce_new(ui_type, pouncer.ptr, pouncee, event, option) v = wrap_pointer(v, "Pounce") return v end,
-	Execute = function(pouncer, pouncee, events) local v = CLIB.purple_pounce_execute(pouncer.ptr, pouncee, events)  return v end,
-}
-library.contact = {
-	New = function() local v = CLIB.purple_contact_new() v = wrap_pointer(v, "Contact") return v end,
-}
-library.date = {
-	FormatShort = function(tm) local v = CLIB.purple_date_format_short(tm) v = chars_to_string(v) return v end,
-	FormatFull = function(tm) local v = CLIB.purple_date_format_full(tm) v = chars_to_string(v) return v end,
-	FormatLong = function(tm) local v = CLIB.purple_date_format_long(tm) v = chars_to_string(v) return v end,
 }
 library.fd = {
 	GetIp = function(fd) local v = CLIB.purple_fd_get_ip(fd) v = chars_to_string(v) return v end,
@@ -3777,13 +3769,14 @@ library.prefs = {
 	Uninit = function() local v = CLIB.purple_prefs_uninit()  return v end,
 	SetBool = function(name, value) local v = CLIB.purple_prefs_set_bool(name, value)  return v end,
 }
-library.conv = {
-	ChatCbGetAttributeKeys = function(cbcast_type) local v = CLIB.purple_conv_chat_cb_get_attribute_keys(cb) v = glist_to_table(v, cast_type) return v end,
-	ChatCbGetAttribute = function(cb, key) local v = CLIB.purple_conv_chat_cb_get_attribute(cb, key) v = chars_to_string(v) return v end,
-	PresentError = function(who, account, what) local v = CLIB.purple_conv_present_error(who, account.ptr, what)  return v end,
-	ChatCbDestroy = function(cb) local v = CLIB.purple_conv_chat_cb_destroy(cb)  return v end,
-	ChatCbNew = function(name, alias, flags) local v = CLIB.purple_conv_chat_cb_new(name, alias, flags)  return v end,
-	ChatCbGetName = function(cb) local v = CLIB.purple_conv_chat_cb_get_name(cb) v = chars_to_string(v) return v end,
+library.roomlist = {
+	SetUiOps = function(ops) local v = CLIB.purple_roomlist_set_ui_ops(ops)  return v end,
+	New = function(account) local v = CLIB.purple_roomlist_new(account.ptr) v = wrap_pointer(v, "Roomlist") return v end,
+	RoomNew = function(type, name, parent) local v = CLIB.purple_roomlist_room_new(type, name, parent.ptr) v = wrap_pointer(v, "RoomlistRoom") return v end,
+	FieldNew = function(type, label, name, hidden) local v = CLIB.purple_roomlist_field_new(type, label, name, hidden) v = wrap_pointer(v, "RoomlistField") return v end,
+	ShowWithAccount = function(account) local v = CLIB.purple_roomlist_show_with_account(account.ptr)  return v end,
+	GetList = function(gc) local v = CLIB.purple_roomlist_get_list(gc.ptr) v = wrap_pointer(v, "Roomlist") return v end,
+	GetUiOps = function() local v = CLIB.purple_roomlist_get_ui_ops()  return v end,
 }
 library.account = {
 	RequestClose = function(ui_handle) local v = CLIB.purple_account_request_close(ui_handle)  return v end,
@@ -3816,37 +3809,41 @@ library.srv = {
 	TxtQueryGetUiOps = function() local v = CLIB.purple_srv_txt_query_get_ui_ops()  return v end,
 	Resolve = function(protocol, transport, domain, cb, extradata) local v = CLIB.purple_srv_resolve(protocol, transport, domain, cb, extradata) v = wrap_pointer(v, "SrvQueryData") return v end,
 }
-library.pmp = {
-	Init = function() local v = CLIB.purple_pmp_init()  return v end,
-	CreateMap = function(type, privateport, publicport, lifetime) local v = CLIB.purple_pmp_create_map(type, privateport, publicport, lifetime)  return v end,
-	DestroyMap = function(type, privateport) local v = CLIB.purple_pmp_destroy_map(type, privateport)  return v end,
-	GetPublicIp = function() local v = CLIB.purple_pmp_get_public_ip() v = chars_to_string(v) return v end,
+library.str = {
+	StripChar = function(str, thechar) local v = CLIB.purple_str_strip_char(str, thechar)  return v end,
+	HasPrefix = function(s, p) local v = CLIB.purple_str_has_prefix(s, p)  return v end,
+	HasSuffix = function(s, x) local v = CLIB.purple_str_has_suffix(s, x)  return v end,
+	ToTime = function(timestamp, utc, tm, tz_off, rest) local v = CLIB.purple_str_to_time(timestamp, utc, tm, tz_off, rest)  return v end,
+	BinaryToAscii = function(binary, len) local v = CLIB.purple_str_binary_to_ascii(binary, len) v = chars_to_string(v) return v end,
+	SecondsToString = function(sec) local v = CLIB.purple_str_seconds_to_string(sec) v = chars_to_string(v) return v end,
+	AddCr = function(str) local v = CLIB.purple_str_add_cr(str) v = chars_to_string(v) return v end,
+	SizeToUnits = function(size) local v = CLIB.purple_str_size_to_units(size) v = chars_to_string(v) return v end,
 }
-library.status = {
-	Init = function() local v = CLIB.purple_status_init()  return v end,
-	TypeFindWithId = function(status_types, id) local v = CLIB.purple_status_type_find_with_id(table_to_glist(status_types), id) v = wrap_pointer(v, "StatusType") return v end,
-	New = function(status_type, presence) local v = CLIB.purple_status_new(status_type.ptr, presence.ptr) v = wrap_pointer(v, "Status") return v end,
-	TypeNewFull = function(primitive, id, name, saveable, user_settable, independent) local v = CLIB.purple_status_type_new_full(primitive, id, name, saveable, user_settable, independent) v = wrap_pointer(v, "StatusType") return v end,
-	TypeNewWithAttrs = function(primitive, id, name, saveable, user_settable, independent, attr_id, attr_name, attr_value, _10) local v = CLIB.purple_status_type_new_with_attrs(primitive, id, name, saveable, user_settable, independent, attr_id, attr_name, attr_value.ptr, _10) v = wrap_pointer(v, "StatusType") return v end,
-	AttrNew = function(id, name, value_type) local v = CLIB.purple_status_attr_new(id, name, value_type.ptr) v = wrap_pointer(v, "StatusAttr") return v end,
-	TypeNew = function(primitive, id, name, user_settable) local v = CLIB.purple_status_type_new(primitive, id, name, user_settable) v = wrap_pointer(v, "StatusType") return v end,
-	GetHandle = function() local v = CLIB.purple_status_get_handle()  return v end,
-	Uninit = function() local v = CLIB.purple_status_uninit()  return v end,
+library.stringref = {
+	NewNoref = function(value) local v = CLIB.purple_stringref_new_noref(value) v = wrap_pointer(v, "Stringref") return v end,
+	Printf = function(format, _2) local v = CLIB.purple_stringref_printf(format, _2) v = wrap_pointer(v, "Stringref") return v end,
+	New = function(value) local v = CLIB.purple_stringref_new(value) v = wrap_pointer(v, "Stringref") return v end,
 }
-library.sound = {
-	Init = function() local v = CLIB.purple_sound_init()  return v end,
-	ThemeGetType = function() local v = CLIB.purple_sound_theme_get_type()  return v end,
-	PlayEvent = function(event, account) local v = CLIB.purple_sound_play_event(event, account.ptr)  return v end,
-	PlayFile = function(filename, account) local v = CLIB.purple_sound_play_file(filename, account.ptr)  return v end,
-	GetUiOps = function() local v = CLIB.purple_sound_get_ui_ops()  return v end,
-	SetUiOps = function(ops) local v = CLIB.purple_sound_set_ui_ops(ops)  return v end,
-	Uninit = function() local v = CLIB.purple_sound_uninit()  return v end,
-	ThemeLoaderGetType = function() local v = CLIB.purple_sound_theme_loader_get_type()  return v end,
+library.debug = {
+	Init = function() local v = CLIB.purple_debug_init()  return v end,
+	Misc = function(category, format, _3) local v = CLIB.purple_debug_misc(category, format, _3)  return v end,
+	SetVerbose = function(verbose) local v = CLIB.purple_debug_set_verbose(verbose)  return v end,
+	IsUnsafe = function() local v = CLIB.purple_debug_is_unsafe()  return v end,
+	IsVerbose = function() local v = CLIB.purple_debug_is_verbose()  return v end,
+	Info = function(category, format, _3) local v = CLIB.purple_debug_info(category, format, _3)  return v end,
+	Warning = function(category, format, _3) local v = CLIB.purple_debug_warning(category, format, _3)  return v end,
+	IsEnabled = function() local v = CLIB.purple_debug_is_enabled()  return v end,
+	SetUnsafe = function(unsafe) local v = CLIB.purple_debug_set_unsafe(unsafe)  return v end,
+	Error = function(category, format, _3) local v = CLIB.purple_debug_error(category, format, _3)  return v end,
+	GetUiOps = function() local v = CLIB.purple_debug_get_ui_ops()  return v end,
+	SetUiOps = function(ops) local v = CLIB.purple_debug_set_ui_ops(ops)  return v end,
+	SetEnabled = function(enabled) local v = CLIB.purple_debug_set_enabled(enabled)  return v end,
+	Fatal = function(category, format, _3) local v = CLIB.purple_debug_fatal(category, format, _3)  return v end,
 }
 library.presence = {
 	NewForConv = function(conv) local v = CLIB.purple_presence_new_for_conv(conv.ptr) v = wrap_pointer(v, "Presence") return v end,
-	NewForBuddy = function(buddy) local v = CLIB.purple_presence_new_for_buddy(buddy.ptr) v = wrap_pointer(v, "Presence") return v end,
 	New = function(context) local v = CLIB.purple_presence_new(context) v = wrap_pointer(v, "Presence") return v end,
+	NewForBuddy = function(buddy) local v = CLIB.purple_presence_new_for_buddy(buddy.ptr) v = wrap_pointer(v, "Presence") return v end,
 	NewForAccount = function(account) local v = CLIB.purple_presence_new_for_account(account.ptr) v = wrap_pointer(v, "Presence") return v end,
 }
 library.strdup = {
@@ -3870,13 +3867,10 @@ library.prpl = {
 	GetMediaCaps = function(account, who) local v = CLIB.purple_prpl_get_media_caps(account.ptr, who)  return v end,
 	ChangeAccountStatus = function(account, old_status, new_status) local v = CLIB.purple_prpl_change_account_status(account.ptr, old_status.ptr, new_status.ptr)  return v end,
 }
-library.upnp = {
-	RemovePortMapping = function(portmap, protocol, cb, cb_data) local v = CLIB.purple_upnp_remove_port_mapping(portmap, protocol, cb, cb_data)  return v end,
-	SetPortMapping = function(portmap, protocol, cb, cb_data) local v = CLIB.purple_upnp_set_port_mapping(portmap, protocol, cb, cb_data)  return v end,
-	Discover = function(cb, cb_data) local v = CLIB.purple_upnp_discover(cb, cb_data)  return v end,
-	CancelPortMapping = function(mapping_data) local v = CLIB.purple_upnp_cancel_port_mapping(mapping_data)  return v end,
-	Init = function() local v = CLIB.purple_upnp_init()  return v end,
-	GetPublicIp = function() local v = CLIB.purple_upnp_get_public_ip() v = chars_to_string(v) return v end,
+library.date = {
+	FormatShort = function(tm) local v = CLIB.purple_date_format_short(tm) v = chars_to_string(v) return v end,
+	FormatFull = function(tm) local v = CLIB.purple_date_format_full(tm) v = chars_to_string(v) return v end,
+	FormatLong = function(tm) local v = CLIB.purple_date_format_long(tm) v = chars_to_string(v) return v end,
 }
 library.certificate = {
 	Import = function(scheme, filename) local v = CLIB.purple_certificate_import(scheme, filename) v = wrap_pointer(v, "Certificate") return v end,
@@ -3899,10 +3893,10 @@ library.certificate = {
 	CopyList = function(crt_listcast_type) local v = CLIB.purple_certificate_copy_list(table_to_glist(crt_list)) v = glist_to_table(v, cast_type) return v end,
 	Verify = function(verifier, subject_name, cert_chain, cb, cb_data) local v = CLIB.purple_certificate_verify(verifier, subject_name, table_to_glist(cert_chain), cb, cb_data)  return v end,
 	CheckSignatureChain = function(chain) local v = CLIB.purple_certificate_check_signature_chain(table_to_glist(chain))  return v end,
-	VerifyComplete = function(vrq, st) local v = CLIB.purple_certificate_verify_complete(vrq, st)  return v end,
+	Uninit = function() local v = CLIB.purple_certificate_uninit()  return v end,
 	GetHandle = function() local v = CLIB.purple_certificate_get_handle()  return v end,
 	UnregisterPool = function(pool) local v = CLIB.purple_certificate_unregister_pool(pool.ptr)  return v end,
-	Uninit = function() local v = CLIB.purple_certificate_uninit()  return v end,
+	VerifyComplete = function(vrq, st) local v = CLIB.purple_certificate_verify_complete(vrq, st)  return v end,
 	FindVerifier = function(scheme_name, ver_name) local v = CLIB.purple_certificate_find_verifier(scheme_name, ver_name)  return v end,
 }
 library.unescape = {
@@ -3910,22 +3904,8 @@ library.unescape = {
 	Html = function(html) local v = CLIB.purple_unescape_html(html) v = chars_to_string(v) return v end,
 	Text = function(text) local v = CLIB.purple_unescape_text(text) v = chars_to_string(v) return v end,
 }
-library.global = {
-	ProxySetInfo = function(info) local v = CLIB.purple_global_proxy_set_info(info.ptr)  return v end,
-	ProxyGetInfo = function() local v = CLIB.purple_global_proxy_get_info() v = wrap_pointer(v, "ProxyInfo") return v end,
-}
-library.stringref = {
-	NewNoref = function(value) local v = CLIB.purple_stringref_new_noref(value) v = wrap_pointer(v, "Stringref") return v end,
-	Printf = function(format, _2) local v = CLIB.purple_stringref_printf(format, _2) v = wrap_pointer(v, "Stringref") return v end,
-	New = function(value) local v = CLIB.purple_stringref_new(value) v = wrap_pointer(v, "Stringref") return v end,
-}
-library.primitive = {
-	GetTypeFromId = function(id) local v = CLIB.purple_primitive_get_type_from_id(id)  return v end,
-	GetIdFromType = function(type) local v = CLIB.purple_primitive_get_id_from_type(type) v = chars_to_string(v) return v end,
-	GetNameFromType = function(type) local v = CLIB.purple_primitive_get_name_from_type(type) v = chars_to_string(v) return v end,
-}
 library.log = {
-	New = function(type, name, account, conv, time, tm) local v = CLIB.purple_log_new(type, name, account.ptr, conv.ptr, time, tm) v = wrap_pointer(v, "Log") return v end,
+	LoggerGet = function() local v = CLIB.purple_log_logger_get() v = wrap_pointer(v, "LogLogger") return v end,
 	LoggerGetOptions = function(cast_type) local v = CLIB.purple_log_logger_get_options() v = glist_to_table(v, cast_type) return v end,
 	GetTotalSize = function(type, name, account) local v = CLIB.purple_log_get_total_size(type, name, account.ptr)  return v end,
 	GetActivityScore = function(type, name, account) local v = CLIB.purple_log_get_activity_score(type, name, account.ptr)  return v end,
@@ -3937,11 +3917,35 @@ library.log = {
 	GetLogs = function(type, name, account, cast_type) local v = CLIB.purple_log_get_logs(type, name, account.ptr) v = glist_to_table(v, cast_type) return v end,
 	GetSystemLogs = function(accountcast_type) local v = CLIB.purple_log_get_system_logs(account.ptr) v = glist_to_table(v, cast_type) return v end,
 	CommonLister = function(type, name, account, ext, logger, cast_type) local v = CLIB.purple_log_common_lister(type, name, account.ptr, ext, logger.ptr) v = glist_to_table(v, cast_type) return v end,
-	LoggerGet = function() local v = CLIB.purple_log_logger_get() v = wrap_pointer(v, "LogLogger") return v end,
-	GetHandle = function() local v = CLIB.purple_log_get_handle()  return v end,
 	LoggerNew = function(id, name, functions, _4) local v = CLIB.purple_log_logger_new(id, name, functions, _4) v = wrap_pointer(v, "LogLogger") return v end,
+	GetHandle = function() local v = CLIB.purple_log_get_handle()  return v end,
+	New = function(type, name, account, conv, time, tm) local v = CLIB.purple_log_new(type, name, account.ptr, conv.ptr, time, tm) v = wrap_pointer(v, "Log") return v end,
 	Uninit = function() local v = CLIB.purple_log_uninit()  return v end,
 	Compare = function(y, z) local v = CLIB.purple_log_compare(y, z)  return v end,
+}
+library.sound = {
+	Init = function() local v = CLIB.purple_sound_init()  return v end,
+	ThemeGetType = function() local v = CLIB.purple_sound_theme_get_type()  return v end,
+	PlayEvent = function(event, account) local v = CLIB.purple_sound_play_event(event, account.ptr)  return v end,
+	PlayFile = function(filename, account) local v = CLIB.purple_sound_play_file(filename, account.ptr)  return v end,
+	GetUiOps = function() local v = CLIB.purple_sound_get_ui_ops()  return v end,
+	SetUiOps = function(ops) local v = CLIB.purple_sound_set_ui_ops(ops)  return v end,
+	Uninit = function() local v = CLIB.purple_sound_uninit()  return v end,
+	ThemeLoaderGetType = function() local v = CLIB.purple_sound_theme_loader_get_type()  return v end,
+}
+library.primitive = {
+	GetTypeFromId = function(id) local v = CLIB.purple_primitive_get_type_from_id(id)  return v end,
+	GetIdFromType = function(type) local v = CLIB.purple_primitive_get_id_from_type(type) v = chars_to_string(v) return v end,
+	GetNameFromType = function(type) local v = CLIB.purple_primitive_get_name_from_type(type) v = chars_to_string(v) return v end,
+}
+library.purple = {
+	Strequal = function(left, right) local v = CLIB.purple_strequal(left, right)  return v end,
+	Strcasestr = function(haystack, needle) local v = CLIB.purple_strcasestr(haystack, needle) v = chars_to_string(v) return v end,
+	Mkstemp = function(path, binary) local v = CLIB.purple_mkstemp(path, binary)  return v end,
+	Debug = function(level, category, format, _4) local v = CLIB.purple_debug(level, category, format, _4)  return v end,
+	Strreplace = function(string, delimiter, replacement) local v = CLIB.purple_strreplace(string, delimiter, replacement) v = chars_to_string(v) return v end,
+	Strcasereplace = function(string, delimiter, replacement) local v = CLIB.purple_strcasereplace(string, delimiter, replacement) v = chars_to_string(v) return v end,
+	Normalize = function(account, str) local v = CLIB.purple_normalize(account.ptr, str) v = chars_to_string(v) return v end,
 }
 library.xfers = {
 	Init = function() local v = CLIB.purple_xfers_init()  return v end,
@@ -3975,21 +3979,17 @@ library.proxy = {
 	Uninit = function() local v = CLIB.purple_proxy_uninit()  return v end,
 	ConnectCancel = function(connect_data) local v = CLIB.purple_proxy_connect_cancel(connect_data)  return v end,
 }
-library.purple = {
-	Strequal = function(left, right) local v = CLIB.purple_strequal(left, right)  return v end,
-	Strcasestr = function(haystack, needle) local v = CLIB.purple_strcasestr(haystack, needle) v = chars_to_string(v) return v end,
-	Mkstemp = function(path, binary) local v = CLIB.purple_mkstemp(path, binary)  return v end,
-	Debug = function(level, category, format, _4) local v = CLIB.purple_debug(level, category, format, _4)  return v end,
-	Strreplace = function(string, delimiter, replacement) local v = CLIB.purple_strreplace(string, delimiter, replacement) v = chars_to_string(v) return v end,
-	Strcasereplace = function(string, delimiter, replacement) local v = CLIB.purple_strcasereplace(string, delimiter, replacement) v = chars_to_string(v) return v end,
-	Normalize = function(account, str) local v = CLIB.purple_normalize(account.ptr, str) v = chars_to_string(v) return v end,
-}
-library.ipv6 = {
-	AddressIsValid = function(ip) local v = CLIB.purple_ipv6_address_is_valid(ip)  return v end,
+library.url = {
+	Parse = function(url, ret_host, ret_port, ret_path, ret_user, ret_passwd) local v = CLIB.purple_url_parse(url, ret_host, ret_port, ret_path, ret_user, ret_passwd)  return v end,
+	Encode = function(str) local v = CLIB.purple_url_encode(str) v = chars_to_string(v) return v end,
+	Decode = function(str) local v = CLIB.purple_url_decode(str) v = chars_to_string(v) return v end,
 }
 library.socket = {
 	GetFamily = function(fd) local v = CLIB.purple_socket_get_family(fd)  return v end,
 	SpeaksIpv4 = function(fd) local v = CLIB.purple_socket_speaks_ipv4(fd)  return v end,
+}
+library.group = {
+	New = function(name) local v = CLIB.purple_group_new(name) v = wrap_pointer(v, "Group") return v end,
 }
 library.savedstatus = {
 	GetDefault = function() local v = CLIB.purple_savedstatus_get_default() v = wrap_pointer(v, "SavedStatus") return v end,

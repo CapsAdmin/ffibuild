@@ -708,8 +708,8 @@ do -- type metatables
 				local key, val = line:match("(.+) = (.+)")
 
 				if key and val then
-					local num = ffibuild.ParseEnumValue(val, current_meta_data, enums)
-
+					num = ffibuild.ParseEnumValue(val, current_meta_data, enums)
+					
 					if not num then
 						error("unable to parse enum:\n\t" .. val)
 					end

@@ -7,6 +7,7 @@ struct GLFWgammaramp {unsigned short*red;unsigned short*green;unsigned short*blu
 struct GLFWimage {int width;int height;unsigned char*pixels;};
 void(glfwMaximizeWindow)(struct GLFWwindow*);
 void(glfwRestoreWindow)(struct GLFWwindow*);
+unsigned long(glfwGetTimerValue)();
 void(glfwDestroyCursor)(struct GLFWcursor*);
 const char*(glfwGetVersionString)();
 void(glfwGetWindowPos)(struct GLFWwindow*,int*,int*);
@@ -23,27 +24,30 @@ void(glfwGetVersion)(int*,int*,int*);
 const float*(glfwGetJoystickAxes)(int,int*);
 struct GLFWwindow*(glfwCreateWindow)(int,int,const char*,struct GLFWmonitor*,struct GLFWwindow*);
 void(*glfwSetCursorEnterCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int)))(struct GLFWwindow*,int);
-void(glfwSetCursor)(struct GLFWwindow*,struct GLFWcursor*);
+void(glfwSetWindowIcon)(struct GLFWwindow*,int,const struct GLFWimage*);
 void(*glfwSetFramebufferSizeCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,int)))(struct GLFWwindow*,int,int);
 const char*(glfwGetMonitorName)(struct GLFWmonitor*);
 void(glfwSetWindowTitle)(struct GLFWwindow*,const char*);
 int(glfwJoystickPresent)(int);
 void(glfwGetMonitorPos)(struct GLFWmonitor*,int*,int*);
-struct GLFWmonitor*(glfwGetPrimaryMonitor)();
 int(glfwCreateWindowSurface)(void*,struct GLFWwindow*,void*,void**);
 void(*glfwGetInstanceProcAddress(void*,const char*))();
 const char**(glfwGetRequiredInstanceExtensions)(unsigned int*);
+struct GLFWmonitor*(glfwGetPrimaryMonitor)();
 int(glfwVulkanSupported)();
+void(*glfwSetWindowPosCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,int)))(struct GLFWwindow*,int,int);
 void(glfwSwapInterval)(int);
 void(glfwSwapBuffers)(struct GLFWwindow*);
 struct GLFWwindow*(glfwGetCurrentContext)();
 void(glfwMakeContextCurrent)(struct GLFWwindow*);
+void(glfwSetCursor)(struct GLFWwindow*,struct GLFWcursor*);
 double(glfwGetTime)();
 const char*(glfwGetClipboardString)(struct GLFWwindow*);
 const unsigned char*(glfwGetJoystickButtons)(int,int*);
 void(glfwSetWindowSize)(struct GLFWwindow*,int,int);
 void(*glfwSetMouseButtonCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,int,int)))(struct GLFWwindow*,int,int,int);
 void(*glfwSetKeyCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,int,int,int)))(struct GLFWwindow*,int,int,int,int);
+unsigned long(glfwGetTimerFrequency)();
 struct GLFWcursor*(glfwCreateStandardCursor)(int);
 struct GLFWcursor*(glfwCreateCursor)(const struct GLFWimage*,int,int);
 void(glfwGetCursorPos)(struct GLFWwindow*,double*,double*);
@@ -57,8 +61,8 @@ void(glfwPollEvents)();
 void(*glfwSetWindowFocusCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int)))(struct GLFWwindow*,int);
 void(*glfwSetWindowCloseCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*)))(struct GLFWwindow*);
 void(*glfwGetProcAddress(const char*))();
-void(*glfwSetWindowPosCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,int)))(struct GLFWwindow*,int,int);
 void*(glfwGetWindowUserPointer)(struct GLFWwindow*);
+void(glfwSetWindowMonitor)(struct GLFWwindow*,struct GLFWmonitor*,int,int,int,int,int);
 void(glfwSetWindowUserPointer)(struct GLFWwindow*,void*);
 int(glfwGetWindowAttrib)(struct GLFWwindow*,int);
 void(*glfwSetDropCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,int,const char**)))(struct GLFWwindow*,int,const char**);
@@ -94,12 +98,14 @@ void(*glfwSetCharModsCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*
 void(glfwSetClipboardString)(struct GLFWwindow*,const char*);
 void(*glfwSetCursorPosCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,double,double)))(struct GLFWwindow*,double,double);
 void(*glfwSetScrollCallback(struct GLFWwindow*,void(*cbfun)(struct GLFWwindow*,double,double)))(struct GLFWwindow*,double,double);
+void(glfwWaitEventsTimeout)(double);
 ]])
 local CLIB = ffi.load(_G.FFI_LIB or "glfw")
 local library = {}
 library = {
 	MaximizeWindow = CLIB.glfwMaximizeWindow,
 	RestoreWindow = CLIB.glfwRestoreWindow,
+	GetTimerValue = CLIB.glfwGetTimerValue,
 	DestroyCursor = CLIB.glfwDestroyCursor,
 	GetVersionString = CLIB.glfwGetVersionString,
 	GetWindowPos = CLIB.glfwGetWindowPos,
@@ -116,27 +122,30 @@ library = {
 	GetJoystickAxes = CLIB.glfwGetJoystickAxes,
 	CreateWindow = CLIB.glfwCreateWindow,
 	SetCursorEnterCallback = CLIB.glfwSetCursorEnterCallback,
-	SetCursor = CLIB.glfwSetCursor,
+	SetWindowIcon = CLIB.glfwSetWindowIcon,
 	SetFramebufferSizeCallback = CLIB.glfwSetFramebufferSizeCallback,
 	GetMonitorName = CLIB.glfwGetMonitorName,
 	SetWindowTitle = CLIB.glfwSetWindowTitle,
 	JoystickPresent = CLIB.glfwJoystickPresent,
 	GetMonitorPos = CLIB.glfwGetMonitorPos,
-	GetPrimaryMonitor = CLIB.glfwGetPrimaryMonitor,
 	CreateWindowSurface = CLIB.glfwCreateWindowSurface,
 	GetInstanceProcAddress = CLIB.glfwGetInstanceProcAddress,
 	GetRequiredInstanceExtensions = CLIB.glfwGetRequiredInstanceExtensions,
+	GetPrimaryMonitor = CLIB.glfwGetPrimaryMonitor,
 	VulkanSupported = CLIB.glfwVulkanSupported,
+	SetWindowPosCallback = CLIB.glfwSetWindowPosCallback,
 	SwapInterval = CLIB.glfwSwapInterval,
 	SwapBuffers = CLIB.glfwSwapBuffers,
 	GetCurrentContext = CLIB.glfwGetCurrentContext,
 	MakeContextCurrent = CLIB.glfwMakeContextCurrent,
+	SetCursor = CLIB.glfwSetCursor,
 	GetTime = CLIB.glfwGetTime,
 	GetClipboardString = CLIB.glfwGetClipboardString,
 	GetJoystickButtons = CLIB.glfwGetJoystickButtons,
 	SetWindowSize = CLIB.glfwSetWindowSize,
 	SetMouseButtonCallback = CLIB.glfwSetMouseButtonCallback,
 	SetKeyCallback = CLIB.glfwSetKeyCallback,
+	GetTimerFrequency = CLIB.glfwGetTimerFrequency,
 	CreateStandardCursor = CLIB.glfwCreateStandardCursor,
 	CreateCursor = CLIB.glfwCreateCursor,
 	GetCursorPos = CLIB.glfwGetCursorPos,
@@ -150,8 +159,8 @@ library = {
 	SetWindowFocusCallback = CLIB.glfwSetWindowFocusCallback,
 	SetWindowCloseCallback = CLIB.glfwSetWindowCloseCallback,
 	GetProcAddress = CLIB.glfwGetProcAddress,
-	SetWindowPosCallback = CLIB.glfwSetWindowPosCallback,
 	GetWindowUserPointer = CLIB.glfwGetWindowUserPointer,
+	SetWindowMonitor = CLIB.glfwSetWindowMonitor,
 	SetWindowUserPointer = CLIB.glfwSetWindowUserPointer,
 	GetWindowAttrib = CLIB.glfwGetWindowAttrib,
 	SetDropCallback = CLIB.glfwSetDropCallback,
@@ -187,6 +196,7 @@ library = {
 	SetClipboardString = CLIB.glfwSetClipboardString,
 	SetCursorPosCallback = CLIB.glfwSetCursorPosCallback,
 	SetScrollCallback = CLIB.glfwSetScrollCallback,
+	WaitEventsTimeout = CLIB.glfwWaitEventsTimeout,
 }
 library.e = {
 	WINGDIAPI_DEFINED = 1,
