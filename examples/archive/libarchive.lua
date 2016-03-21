@@ -1,12 +1,9 @@
 local ffi = require("ffi")
-ffi.cdef([[struct timespec {long tv_sec;long tv_nsec;};
-struct stat {unsigned long st_dev;unsigned long st_ino;unsigned long st_nlink;unsigned int st_mode;unsigned int st_uid;unsigned int st_gid;int __pad0;unsigned long st_rdev;long st_size;long st_blksize;long st_blocks;struct timespec st_atim;struct timespec st_mtim;struct timespec st_ctim;long __glibc_reserved[3];};
-struct _IO_marker {struct _IO_marker*_next;struct _IO_FILE*_sbuf;int _pos;};
-struct _IO_FILE {int _flags;char*_IO_read_ptr;char*_IO_read_end;char*_IO_read_base;char*_IO_write_base;char*_IO_write_ptr;char*_IO_write_end;char*_IO_buf_base;char*_IO_buf_end;char*_IO_save_base;char*_IO_backup_base;char*_IO_save_end;struct _IO_marker*_markers;struct _IO_FILE*_chain;int _fileno;int _flags2;long _old_offset;unsigned short _cur_column;signed char _vtable_offset;char _shortbuf[1];void*_lock;long _offset;void*__pad1;void*__pad2;void*__pad3;void*__pad4;unsigned long __pad5;int _mode;char _unused2[15*sizeof(int)-4*sizeof(void*)-sizeof(size_t)];};
-struct archive {};
+ffi.cdef([[struct archive {};
 struct archive_entry {};
 struct archive_acl {};
 struct archive_entry_linkresolver {};
+int(archive_version_number)();
 int(archive_read_support_format_gnutar)(struct archive*);
 int(archive_match_include_date)(struct archive*,int,const char*);
 int(archive_read_open_fd)(struct archive*,int,unsigned long);
@@ -34,6 +31,7 @@ int(archive_read_support_compression_lzip)(struct archive*);
 int(archive_write_set_format_by_name)(struct archive*,const char*);
 int(archive_read_support_format_cpio)(struct archive*);
 int(archive_write_zip_set_compression_store)(struct archive*);
+const char*(archive_liblz4_version)();
 int(archive_read_support_compression_compress)(struct archive*);
 int(archive_match_path_unmatched_inclusions)(struct archive*);
 int(archive_write_set_format_ustar)(struct archive*);
@@ -44,6 +42,7 @@ int(archive_read_support_filter_program_signature)(struct archive*,const char*,c
 long(archive_entry_uid)(struct archive_entry*);
 long(archive_position_compressed)(struct archive*);
 const char*(archive_entry_copy_fflags_text)(struct archive_entry*,const char*);
+int(archive_read_disk_current_filesystem)(struct archive*);
 int(archive_write_add_filter_xz)(struct archive*);
 int(archive_read_set_callback_data)(struct archive*,void*);
 int(archive_match_include_gid)(struct archive*,long);
@@ -90,15 +89,17 @@ void(archive_read_extract_set_progress_callback)(struct archive*,void(*_progress
 int(archive_read_open_filename)(struct archive*,const char*,unsigned long);
 unsigned long(archive_entry_rdevmajor)(struct archive_entry*);
 void(archive_entry_set_mode)(struct archive_entry*,unsigned int);
-const struct stat*(archive_entry_stat)(struct archive_entry*);
+void*(archive_entry_stat)(struct archive_entry*);
 int(archive_read_support_compression_program)(struct archive*,const char*);
-void(archive_entry_copy_stat)(struct archive_entry*,const struct stat*);
+void(archive_entry_copy_stat)(struct archive_entry*,void*);
 int(archive_read_support_filter_lz4)(struct archive*);
 int(archive_write_set_compression_bzip2)(struct archive*);
+const char*(archive_bzlib_version)();
 const char*(archive_filter_name)(struct archive*,int);
 int(archive_read_support_compression_lzma)(struct archive*);
 int(archive_write_open_filename)(struct archive*,const char*);
 int(archive_read_support_format_zip)(struct archive*);
+int(archive_write_header)(struct archive*,struct archive_entry*);
 int(archive_write_open_filename_w)(struct archive*,const int*);
 int(archive_read_support_format_7zip)(struct archive*);
 int(archive_entry_dev_is_set)(struct archive_entry*);
@@ -112,6 +113,7 @@ void(archive_read_extract_set_skip_file)(struct archive*,long,long);
 void(archive_entry_copy_sourcepath_w)(struct archive_entry*,const int*);
 void(archive_entry_set_pathname)(struct archive_entry*,const char*);
 int(archive_read_disk_set_symlink_hybrid)(struct archive*);
+const char*(archive_zlib_version)();
 int(archive_write_set_compression_compress)(struct archive*);
 int(archive_entry_sparse_next)(struct archive_entry*,long*,long*);
 int(archive_read_disk_can_descend)(struct archive*);
@@ -141,13 +143,14 @@ int(archive_read_disk_set_matching)(struct archive*,struct archive*,void(*_exclu
 int(archive_read_set_option)(struct archive*,const char*,const char*,const char*);
 void(archive_set_error)(struct archive*,int,const char*,...);
 int(archive_entry_ctime_is_set)(struct archive_entry*);
-int(archive_read_disk_entry_from_file)(struct archive*,struct archive_entry*,int,const struct stat*);
-int(archive_read_set_open_callback)(struct archive*,int(unknown_2)(struct archive*,void*));
+int(archive_read_disk_entry_from_file)(struct archive*,struct archive_entry*,int,const void*);
+int(archive_read_set_seek_callback)(struct archive*,long(unknown_2)(struct archive*,void*,long,int));
 int(archive_write_set_compression_none)(struct archive*);
 unsigned long(archive_entry_rdevminor)(struct archive_entry*);
 void(archive_entry_set_filetype)(struct archive_entry*,unsigned int);
 long(archive_entry_birthtime)(struct archive_entry*);
 void(archive_entry_set_perm)(struct archive_entry*,unsigned int);
+int(archive_read_support_filter_compress)(struct archive*);
 int(archive_errno)(struct archive*);
 int(archive_read_open_file)(struct archive*,const char*,unsigned long);
 int(archive_read_support_filter_bzip2)(struct archive*);
@@ -168,6 +171,7 @@ int(archive_read_append_callback_data)(struct archive*,void*);
 int(archive_read_open1)(struct archive*);
 int(archive_read_set_options)(struct archive*,const char*);
 int(archive_read_data_block)(struct archive*,const void**,unsigned long*,long*);
+const char*(archive_liblzma_version)();
 int(archive_match_time_excluded)(struct archive*,struct archive_entry*);
 int(archive_entry_sparse_count)(struct archive_entry*);
 int(archive_match_include_file_time)(struct archive*,int,const char*);
@@ -184,78 +188,78 @@ int(archive_read_append_filter)(struct archive*,int);
 struct archive*(archive_read_new)();
 void(archive_entry_copy_mac_metadata)(struct archive_entry*,const void*,unsigned long);
 int(archive_read_open)(struct archive*,void*,int(unknown_3)(struct archive*,void*),long(unknown_4)(struct archive*,void*,const void**),int(unknown_5)(struct archive*,void*));
-const int*(archive_entry_acl_text_w)(struct archive_entry*,int);
+int(archive_entry_acl_reset)(struct archive_entry*,int);
 struct archive_entry_linkresolver*(archive_entry_linkresolver_new)();
 int(archive_entry_sparse_reset)(struct archive_entry*);
-int(archive_entry_is_data_encrypted)(struct archive_entry*);
-void(archive_entry_unset_birthtime)(struct archive_entry*);
+const int*(archive_entry_uname_w)(struct archive_entry*);
 void(archive_entry_sparse_clear)(struct archive_entry*);
+void(archive_entry_unset_birthtime)(struct archive_entry*);
 int(archive_entry_xattr_next)(struct archive_entry*,const char**,const void**,unsigned long*);
-int(archive_write_set_format_shar_dump)(struct archive*);
 int(archive_entry_xattr_reset)(struct archive_entry*);
-void(archive_entry_copy_gname_w)(struct archive_entry*,const int*);
+void(archive_entry_copy_gname)(struct archive_entry*,const char*);
 struct archive_acl*(archive_entry_acl)(struct archive_entry*);
+const int*(archive_entry_acl_text_w)(struct archive_entry*,int);
 struct archive_entry*(archive_entry_partial_links)(struct archive_entry_linkresolver*,unsigned int*);
-int(archive_entry_acl_reset)(struct archive_entry*,int);
 int(archive_entry_acl_add_entry_w)(struct archive_entry*,int,int,int,int,const int*);
 int(archive_entry_acl_add_entry)(struct archive_entry*,int,int,int,int,const char*);
+int(archive_write_set_format_option)(struct archive*,const char*,const char*,const char*);
 const void*(archive_entry_mac_metadata)(struct archive_entry*,unsigned long*);
 int(archive_read_support_format_iso9660)(struct archive*);
-int(archive_write_set_bytes_in_last_block)(struct archive*,int);
 int(archive_entry_update_uname_utf8)(struct archive_entry*,const char*);
 void(archive_entry_copy_uname_w)(struct archive_entry*,const int*);
 void(archive_entry_copy_uname)(struct archive_entry*,const char*);
-int(archive_match_excluded)(struct archive*,struct archive_entry*);
 void(archive_entry_set_uname_utf8)(struct archive_entry*,const char*);
+int(archive_match_excluded)(struct archive*,struct archive_entry*);
 void(archive_entry_set_uname)(struct archive_entry*,const char*);
 int(archive_entry_update_symlink_utf8)(struct archive_entry*,const char*);
-int(archive_write_set_format_shar)(struct archive*);
 void(archive_entry_copy_symlink_w)(struct archive_entry*,const int*);
+int(archive_write_set_format_shar)(struct archive*);
 void(archive_entry_copy_symlink)(struct archive_entry*,const char*);
-int(archive_write_free)(struct archive*);
 void(archive_entry_set_symlink_utf8)(struct archive_entry*,const char*);
+int(archive_write_free)(struct archive*);
 void(archive_entry_set_symlink)(struct archive_entry*,const char*);
 void(archive_entry_copy_sourcepath)(struct archive_entry*,const char*);
 void(archive_entry_unset_size)(struct archive_entry*);
 void(archive_entry_set_size)(struct archive_entry*,long);
-int(archive_file_count)(struct archive*);
 void(archive_entry_set_rdevminor)(struct archive_entry*,unsigned long);
+int(archive_file_count)(struct archive*);
 void(archive_entry_set_rdevmajor)(struct archive_entry*,unsigned long);
 int(archive_entry_update_pathname_utf8)(struct archive_entry*,const char*);
 void(archive_entry_copy_pathname_w)(struct archive_entry*,const int*);
-const int*(archive_entry_gname_w)(struct archive_entry*);
+const char*(archive_entry_gname)(struct archive_entry*);
 void(archive_entry_set_pathname_utf8)(struct archive_entry*,const char*);
 void(archive_entry_set_nlink)(struct archive_entry*,unsigned int);
 void(archive_entry_unset_mtime)(struct archive_entry*);
-int(archive_write_disk_set_options)(struct archive*,int);
 void(archive_entry_set_mtime)(struct archive_entry*,long,long);
-int(archive_read_support_compression_bzip2)(struct archive*);
-void(archive_entry_set_link)(struct archive_entry*,const char*);
-int(archive_read_support_format_warc)(struct archive*);
-void(archive_entry_copy_link)(struct archive_entry*,const char*);
-void(archive_entry_copy_link_w)(struct archive_entry*,const int*);
+int(archive_write_disk_set_options)(struct archive*,int);
 void(archive_entry_set_ino)(struct archive_entry*,long);
+int(archive_read_support_compression_bzip2)(struct archive*);
+void(archive_entry_copy_link)(struct archive_entry*,const char*);
+int(archive_read_support_format_warc)(struct archive*);
+void(archive_entry_set_link)(struct archive_entry*,const char*);
+void(archive_entry_copy_link_w)(struct archive_entry*,const int*);
 void(archive_entry_copy_hardlink)(struct archive_entry*,const char*);
-int(archive_write_set_format_option)(struct archive*,const char*,const char*,const char*);
+int(archive_write_open_FILE)(struct archive*,void*);
 int(archive_write_set_format_v7tar)(struct archive*);
 int(archive_entry_update_gname_utf8)(struct archive_entry*,const char*);
+void(archive_entry_copy_gname_w)(struct archive_entry*,const int*);
 void(archive_entry_xattr_add_entry)(struct archive_entry*,const char*,const void*,unsigned long);
-int(archive_read_support_format_by_code)(struct archive*,int);
-void(archive_entry_copy_gname)(struct archive_entry*,const char*);
 const int*(archive_entry_copy_fflags_text_w)(struct archive_entry*,const int*);
-long(archive_position_uncompressed)(struct archive*);
 void(archive_entry_set_fflags)(struct archive_entry*,unsigned long,unsigned long);
+long(archive_position_uncompressed)(struct archive*);
+int(archive_read_open_FILE)(struct archive*,void*);
 int(archive_write_set_passphrase)(struct archive*,const char*);
 void(archive_entry_unset_ctime)(struct archive_entry*);
 void(archive_entry_set_ctime)(struct archive_entry*,long,long);
+int(archive_free)(struct archive*);
 int(archive_read_disk_open_w)(struct archive*,const int*);
 void(archive_entry_set_atime)(struct archive_entry*,long,long);
 int(archive_entry_is_metadata_encrypted)(struct archive_entry*);
+int(archive_entry_is_data_encrypted)(struct archive_entry*);
 void(archive_entry_sparse_add_entry)(struct archive_entry*,long,long);
-const int*(archive_entry_uname_w)(struct archive_entry*);
 const char*(archive_entry_uname_utf8)(struct archive_entry*);
-int(archive_write_disk_set_skip_file)(struct archive*,long,long);
 const char*(archive_entry_uname)(struct archive_entry*);
+int(archive_write_disk_set_skip_file)(struct archive*,long,long);
 const int*(archive_entry_symlink_w)(struct archive_entry*);
 const char*(archive_entry_symlink_utf8)(struct archive_entry*);
 const char*(archive_entry_strmode)(struct archive_entry*);
@@ -263,141 +267,137 @@ const char*(archive_entry_symlink)(struct archive_entry*);
 int(archive_match_include_pattern_from_file_w)(struct archive*,const int*,int);
 int(archive_read_add_callback_data)(struct archive*,void*,unsigned int);
 int(archive_read_support_compression_rpm)(struct archive*);
-int(archive_read_set_passphrase_callback)(struct archive*,void*,const char*(unknown_3)(struct archive*,void*));
-int(archive_read_disk_set_symlink_physical)(struct archive*);
 long(archive_entry_size)(struct archive_entry*);
+int(archive_read_disk_set_symlink_physical)(struct archive*);
 const int*(archive_entry_sourcepath_w)(struct archive_entry*);
 const int*(archive_entry_pathname_w)(struct archive_entry*);
-int(archive_match_include_file_time_w)(struct archive*,int,const int*);
 unsigned int(archive_entry_nlink)(struct archive_entry*);
+int(archive_match_include_file_time_w)(struct archive*,int,const int*);
 int(archive_entry_mtime_is_set)(struct archive_entry*);
 long(archive_entry_mtime_nsec)(struct archive_entry*);
 long(archive_entry_mtime)(struct archive_entry*);
 int(archive_entry_ino_is_set)(struct archive_entry*);
 long(archive_entry_ino64)(struct archive_entry*);
 const int*(archive_entry_hardlink_w)(struct archive_entry*);
-int(archive_write_get_bytes_per_block)(struct archive*);
 const char*(archive_entry_hardlink_utf8)(struct archive_entry*);
+int(archive_write_get_bytes_per_block)(struct archive*);
 const char*(archive_entry_hardlink)(struct archive_entry*);
+const int*(archive_entry_gname_w)(struct archive_entry*);
 int(archive_match_include_time)(struct archive*,int,long,long);
 void(archive_entry_copy_pathname)(struct archive_entry*,const char*);
 int(archive_write_fail)(struct archive*);
-const char*(archive_entry_gname)(struct archive_entry*);
-int(archive_read_set_switch_callback)(struct archive*,int(unknown_2)(struct archive*,void*,void*));
 long(archive_entry_gid)(struct archive_entry*);
+int(archive_read_set_switch_callback)(struct archive*,int(unknown_2)(struct archive*,void*,void*));
 unsigned long(archive_entry_devmajor)(struct archive_entry*);
 long(archive_entry_ctime_nsec)(struct archive_entry*);
 long(archive_entry_ctime)(struct archive_entry*);
-int(archive_read_open_FILE)(struct archive*,struct _IO_FILE*);
 long(archive_entry_atime)(struct archive_entry*);
 struct archive_entry*(archive_entry_new2)(struct archive*);
 void(archive_entry_free)(struct archive_entry*);
 struct archive_entry*(archive_entry_clear)(struct archive_entry*);
 int(archive_match_include_pattern_w)(struct archive*,const int*);
 void(archive_entry_unset_atime)(struct archive_entry*);
-int(archive_write_set_skip_file)(struct archive*,long,long);
-int(archive_read_support_filter_compress)(struct archive*);
-int(archive_version_number)();
 int(archive_read_disk_set_behavior)(struct archive*,int);
 int(archive_read_prepend_callback_data)(struct archive*,void*);
 long(archive_write_disk_uid)(struct archive*,const char*,long);
 void(archive_entry_set_devminor)(struct archive_entry*,unsigned long);
 int(archive_read_data_skip)(struct archive*);
 int(archive_read_support_compression_gzip)(struct archive*);
-int(archive_free)(struct archive*);
-int(archive_read_support_filter_gzip)(struct archive*);
-int(archive_read_support_format_zip_streamable)(struct archive*);
 int(archive_read_support_filter_none)(struct archive*);
+int(archive_read_support_format_zip_streamable)(struct archive*);
+int(archive_read_disk_descend)(struct archive*);
+const char*(archive_read_disk_uname)(struct archive*,long);
 int(archive_read_open_memory2)(struct archive*,const void*,unsigned long,unsigned long);
-int(archive_match_include_uname)(struct archive*,const char*);
+int(archive_write_disk_set_standard_lookup)(struct archive*);
 void(archive_entry_acl_clear)(struct archive_entry*);
-int(archive_write_header)(struct archive*,struct archive_entry*);
 int(archive_write_add_filter_program)(struct archive*,const char*);
-int(archive_read_extract)(struct archive*,struct archive_entry*,int);
-int(archive_read_support_filter_lrzip)(struct archive*);
+int(archive_match_exclude_pattern_from_file_w)(struct archive*,const int*,int);
 int(archive_write_add_filter_lzop)(struct archive*);
-int(archive_write_set_format_raw)(struct archive*);
+int(archive_write_set_format_gnutar)(struct archive*);
 int(archive_write_set_format_zip)(struct archive*);
-int(archive_write_set_format)(struct archive*,int);
 int(archive_compression)(struct archive*);
-int(archive_write_add_filter_by_name)(struct archive*,const char*);
 int(archive_read_open2)(struct archive*,void*,int(unknown_3)(struct archive*,void*),long(unknown_4)(struct archive*,void*,const void**),long(unknown_5)(struct archive*,void*,long),int(unknown_6)(struct archive*,void*));
 int(archive_write_set_format_xar)(struct archive*);
-int(archive_read_finish)(struct archive*);
+int(archive_write_add_filter_by_name)(struct archive*,const char*);
 int(archive_match_exclude_pattern_w)(struct archive*,const int*);
-int(archive_read_set_format_option)(struct archive*,const char*,const char*,const char*);
+int(archive_read_finish)(struct archive*);
 int(archive_write_set_compression_gzip)(struct archive*);
 int(archive_write_set_format_filter_by_ext_def)(struct archive*,const char*,const char*);
 int(archive_write_get_bytes_in_last_block)(struct archive*);
 int(archive_read_support_format_rar)(struct archive*);
-int(archive_read_has_encrypted_entries)(struct archive*);
 int(archive_write_open_fd)(struct archive*,int);
 int(archive_write_add_filter_lz4)(struct archive*);
 int(archive_entry_birthtime_is_set)(struct archive_entry*);
-int(archive_read_set_skip_callback)(struct archive*,long(unknown_2)(struct archive*,void*,long));
+int(archive_read_set_format_option)(struct archive*,const char*,const char*,const char*);
 int(archive_match_include_gname_w)(struct archive*,const int*);
+int(archive_read_support_filter_lzma)(struct archive*);
+int(archive_read_set_close_callback)(struct archive*,int(unknown_2)(struct archive*,void*));
 unsigned int(archive_entry_mode)(struct archive_entry*);
 int(archive_write_set_bytes_per_block)(struct archive*,int);
+int(archive_write_set_bytes_in_last_block)(struct archive*,int);
 int(archive_read_next_header)(struct archive*,struct archive_entry**);
-int(archive_read_support_filter_uu)(struct archive*);
-int(archive_read_support_filter_grzip)(struct archive*);
-const char*(archive_version_details)();
-int(archive_read_close)(struct archive*);
+int(archive_read_support_filter_gzip)(struct archive*);
 int(archive_read_support_compression_all)(struct archive*);
+int(archive_read_close)(struct archive*);
+const char*(archive_version_details)();
 struct archive*(archive_write_disk_new)();
-int(archive_write_zip_set_compression_deflate)(struct archive*);
+int(archive_read_disk_open)(struct archive*,const char*);
+int(archive_read_support_filter_uu)(struct archive*);
 void(archive_entry_set_is_metadata_encrypted)(struct archive_entry*,char);
+int(archive_read_support_filter_lrzip)(struct archive*);
 int(archive_read_support_filter_lzip)(struct archive*);
-int(archive_read_support_filter_lzma)(struct archive*);
 int(archive_read_support_filter_all)(struct archive*);
-int(archive_read_support_filter_xz)(struct archive*);
 int(archive_read_set_format)(struct archive*,int);
+int(archive_read_support_format_by_code)(struct archive*,int);
 int(archive_read_support_format_cab)(struct archive*);
 int(archive_match_include_uname_w)(struct archive*,const int*);
-int(archive_read_append_filter_program)(struct archive*,const char*);
+int(archive_read_support_filter_xz)(struct archive*);
 void(archive_entry_set_is_data_encrypted)(struct archive_entry*,char);
+int(archive_read_set_open_callback)(struct archive*,int(unknown_2)(struct archive*,void*));
 int(archive_read_set_read_callback)(struct archive*,long(unknown_2)(struct archive*,void*,const void**));
-int(archive_read_set_seek_callback)(struct archive*,long(unknown_2)(struct archive*,void*,long,int));
-int(archive_write_add_filter_b64encode)(struct archive*);
 int(archive_write_set_format_ar_svr4)(struct archive*);
+int(archive_write_add_filter_b64encode)(struct archive*);
+int(archive_read_has_encrypted_entries)(struct archive*);
 const char*(archive_version_string)();
+int(archive_read_data_into_fd)(struct archive*,int);
 int(archive_write_add_filter_lzip)(struct archive*);
 int(archive_read_set_filter_option)(struct archive*,const char*,const char*,const char*);
+int(archive_read_set_passphrase_callback)(struct archive*,void*,const char*(unknown_3)(struct archive*,void*));
 int(archive_entry_size_is_set)(struct archive_entry*);
 int(archive_read_support_format_xar)(struct archive*);
+int(archive_write_set_skip_file)(struct archive*,long,long);
+int(archive_read_append_filter_program)(struct archive*,const char*);
 int(archive_write_set_compression_program)(struct archive*,const char*);
 long(archive_write_data)(struct archive*,const void*,unsigned long);
 int(archive_write_add_filter_bzip2)(struct archive*);
-const char*(archive_read_disk_uname)(struct archive*,long);
 int(archive_write_add_filter_gzip)(struct archive*);
 int(archive_write_add_filter_lrzip)(struct archive*);
 int(archive_write_add_filter_none)(struct archive*);
-int(archive_write_add_filter_uuencode)(struct archive*);
 int(archive_format)(struct archive*);
+int(archive_write_add_filter_uuencode)(struct archive*);
+int(archive_write_set_format)(struct archive*,int);
 int(archive_write_set_format_7zip)(struct archive*);
 int(archive_write_set_format_ar_bsd)(struct archive*);
+int(archive_read_set_skip_callback)(struct archive*,long(unknown_2)(struct archive*,void*,long));
 int(archive_write_set_format_cpio)(struct archive*);
-int(archive_write_set_format_gnutar)(struct archive*);
-int(archive_write_set_format_pax_restricted)(struct archive*);
 int(archive_read_support_format_tar)(struct archive*);
-int(archive_match_exclude_pattern_from_file_w)(struct archive*,const int*,int);
-int(archive_write_open_FILE)(struct archive*,struct _IO_FILE*);
+int(archive_read_support_filter_grzip)(struct archive*);
+int(archive_write_set_format_raw)(struct archive*);
 int(archive_write_finish_entry)(struct archive*);
+int(archive_write_zip_set_compression_deflate)(struct archive*);
+int(archive_read_extract)(struct archive*,struct archive_entry*,int);
 void(archive_entry_set_hardlink_utf8)(struct archive_entry*,const char*);
 const char*(archive_entry_pathname)(struct archive_entry*);
 unsigned long(archive_entry_devminor)(struct archive_entry*);
-int(archive_read_data_into_fd)(struct archive*,int);
+int(archive_write_set_format_pax_restricted)(struct archive*);
+int(archive_match_include_uname)(struct archive*,const char*);
 int(archive_write_set_format_mtree_classic)(struct archive*);
-int(archive_write_disk_set_standard_lookup)(struct archive*);
 int(archive_read_set_callback_data2)(struct archive*,void*,unsigned int);
 int(archive_write_add_filter_compress)(struct archive*);
-int(archive_read_disk_open)(struct archive*,const char*);
-int(archive_read_disk_descend)(struct archive*);
-int(archive_read_disk_current_filesystem)(struct archive*);
+int(archive_write_set_format_shar_dump)(struct archive*);
 int(archive_read_format_capabilities)(struct archive*);
 long(archive_write_data_block)(struct archive*,const void*,unsigned long,long);
 int(archive_match_path_excluded)(struct archive*,struct archive_entry*);
-int(archive_read_set_close_callback)(struct archive*,int(unknown_2)(struct archive*,void*));
 int(archive_match_exclude_pattern_from_file)(struct archive*,const char*,int);
 int(archive_match_include_pattern_from_file)(struct archive*,const char*,int);
 void(archive_entry_set_devmajor)(struct archive_entry*,unsigned long);
@@ -406,6 +406,7 @@ void(archive_entry_set_hardlink)(struct archive_entry*,const char*);
 local CLIB = ffi.load(_G.FFI_LIB or "archive")
 local library = {}
 library = {
+	VersionNumber = CLIB.archive_version_number,
 	ReadSupportFormatGnutar = CLIB.archive_read_support_format_gnutar,
 	MatchIncludeDate = CLIB.archive_match_include_date,
 	ReadOpenFd = CLIB.archive_read_open_fd,
@@ -433,6 +434,7 @@ library = {
 	WriteSetFormatByName = CLIB.archive_write_set_format_by_name,
 	ReadSupportFormatCpio = CLIB.archive_read_support_format_cpio,
 	WriteZipSetCompressionStore = CLIB.archive_write_zip_set_compression_store,
+	Liblz4Version = CLIB.archive_liblz4_version,
 	ReadSupportCompressionCompress = CLIB.archive_read_support_compression_compress,
 	MatchPathUnmatchedInclusions = CLIB.archive_match_path_unmatched_inclusions,
 	WriteSetFormatUstar = CLIB.archive_write_set_format_ustar,
@@ -443,6 +445,7 @@ library = {
 	EntryUid = CLIB.archive_entry_uid,
 	PositionCompressed = CLIB.archive_position_compressed,
 	EntryCopyFflagsText = CLIB.archive_entry_copy_fflags_text,
+	ReadDiskCurrentFilesystem = CLIB.archive_read_disk_current_filesystem,
 	WriteAddFilterXz = CLIB.archive_write_add_filter_xz,
 	ReadSetCallbackData = CLIB.archive_read_set_callback_data,
 	MatchIncludeGid = CLIB.archive_match_include_gid,
@@ -494,10 +497,12 @@ library = {
 	EntryCopyStat = CLIB.archive_entry_copy_stat,
 	ReadSupportFilterLz4 = CLIB.archive_read_support_filter_lz4,
 	WriteSetCompressionBzip2 = CLIB.archive_write_set_compression_bzip2,
+	BzlibVersion = CLIB.archive_bzlib_version,
 	FilterName = CLIB.archive_filter_name,
 	ReadSupportCompressionLzma = CLIB.archive_read_support_compression_lzma,
 	WriteOpenFilename = CLIB.archive_write_open_filename,
 	ReadSupportFormatZip = CLIB.archive_read_support_format_zip,
+	WriteHeader = CLIB.archive_write_header,
 	WriteOpenFilenameW = CLIB.archive_write_open_filename_w,
 	ReadSupportFormat_7zip = CLIB.archive_read_support_format_7zip,
 	EntryDevIsSet = CLIB.archive_entry_dev_is_set,
@@ -511,6 +516,7 @@ library = {
 	EntryCopySourcepathW = CLIB.archive_entry_copy_sourcepath_w,
 	EntrySetPathname = CLIB.archive_entry_set_pathname,
 	ReadDiskSetSymlinkHybrid = CLIB.archive_read_disk_set_symlink_hybrid,
+	ZlibVersion = CLIB.archive_zlib_version,
 	WriteSetCompressionCompress = CLIB.archive_write_set_compression_compress,
 	EntrySparseNext = CLIB.archive_entry_sparse_next,
 	ReadDiskCanDescend = CLIB.archive_read_disk_can_descend,
@@ -541,12 +547,13 @@ library = {
 	SetError = CLIB.archive_set_error,
 	EntryCtimeIsSet = CLIB.archive_entry_ctime_is_set,
 	ReadDiskEntryFromFile = CLIB.archive_read_disk_entry_from_file,
-	ReadSetOpenCallback = CLIB.archive_read_set_open_callback,
+	ReadSetSeekCallback = CLIB.archive_read_set_seek_callback,
 	WriteSetCompressionNone = CLIB.archive_write_set_compression_none,
 	EntryRdevminor = CLIB.archive_entry_rdevminor,
 	EntrySetFiletype = CLIB.archive_entry_set_filetype,
 	EntryBirthtime = CLIB.archive_entry_birthtime,
 	EntrySetPerm = CLIB.archive_entry_set_perm,
+	ReadSupportFilterCompress = CLIB.archive_read_support_filter_compress,
 	Errno = CLIB.archive_errno,
 	ReadOpenFile = CLIB.archive_read_open_file,
 	ReadSupportFilterBzip2 = CLIB.archive_read_support_filter_bzip2,
@@ -567,6 +574,7 @@ library = {
 	ReadOpen1 = CLIB.archive_read_open1,
 	ReadSetOptions = CLIB.archive_read_set_options,
 	ReadDataBlock = CLIB.archive_read_data_block,
+	LiblzmaVersion = CLIB.archive_liblzma_version,
 	MatchTimeExcluded = CLIB.archive_match_time_excluded,
 	EntrySparseCount = CLIB.archive_entry_sparse_count,
 	MatchIncludeFileTime = CLIB.archive_match_include_file_time,
@@ -583,78 +591,78 @@ library = {
 	ReadNew = CLIB.archive_read_new,
 	EntryCopyMacMetadata = CLIB.archive_entry_copy_mac_metadata,
 	ReadOpen = CLIB.archive_read_open,
-	EntryAclTextW = CLIB.archive_entry_acl_text_w,
+	EntryAclReset = CLIB.archive_entry_acl_reset,
 	EntryLinkresolverNew = CLIB.archive_entry_linkresolver_new,
 	EntrySparseReset = CLIB.archive_entry_sparse_reset,
-	EntryIsDataEncrypted = CLIB.archive_entry_is_data_encrypted,
-	EntryUnsetBirthtime = CLIB.archive_entry_unset_birthtime,
+	EntryUnameW = CLIB.archive_entry_uname_w,
 	EntrySparseClear = CLIB.archive_entry_sparse_clear,
+	EntryUnsetBirthtime = CLIB.archive_entry_unset_birthtime,
 	EntryXattrNext = CLIB.archive_entry_xattr_next,
-	WriteSetFormatSharDump = CLIB.archive_write_set_format_shar_dump,
 	EntryXattrReset = CLIB.archive_entry_xattr_reset,
-	EntryCopyGnameW = CLIB.archive_entry_copy_gname_w,
+	EntryCopyGname = CLIB.archive_entry_copy_gname,
 	EntryAcl = CLIB.archive_entry_acl,
+	EntryAclTextW = CLIB.archive_entry_acl_text_w,
 	EntryPartialLinks = CLIB.archive_entry_partial_links,
-	EntryAclReset = CLIB.archive_entry_acl_reset,
 	EntryAclAddEntryW = CLIB.archive_entry_acl_add_entry_w,
 	EntryAclAddEntry = CLIB.archive_entry_acl_add_entry,
+	WriteSetFormatOption = CLIB.archive_write_set_format_option,
 	EntryMacMetadata = CLIB.archive_entry_mac_metadata,
 	ReadSupportFormatIso9660 = CLIB.archive_read_support_format_iso9660,
-	WriteSetBytesInLastBlock = CLIB.archive_write_set_bytes_in_last_block,
 	EntryUpdateUnameUtf8 = CLIB.archive_entry_update_uname_utf8,
 	EntryCopyUnameW = CLIB.archive_entry_copy_uname_w,
 	EntryCopyUname = CLIB.archive_entry_copy_uname,
-	MatchExcluded = CLIB.archive_match_excluded,
 	EntrySetUnameUtf8 = CLIB.archive_entry_set_uname_utf8,
+	MatchExcluded = CLIB.archive_match_excluded,
 	EntrySetUname = CLIB.archive_entry_set_uname,
 	EntryUpdateSymlinkUtf8 = CLIB.archive_entry_update_symlink_utf8,
-	WriteSetFormatShar = CLIB.archive_write_set_format_shar,
 	EntryCopySymlinkW = CLIB.archive_entry_copy_symlink_w,
+	WriteSetFormatShar = CLIB.archive_write_set_format_shar,
 	EntryCopySymlink = CLIB.archive_entry_copy_symlink,
-	WriteFree = CLIB.archive_write_free,
 	EntrySetSymlinkUtf8 = CLIB.archive_entry_set_symlink_utf8,
+	WriteFree = CLIB.archive_write_free,
 	EntrySetSymlink = CLIB.archive_entry_set_symlink,
 	EntryCopySourcepath = CLIB.archive_entry_copy_sourcepath,
 	EntryUnsetSize = CLIB.archive_entry_unset_size,
 	EntrySetSize = CLIB.archive_entry_set_size,
-	FileCount = CLIB.archive_file_count,
 	EntrySetRdevminor = CLIB.archive_entry_set_rdevminor,
+	FileCount = CLIB.archive_file_count,
 	EntrySetRdevmajor = CLIB.archive_entry_set_rdevmajor,
 	EntryUpdatePathnameUtf8 = CLIB.archive_entry_update_pathname_utf8,
 	EntryCopyPathnameW = CLIB.archive_entry_copy_pathname_w,
-	EntryGnameW = CLIB.archive_entry_gname_w,
+	EntryGname = CLIB.archive_entry_gname,
 	EntrySetPathnameUtf8 = CLIB.archive_entry_set_pathname_utf8,
 	EntrySetNlink = CLIB.archive_entry_set_nlink,
 	EntryUnsetMtime = CLIB.archive_entry_unset_mtime,
-	WriteDiskSetOptions = CLIB.archive_write_disk_set_options,
 	EntrySetMtime = CLIB.archive_entry_set_mtime,
-	ReadSupportCompressionBzip2 = CLIB.archive_read_support_compression_bzip2,
-	EntrySetLink = CLIB.archive_entry_set_link,
-	ReadSupportFormatWarc = CLIB.archive_read_support_format_warc,
-	EntryCopyLink = CLIB.archive_entry_copy_link,
-	EntryCopyLinkW = CLIB.archive_entry_copy_link_w,
+	WriteDiskSetOptions = CLIB.archive_write_disk_set_options,
 	EntrySetIno = CLIB.archive_entry_set_ino,
+	ReadSupportCompressionBzip2 = CLIB.archive_read_support_compression_bzip2,
+	EntryCopyLink = CLIB.archive_entry_copy_link,
+	ReadSupportFormatWarc = CLIB.archive_read_support_format_warc,
+	EntrySetLink = CLIB.archive_entry_set_link,
+	EntryCopyLinkW = CLIB.archive_entry_copy_link_w,
 	EntryCopyHardlink = CLIB.archive_entry_copy_hardlink,
-	WriteSetFormatOption = CLIB.archive_write_set_format_option,
+	WriteOpen_FILE = CLIB.archive_write_open_FILE,
 	WriteSetFormatV7tar = CLIB.archive_write_set_format_v7tar,
 	EntryUpdateGnameUtf8 = CLIB.archive_entry_update_gname_utf8,
+	EntryCopyGnameW = CLIB.archive_entry_copy_gname_w,
 	EntryXattrAddEntry = CLIB.archive_entry_xattr_add_entry,
-	ReadSupportFormatByCode = CLIB.archive_read_support_format_by_code,
-	EntryCopyGname = CLIB.archive_entry_copy_gname,
 	EntryCopyFflagsTextW = CLIB.archive_entry_copy_fflags_text_w,
-	PositionUncompressed = CLIB.archive_position_uncompressed,
 	EntrySetFflags = CLIB.archive_entry_set_fflags,
+	PositionUncompressed = CLIB.archive_position_uncompressed,
+	ReadOpen_FILE = CLIB.archive_read_open_FILE,
 	WriteSetPassphrase = CLIB.archive_write_set_passphrase,
 	EntryUnsetCtime = CLIB.archive_entry_unset_ctime,
 	EntrySetCtime = CLIB.archive_entry_set_ctime,
+	Free = CLIB.archive_free,
 	ReadDiskOpenW = CLIB.archive_read_disk_open_w,
 	EntrySetAtime = CLIB.archive_entry_set_atime,
 	EntryIsMetadataEncrypted = CLIB.archive_entry_is_metadata_encrypted,
+	EntryIsDataEncrypted = CLIB.archive_entry_is_data_encrypted,
 	EntrySparseAddEntry = CLIB.archive_entry_sparse_add_entry,
-	EntryUnameW = CLIB.archive_entry_uname_w,
 	EntryUnameUtf8 = CLIB.archive_entry_uname_utf8,
-	WriteDiskSetSkipFile = CLIB.archive_write_disk_set_skip_file,
 	EntryUname = CLIB.archive_entry_uname,
+	WriteDiskSetSkipFile = CLIB.archive_write_disk_set_skip_file,
 	EntrySymlinkW = CLIB.archive_entry_symlink_w,
 	EntrySymlinkUtf8 = CLIB.archive_entry_symlink_utf8,
 	EntryStrmode = CLIB.archive_entry_strmode,
@@ -662,141 +670,137 @@ library = {
 	MatchIncludePatternFromFileW = CLIB.archive_match_include_pattern_from_file_w,
 	ReadAddCallbackData = CLIB.archive_read_add_callback_data,
 	ReadSupportCompressionRpm = CLIB.archive_read_support_compression_rpm,
-	ReadSetPassphraseCallback = CLIB.archive_read_set_passphrase_callback,
-	ReadDiskSetSymlinkPhysical = CLIB.archive_read_disk_set_symlink_physical,
 	EntrySize = CLIB.archive_entry_size,
+	ReadDiskSetSymlinkPhysical = CLIB.archive_read_disk_set_symlink_physical,
 	EntrySourcepathW = CLIB.archive_entry_sourcepath_w,
 	EntryPathnameW = CLIB.archive_entry_pathname_w,
-	MatchIncludeFileTimeW = CLIB.archive_match_include_file_time_w,
 	EntryNlink = CLIB.archive_entry_nlink,
+	MatchIncludeFileTimeW = CLIB.archive_match_include_file_time_w,
 	EntryMtimeIsSet = CLIB.archive_entry_mtime_is_set,
 	EntryMtimeNsec = CLIB.archive_entry_mtime_nsec,
 	EntryMtime = CLIB.archive_entry_mtime,
 	EntryInoIsSet = CLIB.archive_entry_ino_is_set,
 	EntryIno64 = CLIB.archive_entry_ino64,
 	EntryHardlinkW = CLIB.archive_entry_hardlink_w,
-	WriteGetBytesPerBlock = CLIB.archive_write_get_bytes_per_block,
 	EntryHardlinkUtf8 = CLIB.archive_entry_hardlink_utf8,
+	WriteGetBytesPerBlock = CLIB.archive_write_get_bytes_per_block,
 	EntryHardlink = CLIB.archive_entry_hardlink,
+	EntryGnameW = CLIB.archive_entry_gname_w,
 	MatchIncludeTime = CLIB.archive_match_include_time,
 	EntryCopyPathname = CLIB.archive_entry_copy_pathname,
 	WriteFail = CLIB.archive_write_fail,
-	EntryGname = CLIB.archive_entry_gname,
-	ReadSetSwitchCallback = CLIB.archive_read_set_switch_callback,
 	EntryGid = CLIB.archive_entry_gid,
+	ReadSetSwitchCallback = CLIB.archive_read_set_switch_callback,
 	EntryDevmajor = CLIB.archive_entry_devmajor,
 	EntryCtimeNsec = CLIB.archive_entry_ctime_nsec,
 	EntryCtime = CLIB.archive_entry_ctime,
-	ReadOpen_FILE = CLIB.archive_read_open_FILE,
 	EntryAtime = CLIB.archive_entry_atime,
 	EntryNew2 = CLIB.archive_entry_new2,
 	EntryFree = CLIB.archive_entry_free,
 	EntryClear = CLIB.archive_entry_clear,
 	MatchIncludePatternW = CLIB.archive_match_include_pattern_w,
 	EntryUnsetAtime = CLIB.archive_entry_unset_atime,
-	WriteSetSkipFile = CLIB.archive_write_set_skip_file,
-	ReadSupportFilterCompress = CLIB.archive_read_support_filter_compress,
-	VersionNumber = CLIB.archive_version_number,
 	ReadDiskSetBehavior = CLIB.archive_read_disk_set_behavior,
 	ReadPrependCallbackData = CLIB.archive_read_prepend_callback_data,
 	WriteDiskUid = CLIB.archive_write_disk_uid,
 	EntrySetDevminor = CLIB.archive_entry_set_devminor,
 	ReadDataSkip = CLIB.archive_read_data_skip,
 	ReadSupportCompressionGzip = CLIB.archive_read_support_compression_gzip,
-	Free = CLIB.archive_free,
-	ReadSupportFilterGzip = CLIB.archive_read_support_filter_gzip,
-	ReadSupportFormatZipStreamable = CLIB.archive_read_support_format_zip_streamable,
 	ReadSupportFilterNone = CLIB.archive_read_support_filter_none,
+	ReadSupportFormatZipStreamable = CLIB.archive_read_support_format_zip_streamable,
+	ReadDiskDescend = CLIB.archive_read_disk_descend,
+	ReadDiskUname = CLIB.archive_read_disk_uname,
 	ReadOpenMemory2 = CLIB.archive_read_open_memory2,
-	MatchIncludeUname = CLIB.archive_match_include_uname,
+	WriteDiskSetStandardLookup = CLIB.archive_write_disk_set_standard_lookup,
 	EntryAclClear = CLIB.archive_entry_acl_clear,
-	WriteHeader = CLIB.archive_write_header,
 	WriteAddFilterProgram = CLIB.archive_write_add_filter_program,
-	ReadExtract = CLIB.archive_read_extract,
-	ReadSupportFilterLrzip = CLIB.archive_read_support_filter_lrzip,
+	MatchExcludePatternFromFileW = CLIB.archive_match_exclude_pattern_from_file_w,
 	WriteAddFilterLzop = CLIB.archive_write_add_filter_lzop,
-	WriteSetFormatRaw = CLIB.archive_write_set_format_raw,
+	WriteSetFormatGnutar = CLIB.archive_write_set_format_gnutar,
 	WriteSetFormatZip = CLIB.archive_write_set_format_zip,
-	WriteSetFormat = CLIB.archive_write_set_format,
 	Compression = CLIB.archive_compression,
-	WriteAddFilterByName = CLIB.archive_write_add_filter_by_name,
 	ReadOpen2 = CLIB.archive_read_open2,
 	WriteSetFormatXar = CLIB.archive_write_set_format_xar,
-	ReadFinish = CLIB.archive_read_finish,
+	WriteAddFilterByName = CLIB.archive_write_add_filter_by_name,
 	MatchExcludePatternW = CLIB.archive_match_exclude_pattern_w,
-	ReadSetFormatOption = CLIB.archive_read_set_format_option,
+	ReadFinish = CLIB.archive_read_finish,
 	WriteSetCompressionGzip = CLIB.archive_write_set_compression_gzip,
 	WriteSetFormatFilterByExtDef = CLIB.archive_write_set_format_filter_by_ext_def,
 	WriteGetBytesInLastBlock = CLIB.archive_write_get_bytes_in_last_block,
 	ReadSupportFormatRar = CLIB.archive_read_support_format_rar,
-	ReadHasEncryptedEntries = CLIB.archive_read_has_encrypted_entries,
 	WriteOpenFd = CLIB.archive_write_open_fd,
 	WriteAddFilterLz4 = CLIB.archive_write_add_filter_lz4,
 	EntryBirthtimeIsSet = CLIB.archive_entry_birthtime_is_set,
-	ReadSetSkipCallback = CLIB.archive_read_set_skip_callback,
+	ReadSetFormatOption = CLIB.archive_read_set_format_option,
 	MatchIncludeGnameW = CLIB.archive_match_include_gname_w,
+	ReadSupportFilterLzma = CLIB.archive_read_support_filter_lzma,
+	ReadSetCloseCallback = CLIB.archive_read_set_close_callback,
 	EntryMode = CLIB.archive_entry_mode,
 	WriteSetBytesPerBlock = CLIB.archive_write_set_bytes_per_block,
+	WriteSetBytesInLastBlock = CLIB.archive_write_set_bytes_in_last_block,
 	ReadNextHeader = CLIB.archive_read_next_header,
-	ReadSupportFilterUu = CLIB.archive_read_support_filter_uu,
-	ReadSupportFilterGrzip = CLIB.archive_read_support_filter_grzip,
-	VersionDetails = CLIB.archive_version_details,
-	ReadClose = CLIB.archive_read_close,
+	ReadSupportFilterGzip = CLIB.archive_read_support_filter_gzip,
 	ReadSupportCompressionAll = CLIB.archive_read_support_compression_all,
+	ReadClose = CLIB.archive_read_close,
+	VersionDetails = CLIB.archive_version_details,
 	WriteDiskNew = CLIB.archive_write_disk_new,
-	WriteZipSetCompressionDeflate = CLIB.archive_write_zip_set_compression_deflate,
+	ReadDiskOpen = CLIB.archive_read_disk_open,
+	ReadSupportFilterUu = CLIB.archive_read_support_filter_uu,
 	EntrySetIsMetadataEncrypted = CLIB.archive_entry_set_is_metadata_encrypted,
+	ReadSupportFilterLrzip = CLIB.archive_read_support_filter_lrzip,
 	ReadSupportFilterLzip = CLIB.archive_read_support_filter_lzip,
-	ReadSupportFilterLzma = CLIB.archive_read_support_filter_lzma,
 	ReadSupportFilterAll = CLIB.archive_read_support_filter_all,
-	ReadSupportFilterXz = CLIB.archive_read_support_filter_xz,
 	ReadSetFormat = CLIB.archive_read_set_format,
+	ReadSupportFormatByCode = CLIB.archive_read_support_format_by_code,
 	ReadSupportFormatCab = CLIB.archive_read_support_format_cab,
 	MatchIncludeUnameW = CLIB.archive_match_include_uname_w,
-	ReadAppendFilterProgram = CLIB.archive_read_append_filter_program,
+	ReadSupportFilterXz = CLIB.archive_read_support_filter_xz,
 	EntrySetIsDataEncrypted = CLIB.archive_entry_set_is_data_encrypted,
+	ReadSetOpenCallback = CLIB.archive_read_set_open_callback,
 	ReadSetReadCallback = CLIB.archive_read_set_read_callback,
-	ReadSetSeekCallback = CLIB.archive_read_set_seek_callback,
-	WriteAddFilterB64encode = CLIB.archive_write_add_filter_b64encode,
 	WriteSetFormatArSvr4 = CLIB.archive_write_set_format_ar_svr4,
+	WriteAddFilterB64encode = CLIB.archive_write_add_filter_b64encode,
+	ReadHasEncryptedEntries = CLIB.archive_read_has_encrypted_entries,
 	VersionString = CLIB.archive_version_string,
+	ReadDataIntoFd = CLIB.archive_read_data_into_fd,
 	WriteAddFilterLzip = CLIB.archive_write_add_filter_lzip,
 	ReadSetFilterOption = CLIB.archive_read_set_filter_option,
+	ReadSetPassphraseCallback = CLIB.archive_read_set_passphrase_callback,
 	EntrySizeIsSet = CLIB.archive_entry_size_is_set,
 	ReadSupportFormatXar = CLIB.archive_read_support_format_xar,
+	WriteSetSkipFile = CLIB.archive_write_set_skip_file,
+	ReadAppendFilterProgram = CLIB.archive_read_append_filter_program,
 	WriteSetCompressionProgram = CLIB.archive_write_set_compression_program,
 	WriteData = CLIB.archive_write_data,
 	WriteAddFilterBzip2 = CLIB.archive_write_add_filter_bzip2,
-	ReadDiskUname = CLIB.archive_read_disk_uname,
 	WriteAddFilterGzip = CLIB.archive_write_add_filter_gzip,
 	WriteAddFilterLrzip = CLIB.archive_write_add_filter_lrzip,
 	WriteAddFilterNone = CLIB.archive_write_add_filter_none,
-	WriteAddFilterUuencode = CLIB.archive_write_add_filter_uuencode,
 	Format = CLIB.archive_format,
+	WriteAddFilterUuencode = CLIB.archive_write_add_filter_uuencode,
+	WriteSetFormat = CLIB.archive_write_set_format,
 	WriteSetFormat_7zip = CLIB.archive_write_set_format_7zip,
 	WriteSetFormatArBsd = CLIB.archive_write_set_format_ar_bsd,
+	ReadSetSkipCallback = CLIB.archive_read_set_skip_callback,
 	WriteSetFormatCpio = CLIB.archive_write_set_format_cpio,
-	WriteSetFormatGnutar = CLIB.archive_write_set_format_gnutar,
-	WriteSetFormatPaxRestricted = CLIB.archive_write_set_format_pax_restricted,
 	ReadSupportFormatTar = CLIB.archive_read_support_format_tar,
-	MatchExcludePatternFromFileW = CLIB.archive_match_exclude_pattern_from_file_w,
-	WriteOpen_FILE = CLIB.archive_write_open_FILE,
+	ReadSupportFilterGrzip = CLIB.archive_read_support_filter_grzip,
+	WriteSetFormatRaw = CLIB.archive_write_set_format_raw,
 	WriteFinishEntry = CLIB.archive_write_finish_entry,
+	WriteZipSetCompressionDeflate = CLIB.archive_write_zip_set_compression_deflate,
+	ReadExtract = CLIB.archive_read_extract,
 	EntrySetHardlinkUtf8 = CLIB.archive_entry_set_hardlink_utf8,
 	EntryPathname = CLIB.archive_entry_pathname,
 	EntryDevminor = CLIB.archive_entry_devminor,
-	ReadDataIntoFd = CLIB.archive_read_data_into_fd,
+	WriteSetFormatPaxRestricted = CLIB.archive_write_set_format_pax_restricted,
+	MatchIncludeUname = CLIB.archive_match_include_uname,
 	WriteSetFormatMtreeClassic = CLIB.archive_write_set_format_mtree_classic,
-	WriteDiskSetStandardLookup = CLIB.archive_write_disk_set_standard_lookup,
 	ReadSetCallbackData2 = CLIB.archive_read_set_callback_data2,
 	WriteAddFilterCompress = CLIB.archive_write_add_filter_compress,
-	ReadDiskOpen = CLIB.archive_read_disk_open,
-	ReadDiskDescend = CLIB.archive_read_disk_descend,
-	ReadDiskCurrentFilesystem = CLIB.archive_read_disk_current_filesystem,
+	WriteSetFormatSharDump = CLIB.archive_write_set_format_shar_dump,
 	ReadFormatCapabilities = CLIB.archive_read_format_capabilities,
 	WriteDataBlock = CLIB.archive_write_data_block,
 	MatchPathExcluded = CLIB.archive_match_path_excluded,
-	ReadSetCloseCallback = CLIB.archive_read_set_close_callback,
 	MatchExcludePatternFromFile = CLIB.archive_match_exclude_pattern_from_file,
 	MatchIncludePatternFromFile = CLIB.archive_match_include_pattern_from_file,
 	EntrySetDevmajor = CLIB.archive_entry_set_devmajor,
