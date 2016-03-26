@@ -156,7 +156,7 @@ function DEMO:Initialize()
 
 	do -- setup the glfw window buffer
 		local surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
-print(surface, "!!!!")
+
 		local formats = self.PhysicalDevice:GetSurfaceFormats(surface)
 		local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(surface)
 
