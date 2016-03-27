@@ -709,7 +709,7 @@ do -- type metatables
 
 				if key and val then
 					num = ffibuild.ParseEnumValue(val, current_meta_data, enums)
-					
+
 					if not num then
 						error("unable to parse enum:\n\t" .. val)
 					end
@@ -1093,30 +1093,6 @@ do -- type metatables
 			return return_type:GetDeclaration(meta_data)  .. "(" .. (func_type or self.func_type) .. " " .. (func_name or self.name or "") .. ")" .. arg_line
 		end
 
-		local keywords = {
-			["and"] = true,
-			["break"] = true,
-			["do"] = true,
-			["else"] = true,
-			["elseif"] = true,
-			["end"] = true,
-			["false"] = true,
-			["for"] = true,
-			["function"] = true,
-			["if"] = true,
-			["in"] = true,
-			["local"] = true,
-			["nil"] = true,
-			["not"] = true,
-			["or"] = true,
-			["repeat"] = true,
-			["return"] = true,
-			["then"] = true,
-			["true"] = true,
-			["until"] = true,
-			["while"] = true,
-		}
-
 		function FUNCTION:GetParameters(meta, check, max_arguments)
 			if not self.arguments then return "", "" end
 
@@ -1132,7 +1108,7 @@ do -- type metatables
 
 				local name = arg.name or "_" .. i
 
-				if keywords[name] then
+				if ffibuild.IsKeyword(name) then
 					name = name .. "_"
 				end
 
@@ -1569,7 +1545,34 @@ do -- lua helper functions
 				end
 			end
 		end
+	end
 
+	local keywords = {
+		["and"] = true,
+		["break"] = true,
+		["do"] = true,
+		["else"] = true,
+		["elseif"] = true,
+		["end"] = true,
+		["false"] = true,
+		["for"] = true,
+		["function"] = true,
+		["if"] = true,
+		["in"] = true,
+		["local"] = true,
+		["nil"] = true,
+		["not"] = true,
+		["or"] = true,
+		["repeat"] = true,
+		["return"] = true,
+		["then"] = true,
+		["true"] = true,
+		["until"] = true,
+		["while"] = true,
+	}
+
+	function ffibuild.IsKeyword(str)
+		return keywords[str] ~= nil
 	end
 end
 
