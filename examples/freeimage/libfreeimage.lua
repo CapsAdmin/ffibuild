@@ -732,7 +732,7 @@ do
 	end
 
 	function library.LoadMultiPageImage(data, flags)
-		local buffer = ffi.cast("const unsigned char *const ", data)
+		local buffer = ffi.cast("unsigned char *", data)
 
 		local stream = library.OpenMemory(buffer, #data)
 		local type = library.GetFileTypeFromMemory(stream, #data)
@@ -746,7 +746,7 @@ do
 			local temp = library.LockPage(temp, page)
 			local bitmap = library.ConvertTo32Bits(temp)
 
-			local tag = ffi.new("FI_TAG *[1]")
+			local tag = ffi.new("struct FITAG *[1]")
 			library.GetMetadata(library.e.METADATA_ANIMATION, bitmap, "FrameLeft", tag)
 			local x = tonumber(ffi.cast("int", library.GetTagValue(tag[0])))
 
