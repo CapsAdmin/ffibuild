@@ -19,7 +19,7 @@ DEMO.InstanceValidationLayers = {
 	--"VK_LAYER_LUNARG_mem_tracker",
 	--"VK_LAYER_LUNARG_object_tracker",
 	--"VK_LAYER_LUNARG_draw_state",
-	"VK_LAYER_LUNARG_param_checker",
+	--"VK_LAYER_LUNARG_param_checker",
 	--"VK_LAYER_LUNARG_swapchain",
 	--"VK_LAYER_LUNARG_device_limits",
 	--"VK_LAYER_LUNARG_image",
@@ -27,7 +27,7 @@ DEMO.InstanceValidationLayers = {
 }
 
 DEMO.InstanceExtensions = {
-	"VK_EXT_debug_report",
+	--"VK_EXT_debug_report",
 }
 
 DEMO.DeviceValidationLayers = DEMO.InstanceValidationLayers
@@ -132,7 +132,6 @@ function DEMO:Initialize()
 
 	do -- setup the glfw window buffer
 		local surface = glfw.CreateWindowSurface(self.Instance, self.Window, nil)
-
 		local formats = self.PhysicalDevice:GetSurfaceFormats(surface)
 		local capabilities = self.PhysicalDevice:GetSurfaceCapabilities(surface)
 
@@ -184,17 +183,28 @@ function DEMO:Initialize()
 		self:CreateSetupCMD()
 
 		do -- depth buffer to use in render pass
-			self.DepthBuffer = self:CreateImage(self.Width, self.Height, "d16_unorm", "depth_stencil_attachment", "optimal", 0)
+			local format = "d16_unorm"
+
+			self.DepthBuffer = self:CreateImage({
+				width = self.Width,
+				height = self.Height,
+				format = format,
+				usage = {"depth_stencil_attachment", "transfer_src"},
+				tiling = "optimal",
+				required_props = "device_local"
+			})
+
+			self.DepthBuffer.format = format
 
 			self:SetImageLayout(self.DepthBuffer.image, "depth", "undefined", "depth_stencil_attachment_optimal")
 
 			self.DepthBuffer.view = self.Device:CreateImageView({
 				viewType = "2d",
 				image = self.DepthBuffer.image,
-				format = self.DepthBuffer.format,
+				format = format,
 				flags = 0,
 				subresourceRange = {
-					aspectMask = "depth",
+					aspectMask = {"depth", "stencil"},
 
 					levelCount = 1,
 					baseMipLevel = 0,
@@ -478,7 +488,8 @@ function DEMO:Initialize()
 
 	-- update uniforms
 	self.Device:UpdateDescriptorSets(
-		2, vk.s.WriteDescriptorSetArray{
+		nil,
+		{
 			{
 				dstSet = self.DescriptorSet,
 				descriptorType = "uniform_buffer",
@@ -670,7 +681,7 @@ function DEMO:Initialize()
 	self:FlushSetupCMD()
 
 	for _, buffer in ipairs(self.SwapChainBuffers) do
-		buffer.cmd:Begin(vk.s.CommandBufferBeginInfo{
+		buffer.cmd:Begin({
 			flags = 0,
 			pInheritanceInfo = {
 				renderPass = nil,
@@ -683,7 +694,7 @@ function DEMO:Initialize()
 		})
 
 		buffer.cmd:BeginRenderPass(
-			vk.s.RenderPassBeginInfo{
+			{
 				renderPass = self.RenderPass,
 				framebuffer = buffer.framebuffer,
 				renderArea = {offset = {0, 0}, extent = {self.Width, self.Height}},
@@ -692,18 +703,16 @@ function DEMO:Initialize()
 					{depthStencil = {1, 0}}
 				},
 			},
-			vk.e.subpass_contents.inline
+			"inline"
 		)
 
-		buffer.cmd:SetViewport(
-			0,
-			1, vk.s.ViewportArray{
+		buffer.cmd:SetViewport(0, nil,
+			{
 				{0,0,self.Height,self.Width, 0,1}
 			}
 		)
-		buffer.cmd:SetScissor(
-			0,
-			1, vk.s.Rect2DArray{
+		buffer.cmd:SetScissor(0, nil,
+			{
 				{
 					offset = {0, 0},
 					extent = {self.Height, self.Width}
@@ -711,22 +720,22 @@ function DEMO:Initialize()
 			}
 		)
 
-		buffer.cmd:BindPipeline(vk.e.pipeline_bind_point.graphics, self.Pipeline)
-		buffer.cmd:BindDescriptorSets(vk.e.pipeline_bind_point.graphics, self.PipelineLayout, 0, 1, vk.s.DescriptorSetArray{self.DescriptorSet}, 0, nil)
+		buffer.cmd:BindPipeline("graphics", self.Pipeline)
+		buffer.cmd:BindDescriptorSets("graphics", self.PipelineLayout, 0, nil, {self.DescriptorSet}, 0, nil)
 
 
-		buffer.cmd:BindVertexBuffers(0, 1, vk.s.BufferArray{self.Vertices.buffer}, ffi.new("unsigned long[1]", 0))
-		buffer.cmd:BindIndexBuffer(self.Indices.buffer, 0, vk.e.index_type.uint32)
+		buffer.cmd:BindVertexBuffers(0, nil, {self.Vertices.buffer}, ffi.new("unsigned long[1]", 0))
+		buffer.cmd:BindIndexBuffer(self.Indices.buffer, 0, "uint32")
 
 		buffer.cmd:DrawIndexed(self.Indices.count, 1, 0, 0, 0)
 
 		buffer.cmd:EndRenderPass()
 
 		buffer.cmd:PipelineBarrier(
-			vk.e.pipeline_stage.all_commands, vk.e.pipeline_stage.top_of_pipe, 0,
+			"all_commands", "top_of_pipe", 0,
 			0, nil,
 			0, nil,
-			1, vk.s.ImageMemoryBarrierArray{
+			nil, {
 				{
 					srcAccessMask = "color_attachment_write",
 					dstAccessMask = "memory_read",
@@ -753,8 +762,7 @@ function DEMO:Initialize()
 
 	self:FlushSetupCMD()
 
-	--while glfw.WindowShouldClose(self.Window) == 0
-	do
+	while glfw.WindowShouldClose(self.Window) == 0 do
 		self.DeviceQueue:WaitIdle()
 		self.Device:WaitIdle()
 
@@ -780,8 +788,8 @@ function DEMO:Initialize()
 		--self.ProjectionMatrix:Perspective(math.rad(90), 32000, 0.1, self.Width / self.Height)
 		self:UpdateBuffer(self.Uniforms)
 
-		self.DeviceQueue:Submit(
-			1, vk.s.SubmitInfoArray{
+		self.DeviceQueue:Submit(nil,
+			{
 				{
 					pWaitDstStageMask = ffi.new("enum VkPipelineStageFlagBits [1]", vk.e.pipeline_stage.bottom_of_pipe),
 
@@ -802,7 +810,7 @@ function DEMO:Initialize()
 			nil
 		)
 
-		self.DeviceQueue:Present(vk.s.PresentInfoKHR{
+		self.DeviceQueue:Present({
 			pSwapchains = {
 				self.SwapChain
 			},
@@ -851,10 +859,11 @@ function DEMO:SetImageLayout(image, aspect_mask, old_image_layout, new_image_lay
 	end
 
 	self.SetupCMD:PipelineBarrier(
-		vk.e.pipeline_stage.top_of_pipe, vk.e.pipeline_stage.top_of_pipe, 0,
+		"top_of_pipe", "top_of_pipe", 0,
 		0, nil,
 		0, nil,
-		1, vk.s.ImageMemoryBarrier({
+		nil,
+		{
 			srcAccessMask = src_mask,
 			dstAccessMask = dst_mask,
 			oldLayout = old_image_layout,
@@ -869,7 +878,7 @@ function DEMO:SetImageLayout(image, aspect_mask, old_image_layout, new_image_lay
 				layerCount = 1,
 				baseLayerLevel = 0
 			},
-		})
+		}
 	)
 end
 
@@ -882,7 +891,7 @@ function DEMO:CreateSetupCMD()
 end
 
 function DEMO:BeginSetupCMD()
-	self.SetupCMD:Begin(vk.s.CommandBufferBeginInfo{
+	self.SetupCMD:Begin({
 		flags = 0,
 		pInheritanceInfo = {
 			renderPass = nil,
@@ -900,7 +909,8 @@ function DEMO:FlushSetupCMD()
 
 	self.SetupCMD:End()
 	self.DeviceQueue:Submit(
-		1, vk.s.SubmitInfoArray{
+		nil,
+		{
 			{
 				waitSemaphoreCount = 0,
 				pWaitSemaphores = nil,
@@ -921,7 +931,8 @@ function DEMO:FlushSetupCMD()
 
 	self.Device:FreeCommandBuffers(
 		self.DeviceCommandPool,
-		1, vk.s.CommandBufferArray{
+		nil,
+		{
 			self.SetupCMD
 		}
 	)
@@ -929,16 +940,16 @@ function DEMO:FlushSetupCMD()
 end
 
 
-function DEMO:CreateImage(width, height, format, usage, tiling, required_props, levels)
+function DEMO:CreateImage(info)
 	local image = self.Device:CreateImage({
 		imageType = "2d",
-		format = format,
-		extent = {width, height, 1},
-		mipLevels = levels or 1,
+		format = info.format,
+		extent = {info.width, info.height, 1},
+		mipLevels = info.levels or 1,
 		arrayLayers = 1,
 		samples = "1",
-		tiling = tiling,
-		usage = usage,
+		tiling = info.tiling,
+		usage = info.usage,
 		flags = 0,
 		queueFamilyIndexCount = 0,
 		sharingMode = "exclusive",
@@ -949,7 +960,7 @@ function DEMO:CreateImage(width, height, format, usage, tiling, required_props, 
 
 	local memory = self.Device:AllocateMemory({
 		allocationSize = memory_requirements.size,
-		memoryTypeIndex = self:GetMemoryTypeFromProperties(memory_requirements.memoryTypeBits, required_props),
+		memoryTypeIndex = self:GetMemoryTypeFromProperties(memory_requirements.memoryTypeBits, info.required_props),
 	})
 
 	self.Device:BindImageMemory(image, memory, 0)
@@ -958,9 +969,6 @@ function DEMO:CreateImage(width, height, format, usage, tiling, required_props, 
 		image = image,
 		memory = memory,
 		size = memory_requirements.size,
-		format = format,
-		width = width,
-		height = height,
 	}
 end
 
@@ -975,36 +983,37 @@ function DEMO:CreateTexture(file_name, format)
 	texture.height = image_infos[1].height
 	texture.mip_levels = #image_infos
 
-	local properties = self.PhysicalDevice:GetFormatProperties(vk.e.format[format])
+	local properties = self.PhysicalDevice:GetFormatProperties(format)
 
 	if bit.band(properties.linearTilingFeatures, vk.e.format_feature.sampled_image) ~= 0 then
-		local image = self:CreateImage(
-			texture.width,
-			texture.height,
-			format,
-			{"transfer_dst", "sampled"},
-			"optimal",
-			"device_local",
-			texture.mip_levels
-		)
+		local image = self:CreateImage({
+			width = texture.width,
+			height = texture.height,
+			format = format,
+			usage = {"transfer_dst", "sampled"},
+			tiling = "optimal",
+			required_props = "device_local",
+			levels = texture.mip_levels,
+		})
 
 		texture.image = image.image
 		texture.memory = image.memory
 		texture.size = image.size
-		texture.width = image.width
-		texture.height = image.height
-		texture.format = image.format
 
 		-- copy the mip maps into temporary images
 		for i, image_info in ipairs(image_infos) do
-			local image = self:CreateImage(
-				image_info.width,
-				image_info.height,
-				format,
-				"transfer_src",
-				"linear",
-				"host_visible"
-			)
+			local image = self:CreateImage({
+				width = image_info.width,
+				height = image_info.height,
+				format = format,
+				usage = "transfer_dst",
+				tiling = "linear",
+				required_props = "host_visible",
+			})
+
+			image.width = image_info.width
+			image.height = image_info.height
+			image.format = format
 
 			self.Device:MapMemory(image.memory, 0, image.size, 0, "uint8_t", function(data)
 				--for i = 0, tonumber(info.size) - 1 do data[i] = math.random(255) end
@@ -1021,9 +1030,10 @@ function DEMO:CreateTexture(file_name, format)
 		-- copy from temporary mip map images to main image
 		for i, mip_map in ipairs(image_infos) do
 			self.SetupCMD:CopyImage(
-				mip_map.image, vk.e.image_layout.transfer_src_optimal,
-				texture.image, vk.e.image_layout.transfer_dst_optimal,
-				1, vk.s.ImageCopyArray{
+				mip_map.image, "transfer_src_optimal",
+				texture.image, "transfer_dst_optimal",
+				nil,
+				{
 					{
 						extent = {mip_map.width, mip_map.height, 1},
 
@@ -1057,14 +1067,18 @@ function DEMO:CreateTexture(file_name, format)
 	else
 		texture.mip_levels = 1
 
-		local info = self:CreateImage(texture.width, texture.height, format, "sampled", "linear", "host_visible")
+		local info = self:CreateImage({
+			width = texture.width,
+			height = texture.height,
+			format = format,
+			usage = "sampled",
+			tiling = "linear",
+			required_props = "host_visible"
+		})
 
 		texture.image = info.image
 		texture.memory = info.memory
 		texture.size = info.size
-		texture.width = info.width
-		texture.height = info.height
-		texture.format = info.format
 
 		self.Device:MapMemory(info.memory, 0, info.size, 0, "uint8_t", function(data)
 			ffi.copy(data, image_infos[1].data, image_infos[1].size)
