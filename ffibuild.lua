@@ -1102,6 +1102,7 @@ do -- type metatables
 
 			local parameters = {}
 			local call = {}
+			local types = {}
 
 			for i, arg in ipairs(self.arguments) do
 				if max_arguments and i > max_arguments then break end
@@ -1128,12 +1129,11 @@ do -- type metatables
 
 				local res = check and check(arg, name) or name
 
-				if res then
-					table.insert(call, res)
-				end
+				table.insert(call, res)
+				table.insert(types, arg)
 			end
 
-			return table.concat(parameters, ", "), table.concat(call, ", ")
+			return table.concat(parameters, ", "), table.concat(call, ", "), types
 		end
 
 		function FUNCTION:FetchRequired(meta_data, out)

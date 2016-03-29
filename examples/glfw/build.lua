@@ -34,12 +34,17 @@ lua = lua .. "library = " .. meta_data:BuildFunctions("^glfw(.+)")
 lua = lua .. "library.e = " .. meta_data:BuildEnums("^GLFW_(.+)", "./repo/include/GLFW/glfw3.h", "GLFW_")
 
 lua = lua .. [[
-function library.GetRequiredInstanceExtensions()
+function library.GetRequiredInstanceExtensions(extra)
 	local count = ffi.new("uint32_t[1]")
 	local array = CLIB.glfwGetRequiredInstanceExtensions(count)
 	local out = {}
 	for i = 0, count[0] - 1 do
 		table.insert(out, ffi.string(array[i]))
+	end
+	if extra then
+		for i,v in ipairs(extra) do
+			table.insert(out, v)
+		end
 	end
 	return out
 end

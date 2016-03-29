@@ -436,12 +436,17 @@ library.e = {
 	DISCONNECTED = 262146,
 	DONT_CARE = -1,
 }
-function library.GetRequiredInstanceExtensions()
+function library.GetRequiredInstanceExtensions(extra)
 	local count = ffi.new("uint32_t[1]")
 	local array = CLIB.glfwGetRequiredInstanceExtensions(count)
 	local out = {}
 	for i = 0, count[0] - 1 do
 		table.insert(out, ffi.string(array[i]))
+	end
+	if extra then
+		for i,v in ipairs(extra) do
+			table.insert(out, v)
+		end
 	end
 	return out
 end

@@ -203,6 +203,116 @@ do -- enums
 	lua = lua .. "}\n"
 end
 
+local flag_translate = {
+	["struct VkImageSubresourceRange"] = {
+		aspectMask = "enum VkImageAspectFlagBits",
+	},
+	["struct VkImageSubresourceLayers"] = {
+		aspectMask = "enum VkImageAspectFlagBits",
+	},
+	["struct VkBufferCreateInfo"] = {
+		usage = "enum VkBufferUsageFlagBits",
+	},
+	["struct VkDebugReportCallbackCreateInfoEXT"] = {
+		flags = "enum VkDebugReportFlagBitsEXT",
+	},
+	["struct VkSwapchainCreateInfoKHR"] = {
+		imageUse = "enum VkImageUsageFlagBits",
+	},
+	["struct VkDescriptorSetLayoutBinding"] = {
+		stageFlags = "enum VkShaderStageFlagBits",
+	},
+	["struct VkPipelineRasterizationStateCreateInfo"] = {
+		cullMode = "enum VkCullModeFlagBits",
+	},
+	["struct VkImageMemoryBarrier"] = {
+		srcAccessMask = "enum VkAccessFlagBits",
+		dstAccessMask = "enum VkAccessFlagBits",
+	},
+	["struct VkImageCreateInfo"] = {
+		usage = "enum VkImageUsageFlagBits",
+	},
+	["vkCmdPipelineBarrier"] = {
+		srcStageMask = "enum VkPipelineStageFlagBits",
+		dstStageMask = "enum VkPipelineStageFlagBits",
+	},
+}
+
+local function translate_arguments(tbl, arg_prefix, struct_type)
+	arg_prefix = arg_prefix or "tbl."
+	local p = arg_prefix
+	local s = ""
+
+	for i, type in ipairs(tbl) do
+		if type.name ~= "sType" then
+			if type.name:find("Enable$") then
+				s = s .. "\ttbl." .. type.name .. " = "..p.."" .. type.name .. " and 1 or 0\n"
+			elseif type.name:find("^pp") and tbl[i - 1] and tbl[i - 1].name:find("Count$") then
+				s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
+				s = s .. "\t\t"..p.."" .. tbl[i - 1].name .. " = #"..p.."" .. type.name .. "\n"
+				s = s .. "\t\t"..p.."" .. type.name .. " = library.util.StringList("..p.."" .. type.name .. ")\n"
+				s = s .. "\tend\n"
+			else
+				local basic_type = type:GetBasicType(meta_data)
+
+				if flag_translate[struct_type] then
+					basic_type = flag_translate[struct_type][type.name] or basic_type
+				end
+
+				if enum_group_translate[basic_type] then
+					if basic_type:find("FlagBits") then
+						s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
+						s = s .. "\t\t"..p.."" .. type.name .. " = library.e." .. enum_group_translate[basic_type] .. ".make_enums("..p.."" .. type.name .. ")\n"
+						s = s .. "\telseif type("..p.."" .. type.name .. ") == \"string\" then\n"
+						s = s .. "\t\t"..p.."" .. type.name .. " = library.e." .. enum_group_translate[basic_type] .. "["..p.."" .. type.name .. "]\n"
+						s = s .. "\tend\n"
+					else
+						s = s .. "\tif type("..p.."" .. type.name .. ") == \"string\" then\n"
+						s = s .. "\t\t"..p.."" .. type.name .. " = library.e." .. enum_group_translate[basic_type] .. "["..p.."" .. type.name .. "]\n"
+						s = s .. "\tend\n"
+					end
+					if type.name:find("Type$") and tbl[i - 1] and tbl[i - 1].name:find("Count$") then
+						local count_var = tbl[i - 1]
+
+						for i = i + 1, #tbl do
+							local type = tbl[i]
+							if not type then break end
+
+							local basic_type = type:GetBasicType(meta_data)
+							local friendly = basic_type:match("^.- Vk(.+)")
+							friendly = friendly:gsub("_T", "")
+							s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
+							s = s .. "\t\tif not "..p..""..count_var.name.." then\n"
+							s = s .. "\t\t\t"..p..""..count_var.name.." = #"..p..""..type.name.."\n"
+							s = s .. "\t\tend\n"
+							s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."Array("..p.."" .. type.name .. ")\n"
+							s = s .. "\tend\n"
+						end
+						break
+					end
+				elseif basic_type:find("^struct ") or basic_type:find("^union ") then
+					local friendly = basic_type:match("^.- Vk(.+)")
+
+					if type.name:find("^p") and tbl[i - 1] and tbl[i - 1].name:find("Count$") then
+						friendly = friendly:gsub("_T", "")
+						s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
+						s = s .. "\t\tif not "..p..""..tbl[i - 1].name.." then\n"
+						s = s .. "\t\t\t"..p..""..tbl[i - 1].name.." = #"..p.."" .. type.name .. "\n"
+						s = s .. "\t\tend\n"
+						s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."Array("..p.."" .. type.name .. ")\n"
+						s = s .. "\tend\n"
+					elseif not friendly:find("_T$") then
+						s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
+						s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."("..p.."" .. type.name .. ")\n"
+						s = s .. "\tend\n"
+					end
+				end
+			end
+		end
+	end
+	return s
+end
+
 do -- enumerate helpers so you don't have to make boxed count and array values
 	for func_name, func_type in pairs(meta_data.functions) do
 		if func_name:find("^vkEnumerate") then
@@ -256,12 +366,13 @@ do -- get helpers so you don't have to make a boxed value
 					if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
 					if func_type.arguments[#func_type.arguments - 1]:GetDeclaration(meta_data)  == "unsigned int *" then
-						local parameters, call = func_type:GetParameters(nil, nil, -2)
+						local parameters, call, args = func_type:GetParameters(nil, nil, -2)
 
 						call = call .. ", "
 
 
 						lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
+]]..translate_arguments(args, "", func_name)..[[
 	local count = ffi.new("uint32_t[1]")
 
 	]]..lib..[[.]] .. func_name .. [[(]] .. call .. [[count, nil)
@@ -299,11 +410,12 @@ end
 ]]
 						end
 					else
-						local parameters, call = func_type:GetParameters(nil, nil, -1)
+						local parameters, call, args = func_type:GetParameters(nil, nil, -1)
 
 						call = call .. ", "
 
 						lua = lua .. [[function library.]] .. friendly .. [[(]] .. parameters .. [[)
+]]..translate_arguments(args, "", func_name)..[[
 	local box = ffi.new("]] .. type:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]") .. [[")
 ]]
 
@@ -353,113 +465,11 @@ function library.MapMemory(device, memory, a, b, c, type, func)
 	return nil, status
 end
 	]]
+
+	helper_functions.vkMapMemory = "library.MapMemory"
 end
 
 do -- struct creation helpers
-	local flag_translate = {
-		["struct VkImageSubresourceRange"] = {
-			aspectMask = "enum VkImageAspectFlagBits",
-		},
-		["struct VkImageSubresourceLayers"] = {
-			aspectMask = "enum VkImageAspectFlagBits",
-		},
-		["struct VkBufferCreateInfo"] = {
-			usage = "enum VkBufferUsageFlagBits",
-		},
-		["struct VkDebugReportCallbackCreateInfoEXT"] = {
-			flags = "enum VkDebugReportFlagBitsEXT",
-		},
-		["struct VkSwapchainCreateInfoKHR"] = {
-			imageUse = "enum VkImageUsageFlagBits",
-		},
-		["struct VkDescriptorSetLayoutBinding"] = {
-			stageFlags = "enum VkShaderStageFlagBits",
-		},
-		["struct VkPipelineRasterizationStateCreateInfo"] = {
-			cullMode = "enum VkCullModeFlagBits",
-		},
-		["struct VkImageMemoryBarrier"] = {
-			srcAccessMask = "enum VkAccessFlagBits",
-			dstAccessMask = "enum VkAccessFlagBits",
-		},
-		["struct VkImageCreateInfo"] = {
-			usage = "enum VkImageUsageFlagBits",
-		},
-	}
-
-	local function translate_values(struct, struct_type)
-		local s = ""
-
-		for i, type in ipairs(struct.data) do
-			if type.name ~= "sType" then
-				if type.name:find("Enable$") then
-					s = s .. "\ttbl." .. type.name .. " = tbl." .. type.name .. " and 1 or 0\n"
-				elseif type.name:find("^pp") and struct.data[i - 1] and struct.data[i - 1].name:find("Count$") then
-					s = s .. "\tif type(tbl." .. type.name .. ") == \"table\" then\n"
-					s = s .. "\t\ttbl." .. struct.data[i - 1].name .. " = #tbl." .. type.name .. "\n"
-					s = s .. "\t\ttbl." .. type.name .. " = library.util.StringList(tbl." .. type.name .. ")\n"
-					s = s .. "\tend\n"
-				else
-					local basic_type = type:GetBasicType(meta_data)
-
-					if flag_translate[struct_type] then
-						basic_type = flag_translate[struct_type][type.name] or basic_type
-					end
-
-					if enum_group_translate[basic_type] then
-						if basic_type:find("FlagBits") then
-							s = s .. "\tif type(tbl." .. type.name .. ") == \"table\" then\n"
-							s = s .. "\t\ttbl." .. type.name .. " = library.e." .. enum_group_translate[basic_type] .. ".make_enums(tbl." .. type.name .. ")\n"
-							s = s .. "\telseif type(tbl." .. type.name .. ") == \"string\" then\n"
-							s = s .. "\t\ttbl." .. type.name .. " = library.e." .. enum_group_translate[basic_type] .. "[tbl." .. type.name .. "]\n"
-							s = s .. "\tend\n"
-						else
-							s = s .. "\tif type(tbl." .. type.name .. ") == \"string\" then\n"
-							s = s .. "\t\ttbl." .. type.name .. " = library.e." .. enum_group_translate[basic_type] .. "[tbl." .. type.name .. "]\n"
-							s = s .. "\tend\n"
-						end
-						if type.name:find("Type$") and struct.data[i - 1] and struct.data[i - 1].name:find("Count$") then
-							local count_var = struct.data[i - 1]
-
-							for i = i + 1, #struct.data do
-								local type = struct.data[i]
-								if not type then break end
-
-								local basic_type = type:GetBasicType(meta_data)
-								local friendly = basic_type:match("^.- Vk(.+)")
-								friendly = friendly:gsub("_T", "")
-								s = s .. "\tif type(tbl." .. type.name .. ") == \"table\" then\n"
-								s = s .. "\t\tif not tbl."..count_var.name.." then\n"
-								s = s .. "\t\t\ttbl."..count_var.name.." = #tbl."..type.name.."\n"
-								s = s .. "\t\tend\n"
-								s = s .. "\t\ttbl." .. type.name .. " = library.s."..friendly.."Array(tbl." .. type.name .. ")\n"
-								s = s .. "\tend\n"
-							end
-							break
-						end
-					elseif basic_type:find("^struct ") or basic_type:find("^union ") then
-						local friendly = basic_type:match("^.- Vk(.+)")
-
-						if type.name:find("^p") and struct.data[i - 1] and struct.data[i - 1].name:find("Count$") then
-							friendly = friendly:gsub("_T", "")
-							s = s .. "\tif type(tbl." .. type.name .. ") == \"table\" then\n"
-							s = s .. "\t\tif not tbl."..struct.data[i - 1].name.." then\n"
-							s = s .. "\t\t\ttbl."..struct.data[i - 1].name.." = #tbl." .. type.name .. "\n"
-							s = s .. "\t\tend\n"
-							s = s .. "\t\ttbl." .. type.name .. " = library.s."..friendly.."Array(tbl." .. type.name .. ")\n"
-							s = s .. "\tend\n"
-						elseif not friendly:find("_T$") then
-							s = s .. "\tif type(tbl." .. type.name .. ") == \"table\" then\n"
-							s = s .. "\t\ttbl." .. type.name .. " = library.s."..friendly.."(tbl." .. type.name .. ")\n"
-							s = s .. "\tend\n"
-						end
-					end
-				end
-			end
-		end
-		return s
-	end
-
 	lua = lua .. "library.s = {}\n"
 	local done = {}
 	for i, info in ipairs(meta_data.enums["enum VkStructureType"].enums) do
@@ -475,8 +485,7 @@ do -- struct creation helpers
 		if struct then
 			lua = lua .. "function library.s." .. friendly .. "(tbl)\n"
 			lua = lua .. "\ttbl.sType = \"" .. info.key .. "\"\n"
-
-			lua = lua .. translate_values(struct, "struct Vk" .. friendly)
+			lua = lua .. translate_arguments(struct.data, "tbl.", "struct Vk" .. friendly)
 			lua = lua .. "\treturn ffi.new(\"struct Vk" .. friendly .. "\", tbl)\nend\n"
 			done[struct] = true
 		end
@@ -495,7 +504,7 @@ do -- struct creation helpers
 				else
 					if not done[struct] then
 						lua = lua .. "function library.s." .. friendly .. "(tbl)\n"
-						lua = lua .. translate_values(struct, basic_type)
+						lua = lua .. translate_arguments(struct.data, "tbl.", basic_type)
 						lua = lua .. "\treturn ffi.new(\""..keyword.." Vk" .. friendly .. "\", tbl)\n"
 						lua = lua .. "end\n"
 					end
@@ -513,7 +522,7 @@ end
 
 do -- *Create helpers so you don't have to make a boxed value
 	for func_name, func_type in pairs(meta_data.functions) do
-		local parameters, call = func_type:GetParameters(nil, nil, #func_type.arguments - 1)
+		local parameters, call, args = func_type:GetParameters(nil, nil, #func_type.arguments - 1)
 		if #func_type.arguments ~= 1 then call = call .. ", " end
 
 		if func_name:find("^vkCreate") or func_name:find("^vkAllocate") then
@@ -523,46 +532,56 @@ do -- *Create helpers so you don't have to make a boxed value
 			if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
 			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)]] .. "\n"
+			lua = lua .. translate_arguments(args, "", func_name)
 
 			local keep_arg = {}
 
 			if parameters:find("pCreateInfos") then
 				keep_arg = "pCreateInfos"
-				local basic_type = func_type.arguments[#func_type.arguments - 2]:GetBasicType(meta_data)
-				lua = lua .. [[
-				if type(pCreateInfos) == "table" then
-					for i, v in ipairs(pCreateInfos) do
-						pCreateInfos[i] = library.s.]] .. basic_type:match("struct Vk(.+)") .. [[(v)
-					end
-					pCreateInfos = ffi.new("]]..basic_type..[[["..#pCreateInfos.."]", pCreateInfos)
-				end
-				]]
 			elseif parameters:find("Info") then
 				for _, arg in ipairs(func_type.arguments) do
 					if arg.name:find("Info") then
-						lua = lua .. "\tif type("..arg.name..") == \"table\" then "..arg.name.." = library.s." .. arg:GetBasicType(meta_data):match("struct Vk(.+)") .. "("..arg.name..") end\n"
 						keep_arg = arg.name
 						break
 					end
 				end
 			end
+
 			lua = lua .. [[
-			local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
-			local status = ]]..lib..[[.]]..func_name..[[(]]..call..[[box)
+	local box = ffi.new("]]..func_type.arguments[#func_type.arguments]:GetDeclaration(meta_data):gsub("(.+)%*", "%1[1]")..[[")
+	local status = ]]..lib..[[.]]..func_name..[[(]]..call..[[box)
 
-			if status == "VK_SUCCESS" then
-				library.struct_gc[ box ] = ]]..keep_arg..[[
+	if status == "VK_SUCCESS" then
+		library.struct_gc[ box ] = ]]..keep_arg..[[
 
-				return box[0], status
-			end
+		return box[0], status
+	end
 
-			return nil, status
+	return nil, status
+end
+]]
+
+			helper_functions[func_name] = "library." .. friendly
 		end
-		]]
-
-		helper_functions[func_name] = "library." .. friendly
 	end
 end
+
+for func_name, func_type in pairs(meta_data.functions) do
+	if not helper_functions[func_name] then
+		local parameters, call, args = func_type:GetParameters()
+		local friendly = func_name:match("^vk(.+)")
+		local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+
+		if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
+
+		if not helper_functions[func_name] then
+			lua = lua .. [[function library.]]..friendly..[[(]]..parameters..[[)]] .. "\n"
+			lua = lua .. translate_arguments(args, "", func_name)
+			lua = lua .. "\treturn " .. lib .. "." .. func_name .. "(" .. call .. ")\n"
+			lua = lua .. "end\n\n"
+			helper_functions[func_name] = "library." .. friendly
+		end
+	end
 end
 
 do
