@@ -379,30 +379,6 @@ void(vkCmdSetViewport)(struct VkCommandBuffer_T*,unsigned int,unsigned int,const
 ]])
 local CLIB = ffi.load(_G.FFI_LIB or "vulkan")
 local library = {}
-
-
---====helper metatables====
-	local metatables = {}
-	local object_cache = {}
-
-	local function wrap_pointer(ptr, meta_name)
-		-- TODO
-		-- you should be able to use cdata as key and it would use the address
-		-- but apparently that doesn't work
-		local id = tostring(ptr)
-
-		if not object_cache[meta_name] then
-			object_cache[meta_name] = setmetatable({}, {__mode = "v"})
-		end
-
-		if not object_cache[meta_name][id] then
-			object_cache[meta_name][id] = setmetatable({ptr = ptr}, metatables[meta_name])
-		end
-
-		return object_cache[meta_name][id]
-	end
---====helper metatables====
-
 library = {
 	GetBufferMemoryRequirements = CLIB.vkGetBufferMemoryRequirements,
 	DeviceWaitIdle = CLIB.vkDeviceWaitIdle,
@@ -2648,6 +2624,11 @@ function library.GetPhysicalDeviceSparseImageFormatProperties(physicalDevice, fo
 	elseif type(samples) == "string" then
 		samples = library.e.sample_count[samples]
 	end
+	if type(usage) == "table" then
+		usage = library.e.image_usage.make_enums(usage)
+	elseif type(usage) == "string" then
+		usage = library.e.image_usage[usage]
+	end
 	if type(tiling) == "string" then
 		tiling = library.e.image_tiling[tiling]
 	end
@@ -2687,7 +2668,7 @@ function library.GetPhysicalDeviceSurfaceFormats(physicalDevice, surface)
 end
 function library.GetImageSubresourceLayout(device, image, pSubresource)
 	if type(pSubresource) == "table" then
-		pSubresource = library.s.ImageSubresource(pSubresource)
+		pSubresource = library.s.ImageSubresource(pSubresource, false)
 	end
 	local box = ffi.new("struct VkSubresourceLayout [1]")
 	CLIB.vkGetImageSubresourceLayout(device, image, pSubresource, box)
@@ -2737,6 +2718,16 @@ function library.GetPhysicalDeviceImageFormatProperties(physicalDevice, format, 
 	end
 	if type(tiling) == "string" then
 		tiling = library.e.image_tiling[tiling]
+	end
+	if type(usage) == "table" then
+		usage = library.e.image_usage.make_enums(usage)
+	elseif type(usage) == "string" then
+		usage = library.e.image_usage[usage]
+	end
+	if type(flags) == "table" then
+		flags = library.e.image_create.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.image_create[flags]
 	end
 	local box = ffi.new("struct VkImageFormatProperties [1]")
 	local status = CLIB.vkGetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags, box)
@@ -2940,14 +2931,14 @@ function library.MapMemory(device, memory, a, b, c, type, func)
 	return nil, status
 end
 	library.s = {}
-function library.s.ApplicationInfo(tbl)
+function library.s.ApplicationInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_APPLICATION_INFO"
-	return ffi.new("struct VkApplicationInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkApplicationInfo", tbl)
 end
-function library.s.InstanceCreateInfo(tbl)
+function library.s.InstanceCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO"
 	if type(tbl.pApplicationInfo) == "table" then
-		tbl.pApplicationInfo = library.s.ApplicationInfo(tbl.pApplicationInfo)
+		tbl.pApplicationInfo = library.s.ApplicationInfo(tbl.pApplicationInfo, false)
 	end
 	if type(tbl.ppEnabledLayerNames) == "table" then
 		tbl.enabledLayerCount = #tbl.ppEnabledLayerNames
@@ -2957,19 +2948,19 @@ function library.s.InstanceCreateInfo(tbl)
 		tbl.enabledExtensionCount = #tbl.ppEnabledExtensionNames
 		tbl.ppEnabledExtensionNames = library.util.StringList(tbl.ppEnabledExtensionNames)
 	end
-	return ffi.new("struct VkInstanceCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkInstanceCreateInfo", tbl)
 end
-function library.s.DeviceQueueCreateInfo(tbl)
+function library.s.DeviceQueueCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO"
-	return ffi.new("struct VkDeviceQueueCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkDeviceQueueCreateInfo", tbl)
 end
-function library.s.DeviceCreateInfo(tbl)
+function library.s.DeviceCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO"
 	if type(tbl.pQueueCreateInfos) == "table" then
 		if not tbl.queueCreateInfoCount then
 			tbl.queueCreateInfoCount = #tbl.pQueueCreateInfos
 		end
-		tbl.pQueueCreateInfos = library.s.DeviceQueueCreateInfoArray(tbl.pQueueCreateInfos)
+		tbl.pQueueCreateInfos = library.s.DeviceQueueCreateInfoArray(tbl.pQueueCreateInfos, false)
 	end
 	if type(tbl.ppEnabledLayerNames) == "table" then
 		tbl.enabledLayerCount = #tbl.ppEnabledLayerNames
@@ -2980,95 +2971,110 @@ function library.s.DeviceCreateInfo(tbl)
 		tbl.ppEnabledExtensionNames = library.util.StringList(tbl.ppEnabledExtensionNames)
 	end
 	if type(tbl.pEnabledFeatures) == "table" then
-		tbl.pEnabledFeatures = library.s.PhysicalDeviceFeatures(tbl.pEnabledFeatures)
+		tbl.pEnabledFeatures = library.s.PhysicalDeviceFeatures(tbl.pEnabledFeatures, false)
 	end
-	return ffi.new("struct VkDeviceCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkDeviceCreateInfo", tbl)
 end
-function library.s.SubmitInfo(tbl)
+function library.s.SubmitInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_SUBMIT_INFO"
 	if type(tbl.pWaitSemaphores) == "table" then
 		if not tbl.waitSemaphoreCount then
 			tbl.waitSemaphoreCount = #tbl.pWaitSemaphores
 		end
-		tbl.pWaitSemaphores = library.s.SemaphoreArray(tbl.pWaitSemaphores)
+		tbl.pWaitSemaphores = library.s.SemaphoreArray(tbl.pWaitSemaphores, false)
 	end
 	if type(tbl.pCommandBuffers) == "table" then
 		if not tbl.commandBufferCount then
 			tbl.commandBufferCount = #tbl.pCommandBuffers
 		end
-		tbl.pCommandBuffers = library.s.CommandBufferArray(tbl.pCommandBuffers)
+		tbl.pCommandBuffers = library.s.CommandBufferArray(tbl.pCommandBuffers, false)
 	end
 	if type(tbl.pSignalSemaphores) == "table" then
 		if not tbl.signalSemaphoreCount then
 			tbl.signalSemaphoreCount = #tbl.pSignalSemaphores
 		end
-		tbl.pSignalSemaphores = library.s.SemaphoreArray(tbl.pSignalSemaphores)
+		tbl.pSignalSemaphores = library.s.SemaphoreArray(tbl.pSignalSemaphores, false)
 	end
-	return ffi.new("struct VkSubmitInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkSubmitInfo", tbl)
 end
-function library.s.MemoryAllocateInfo(tbl)
+function library.s.MemoryAllocateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO"
-	return ffi.new("struct VkMemoryAllocateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkMemoryAllocateInfo", tbl)
 end
-function library.s.MappedMemoryRange(tbl)
+function library.s.MappedMemoryRange(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE"
-	return ffi.new("struct VkMappedMemoryRange", tbl)
+	return table_only and tbl or ffi.new("struct VkMappedMemoryRange", tbl)
 end
-function library.s.BindSparseInfo(tbl)
+function library.s.BindSparseInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BIND_SPARSE_INFO"
 	if type(tbl.pWaitSemaphores) == "table" then
 		if not tbl.waitSemaphoreCount then
 			tbl.waitSemaphoreCount = #tbl.pWaitSemaphores
 		end
-		tbl.pWaitSemaphores = library.s.SemaphoreArray(tbl.pWaitSemaphores)
+		tbl.pWaitSemaphores = library.s.SemaphoreArray(tbl.pWaitSemaphores, false)
 	end
 	if type(tbl.pBufferBinds) == "table" then
 		if not tbl.bufferBindCount then
 			tbl.bufferBindCount = #tbl.pBufferBinds
 		end
-		tbl.pBufferBinds = library.s.SparseBufferMemoryBindInfoArray(tbl.pBufferBinds)
+		tbl.pBufferBinds = library.s.SparseBufferMemoryBindInfoArray(tbl.pBufferBinds, false)
 	end
 	if type(tbl.pImageOpaqueBinds) == "table" then
 		if not tbl.imageOpaqueBindCount then
 			tbl.imageOpaqueBindCount = #tbl.pImageOpaqueBinds
 		end
-		tbl.pImageOpaqueBinds = library.s.SparseImageOpaqueMemoryBindInfoArray(tbl.pImageOpaqueBinds)
+		tbl.pImageOpaqueBinds = library.s.SparseImageOpaqueMemoryBindInfoArray(tbl.pImageOpaqueBinds, false)
 	end
 	if type(tbl.pImageBinds) == "table" then
 		if not tbl.imageBindCount then
 			tbl.imageBindCount = #tbl.pImageBinds
 		end
-		tbl.pImageBinds = library.s.SparseImageMemoryBindInfoArray(tbl.pImageBinds)
+		tbl.pImageBinds = library.s.SparseImageMemoryBindInfoArray(tbl.pImageBinds, false)
 	end
 	if type(tbl.pSignalSemaphores) == "table" then
 		if not tbl.signalSemaphoreCount then
 			tbl.signalSemaphoreCount = #tbl.pSignalSemaphores
 		end
-		tbl.pSignalSemaphores = library.s.SemaphoreArray(tbl.pSignalSemaphores)
+		tbl.pSignalSemaphores = library.s.SemaphoreArray(tbl.pSignalSemaphores, false)
 	end
-	return ffi.new("struct VkBindSparseInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkBindSparseInfo", tbl)
 end
-function library.s.FenceCreateInfo(tbl)
+function library.s.FenceCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO"
-	return ffi.new("struct VkFenceCreateInfo", tbl)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.fence_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.fence_create[tbl.flags]
+	end
+	return table_only and tbl or ffi.new("struct VkFenceCreateInfo", tbl)
 end
-function library.s.SemaphoreCreateInfo(tbl)
+function library.s.SemaphoreCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO"
-	return ffi.new("struct VkSemaphoreCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkSemaphoreCreateInfo", tbl)
 end
-function library.s.EventCreateInfo(tbl)
+function library.s.EventCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_EVENT_CREATE_INFO"
-	return ffi.new("struct VkEventCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkEventCreateInfo", tbl)
 end
-function library.s.QueryPoolCreateInfo(tbl)
+function library.s.QueryPoolCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO"
 	if type(tbl.queryType) == "string" then
 		tbl.queryType = library.e.query_type[tbl.queryType]
 	end
-	return ffi.new("struct VkQueryPoolCreateInfo", tbl)
+	if type(tbl.pipelineStatistics) == "table" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic.make_enums(tbl.pipelineStatistics)
+	elseif type(tbl.pipelineStatistics) == "string" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic[tbl.pipelineStatistics]
+	end
+	return table_only and tbl or ffi.new("struct VkQueryPoolCreateInfo", tbl)
 end
-function library.s.BufferCreateInfo(tbl)
+function library.s.BufferCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.buffer_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.buffer_create[tbl.flags]
+	end
 	if type(tbl.usage) == "table" then
 		tbl.usage = library.e.buffer_usage.make_enums(tbl.usage)
 	elseif type(tbl.usage) == "string" then
@@ -3077,17 +3083,22 @@ function library.s.BufferCreateInfo(tbl)
 	if type(tbl.sharingMode) == "string" then
 		tbl.sharingMode = library.e.sharing_mode[tbl.sharingMode]
 	end
-	return ffi.new("struct VkBufferCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkBufferCreateInfo", tbl)
 end
-function library.s.BufferViewCreateInfo(tbl)
+function library.s.BufferViewCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO"
 	if type(tbl.format) == "string" then
 		tbl.format = library.e.format[tbl.format]
 	end
-	return ffi.new("struct VkBufferViewCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkBufferViewCreateInfo", tbl)
 end
-function library.s.ImageCreateInfo(tbl)
+function library.s.ImageCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.image_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.image_create[tbl.flags]
+	end
 	if type(tbl.imageType) == "string" then
 		tbl.imageType = library.e.image_type[tbl.imageType]
 	end
@@ -3095,7 +3106,7 @@ function library.s.ImageCreateInfo(tbl)
 		tbl.format = library.e.format[tbl.format]
 	end
 	if type(tbl.extent) == "table" then
-		tbl.extent = library.s.Extent3D(tbl.extent)
+		tbl.extent = library.s.Extent3D(tbl.extent, true)
 	end
 	if type(tbl.samples) == "table" then
 		tbl.samples = library.e.sample_count.make_enums(tbl.samples)
@@ -3116,9 +3127,9 @@ function library.s.ImageCreateInfo(tbl)
 	if type(tbl.initialLayout) == "string" then
 		tbl.initialLayout = library.e.image_layout[tbl.initialLayout]
 	end
-	return ffi.new("struct VkImageCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkImageCreateInfo", tbl)
 end
-function library.s.ImageViewCreateInfo(tbl)
+function library.s.ImageViewCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO"
 	if type(tbl.viewType) == "string" then
 		tbl.viewType = library.e.image_view_type[tbl.viewType]
@@ -3127,22 +3138,22 @@ function library.s.ImageViewCreateInfo(tbl)
 		tbl.format = library.e.format[tbl.format]
 	end
 	if type(tbl.components) == "table" then
-		tbl.components = library.s.ComponentMapping(tbl.components)
+		tbl.components = library.s.ComponentMapping(tbl.components, true)
 	end
 	if type(tbl.subresourceRange) == "table" then
-		tbl.subresourceRange = library.s.ImageSubresourceRange(tbl.subresourceRange)
+		tbl.subresourceRange = library.s.ImageSubresourceRange(tbl.subresourceRange, true)
 	end
-	return ffi.new("struct VkImageViewCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkImageViewCreateInfo", tbl)
 end
-function library.s.ShaderModuleCreateInfo(tbl)
+function library.s.ShaderModuleCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO"
-	return ffi.new("struct VkShaderModuleCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkShaderModuleCreateInfo", tbl)
 end
-function library.s.PipelineCacheCreateInfo(tbl)
+function library.s.PipelineCacheCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO"
-	return ffi.new("struct VkPipelineCacheCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineCacheCreateInfo", tbl)
 end
-function library.s.PipelineShaderStageCreateInfo(tbl)
+function library.s.PipelineShaderStageCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO"
 	if type(tbl.stage) == "table" then
 		tbl.stage = library.e.shader_stage.make_enums(tbl.stage)
@@ -3150,55 +3161,55 @@ function library.s.PipelineShaderStageCreateInfo(tbl)
 		tbl.stage = library.e.shader_stage[tbl.stage]
 	end
 	if type(tbl.pSpecializationInfo) == "table" then
-		tbl.pSpecializationInfo = library.s.SpecializationInfo(tbl.pSpecializationInfo)
+		tbl.pSpecializationInfo = library.s.SpecializationInfo(tbl.pSpecializationInfo, false)
 	end
-	return ffi.new("struct VkPipelineShaderStageCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineShaderStageCreateInfo", tbl)
 end
-function library.s.PipelineVertexInputStateCreateInfo(tbl)
+function library.s.PipelineVertexInputStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO"
 	if type(tbl.pVertexBindingDescriptions) == "table" then
 		if not tbl.vertexBindingDescriptionCount then
 			tbl.vertexBindingDescriptionCount = #tbl.pVertexBindingDescriptions
 		end
-		tbl.pVertexBindingDescriptions = library.s.VertexInputBindingDescriptionArray(tbl.pVertexBindingDescriptions)
+		tbl.pVertexBindingDescriptions = library.s.VertexInputBindingDescriptionArray(tbl.pVertexBindingDescriptions, false)
 	end
 	if type(tbl.pVertexAttributeDescriptions) == "table" then
 		if not tbl.vertexAttributeDescriptionCount then
 			tbl.vertexAttributeDescriptionCount = #tbl.pVertexAttributeDescriptions
 		end
-		tbl.pVertexAttributeDescriptions = library.s.VertexInputAttributeDescriptionArray(tbl.pVertexAttributeDescriptions)
+		tbl.pVertexAttributeDescriptions = library.s.VertexInputAttributeDescriptionArray(tbl.pVertexAttributeDescriptions, false)
 	end
-	return ffi.new("struct VkPipelineVertexInputStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineVertexInputStateCreateInfo", tbl)
 end
-function library.s.PipelineInputAssemblyStateCreateInfo(tbl)
+function library.s.PipelineInputAssemblyStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO"
 	if type(tbl.topology) == "string" then
 		tbl.topology = library.e.primitive_topology[tbl.topology]
 	end
 	tbl.primitiveRestartEnable = tbl.primitiveRestartEnable and 1 or 0
-	return ffi.new("struct VkPipelineInputAssemblyStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineInputAssemblyStateCreateInfo", tbl)
 end
-function library.s.PipelineTessellationStateCreateInfo(tbl)
+function library.s.PipelineTessellationStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO"
-	return ffi.new("struct VkPipelineTessellationStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineTessellationStateCreateInfo", tbl)
 end
-function library.s.PipelineViewportStateCreateInfo(tbl)
+function library.s.PipelineViewportStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO"
 	if type(tbl.pViewports) == "table" then
 		if not tbl.viewportCount then
 			tbl.viewportCount = #tbl.pViewports
 		end
-		tbl.pViewports = library.s.ViewportArray(tbl.pViewports)
+		tbl.pViewports = library.s.ViewportArray(tbl.pViewports, false)
 	end
 	if type(tbl.pScissors) == "table" then
 		if not tbl.scissorCount then
 			tbl.scissorCount = #tbl.pScissors
 		end
-		tbl.pScissors = library.s.Rect2DArray(tbl.pScissors)
+		tbl.pScissors = library.s.Rect2DArray(tbl.pScissors, false)
 	end
-	return ffi.new("struct VkPipelineViewportStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineViewportStateCreateInfo", tbl)
 end
-function library.s.PipelineRasterizationStateCreateInfo(tbl)
+function library.s.PipelineRasterizationStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO"
 	tbl.depthClampEnable = tbl.depthClampEnable and 1 or 0
 	tbl.rasterizerDiscardEnable = tbl.rasterizerDiscardEnable and 1 or 0
@@ -3214,9 +3225,9 @@ function library.s.PipelineRasterizationStateCreateInfo(tbl)
 		tbl.frontFace = library.e.front_face[tbl.frontFace]
 	end
 	tbl.depthBiasEnable = tbl.depthBiasEnable and 1 or 0
-	return ffi.new("struct VkPipelineRasterizationStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineRasterizationStateCreateInfo", tbl)
 end
-function library.s.PipelineMultisampleStateCreateInfo(tbl)
+function library.s.PipelineMultisampleStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO"
 	if type(tbl.rasterizationSamples) == "table" then
 		tbl.rasterizationSamples = library.e.sample_count.make_enums(tbl.rasterizationSamples)
@@ -3226,9 +3237,9 @@ function library.s.PipelineMultisampleStateCreateInfo(tbl)
 	tbl.sampleShadingEnable = tbl.sampleShadingEnable and 1 or 0
 	tbl.alphaToCoverageEnable = tbl.alphaToCoverageEnable and 1 or 0
 	tbl.alphaToOneEnable = tbl.alphaToOneEnable and 1 or 0
-	return ffi.new("struct VkPipelineMultisampleStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineMultisampleStateCreateInfo", tbl)
 end
-function library.s.PipelineDepthStencilStateCreateInfo(tbl)
+function library.s.PipelineDepthStencilStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO"
 	tbl.depthTestEnable = tbl.depthTestEnable and 1 or 0
 	tbl.depthWriteEnable = tbl.depthWriteEnable and 1 or 0
@@ -3238,14 +3249,14 @@ function library.s.PipelineDepthStencilStateCreateInfo(tbl)
 	tbl.depthBoundsTestEnable = tbl.depthBoundsTestEnable and 1 or 0
 	tbl.stencilTestEnable = tbl.stencilTestEnable and 1 or 0
 	if type(tbl.front) == "table" then
-		tbl.front = library.s.StencilOpState(tbl.front)
+		tbl.front = library.s.StencilOpState(tbl.front, true)
 	end
 	if type(tbl.back) == "table" then
-		tbl.back = library.s.StencilOpState(tbl.back)
+		tbl.back = library.s.StencilOpState(tbl.back, true)
 	end
-	return ffi.new("struct VkPipelineDepthStencilStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineDepthStencilStateCreateInfo", tbl)
 end
-function library.s.PipelineColorBlendStateCreateInfo(tbl)
+function library.s.PipelineColorBlendStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO"
 	tbl.logicOpEnable = tbl.logicOpEnable and 1 or 0
 	if type(tbl.logicOp) == "string" then
@@ -3255,78 +3266,88 @@ function library.s.PipelineColorBlendStateCreateInfo(tbl)
 		if not tbl.attachmentCount then
 			tbl.attachmentCount = #tbl.pAttachments
 		end
-		tbl.pAttachments = library.s.PipelineColorBlendAttachmentStateArray(tbl.pAttachments)
+		tbl.pAttachments = library.s.PipelineColorBlendAttachmentStateArray(tbl.pAttachments, false)
 	end
-	return ffi.new("struct VkPipelineColorBlendStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineColorBlendStateCreateInfo", tbl)
 end
-function library.s.PipelineDynamicStateCreateInfo(tbl)
+function library.s.PipelineDynamicStateCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO"
 	if type(tbl.pDynamicStates) == "string" then
 		tbl.pDynamicStates = library.e.dynamic_state[tbl.pDynamicStates]
 	end
-	return ffi.new("struct VkPipelineDynamicStateCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineDynamicStateCreateInfo", tbl)
 end
-function library.s.GraphicsPipelineCreateInfo(tbl)
+function library.s.GraphicsPipelineCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.pipeline_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.pipeline_create[tbl.flags]
+	end
 	if type(tbl.pStages) == "table" then
 		if not tbl.stageCount then
 			tbl.stageCount = #tbl.pStages
 		end
-		tbl.pStages = library.s.PipelineShaderStageCreateInfoArray(tbl.pStages)
+		tbl.pStages = library.s.PipelineShaderStageCreateInfoArray(tbl.pStages, false)
 	end
 	if type(tbl.pVertexInputState) == "table" then
-		tbl.pVertexInputState = library.s.PipelineVertexInputStateCreateInfo(tbl.pVertexInputState)
+		tbl.pVertexInputState = library.s.PipelineVertexInputStateCreateInfo(tbl.pVertexInputState, false)
 	end
 	if type(tbl.pInputAssemblyState) == "table" then
-		tbl.pInputAssemblyState = library.s.PipelineInputAssemblyStateCreateInfo(tbl.pInputAssemblyState)
+		tbl.pInputAssemblyState = library.s.PipelineInputAssemblyStateCreateInfo(tbl.pInputAssemblyState, false)
 	end
 	if type(tbl.pTessellationState) == "table" then
-		tbl.pTessellationState = library.s.PipelineTessellationStateCreateInfo(tbl.pTessellationState)
+		tbl.pTessellationState = library.s.PipelineTessellationStateCreateInfo(tbl.pTessellationState, false)
 	end
 	if type(tbl.pViewportState) == "table" then
-		tbl.pViewportState = library.s.PipelineViewportStateCreateInfo(tbl.pViewportState)
+		tbl.pViewportState = library.s.PipelineViewportStateCreateInfo(tbl.pViewportState, false)
 	end
 	if type(tbl.pRasterizationState) == "table" then
-		tbl.pRasterizationState = library.s.PipelineRasterizationStateCreateInfo(tbl.pRasterizationState)
+		tbl.pRasterizationState = library.s.PipelineRasterizationStateCreateInfo(tbl.pRasterizationState, false)
 	end
 	if type(tbl.pMultisampleState) == "table" then
-		tbl.pMultisampleState = library.s.PipelineMultisampleStateCreateInfo(tbl.pMultisampleState)
+		tbl.pMultisampleState = library.s.PipelineMultisampleStateCreateInfo(tbl.pMultisampleState, false)
 	end
 	if type(tbl.pDepthStencilState) == "table" then
-		tbl.pDepthStencilState = library.s.PipelineDepthStencilStateCreateInfo(tbl.pDepthStencilState)
+		tbl.pDepthStencilState = library.s.PipelineDepthStencilStateCreateInfo(tbl.pDepthStencilState, false)
 	end
 	if type(tbl.pColorBlendState) == "table" then
-		tbl.pColorBlendState = library.s.PipelineColorBlendStateCreateInfo(tbl.pColorBlendState)
+		tbl.pColorBlendState = library.s.PipelineColorBlendStateCreateInfo(tbl.pColorBlendState, false)
 	end
 	if type(tbl.pDynamicState) == "table" then
-		tbl.pDynamicState = library.s.PipelineDynamicStateCreateInfo(tbl.pDynamicState)
+		tbl.pDynamicState = library.s.PipelineDynamicStateCreateInfo(tbl.pDynamicState, false)
 	end
-	return ffi.new("struct VkGraphicsPipelineCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkGraphicsPipelineCreateInfo", tbl)
 end
-function library.s.ComputePipelineCreateInfo(tbl)
+function library.s.ComputePipelineCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO"
-	if type(tbl.stage) == "table" then
-		tbl.stage = library.s.PipelineShaderStageCreateInfo(tbl.stage)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.pipeline_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.pipeline_create[tbl.flags]
 	end
-	return ffi.new("struct VkComputePipelineCreateInfo", tbl)
+	if type(tbl.stage) == "table" then
+		tbl.stage = library.s.PipelineShaderStageCreateInfo(tbl.stage, true)
+	end
+	return table_only and tbl or ffi.new("struct VkComputePipelineCreateInfo", tbl)
 end
-function library.s.PipelineLayoutCreateInfo(tbl)
+function library.s.PipelineLayoutCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO"
 	if type(tbl.pSetLayouts) == "table" then
 		if not tbl.setLayoutCount then
 			tbl.setLayoutCount = #tbl.pSetLayouts
 		end
-		tbl.pSetLayouts = library.s.DescriptorSetLayoutArray(tbl.pSetLayouts)
+		tbl.pSetLayouts = library.s.DescriptorSetLayoutArray(tbl.pSetLayouts, false)
 	end
 	if type(tbl.pPushConstantRanges) == "table" then
 		if not tbl.pushConstantRangeCount then
 			tbl.pushConstantRangeCount = #tbl.pPushConstantRanges
 		end
-		tbl.pPushConstantRanges = library.s.PushConstantRangeArray(tbl.pPushConstantRanges)
+		tbl.pPushConstantRanges = library.s.PushConstantRangeArray(tbl.pPushConstantRanges, false)
 	end
-	return ffi.new("struct VkPipelineLayoutCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkPipelineLayoutCreateInfo", tbl)
 end
-function library.s.SamplerCreateInfo(tbl)
+function library.s.SamplerCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO"
 	if type(tbl.magFilter) == "string" then
 		tbl.magFilter = library.e.filter[tbl.magFilter]
@@ -3354,39 +3375,45 @@ function library.s.SamplerCreateInfo(tbl)
 	if type(tbl.borderColor) == "string" then
 		tbl.borderColor = library.e.border_color[tbl.borderColor]
 	end
-	return ffi.new("struct VkSamplerCreateInfo", tbl)
+	tbl.unnormalizedCoordinates = tbl.unnormalizedCoordinates and 1 or 0
+	return table_only and tbl or ffi.new("struct VkSamplerCreateInfo", tbl)
 end
-function library.s.DescriptorSetLayoutCreateInfo(tbl)
+function library.s.DescriptorSetLayoutCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO"
 	if type(tbl.pBindings) == "table" then
 		if not tbl.bindingCount then
 			tbl.bindingCount = #tbl.pBindings
 		end
-		tbl.pBindings = library.s.DescriptorSetLayoutBindingArray(tbl.pBindings)
+		tbl.pBindings = library.s.DescriptorSetLayoutBindingArray(tbl.pBindings, false)
 	end
-	return ffi.new("struct VkDescriptorSetLayoutCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkDescriptorSetLayoutCreateInfo", tbl)
 end
-function library.s.DescriptorPoolCreateInfo(tbl)
+function library.s.DescriptorPoolCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.descriptor_pool_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.descriptor_pool_create[tbl.flags]
+	end
 	if type(tbl.pPoolSizes) == "table" then
 		if not tbl.poolSizeCount then
 			tbl.poolSizeCount = #tbl.pPoolSizes
 		end
-		tbl.pPoolSizes = library.s.DescriptorPoolSizeArray(tbl.pPoolSizes)
+		tbl.pPoolSizes = library.s.DescriptorPoolSizeArray(tbl.pPoolSizes, false)
 	end
-	return ffi.new("struct VkDescriptorPoolCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkDescriptorPoolCreateInfo", tbl)
 end
-function library.s.DescriptorSetAllocateInfo(tbl)
+function library.s.DescriptorSetAllocateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO"
 	if type(tbl.pSetLayouts) == "table" then
 		if not tbl.descriptorSetCount then
 			tbl.descriptorSetCount = #tbl.pSetLayouts
 		end
-		tbl.pSetLayouts = library.s.DescriptorSetLayoutArray(tbl.pSetLayouts)
+		tbl.pSetLayouts = library.s.DescriptorSetLayoutArray(tbl.pSetLayouts, false)
 	end
-	return ffi.new("struct VkDescriptorSetAllocateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkDescriptorSetAllocateInfo", tbl)
 end
-function library.s.WriteDescriptorSet(tbl)
+function library.s.WriteDescriptorSet(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET"
 	if type(tbl.descriptorType) == "string" then
 		tbl.descriptorType = library.e.descriptor_type[tbl.descriptorType]
@@ -3409,85 +3436,115 @@ function library.s.WriteDescriptorSet(tbl)
 		end
 		tbl.pTexelBufferView = library.s.BufferViewArray(tbl.pTexelBufferView)
 	end
-	return ffi.new("struct VkWriteDescriptorSet", tbl)
+	return table_only and tbl or ffi.new("struct VkWriteDescriptorSet", tbl)
 end
-function library.s.CopyDescriptorSet(tbl)
+function library.s.CopyDescriptorSet(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET"
-	return ffi.new("struct VkCopyDescriptorSet", tbl)
+	return table_only and tbl or ffi.new("struct VkCopyDescriptorSet", tbl)
 end
-function library.s.FramebufferCreateInfo(tbl)
+function library.s.FramebufferCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO"
 	if type(tbl.pAttachments) == "table" then
 		if not tbl.attachmentCount then
 			tbl.attachmentCount = #tbl.pAttachments
 		end
-		tbl.pAttachments = library.s.ImageViewArray(tbl.pAttachments)
+		tbl.pAttachments = library.s.ImageViewArray(tbl.pAttachments, false)
 	end
-	return ffi.new("struct VkFramebufferCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkFramebufferCreateInfo", tbl)
 end
-function library.s.RenderPassCreateInfo(tbl)
+function library.s.RenderPassCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO"
 	if type(tbl.pAttachments) == "table" then
 		if not tbl.attachmentCount then
 			tbl.attachmentCount = #tbl.pAttachments
 		end
-		tbl.pAttachments = library.s.AttachmentDescriptionArray(tbl.pAttachments)
+		tbl.pAttachments = library.s.AttachmentDescriptionArray(tbl.pAttachments, false)
 	end
 	if type(tbl.pSubpasses) == "table" then
 		if not tbl.subpassCount then
 			tbl.subpassCount = #tbl.pSubpasses
 		end
-		tbl.pSubpasses = library.s.SubpassDescriptionArray(tbl.pSubpasses)
+		tbl.pSubpasses = library.s.SubpassDescriptionArray(tbl.pSubpasses, false)
 	end
 	if type(tbl.pDependencies) == "table" then
 		if not tbl.dependencyCount then
 			tbl.dependencyCount = #tbl.pDependencies
 		end
-		tbl.pDependencies = library.s.SubpassDependencyArray(tbl.pDependencies)
+		tbl.pDependencies = library.s.SubpassDependencyArray(tbl.pDependencies, false)
 	end
-	return ffi.new("struct VkRenderPassCreateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkRenderPassCreateInfo", tbl)
 end
-function library.s.CommandPoolCreateInfo(tbl)
+function library.s.CommandPoolCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO"
-	return ffi.new("struct VkCommandPoolCreateInfo", tbl)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.command_pool_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.command_pool_create[tbl.flags]
+	end
+	return table_only and tbl or ffi.new("struct VkCommandPoolCreateInfo", tbl)
 end
-function library.s.CommandBufferAllocateInfo(tbl)
+function library.s.CommandBufferAllocateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO"
 	if type(tbl.level) == "string" then
 		tbl.level = library.e.command_buffer_level[tbl.level]
 	end
-	return ffi.new("struct VkCommandBufferAllocateInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkCommandBufferAllocateInfo", tbl)
 end
-function library.s.CommandBufferInheritanceInfo(tbl)
+function library.s.CommandBufferInheritanceInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO"
 	tbl.occlusionQueryEnable = tbl.occlusionQueryEnable and 1 or 0
-	return ffi.new("struct VkCommandBufferInheritanceInfo", tbl)
-end
-function library.s.CommandBufferBeginInfo(tbl)
-	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO"
-	if type(tbl.pInheritanceInfo) == "table" then
-		tbl.pInheritanceInfo = library.s.CommandBufferInheritanceInfo(tbl.pInheritanceInfo)
+	if type(tbl.queryFlags) == "table" then
+		tbl.queryFlags = library.e.query_control.make_enums(tbl.queryFlags)
+	elseif type(tbl.queryFlags) == "string" then
+		tbl.queryFlags = library.e.query_control[tbl.queryFlags]
 	end
-	return ffi.new("struct VkCommandBufferBeginInfo", tbl)
+	if type(tbl.pipelineStatistics) == "table" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic.make_enums(tbl.pipelineStatistics)
+	elseif type(tbl.pipelineStatistics) == "string" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic[tbl.pipelineStatistics]
+	end
+	return table_only and tbl or ffi.new("struct VkCommandBufferInheritanceInfo", tbl)
 end
-function library.s.RenderPassBeginInfo(tbl)
+function library.s.CommandBufferBeginInfo(tbl, table_only)
+	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.command_buffer_usage.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.command_buffer_usage[tbl.flags]
+	end
+	if type(tbl.pInheritanceInfo) == "table" then
+		tbl.pInheritanceInfo = library.s.CommandBufferInheritanceInfo(tbl.pInheritanceInfo, false)
+	end
+	return table_only and tbl or ffi.new("struct VkCommandBufferBeginInfo", tbl)
+end
+function library.s.RenderPassBeginInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO"
 	if type(tbl.renderArea) == "table" then
-		tbl.renderArea = library.s.Rect2D(tbl.renderArea)
+		tbl.renderArea = library.s.Rect2D(tbl.renderArea, true)
 	end
 	if type(tbl.pClearValues) == "table" then
 		if not tbl.clearValueCount then
 			tbl.clearValueCount = #tbl.pClearValues
 		end
-		tbl.pClearValues = library.s.ClearValueArray(tbl.pClearValues)
+		tbl.pClearValues = library.s.ClearValueArray(tbl.pClearValues, false)
 	end
-	return ffi.new("struct VkRenderPassBeginInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkRenderPassBeginInfo", tbl)
 end
-function library.s.BufferMemoryBarrier(tbl)
+function library.s.BufferMemoryBarrier(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER"
-	return ffi.new("struct VkBufferMemoryBarrier", tbl)
+	if type(tbl.srcAccessMask) == "table" then
+		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
+	elseif type(tbl.srcAccessMask) == "string" then
+		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
+	end
+	if type(tbl.dstAccessMask) == "table" then
+		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
+	elseif type(tbl.dstAccessMask) == "string" then
+		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
+	end
+	return table_only and tbl or ffi.new("struct VkBufferMemoryBarrier", tbl)
 end
-function library.s.ImageMemoryBarrier(tbl)
+function library.s.ImageMemoryBarrier(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER"
 	if type(tbl.srcAccessMask) == "table" then
 		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
@@ -3506,15 +3563,25 @@ function library.s.ImageMemoryBarrier(tbl)
 		tbl.newLayout = library.e.image_layout[tbl.newLayout]
 	end
 	if type(tbl.subresourceRange) == "table" then
-		tbl.subresourceRange = library.s.ImageSubresourceRange(tbl.subresourceRange)
+		tbl.subresourceRange = library.s.ImageSubresourceRange(tbl.subresourceRange, true)
 	end
-	return ffi.new("struct VkImageMemoryBarrier", tbl)
+	return table_only and tbl or ffi.new("struct VkImageMemoryBarrier", tbl)
 end
-function library.s.MemoryBarrier(tbl)
+function library.s.MemoryBarrier(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER"
-	return ffi.new("struct VkMemoryBarrier", tbl)
+	if type(tbl.srcAccessMask) == "table" then
+		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
+	elseif type(tbl.srcAccessMask) == "string" then
+		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
+	end
+	if type(tbl.dstAccessMask) == "table" then
+		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
+	elseif type(tbl.dstAccessMask) == "string" then
+		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
+	end
+	return table_only and tbl or ffi.new("struct VkMemoryBarrier", tbl)
 end
-function library.s.SwapchainCreateInfoKHR(tbl)
+function library.s.SwapchainCreateInfoKHR(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR"
 	if type(tbl.imageFormat) == "string" then
 		tbl.imageFormat = library.e.format[tbl.imageFormat]
@@ -3523,7 +3590,12 @@ function library.s.SwapchainCreateInfoKHR(tbl)
 		tbl.imageColorSpace = library.e.colorspace[tbl.imageColorSpace]
 	end
 	if type(tbl.imageExtent) == "table" then
-		tbl.imageExtent = library.s.Extent2D(tbl.imageExtent)
+		tbl.imageExtent = library.s.Extent2D(tbl.imageExtent, true)
+	end
+	if type(tbl.imageUsage) == "table" then
+		tbl.imageUsage = library.e.image_usage.make_enums(tbl.imageUsage)
+	elseif type(tbl.imageUsage) == "string" then
+		tbl.imageUsage = library.e.image_usage[tbl.imageUsage]
 	end
 	if type(tbl.imageSharingMode) == "string" then
 		tbl.imageSharingMode = library.e.sharing_mode[tbl.imageSharingMode]
@@ -3541,35 +3613,36 @@ function library.s.SwapchainCreateInfoKHR(tbl)
 	if type(tbl.presentMode) == "string" then
 		tbl.presentMode = library.e.present_mode[tbl.presentMode]
 	end
-	return ffi.new("struct VkSwapchainCreateInfoKHR", tbl)
+	tbl.clipped = tbl.clipped and 1 or 0
+	return table_only and tbl or ffi.new("struct VkSwapchainCreateInfoKHR", tbl)
 end
-function library.s.PresentInfoKHR(tbl)
+function library.s.PresentInfoKHR(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_PRESENT_INFO_KHR"
 	if type(tbl.pWaitSemaphores) == "table" then
 		if not tbl.waitSemaphoreCount then
 			tbl.waitSemaphoreCount = #tbl.pWaitSemaphores
 		end
-		tbl.pWaitSemaphores = library.s.SemaphoreArray(tbl.pWaitSemaphores)
+		tbl.pWaitSemaphores = library.s.SemaphoreArray(tbl.pWaitSemaphores, false)
 	end
 	if type(tbl.pSwapchains) == "table" then
 		if not tbl.swapchainCount then
 			tbl.swapchainCount = #tbl.pSwapchains
 		end
-		tbl.pSwapchains = library.s.SwapchainKHRArray(tbl.pSwapchains)
+		tbl.pSwapchains = library.s.SwapchainKHRArray(tbl.pSwapchains, false)
 	end
 	if type(tbl.pResults) == "string" then
 		tbl.pResults = library.e.result[tbl.pResults]
 	end
-	return ffi.new("struct VkPresentInfoKHR", tbl)
+	return table_only and tbl or ffi.new("struct VkPresentInfoKHR", tbl)
 end
-function library.s.DisplayModeCreateInfoKHR(tbl)
+function library.s.DisplayModeCreateInfoKHR(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR"
 	if type(tbl.parameters) == "table" then
-		tbl.parameters = library.s.DisplayModeParametersKHR(tbl.parameters)
+		tbl.parameters = library.s.DisplayModeParametersKHR(tbl.parameters, true)
 	end
-	return ffi.new("struct VkDisplayModeCreateInfoKHR", tbl)
+	return table_only and tbl or ffi.new("struct VkDisplayModeCreateInfoKHR", tbl)
 end
-function library.s.DisplaySurfaceCreateInfoKHR(tbl)
+function library.s.DisplaySurfaceCreateInfoKHR(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR"
 	if type(tbl.transform) == "table" then
 		tbl.transform = library.e.surface_transform.make_enums(tbl.transform)
@@ -3582,28 +3655,29 @@ function library.s.DisplaySurfaceCreateInfoKHR(tbl)
 		tbl.alphaMode = library.e.display_plane_alpha[tbl.alphaMode]
 	end
 	if type(tbl.imageExtent) == "table" then
-		tbl.imageExtent = library.s.Extent2D(tbl.imageExtent)
+		tbl.imageExtent = library.s.Extent2D(tbl.imageExtent, true)
 	end
-	return ffi.new("struct VkDisplaySurfaceCreateInfoKHR", tbl)
+	return table_only and tbl or ffi.new("struct VkDisplaySurfaceCreateInfoKHR", tbl)
 end
-function library.s.DisplayPresentInfoKHR(tbl)
+function library.s.DisplayPresentInfoKHR(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR"
 	if type(tbl.srcRect) == "table" then
-		tbl.srcRect = library.s.Rect2D(tbl.srcRect)
+		tbl.srcRect = library.s.Rect2D(tbl.srcRect, true)
 	end
 	if type(tbl.dstRect) == "table" then
-		tbl.dstRect = library.s.Rect2D(tbl.dstRect)
+		tbl.dstRect = library.s.Rect2D(tbl.dstRect, true)
 	end
-	return ffi.new("struct VkDisplayPresentInfoKHR", tbl)
+	tbl.persistent = tbl.persistent and 1 or 0
+	return table_only and tbl or ffi.new("struct VkDisplayPresentInfoKHR", tbl)
 end
-function library.s.DebugReportCallbackCreateInfoEXT(tbl)
+function library.s.DebugReportCallbackCreateInfoEXT(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT"
 	if type(tbl.flags) == "table" then
 		tbl.flags = library.e.debug_report.make_enums(tbl.flags)
 	elseif type(tbl.flags) == "string" then
 		tbl.flags = library.e.debug_report[tbl.flags]
 	end
-	return ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl)
+	return table_only and tbl or ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl)
 end
 function library.s.DescriptorPoolArray(tbl) return ffi.new("struct VkDescriptorPool_T *[?]", #tbl, tbl) end
 function library.s.PipelineTessellationStateCreateInfoArray(tbl)
@@ -3613,8 +3687,8 @@ function library.s.PipelineTessellationStateCreateInfoArray(tbl)
 	return ffi.new("struct VkPipelineTessellationStateCreateInfo[?]", #tbl, tbl)
 end
 function library.s.SemaphoreArray(tbl) return ffi.new("struct VkSemaphore_T *[?]", #tbl, tbl) end
-function library.s.ClearDepthStencilValue(tbl)
-	return ffi.new("struct VkClearDepthStencilValue", tbl)
+function library.s.ClearDepthStencilValue(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkClearDepthStencilValue", tbl)
 end
 function library.s.ClearDepthStencilValueArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3622,14 +3696,14 @@ function library.s.ClearDepthStencilValueArray(tbl)
 	end
 	return ffi.new("struct VkClearDepthStencilValue[?]", #tbl, tbl)
 end
-function library.s.SparseBufferMemoryBindInfo(tbl)
+function library.s.SparseBufferMemoryBindInfo(tbl, table_only)
 	if type(tbl.pBinds) == "table" then
 		if not tbl.bindCount then
 			tbl.bindCount = #tbl.pBinds
 		end
-		tbl.pBinds = library.s.SparseMemoryBindArray(tbl.pBinds)
+		tbl.pBinds = library.s.SparseMemoryBindArray(tbl.pBinds, false)
 	end
-	return ffi.new("struct VkSparseBufferMemoryBindInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkSparseBufferMemoryBindInfo", tbl)
 end
 function library.s.SparseBufferMemoryBindInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3640,7 +3714,7 @@ end
 function library.s.InstanceArray(tbl) return ffi.new("struct VkInstance_T *[?]", #tbl, tbl) end
 function library.s.ImageViewArray(tbl) return ffi.new("struct VkImageView_T *[?]", #tbl, tbl) end
 function library.s.DescriptorSetArray(tbl) return ffi.new("struct VkDescriptorSet_T *[?]", #tbl, tbl) end
-function library.s.ComponentMapping(tbl)
+function library.s.ComponentMapping(tbl, table_only)
 	if type(tbl.r) == "string" then
 		tbl.r = library.e.component_swizzle[tbl.r]
 	end
@@ -3653,7 +3727,7 @@ function library.s.ComponentMapping(tbl)
 	if type(tbl.a) == "string" then
 		tbl.a = library.e.component_swizzle[tbl.a]
 	end
-	return ffi.new("struct VkComponentMapping", tbl)
+	return table_only and tbl or ffi.new("struct VkComponentMapping", tbl)
 end
 function library.s.ComponentMappingArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3667,8 +3741,8 @@ function library.s.PipelineMultisampleStateCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineMultisampleStateCreateInfo[?]", #tbl, tbl)
 end
-function library.s.DispatchIndirectCommand(tbl)
-	return ffi.new("struct VkDispatchIndirectCommand", tbl)
+function library.s.DispatchIndirectCommand(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDispatchIndirectCommand", tbl)
 end
 function library.s.DispatchIndirectCommandArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3729,14 +3803,14 @@ function library.s.PipelineVertexInputStateCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineVertexInputStateCreateInfo[?]", #tbl, tbl)
 end
-function library.s.Rect2D(tbl)
+function library.s.Rect2D(tbl, table_only)
 	if type(tbl.offset) == "table" then
-		tbl.offset = library.s.Offset2D(tbl.offset)
+		tbl.offset = library.s.Offset2D(tbl.offset, true)
 	end
 	if type(tbl.extent) == "table" then
-		tbl.extent = library.s.Extent2D(tbl.extent)
+		tbl.extent = library.s.Extent2D(tbl.extent, true)
 	end
-	return ffi.new("struct VkRect2D", tbl)
+	return table_only and tbl or ffi.new("struct VkRect2D", tbl)
 end
 function library.s.Rect2DArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3744,14 +3818,14 @@ function library.s.Rect2DArray(tbl)
 	end
 	return ffi.new("struct VkRect2D[?]", #tbl, tbl)
 end
-function library.s.SparseImageOpaqueMemoryBindInfo(tbl)
+function library.s.SparseImageOpaqueMemoryBindInfo(tbl, table_only)
 	if type(tbl.pBinds) == "table" then
 		if not tbl.bindCount then
 			tbl.bindCount = #tbl.pBinds
 		end
-		tbl.pBinds = library.s.SparseMemoryBindArray(tbl.pBinds)
+		tbl.pBinds = library.s.SparseMemoryBindArray(tbl.pBinds, false)
 	end
-	return ffi.new("struct VkSparseImageOpaqueMemoryBindInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkSparseImageOpaqueMemoryBindInfo", tbl)
 end
 function library.s.SparseImageOpaqueMemoryBindInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3771,8 +3845,8 @@ function library.s.DisplaySurfaceCreateInfoKHRArray(tbl)
 	end
 	return ffi.new("struct VkDisplaySurfaceCreateInfoKHR[?]", #tbl, tbl)
 end
-function library.s.DisplayPlanePropertiesKHR(tbl)
-	return ffi.new("struct VkDisplayPlanePropertiesKHR", tbl)
+function library.s.DisplayPlanePropertiesKHR(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDisplayPlanePropertiesKHR", tbl)
 end
 function library.s.DisplayPlanePropertiesKHRArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3786,32 +3860,37 @@ function library.s.RenderPassBeginInfoArray(tbl)
 	end
 	return ffi.new("struct VkRenderPassBeginInfo[?]", #tbl, tbl)
 end
-function library.s.DisplayPlaneCapabilitiesKHR(tbl)
+function library.s.DisplayPlaneCapabilitiesKHR(tbl, table_only)
+	if type(tbl.supportedAlpha) == "table" then
+		tbl.supportedAlpha = library.e.display_plane_alpha.make_enums(tbl.supportedAlpha)
+	elseif type(tbl.supportedAlpha) == "string" then
+		tbl.supportedAlpha = library.e.display_plane_alpha[tbl.supportedAlpha]
+	end
 	if type(tbl.minSrcPosition) == "table" then
-		tbl.minSrcPosition = library.s.Offset2D(tbl.minSrcPosition)
+		tbl.minSrcPosition = library.s.Offset2D(tbl.minSrcPosition, true)
 	end
 	if type(tbl.maxSrcPosition) == "table" then
-		tbl.maxSrcPosition = library.s.Offset2D(tbl.maxSrcPosition)
+		tbl.maxSrcPosition = library.s.Offset2D(tbl.maxSrcPosition, true)
 	end
 	if type(tbl.minSrcExtent) == "table" then
-		tbl.minSrcExtent = library.s.Extent2D(tbl.minSrcExtent)
+		tbl.minSrcExtent = library.s.Extent2D(tbl.minSrcExtent, true)
 	end
 	if type(tbl.maxSrcExtent) == "table" then
-		tbl.maxSrcExtent = library.s.Extent2D(tbl.maxSrcExtent)
+		tbl.maxSrcExtent = library.s.Extent2D(tbl.maxSrcExtent, true)
 	end
 	if type(tbl.minDstPosition) == "table" then
-		tbl.minDstPosition = library.s.Offset2D(tbl.minDstPosition)
+		tbl.minDstPosition = library.s.Offset2D(tbl.minDstPosition, true)
 	end
 	if type(tbl.maxDstPosition) == "table" then
-		tbl.maxDstPosition = library.s.Offset2D(tbl.maxDstPosition)
+		tbl.maxDstPosition = library.s.Offset2D(tbl.maxDstPosition, true)
 	end
 	if type(tbl.minDstExtent) == "table" then
-		tbl.minDstExtent = library.s.Extent2D(tbl.minDstExtent)
+		tbl.minDstExtent = library.s.Extent2D(tbl.minDstExtent, true)
 	end
 	if type(tbl.maxDstExtent) == "table" then
-		tbl.maxDstExtent = library.s.Extent2D(tbl.maxDstExtent)
+		tbl.maxDstExtent = library.s.Extent2D(tbl.maxDstExtent, true)
 	end
-	return ffi.new("struct VkDisplayPlaneCapabilitiesKHR", tbl)
+	return table_only and tbl or ffi.new("struct VkDisplayPlaneCapabilitiesKHR", tbl)
 end
 function library.s.DisplayPlaneCapabilitiesKHRArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3819,14 +3898,21 @@ function library.s.DisplayPlaneCapabilitiesKHRArray(tbl)
 	end
 	return ffi.new("struct VkDisplayPlaneCapabilitiesKHR[?]", #tbl, tbl)
 end
-function library.s.DisplayPropertiesKHR(tbl)
+function library.s.DisplayPropertiesKHR(tbl, table_only)
 	if type(tbl.physicalDimensions) == "table" then
-		tbl.physicalDimensions = library.s.Extent2D(tbl.physicalDimensions)
+		tbl.physicalDimensions = library.s.Extent2D(tbl.physicalDimensions, true)
 	end
 	if type(tbl.physicalResolution) == "table" then
-		tbl.physicalResolution = library.s.Extent2D(tbl.physicalResolution)
+		tbl.physicalResolution = library.s.Extent2D(tbl.physicalResolution, true)
 	end
-	return ffi.new("struct VkDisplayPropertiesKHR", tbl)
+	if type(tbl.supportedTransforms) == "table" then
+		tbl.supportedTransforms = library.e.surface_transform.make_enums(tbl.supportedTransforms)
+	elseif type(tbl.supportedTransforms) == "string" then
+		tbl.supportedTransforms = library.e.surface_transform[tbl.supportedTransforms]
+	end
+	tbl.planeReorderPossible = tbl.planeReorderPossible and 1 or 0
+	tbl.persistentContent = tbl.persistentContent and 1 or 0
+	return table_only and tbl or ffi.new("struct VkDisplayPropertiesKHR", tbl)
 end
 function library.s.DisplayPropertiesKHRArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3848,8 +3934,13 @@ function library.s.ComputePipelineCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkComputePipelineCreateInfo[?]", #tbl, tbl)
 end
-function library.s.SparseMemoryBind(tbl)
-	return ffi.new("struct VkSparseMemoryBind", tbl)
+function library.s.SparseMemoryBind(tbl, table_only)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.sparse_memory_bind.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.sparse_memory_bind[tbl.flags]
+	end
+	return table_only and tbl or ffi.new("struct VkSparseMemoryBind", tbl)
 end
 function library.s.SparseMemoryBindArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3857,7 +3948,7 @@ function library.s.SparseMemoryBindArray(tbl)
 	end
 	return ffi.new("struct VkSparseMemoryBind[?]", #tbl, tbl)
 end
-function library.s.StencilOpState(tbl)
+function library.s.StencilOpState(tbl, table_only)
 	if type(tbl.failOp) == "string" then
 		tbl.failOp = library.e.stencil_op[tbl.failOp]
 	end
@@ -3870,7 +3961,7 @@ function library.s.StencilOpState(tbl)
 	if type(tbl.compareOp) == "string" then
 		tbl.compareOp = library.e.compare_op[tbl.compareOp]
 	end
-	return ffi.new("struct VkStencilOpState", tbl)
+	return table_only and tbl or ffi.new("struct VkStencilOpState", tbl)
 end
 function library.s.StencilOpStateArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3885,8 +3976,13 @@ function library.s.DescriptorSetLayoutCreateInfoArray(tbl)
 	return ffi.new("struct VkDescriptorSetLayoutCreateInfo[?]", #tbl, tbl)
 end
 function library.s.PhysicalDeviceArray(tbl) return ffi.new("struct VkPhysicalDevice_T *[?]", #tbl, tbl) end
-function library.s.PhysicalDeviceSparseProperties(tbl)
-	return ffi.new("struct VkPhysicalDeviceSparseProperties", tbl)
+function library.s.PhysicalDeviceSparseProperties(tbl, table_only)
+	tbl.residencyStandard2DBlockShape = tbl.residencyStandard2DBlockShape and 1 or 0
+	tbl.residencyStandard2DMultisampleBlockShape = tbl.residencyStandard2DMultisampleBlockShape and 1 or 0
+	tbl.residencyStandard3DBlockShape = tbl.residencyStandard3DBlockShape and 1 or 0
+	tbl.residencyAlignedMipSize = tbl.residencyAlignedMipSize and 1 or 0
+	tbl.residencyNonResidentStrict = tbl.residencyNonResidentStrict and 1 or 0
+	return table_only and tbl or ffi.new("struct VkPhysicalDeviceSparseProperties", tbl)
 end
 function library.s.PhysicalDeviceSparsePropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3895,7 +3991,7 @@ function library.s.PhysicalDeviceSparsePropertiesArray(tbl)
 	return ffi.new("struct VkPhysicalDeviceSparseProperties[?]", #tbl, tbl)
 end
 function library.s.ShaderModuleArray(tbl) return ffi.new("struct VkShaderModule_T *[?]", #tbl, tbl) end
-function library.s.PipelineColorBlendAttachmentState(tbl)
+function library.s.PipelineColorBlendAttachmentState(tbl, table_only)
 	tbl.blendEnable = tbl.blendEnable and 1 or 0
 	if type(tbl.srcColorBlendFactor) == "string" then
 		tbl.srcColorBlendFactor = library.e.blend_factor[tbl.srcColorBlendFactor]
@@ -3915,7 +4011,12 @@ function library.s.PipelineColorBlendAttachmentState(tbl)
 	if type(tbl.alphaBlendOp) == "string" then
 		tbl.alphaBlendOp = library.e.blend_op[tbl.alphaBlendOp]
 	end
-	return ffi.new("struct VkPipelineColorBlendAttachmentState", tbl)
+	if type(tbl.colorWriteMask) == "table" then
+		tbl.colorWriteMask = library.e.color_component.make_enums(tbl.colorWriteMask)
+	elseif type(tbl.colorWriteMask) == "string" then
+		tbl.colorWriteMask = library.e.color_component[tbl.colorWriteMask]
+	end
+	return table_only and tbl or ffi.new("struct VkPipelineColorBlendAttachmentState", tbl)
 end
 function library.s.PipelineColorBlendAttachmentStateArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3923,8 +4024,8 @@ function library.s.PipelineColorBlendAttachmentStateArray(tbl)
 	end
 	return ffi.new("struct VkPipelineColorBlendAttachmentState[?]", #tbl, tbl)
 end
-function library.s.Extent2D(tbl)
-	return ffi.new("struct VkExtent2D", tbl)
+function library.s.Extent2D(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkExtent2D", tbl)
 end
 function library.s.Extent2DArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3932,8 +4033,8 @@ function library.s.Extent2DArray(tbl)
 	end
 	return ffi.new("struct VkExtent2D[?]", #tbl, tbl)
 end
-function library.s.Extent3D(tbl)
-	return ffi.new("struct VkExtent3D", tbl)
+function library.s.Extent3D(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkExtent3D", tbl)
 end
 function library.s.Extent3DArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3954,14 +4055,14 @@ function library.s.PipelineDepthStencilStateCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineDepthStencilStateCreateInfo[?]", #tbl, tbl)
 end
-function library.s.SurfaceFormatKHR(tbl)
+function library.s.SurfaceFormatKHR(tbl, table_only)
 	if type(tbl.format) == "string" then
 		tbl.format = library.e.format[tbl.format]
 	end
 	if type(tbl.colorSpace) == "string" then
 		tbl.colorSpace = library.e.colorspace[tbl.colorSpace]
 	end
-	return ffi.new("struct VkSurfaceFormatKHR", tbl)
+	return table_only and tbl or ffi.new("struct VkSurfaceFormatKHR", tbl)
 end
 function library.s.SurfaceFormatKHRArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3969,22 +4070,37 @@ function library.s.SurfaceFormatKHRArray(tbl)
 	end
 	return ffi.new("struct VkSurfaceFormatKHR[?]", #tbl, tbl)
 end
-function library.s.SurfaceCapabilitiesKHR(tbl)
+function library.s.SurfaceCapabilitiesKHR(tbl, table_only)
 	if type(tbl.currentExtent) == "table" then
-		tbl.currentExtent = library.s.Extent2D(tbl.currentExtent)
+		tbl.currentExtent = library.s.Extent2D(tbl.currentExtent, true)
 	end
 	if type(tbl.minImageExtent) == "table" then
-		tbl.minImageExtent = library.s.Extent2D(tbl.minImageExtent)
+		tbl.minImageExtent = library.s.Extent2D(tbl.minImageExtent, true)
 	end
 	if type(tbl.maxImageExtent) == "table" then
-		tbl.maxImageExtent = library.s.Extent2D(tbl.maxImageExtent)
+		tbl.maxImageExtent = library.s.Extent2D(tbl.maxImageExtent, true)
+	end
+	if type(tbl.supportedTransforms) == "table" then
+		tbl.supportedTransforms = library.e.surface_transform.make_enums(tbl.supportedTransforms)
+	elseif type(tbl.supportedTransforms) == "string" then
+		tbl.supportedTransforms = library.e.surface_transform[tbl.supportedTransforms]
 	end
 	if type(tbl.currentTransform) == "table" then
 		tbl.currentTransform = library.e.surface_transform.make_enums(tbl.currentTransform)
 	elseif type(tbl.currentTransform) == "string" then
 		tbl.currentTransform = library.e.surface_transform[tbl.currentTransform]
 	end
-	return ffi.new("struct VkSurfaceCapabilitiesKHR", tbl)
+	if type(tbl.supportedCompositeAlpha) == "table" then
+		tbl.supportedCompositeAlpha = library.e.composite_alpha.make_enums(tbl.supportedCompositeAlpha)
+	elseif type(tbl.supportedCompositeAlpha) == "string" then
+		tbl.supportedCompositeAlpha = library.e.composite_alpha[tbl.supportedCompositeAlpha]
+	end
+	if type(tbl.supportedUsageFlags) == "table" then
+		tbl.supportedUsageFlags = library.e.image_usage.make_enums(tbl.supportedUsageFlags)
+	elseif type(tbl.supportedUsageFlags) == "string" then
+		tbl.supportedUsageFlags = library.e.image_usage[tbl.supportedUsageFlags]
+	end
+	return table_only and tbl or ffi.new("struct VkSurfaceCapabilitiesKHR", tbl)
 end
 function library.s.SurfaceCapabilitiesKHRArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3998,11 +4114,16 @@ function library.s.PipelineViewportStateCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineViewportStateCreateInfo[?]", #tbl, tbl)
 end
-function library.s.ImageFormatProperties(tbl)
+function library.s.ImageFormatProperties(tbl, table_only)
 	if type(tbl.maxExtent) == "table" then
-		tbl.maxExtent = library.s.Extent3D(tbl.maxExtent)
+		tbl.maxExtent = library.s.Extent3D(tbl.maxExtent, true)
 	end
-	return ffi.new("struct VkImageFormatProperties", tbl)
+	if type(tbl.sampleCounts) == "table" then
+		tbl.sampleCounts = library.e.sample_count.make_enums(tbl.sampleCounts)
+	elseif type(tbl.sampleCounts) == "string" then
+		tbl.sampleCounts = library.e.sample_count[tbl.sampleCounts]
+	end
+	return table_only and tbl or ffi.new("struct VkImageFormatProperties", tbl)
 end
 function library.s.ImageFormatPropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4010,7 +4131,12 @@ function library.s.ImageFormatPropertiesArray(tbl)
 	end
 	return ffi.new("struct VkImageFormatProperties[?]", #tbl, tbl)
 end
-function library.s.AttachmentDescription(tbl)
+function library.s.AttachmentDescription(tbl, table_only)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.attachment_description.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.attachment_description[tbl.flags]
+	end
 	if type(tbl.format) == "string" then
 		tbl.format = library.e.format[tbl.format]
 	end
@@ -4037,7 +4163,7 @@ function library.s.AttachmentDescription(tbl)
 	if type(tbl.finalLayout) == "string" then
 		tbl.finalLayout = library.e.image_layout[tbl.finalLayout]
 	end
-	return ffi.new("struct VkAttachmentDescription", tbl)
+	return table_only and tbl or ffi.new("struct VkAttachmentDescription", tbl)
 end
 function library.s.AttachmentDescriptionArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4052,14 +4178,14 @@ function library.s.ApplicationInfoArray(tbl)
 	return ffi.new("struct VkApplicationInfo[?]", #tbl, tbl)
 end
 function library.s.RenderPassArray(tbl) return ffi.new("struct VkRenderPass_T *[?]", #tbl, tbl) end
-function library.s.SpecializationInfo(tbl)
+function library.s.SpecializationInfo(tbl, table_only)
 	if type(tbl.pMapEntries) == "table" then
 		if not tbl.mapEntryCount then
 			tbl.mapEntryCount = #tbl.pMapEntries
 		end
-		tbl.pMapEntries = library.s.SpecializationMapEntryArray(tbl.pMapEntries)
+		tbl.pMapEntries = library.s.SpecializationMapEntryArray(tbl.pMapEntries, false)
 	end
-	return ffi.new("struct VkSpecializationInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkSpecializationInfo", tbl)
 end
 function library.s.SpecializationInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4067,11 +4193,11 @@ function library.s.SpecializationInfoArray(tbl)
 	end
 	return ffi.new("struct VkSpecializationInfo[?]", #tbl, tbl)
 end
-function library.s.AttachmentReference(tbl)
+function library.s.AttachmentReference(tbl, table_only)
 	if type(tbl.layout) == "string" then
 		tbl.layout = library.e.image_layout[tbl.layout]
 	end
-	return ffi.new("struct VkAttachmentReference", tbl)
+	return table_only and tbl or ffi.new("struct VkAttachmentReference", tbl)
 end
 function library.s.AttachmentReferenceArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4085,8 +4211,8 @@ function library.s.FramebufferCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkFramebufferCreateInfo[?]", #tbl, tbl)
 end
-function library.s.DrawIndirectCommand(tbl)
-	return ffi.new("struct VkDrawIndirectCommand", tbl)
+function library.s.DrawIndirectCommand(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDrawIndirectCommand", tbl)
 end
 function library.s.DrawIndirectCommandArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4094,14 +4220,14 @@ function library.s.DrawIndirectCommandArray(tbl)
 	end
 	return ffi.new("struct VkDrawIndirectCommand[?]", #tbl, tbl)
 end
-function library.s.SparseImageMemoryBindInfo(tbl)
+function library.s.SparseImageMemoryBindInfo(tbl, table_only)
 	if type(tbl.pBinds) == "table" then
 		if not tbl.bindCount then
 			tbl.bindCount = #tbl.pBinds
 		end
-		tbl.pBinds = library.s.SparseImageMemoryBindArray(tbl.pBinds)
+		tbl.pBinds = library.s.SparseImageMemoryBindArray(tbl.pBinds, false)
 	end
-	return ffi.new("struct VkSparseImageMemoryBindInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkSparseImageMemoryBindInfo", tbl)
 end
 function library.s.SparseImageMemoryBindInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4111,23 +4237,23 @@ function library.s.SparseImageMemoryBindInfoArray(tbl)
 end
 function library.s.SamplerArray(tbl) return ffi.new("struct VkSampler_T *[?]", #tbl, tbl) end
 function library.s.QueryPoolArray(tbl) return ffi.new("struct VkQueryPool_T *[?]", #tbl, tbl) end
-function library.s.ImageResolve(tbl)
+function library.s.ImageResolve(tbl, table_only)
 	if type(tbl.srcSubresource) == "table" then
-		tbl.srcSubresource = library.s.ImageSubresourceLayers(tbl.srcSubresource)
+		tbl.srcSubresource = library.s.ImageSubresourceLayers(tbl.srcSubresource, true)
 	end
 	if type(tbl.srcOffset) == "table" then
-		tbl.srcOffset = library.s.Offset3D(tbl.srcOffset)
+		tbl.srcOffset = library.s.Offset3D(tbl.srcOffset, true)
 	end
 	if type(tbl.dstSubresource) == "table" then
-		tbl.dstSubresource = library.s.ImageSubresourceLayers(tbl.dstSubresource)
+		tbl.dstSubresource = library.s.ImageSubresourceLayers(tbl.dstSubresource, true)
 	end
 	if type(tbl.dstOffset) == "table" then
-		tbl.dstOffset = library.s.Offset3D(tbl.dstOffset)
+		tbl.dstOffset = library.s.Offset3D(tbl.dstOffset, true)
 	end
 	if type(tbl.extent) == "table" then
-		tbl.extent = library.s.Extent3D(tbl.extent)
+		tbl.extent = library.s.Extent3D(tbl.extent, true)
 	end
-	return ffi.new("struct VkImageResolve", tbl)
+	return table_only and tbl or ffi.new("struct VkImageResolve", tbl)
 end
 function library.s.ImageResolveArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4154,14 +4280,14 @@ function library.s.PipelineCacheCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineCacheCreateInfo[?]", #tbl, tbl)
 end
-function library.s.ClearValue(tbl)
+function library.s.ClearValue(tbl, table_only)
 	if type(tbl.color) == "table" then
-		tbl.color = library.s.ClearColorValue(tbl.color)
+		tbl.color = library.s.ClearColorValue(tbl.color, true)
 	end
 	if type(tbl.depthStencil) == "table" then
-		tbl.depthStencil = library.s.ClearDepthStencilValue(tbl.depthStencil)
+		tbl.depthStencil = library.s.ClearDepthStencilValue(tbl.depthStencil, true)
 	end
-	return ffi.new("union VkClearValue", tbl)
+	return table_only and tbl or ffi.new("union VkClearValue", tbl)
 end
 function library.s.ClearValueArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4169,7 +4295,7 @@ function library.s.ClearValueArray(tbl)
 	end
 	return ffi.new("union VkClearValue[?]", #tbl, tbl)
 end
-function library.s.SubpassDescription(tbl)
+function library.s.SubpassDescription(tbl, table_only)
 	if type(tbl.pipelineBindPoint) == "string" then
 		tbl.pipelineBindPoint = library.e.pipeline_bind_point[tbl.pipelineBindPoint]
 	end
@@ -4177,21 +4303,21 @@ function library.s.SubpassDescription(tbl)
 		if not tbl.inputAttachmentCount then
 			tbl.inputAttachmentCount = #tbl.pInputAttachments
 		end
-		tbl.pInputAttachments = library.s.AttachmentReferenceArray(tbl.pInputAttachments)
+		tbl.pInputAttachments = library.s.AttachmentReferenceArray(tbl.pInputAttachments, false)
 	end
 	if type(tbl.pColorAttachments) == "table" then
 		if not tbl.colorAttachmentCount then
 			tbl.colorAttachmentCount = #tbl.pColorAttachments
 		end
-		tbl.pColorAttachments = library.s.AttachmentReferenceArray(tbl.pColorAttachments)
+		tbl.pColorAttachments = library.s.AttachmentReferenceArray(tbl.pColorAttachments, false)
 	end
 	if type(tbl.pResolveAttachments) == "table" then
-		tbl.pResolveAttachments = library.s.AttachmentReference(tbl.pResolveAttachments)
+		tbl.pResolveAttachments = library.s.AttachmentReference(tbl.pResolveAttachments, false)
 	end
 	if type(tbl.pDepthStencilAttachment) == "table" then
-		tbl.pDepthStencilAttachment = library.s.AttachmentReference(tbl.pDepthStencilAttachment)
+		tbl.pDepthStencilAttachment = library.s.AttachmentReference(tbl.pDepthStencilAttachment, false)
 	end
-	return ffi.new("struct VkSubpassDescription", tbl)
+	return table_only and tbl or ffi.new("struct VkSubpassDescription", tbl)
 end
 function library.s.SubpassDescriptionArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4199,11 +4325,16 @@ function library.s.SubpassDescriptionArray(tbl)
 	end
 	return ffi.new("struct VkSubpassDescription[?]", #tbl, tbl)
 end
-function library.s.ClearAttachment(tbl)
-	if type(tbl.clearValue) == "table" then
-		tbl.clearValue = library.s.ClearValue(tbl.clearValue)
+function library.s.ClearAttachment(tbl, table_only)
+	if type(tbl.aspectMask) == "table" then
+		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
+	elseif type(tbl.aspectMask) == "string" then
+		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
 	end
-	return ffi.new("struct VkClearAttachment", tbl)
+	if type(tbl.clearValue) == "table" then
+		tbl.clearValue = library.s.ClearValue(tbl.clearValue, true)
+	end
+	return table_only and tbl or ffi.new("struct VkClearAttachment", tbl)
 end
 function library.s.ClearAttachmentArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4211,8 +4342,8 @@ function library.s.ClearAttachmentArray(tbl)
 	end
 	return ffi.new("struct VkClearAttachment[?]", #tbl, tbl)
 end
-function library.s.SubresourceLayout(tbl)
-	return ffi.new("struct VkSubresourceLayout", tbl)
+function library.s.SubresourceLayout(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkSubresourceLayout", tbl)
 end
 function library.s.SubresourceLayoutArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4220,11 +4351,21 @@ function library.s.SubresourceLayoutArray(tbl)
 	end
 	return ffi.new("struct VkSubresourceLayout[?]", #tbl, tbl)
 end
-function library.s.SparseImageFormatProperties(tbl)
-	if type(tbl.imageGranularity) == "table" then
-		tbl.imageGranularity = library.s.Extent3D(tbl.imageGranularity)
+function library.s.SparseImageFormatProperties(tbl, table_only)
+	if type(tbl.aspectMask) == "table" then
+		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
+	elseif type(tbl.aspectMask) == "string" then
+		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
 	end
-	return ffi.new("struct VkSparseImageFormatProperties", tbl)
+	if type(tbl.imageGranularity) == "table" then
+		tbl.imageGranularity = library.s.Extent3D(tbl.imageGranularity, true)
+	end
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.sparse_image_format.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.sparse_image_format[tbl.flags]
+	end
+	return table_only and tbl or ffi.new("struct VkSparseImageFormatProperties", tbl)
 end
 function library.s.SparseImageFormatPropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4233,11 +4374,16 @@ function library.s.SparseImageFormatPropertiesArray(tbl)
 	return ffi.new("struct VkSparseImageFormatProperties[?]", #tbl, tbl)
 end
 function library.s.DeviceMemoryArray(tbl) return ffi.new("struct VkDeviceMemory_T *[?]", #tbl, tbl) end
-function library.s.QueueFamilyProperties(tbl)
-	if type(tbl.minImageTransferGranularity) == "table" then
-		tbl.minImageTransferGranularity = library.s.Extent3D(tbl.minImageTransferGranularity)
+function library.s.QueueFamilyProperties(tbl, table_only)
+	if type(tbl.queueFlags) == "table" then
+		tbl.queueFlags = library.e.queue.make_enums(tbl.queueFlags)
+	elseif type(tbl.queueFlags) == "string" then
+		tbl.queueFlags = library.e.queue[tbl.queueFlags]
 	end
-	return ffi.new("struct VkQueueFamilyProperties", tbl)
+	if type(tbl.minImageTransferGranularity) == "table" then
+		tbl.minImageTransferGranularity = library.s.Extent3D(tbl.minImageTransferGranularity, true)
+	end
+	return table_only and tbl or ffi.new("struct VkQueueFamilyProperties", tbl)
 end
 function library.s.QueueFamilyPropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4245,11 +4391,11 @@ function library.s.QueueFamilyPropertiesArray(tbl)
 	end
 	return ffi.new("struct VkQueueFamilyProperties[?]", #tbl, tbl)
 end
-function library.s.ClearRect(tbl)
+function library.s.ClearRect(tbl, table_only)
 	if type(tbl.rect) == "table" then
-		tbl.rect = library.s.Rect2D(tbl.rect)
+		tbl.rect = library.s.Rect2D(tbl.rect, true)
 	end
-	return ffi.new("struct VkClearRect", tbl)
+	return table_only and tbl or ffi.new("struct VkClearRect", tbl)
 end
 function library.s.ClearRectArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4257,8 +4403,8 @@ function library.s.ClearRectArray(tbl)
 	end
 	return ffi.new("struct VkClearRect[?]", #tbl, tbl)
 end
-function library.s.LayerProperties(tbl)
-	return ffi.new("struct VkLayerProperties", tbl)
+function library.s.LayerProperties(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkLayerProperties", tbl)
 end
 function library.s.LayerPropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4267,11 +4413,11 @@ function library.s.LayerPropertiesArray(tbl)
 	return ffi.new("struct VkLayerProperties[?]", #tbl, tbl)
 end
 function library.s.CommandBufferArray(tbl) return ffi.new("struct VkCommandBuffer_T *[?]", #tbl, tbl) end
-function library.s.DescriptorImageInfo(tbl)
+function library.s.DescriptorImageInfo(tbl, table_only)
 	if type(tbl.imageLayout) == "string" then
 		tbl.imageLayout = library.e.image_layout[tbl.imageLayout]
 	end
-	return ffi.new("struct VkDescriptorImageInfo", tbl)
+	return table_only and tbl or ffi.new("struct VkDescriptorImageInfo", tbl)
 end
 function library.s.DescriptorImageInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4279,11 +4425,11 @@ function library.s.DescriptorImageInfoArray(tbl)
 	end
 	return ffi.new("struct VkDescriptorImageInfo[?]", #tbl, tbl)
 end
-function library.s.DescriptorPoolSize(tbl)
+function library.s.DescriptorPoolSize(tbl, table_only)
 	if type(tbl.type) == "string" then
 		tbl.type = library.e.descriptor_type[tbl.type]
 	end
-	return ffi.new("struct VkDescriptorPoolSize", tbl)
+	return table_only and tbl or ffi.new("struct VkDescriptorPoolSize", tbl)
 end
 function library.s.DescriptorPoolSizeArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4291,8 +4437,8 @@ function library.s.DescriptorPoolSizeArray(tbl)
 	end
 	return ffi.new("struct VkDescriptorPoolSize[?]", #tbl, tbl)
 end
-function library.s.ClearColorValue(tbl)
-	return ffi.new("union VkClearColorValue", tbl)
+function library.s.ClearColorValue(tbl, table_only)
+	return table_only and tbl or ffi.new("union VkClearColorValue", tbl)
 end
 function library.s.ClearColorValueArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4300,13 +4446,13 @@ function library.s.ClearColorValueArray(tbl)
 	end
 	return ffi.new("union VkClearColorValue[?]", #tbl, tbl)
 end
-function library.s.ImageSubresourceRange(tbl)
+function library.s.ImageSubresourceRange(tbl, table_only)
 	if type(tbl.aspectMask) == "table" then
 		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
 	elseif type(tbl.aspectMask) == "string" then
 		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
 	end
-	return ffi.new("struct VkImageSubresourceRange", tbl)
+	return table_only and tbl or ffi.new("struct VkImageSubresourceRange", tbl)
 end
 function library.s.ImageSubresourceRangeArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4320,11 +4466,11 @@ function library.s.CommandBufferInheritanceInfoArray(tbl)
 	end
 	return ffi.new("struct VkCommandBufferInheritanceInfo[?]", #tbl, tbl)
 end
-function library.s.DisplayModeParametersKHR(tbl)
+function library.s.DisplayModeParametersKHR(tbl, table_only)
 	if type(tbl.visibleRegion) == "table" then
-		tbl.visibleRegion = library.s.Extent2D(tbl.visibleRegion)
+		tbl.visibleRegion = library.s.Extent2D(tbl.visibleRegion, true)
 	end
-	return ffi.new("struct VkDisplayModeParametersKHR", tbl)
+	return table_only and tbl or ffi.new("struct VkDisplayModeParametersKHR", tbl)
 end
 function library.s.DisplayModeParametersKHRArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4338,8 +4484,23 @@ function library.s.CommandBufferAllocateInfoArray(tbl)
 	end
 	return ffi.new("struct VkCommandBufferAllocateInfo[?]", #tbl, tbl)
 end
-function library.s.FormatProperties(tbl)
-	return ffi.new("struct VkFormatProperties", tbl)
+function library.s.FormatProperties(tbl, table_only)
+	if type(tbl.linearTilingFeatures) == "table" then
+		tbl.linearTilingFeatures = library.e.format_feature.make_enums(tbl.linearTilingFeatures)
+	elseif type(tbl.linearTilingFeatures) == "string" then
+		tbl.linearTilingFeatures = library.e.format_feature[tbl.linearTilingFeatures]
+	end
+	if type(tbl.optimalTilingFeatures) == "table" then
+		tbl.optimalTilingFeatures = library.e.format_feature.make_enums(tbl.optimalTilingFeatures)
+	elseif type(tbl.optimalTilingFeatures) == "string" then
+		tbl.optimalTilingFeatures = library.e.format_feature[tbl.optimalTilingFeatures]
+	end
+	if type(tbl.bufferFeatures) == "table" then
+		tbl.bufferFeatures = library.e.format_feature.make_enums(tbl.bufferFeatures)
+	elseif type(tbl.bufferFeatures) == "string" then
+		tbl.bufferFeatures = library.e.format_feature[tbl.bufferFeatures]
+	end
+	return table_only and tbl or ffi.new("struct VkFormatProperties", tbl)
 end
 function library.s.FormatPropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4347,8 +4508,13 @@ function library.s.FormatPropertiesArray(tbl)
 	end
 	return ffi.new("struct VkFormatProperties[?]", #tbl, tbl)
 end
-function library.s.ImageSubresource(tbl)
-	return ffi.new("struct VkImageSubresource", tbl)
+function library.s.ImageSubresource(tbl, table_only)
+	if type(tbl.aspectMask) == "table" then
+		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
+	elseif type(tbl.aspectMask) == "string" then
+		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
+	end
+	return table_only and tbl or ffi.new("struct VkImageSubresource", tbl)
 end
 function library.s.ImageSubresourceArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4374,11 +4540,11 @@ function library.s.EventCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkEventCreateInfo[?]", #tbl, tbl)
 end
-function library.s.VertexInputBindingDescription(tbl)
+function library.s.VertexInputBindingDescription(tbl, table_only)
 	if type(tbl.inputRate) == "string" then
 		tbl.inputRate = library.e.vertex_input_rate[tbl.inputRate]
 	end
-	return ffi.new("struct VkVertexInputBindingDescription", tbl)
+	return table_only and tbl or ffi.new("struct VkVertexInputBindingDescription", tbl)
 end
 function library.s.VertexInputBindingDescriptionArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4386,17 +4552,17 @@ function library.s.VertexInputBindingDescriptionArray(tbl)
 	end
 	return ffi.new("struct VkVertexInputBindingDescription[?]", #tbl, tbl)
 end
-function library.s.PhysicalDeviceProperties(tbl)
+function library.s.PhysicalDeviceProperties(tbl, table_only)
 	if type(tbl.deviceType) == "string" then
 		tbl.deviceType = library.e.physical_device_type[tbl.deviceType]
 	end
 	if type(tbl.limits) == "table" then
-		tbl.limits = library.s.PhysicalDeviceLimits(tbl.limits)
+		tbl.limits = library.s.PhysicalDeviceLimits(tbl.limits, true)
 	end
 	if type(tbl.sparseProperties) == "table" then
-		tbl.sparseProperties = library.s.PhysicalDeviceSparseProperties(tbl.sparseProperties)
+		tbl.sparseProperties = library.s.PhysicalDeviceSparseProperties(tbl.sparseProperties, true)
 	end
-	return ffi.new("struct VkPhysicalDeviceProperties", tbl)
+	return table_only and tbl or ffi.new("struct VkPhysicalDeviceProperties", tbl)
 end
 function library.s.PhysicalDevicePropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4422,8 +4588,8 @@ function library.s.BufferCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkBufferCreateInfo[?]", #tbl, tbl)
 end
-function library.s.AllocationCallbacks(tbl)
-	return ffi.new("struct VkAllocationCallbacks", tbl)
+function library.s.AllocationCallbacks(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkAllocationCallbacks", tbl)
 end
 function library.s.AllocationCallbacksArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4431,11 +4597,11 @@ function library.s.AllocationCallbacksArray(tbl)
 	end
 	return ffi.new("struct VkAllocationCallbacks[?]", #tbl, tbl)
 end
-function library.s.SparseImageMemoryRequirements(tbl)
+function library.s.SparseImageMemoryRequirements(tbl, table_only)
 	if type(tbl.formatProperties) == "table" then
-		tbl.formatProperties = library.s.SparseImageFormatProperties(tbl.formatProperties)
+		tbl.formatProperties = library.s.SparseImageFormatProperties(tbl.formatProperties, true)
 	end
-	return ffi.new("struct VkSparseImageMemoryRequirements", tbl)
+	return table_only and tbl or ffi.new("struct VkSparseImageMemoryRequirements", tbl)
 end
 function library.s.SparseImageMemoryRequirementsArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4443,8 +4609,33 @@ function library.s.SparseImageMemoryRequirementsArray(tbl)
 	end
 	return ffi.new("struct VkSparseImageMemoryRequirements[?]", #tbl, tbl)
 end
-function library.s.SubpassDependency(tbl)
-	return ffi.new("struct VkSubpassDependency", tbl)
+function library.s.SubpassDependency(tbl, table_only)
+	if type(tbl.srcStageMask) == "table" then
+		tbl.srcStageMask = library.e.pipeline_stage.make_enums(tbl.srcStageMask)
+	elseif type(tbl.srcStageMask) == "string" then
+		tbl.srcStageMask = library.e.pipeline_stage[tbl.srcStageMask]
+	end
+	if type(tbl.dstStageMask) == "table" then
+		tbl.dstStageMask = library.e.pipeline_stage.make_enums(tbl.dstStageMask)
+	elseif type(tbl.dstStageMask) == "string" then
+		tbl.dstStageMask = library.e.pipeline_stage[tbl.dstStageMask]
+	end
+	if type(tbl.srcAccessMask) == "table" then
+		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
+	elseif type(tbl.srcAccessMask) == "string" then
+		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
+	end
+	if type(tbl.dstAccessMask) == "table" then
+		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
+	elseif type(tbl.dstAccessMask) == "string" then
+		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
+	end
+	if type(tbl.dependencyFlags) == "table" then
+		tbl.dependencyFlags = library.e.dependency.make_enums(tbl.dependencyFlags)
+	elseif type(tbl.dependencyFlags) == "string" then
+		tbl.dependencyFlags = library.e.dependency[tbl.dependencyFlags]
+	end
+	return table_only and tbl or ffi.new("struct VkSubpassDependency", tbl)
 end
 function library.s.SubpassDependencyArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4452,23 +4643,23 @@ function library.s.SubpassDependencyArray(tbl)
 	end
 	return ffi.new("struct VkSubpassDependency[?]", #tbl, tbl)
 end
-function library.s.ImageCopy(tbl)
+function library.s.ImageCopy(tbl, table_only)
 	if type(tbl.srcSubresource) == "table" then
-		tbl.srcSubresource = library.s.ImageSubresourceLayers(tbl.srcSubresource)
+		tbl.srcSubresource = library.s.ImageSubresourceLayers(tbl.srcSubresource, true)
 	end
 	if type(tbl.srcOffset) == "table" then
-		tbl.srcOffset = library.s.Offset3D(tbl.srcOffset)
+		tbl.srcOffset = library.s.Offset3D(tbl.srcOffset, true)
 	end
 	if type(tbl.dstSubresource) == "table" then
-		tbl.dstSubresource = library.s.ImageSubresourceLayers(tbl.dstSubresource)
+		tbl.dstSubresource = library.s.ImageSubresourceLayers(tbl.dstSubresource, true)
 	end
 	if type(tbl.dstOffset) == "table" then
-		tbl.dstOffset = library.s.Offset3D(tbl.dstOffset)
+		tbl.dstOffset = library.s.Offset3D(tbl.dstOffset, true)
 	end
 	if type(tbl.extent) == "table" then
-		tbl.extent = library.s.Extent3D(tbl.extent)
+		tbl.extent = library.s.Extent3D(tbl.extent, true)
 	end
-	return ffi.new("struct VkImageCopy", tbl)
+	return table_only and tbl or ffi.new("struct VkImageCopy", tbl)
 end
 function library.s.ImageCopyArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4477,11 +4668,11 @@ function library.s.ImageCopyArray(tbl)
 	return ffi.new("struct VkImageCopy[?]", #tbl, tbl)
 end
 function library.s.DescriptorSetLayoutArray(tbl) return ffi.new("struct VkDescriptorSetLayout_T *[?]", #tbl, tbl) end
-function library.s.VertexInputAttributeDescription(tbl)
+function library.s.VertexInputAttributeDescription(tbl, table_only)
 	if type(tbl.format) == "string" then
 		tbl.format = library.e.format[tbl.format]
 	end
-	return ffi.new("struct VkVertexInputAttributeDescription", tbl)
+	return table_only and tbl or ffi.new("struct VkVertexInputAttributeDescription", tbl)
 end
 function library.s.VertexInputAttributeDescriptionArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4490,8 +4681,8 @@ function library.s.VertexInputAttributeDescriptionArray(tbl)
 	return ffi.new("struct VkVertexInputAttributeDescription[?]", #tbl, tbl)
 end
 function library.s.CommandPoolArray(tbl) return ffi.new("struct VkCommandPool_T *[?]", #tbl, tbl) end
-function library.s.DrawIndexedIndirectCommand(tbl)
-	return ffi.new("struct VkDrawIndexedIndirectCommand", tbl)
+function library.s.DrawIndexedIndirectCommand(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDrawIndexedIndirectCommand", tbl)
 end
 function library.s.DrawIndexedIndirectCommandArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4505,13 +4696,13 @@ function library.s.ImageMemoryBarrierArray(tbl)
 	end
 	return ffi.new("struct VkImageMemoryBarrier[?]", #tbl, tbl)
 end
-function library.s.ImageSubresourceLayers(tbl)
+function library.s.ImageSubresourceLayers(tbl, table_only)
 	if type(tbl.aspectMask) == "table" then
 		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
 	elseif type(tbl.aspectMask) == "string" then
 		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
 	end
-	return ffi.new("struct VkImageSubresourceLayers", tbl)
+	return table_only and tbl or ffi.new("struct VkImageSubresourceLayers", tbl)
 end
 function library.s.ImageSubresourceLayersArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4519,8 +4710,8 @@ function library.s.ImageSubresourceLayersArray(tbl)
 	end
 	return ffi.new("struct VkImageSubresourceLayers[?]", #tbl, tbl)
 end
-function library.s.Offset2D(tbl)
-	return ffi.new("struct VkOffset2D", tbl)
+function library.s.Offset2D(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkOffset2D", tbl)
 end
 function library.s.Offset2DArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4546,8 +4737,8 @@ function library.s.RenderPassCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkRenderPassCreateInfo[?]", #tbl, tbl)
 end
-function library.s.DescriptorBufferInfo(tbl)
-	return ffi.new("struct VkDescriptorBufferInfo", tbl)
+function library.s.DescriptorBufferInfo(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDescriptorBufferInfo", tbl)
 end
 function library.s.DescriptorBufferInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4555,7 +4746,7 @@ function library.s.DescriptorBufferInfoArray(tbl)
 	end
 	return ffi.new("struct VkDescriptorBufferInfo[?]", #tbl, tbl)
 end
-function library.s.DescriptorSetLayoutBinding(tbl)
+function library.s.DescriptorSetLayoutBinding(tbl, table_only)
 	if type(tbl.descriptorType) == "string" then
 		tbl.descriptorType = library.e.descriptor_type[tbl.descriptorType]
 	end
@@ -4564,7 +4755,7 @@ function library.s.DescriptorSetLayoutBinding(tbl)
 	elseif type(tbl.stageFlags) == "string" then
 		tbl.stageFlags = library.e.shader_stage[tbl.stageFlags]
 	end
-	return ffi.new("struct VkDescriptorSetLayoutBinding", tbl)
+	return table_only and tbl or ffi.new("struct VkDescriptorSetLayoutBinding", tbl)
 end
 function library.s.DescriptorSetLayoutBindingArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4578,8 +4769,8 @@ function library.s.PipelineLayoutCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineLayoutCreateInfo[?]", #tbl, tbl)
 end
-function library.s.Offset3D(tbl)
-	return ffi.new("struct VkOffset3D", tbl)
+function library.s.Offset3D(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkOffset3D", tbl)
 end
 function library.s.Offset3DArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4600,14 +4791,14 @@ function library.s.DeviceQueueCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkDeviceQueueCreateInfo[?]", #tbl, tbl)
 end
-function library.s.PhysicalDeviceMemoryProperties(tbl)
+function library.s.PhysicalDeviceMemoryProperties(tbl, table_only)
 	if type(tbl.memoryTypes) == "table" then
-		tbl.memoryTypes = library.s.MemoryType(tbl.memoryTypes)
+		tbl.memoryTypes = library.s.MemoryType(tbl.memoryTypes, true)
 	end
 	if type(tbl.memoryHeaps) == "table" then
-		tbl.memoryHeaps = library.s.MemoryHeap(tbl.memoryHeaps)
+		tbl.memoryHeaps = library.s.MemoryHeap(tbl.memoryHeaps, true)
 	end
-	return ffi.new("struct VkPhysicalDeviceMemoryProperties", tbl)
+	return table_only and tbl or ffi.new("struct VkPhysicalDeviceMemoryProperties", tbl)
 end
 function library.s.PhysicalDeviceMemoryPropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4615,8 +4806,56 @@ function library.s.PhysicalDeviceMemoryPropertiesArray(tbl)
 	end
 	return ffi.new("struct VkPhysicalDeviceMemoryProperties[?]", #tbl, tbl)
 end
-function library.s.PhysicalDeviceLimits(tbl)
-	return ffi.new("struct VkPhysicalDeviceLimits", tbl)
+function library.s.PhysicalDeviceLimits(tbl, table_only)
+	if type(tbl.framebufferColorSampleCounts) == "table" then
+		tbl.framebufferColorSampleCounts = library.e.sample_count.make_enums(tbl.framebufferColorSampleCounts)
+	elseif type(tbl.framebufferColorSampleCounts) == "string" then
+		tbl.framebufferColorSampleCounts = library.e.sample_count[tbl.framebufferColorSampleCounts]
+	end
+	if type(tbl.framebufferDepthSampleCounts) == "table" then
+		tbl.framebufferDepthSampleCounts = library.e.sample_count.make_enums(tbl.framebufferDepthSampleCounts)
+	elseif type(tbl.framebufferDepthSampleCounts) == "string" then
+		tbl.framebufferDepthSampleCounts = library.e.sample_count[tbl.framebufferDepthSampleCounts]
+	end
+	if type(tbl.framebufferStencilSampleCounts) == "table" then
+		tbl.framebufferStencilSampleCounts = library.e.sample_count.make_enums(tbl.framebufferStencilSampleCounts)
+	elseif type(tbl.framebufferStencilSampleCounts) == "string" then
+		tbl.framebufferStencilSampleCounts = library.e.sample_count[tbl.framebufferStencilSampleCounts]
+	end
+	if type(tbl.framebufferNoAttachmentsSampleCounts) == "table" then
+		tbl.framebufferNoAttachmentsSampleCounts = library.e.sample_count.make_enums(tbl.framebufferNoAttachmentsSampleCounts)
+	elseif type(tbl.framebufferNoAttachmentsSampleCounts) == "string" then
+		tbl.framebufferNoAttachmentsSampleCounts = library.e.sample_count[tbl.framebufferNoAttachmentsSampleCounts]
+	end
+	if type(tbl.sampledImageColorSampleCounts) == "table" then
+		tbl.sampledImageColorSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageColorSampleCounts)
+	elseif type(tbl.sampledImageColorSampleCounts) == "string" then
+		tbl.sampledImageColorSampleCounts = library.e.sample_count[tbl.sampledImageColorSampleCounts]
+	end
+	if type(tbl.sampledImageIntegerSampleCounts) == "table" then
+		tbl.sampledImageIntegerSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageIntegerSampleCounts)
+	elseif type(tbl.sampledImageIntegerSampleCounts) == "string" then
+		tbl.sampledImageIntegerSampleCounts = library.e.sample_count[tbl.sampledImageIntegerSampleCounts]
+	end
+	if type(tbl.sampledImageDepthSampleCounts) == "table" then
+		tbl.sampledImageDepthSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageDepthSampleCounts)
+	elseif type(tbl.sampledImageDepthSampleCounts) == "string" then
+		tbl.sampledImageDepthSampleCounts = library.e.sample_count[tbl.sampledImageDepthSampleCounts]
+	end
+	if type(tbl.sampledImageStencilSampleCounts) == "table" then
+		tbl.sampledImageStencilSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageStencilSampleCounts)
+	elseif type(tbl.sampledImageStencilSampleCounts) == "string" then
+		tbl.sampledImageStencilSampleCounts = library.e.sample_count[tbl.sampledImageStencilSampleCounts]
+	end
+	if type(tbl.storageImageSampleCounts) == "table" then
+		tbl.storageImageSampleCounts = library.e.sample_count.make_enums(tbl.storageImageSampleCounts)
+	elseif type(tbl.storageImageSampleCounts) == "string" then
+		tbl.storageImageSampleCounts = library.e.sample_count[tbl.storageImageSampleCounts]
+	end
+	tbl.timestampComputeAndGraphics = tbl.timestampComputeAndGraphics and 1 or 0
+	tbl.strictLines = tbl.strictLines and 1 or 0
+	tbl.standardSampleLocations = tbl.standardSampleLocations and 1 or 0
+	return table_only and tbl or ffi.new("struct VkPhysicalDeviceLimits", tbl)
 end
 function library.s.PhysicalDeviceLimitsArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4624,17 +4863,22 @@ function library.s.PhysicalDeviceLimitsArray(tbl)
 	end
 	return ffi.new("struct VkPhysicalDeviceLimits[?]", #tbl, tbl)
 end
-function library.s.SparseImageMemoryBind(tbl)
+function library.s.SparseImageMemoryBind(tbl, table_only)
 	if type(tbl.subresource) == "table" then
-		tbl.subresource = library.s.ImageSubresource(tbl.subresource)
+		tbl.subresource = library.s.ImageSubresource(tbl.subresource, true)
 	end
 	if type(tbl.offset) == "table" then
-		tbl.offset = library.s.Offset3D(tbl.offset)
+		tbl.offset = library.s.Offset3D(tbl.offset, true)
 	end
 	if type(tbl.extent) == "table" then
-		tbl.extent = library.s.Extent3D(tbl.extent)
+		tbl.extent = library.s.Extent3D(tbl.extent, true)
 	end
-	return ffi.new("struct VkSparseImageMemoryBind", tbl)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.sparse_memory_bind.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.sparse_memory_bind[tbl.flags]
+	end
+	return table_only and tbl or ffi.new("struct VkSparseImageMemoryBind", tbl)
 end
 function library.s.SparseImageMemoryBindArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4654,8 +4898,13 @@ function library.s.MemoryAllocateInfoArray(tbl)
 	end
 	return ffi.new("struct VkMemoryAllocateInfo[?]", #tbl, tbl)
 end
-function library.s.MemoryHeap(tbl)
-	return ffi.new("struct VkMemoryHeap", tbl)
+function library.s.MemoryHeap(tbl, table_only)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.memory_heap.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.memory_heap[tbl.flags]
+	end
+	return table_only and tbl or ffi.new("struct VkMemoryHeap", tbl)
 end
 function library.s.MemoryHeapArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4669,8 +4918,13 @@ function library.s.SemaphoreCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkSemaphoreCreateInfo[?]", #tbl, tbl)
 end
-function library.s.MemoryType(tbl)
-	return ffi.new("struct VkMemoryType", tbl)
+function library.s.MemoryType(tbl, table_only)
+	if type(tbl.propertyFlags) == "table" then
+		tbl.propertyFlags = library.e.memory_property.make_enums(tbl.propertyFlags)
+	elseif type(tbl.propertyFlags) == "string" then
+		tbl.propertyFlags = library.e.memory_property[tbl.propertyFlags]
+	end
+	return table_only and tbl or ffi.new("struct VkMemoryType", tbl)
 end
 function library.s.MemoryTypeArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4691,20 +4945,20 @@ function library.s.PipelineDynamicStateCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineDynamicStateCreateInfo[?]", #tbl, tbl)
 end
-function library.s.ImageBlit(tbl)
+function library.s.ImageBlit(tbl, table_only)
 	if type(tbl.srcSubresource) == "table" then
-		tbl.srcSubresource = library.s.ImageSubresourceLayers(tbl.srcSubresource)
+		tbl.srcSubresource = library.s.ImageSubresourceLayers(tbl.srcSubresource, true)
 	end
 	if type(tbl.srcOffsets) == "table" then
-		tbl.srcOffsets = library.s.Offset3D(tbl.srcOffsets)
+		tbl.srcOffsets = library.s.Offset3D(tbl.srcOffsets, true)
 	end
 	if type(tbl.dstSubresource) == "table" then
-		tbl.dstSubresource = library.s.ImageSubresourceLayers(tbl.dstSubresource)
+		tbl.dstSubresource = library.s.ImageSubresourceLayers(tbl.dstSubresource, true)
 	end
 	if type(tbl.dstOffsets) == "table" then
-		tbl.dstOffsets = library.s.Offset3D(tbl.dstOffsets)
+		tbl.dstOffsets = library.s.Offset3D(tbl.dstOffsets, true)
 	end
-	return ffi.new("struct VkImageBlit", tbl)
+	return table_only and tbl or ffi.new("struct VkImageBlit", tbl)
 end
 function library.s.ImageBlitArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4724,11 +4978,11 @@ function library.s.DeviceCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkDeviceCreateInfo[?]", #tbl, tbl)
 end
-function library.s.DisplayModePropertiesKHR(tbl)
+function library.s.DisplayModePropertiesKHR(tbl, table_only)
 	if type(tbl.parameters) == "table" then
-		tbl.parameters = library.s.DisplayModeParametersKHR(tbl.parameters)
+		tbl.parameters = library.s.DisplayModeParametersKHR(tbl.parameters, true)
 	end
-	return ffi.new("struct VkDisplayModePropertiesKHR", tbl)
+	return table_only and tbl or ffi.new("struct VkDisplayModePropertiesKHR", tbl)
 end
 function library.s.DisplayModePropertiesKHRArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4738,8 +4992,8 @@ function library.s.DisplayModePropertiesKHRArray(tbl)
 end
 function library.s.FramebufferArray(tbl) return ffi.new("struct VkFramebuffer_T *[?]", #tbl, tbl) end
 function library.s.FenceArray(tbl) return ffi.new("struct VkFence_T *[?]", #tbl, tbl) end
-function library.s.BufferCopy(tbl)
-	return ffi.new("struct VkBufferCopy", tbl)
+function library.s.BufferCopy(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkBufferCopy", tbl)
 end
 function library.s.BufferCopyArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4747,8 +5001,8 @@ function library.s.BufferCopyArray(tbl)
 	end
 	return ffi.new("struct VkBufferCopy[?]", #tbl, tbl)
 end
-function library.s.ExtensionProperties(tbl)
-	return ffi.new("struct VkExtensionProperties", tbl)
+function library.s.ExtensionProperties(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkExtensionProperties", tbl)
 end
 function library.s.ExtensionPropertiesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4757,8 +5011,63 @@ function library.s.ExtensionPropertiesArray(tbl)
 	return ffi.new("struct VkExtensionProperties[?]", #tbl, tbl)
 end
 function library.s.EventArray(tbl) return ffi.new("struct VkEvent_T *[?]", #tbl, tbl) end
-function library.s.PhysicalDeviceFeatures(tbl)
-	return ffi.new("struct VkPhysicalDeviceFeatures", tbl)
+function library.s.PhysicalDeviceFeatures(tbl, table_only)
+	tbl.robustBufferAccess = tbl.robustBufferAccess and 1 or 0
+	tbl.fullDrawIndexUint32 = tbl.fullDrawIndexUint32 and 1 or 0
+	tbl.imageCubeArray = tbl.imageCubeArray and 1 or 0
+	tbl.independentBlend = tbl.independentBlend and 1 or 0
+	tbl.geometryShader = tbl.geometryShader and 1 or 0
+	tbl.tessellationShader = tbl.tessellationShader and 1 or 0
+	tbl.sampleRateShading = tbl.sampleRateShading and 1 or 0
+	tbl.dualSrcBlend = tbl.dualSrcBlend and 1 or 0
+	tbl.logicOp = tbl.logicOp and 1 or 0
+	tbl.multiDrawIndirect = tbl.multiDrawIndirect and 1 or 0
+	tbl.drawIndirectFirstInstance = tbl.drawIndirectFirstInstance and 1 or 0
+	tbl.depthClamp = tbl.depthClamp and 1 or 0
+	tbl.depthBiasClamp = tbl.depthBiasClamp and 1 or 0
+	tbl.fillModeNonSolid = tbl.fillModeNonSolid and 1 or 0
+	tbl.depthBounds = tbl.depthBounds and 1 or 0
+	tbl.wideLines = tbl.wideLines and 1 or 0
+	tbl.largePoints = tbl.largePoints and 1 or 0
+	tbl.alphaToOne = tbl.alphaToOne and 1 or 0
+	tbl.multiViewport = tbl.multiViewport and 1 or 0
+	tbl.samplerAnisotropy = tbl.samplerAnisotropy and 1 or 0
+	tbl.textureCompressionETC2 = tbl.textureCompressionETC2 and 1 or 0
+	tbl.textureCompressionASTC_LDR = tbl.textureCompressionASTC_LDR and 1 or 0
+	tbl.textureCompressionBC = tbl.textureCompressionBC and 1 or 0
+	tbl.occlusionQueryPrecise = tbl.occlusionQueryPrecise and 1 or 0
+	tbl.pipelineStatisticsQuery = tbl.pipelineStatisticsQuery and 1 or 0
+	tbl.vertexPipelineStoresAndAtomics = tbl.vertexPipelineStoresAndAtomics and 1 or 0
+	tbl.fragmentStoresAndAtomics = tbl.fragmentStoresAndAtomics and 1 or 0
+	tbl.shaderTessellationAndGeometryPointSize = tbl.shaderTessellationAndGeometryPointSize and 1 or 0
+	tbl.shaderImageGatherExtended = tbl.shaderImageGatherExtended and 1 or 0
+	tbl.shaderStorageImageExtendedFormats = tbl.shaderStorageImageExtendedFormats and 1 or 0
+	tbl.shaderStorageImageMultisample = tbl.shaderStorageImageMultisample and 1 or 0
+	tbl.shaderStorageImageReadWithoutFormat = tbl.shaderStorageImageReadWithoutFormat and 1 or 0
+	tbl.shaderStorageImageWriteWithoutFormat = tbl.shaderStorageImageWriteWithoutFormat and 1 or 0
+	tbl.shaderUniformBufferArrayDynamicIndexing = tbl.shaderUniformBufferArrayDynamicIndexing and 1 or 0
+	tbl.shaderSampledImageArrayDynamicIndexing = tbl.shaderSampledImageArrayDynamicIndexing and 1 or 0
+	tbl.shaderStorageBufferArrayDynamicIndexing = tbl.shaderStorageBufferArrayDynamicIndexing and 1 or 0
+	tbl.shaderStorageImageArrayDynamicIndexing = tbl.shaderStorageImageArrayDynamicIndexing and 1 or 0
+	tbl.shaderClipDistance = tbl.shaderClipDistance and 1 or 0
+	tbl.shaderCullDistance = tbl.shaderCullDistance and 1 or 0
+	tbl.shaderFloat64 = tbl.shaderFloat64 and 1 or 0
+	tbl.shaderInt64 = tbl.shaderInt64 and 1 or 0
+	tbl.shaderInt16 = tbl.shaderInt16 and 1 or 0
+	tbl.shaderResourceResidency = tbl.shaderResourceResidency and 1 or 0
+	tbl.shaderResourceMinLod = tbl.shaderResourceMinLod and 1 or 0
+	tbl.sparseBinding = tbl.sparseBinding and 1 or 0
+	tbl.sparseResidencyBuffer = tbl.sparseResidencyBuffer and 1 or 0
+	tbl.sparseResidencyImage2D = tbl.sparseResidencyImage2D and 1 or 0
+	tbl.sparseResidencyImage3D = tbl.sparseResidencyImage3D and 1 or 0
+	tbl.sparseResidency2Samples = tbl.sparseResidency2Samples and 1 or 0
+	tbl.sparseResidency4Samples = tbl.sparseResidency4Samples and 1 or 0
+	tbl.sparseResidency8Samples = tbl.sparseResidency8Samples and 1 or 0
+	tbl.sparseResidency16Samples = tbl.sparseResidency16Samples and 1 or 0
+	tbl.sparseResidencyAliased = tbl.sparseResidencyAliased and 1 or 0
+	tbl.variableMultisampleRate = tbl.variableMultisampleRate and 1 or 0
+	tbl.inheritedQueries = tbl.inheritedQueries and 1 or 0
+	return table_only and tbl or ffi.new("struct VkPhysicalDeviceFeatures", tbl)
 end
 function library.s.PhysicalDeviceFeaturesArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4773,8 +5082,8 @@ function library.s.BindSparseInfoArray(tbl)
 	return ffi.new("struct VkBindSparseInfo[?]", #tbl, tbl)
 end
 function library.s.BufferViewArray(tbl) return ffi.new("struct VkBufferView_T *[?]", #tbl, tbl) end
-function library.s.SpecializationMapEntry(tbl)
-	return ffi.new("struct VkSpecializationMapEntry", tbl)
+function library.s.SpecializationMapEntry(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkSpecializationMapEntry", tbl)
 end
 function library.s.SpecializationMapEntryArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4788,8 +5097,8 @@ function library.s.MappedMemoryRangeArray(tbl)
 	end
 	return ffi.new("struct VkMappedMemoryRange[?]", #tbl, tbl)
 end
-function library.s.MemoryRequirements(tbl)
-	return ffi.new("struct VkMemoryRequirements", tbl)
+function library.s.MemoryRequirements(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkMemoryRequirements", tbl)
 end
 function library.s.MemoryRequirementsArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4816,8 +5125,8 @@ function library.s.ImageViewCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkImageViewCreateInfo[?]", #tbl, tbl)
 end
-function library.s.Viewport(tbl)
-	return ffi.new("struct VkViewport", tbl)
+function library.s.Viewport(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkViewport", tbl)
 end
 function library.s.ViewportArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4831,17 +5140,17 @@ function library.s.DescriptorPoolCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkDescriptorPoolCreateInfo[?]", #tbl, tbl)
 end
-function library.s.BufferImageCopy(tbl)
+function library.s.BufferImageCopy(tbl, table_only)
 	if type(tbl.imageSubresource) == "table" then
-		tbl.imageSubresource = library.s.ImageSubresourceLayers(tbl.imageSubresource)
+		tbl.imageSubresource = library.s.ImageSubresourceLayers(tbl.imageSubresource, true)
 	end
 	if type(tbl.imageOffset) == "table" then
-		tbl.imageOffset = library.s.Offset3D(tbl.imageOffset)
+		tbl.imageOffset = library.s.Offset3D(tbl.imageOffset, true)
 	end
 	if type(tbl.imageExtent) == "table" then
-		tbl.imageExtent = library.s.Extent3D(tbl.imageExtent)
+		tbl.imageExtent = library.s.Extent3D(tbl.imageExtent, true)
 	end
-	return ffi.new("struct VkBufferImageCopy", tbl)
+	return table_only and tbl or ffi.new("struct VkBufferImageCopy", tbl)
 end
 function library.s.BufferImageCopyArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4855,8 +5164,13 @@ function library.s.MemoryBarrierArray(tbl)
 	end
 	return ffi.new("struct VkMemoryBarrier[?]", #tbl, tbl)
 end
-function library.s.PushConstantRange(tbl)
-	return ffi.new("struct VkPushConstantRange", tbl)
+function library.s.PushConstantRange(tbl, table_only)
+	if type(tbl.stageFlags) == "table" then
+		tbl.stageFlags = library.e.shader_stage.make_enums(tbl.stageFlags)
+	elseif type(tbl.stageFlags) == "string" then
+		tbl.stageFlags = library.e.shader_stage[tbl.stageFlags]
+	end
+	return table_only and tbl or ffi.new("struct VkPushConstantRange", tbl)
 end
 function library.s.PushConstantRangeArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -4866,10 +5180,10 @@ function library.s.PushConstantRangeArray(tbl)
 end
 function library.CreateBufferView(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.BufferViewCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.BufferViewCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkBufferView_T * [1]")
 	local status = CLIB.vkCreateBufferView(device, pCreateInfo, pAllocator, box)
@@ -4886,10 +5200,10 @@ function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount,
 		if not createInfoCount then
 			createInfoCount = #pCreateInfos
 		end
-		pCreateInfos = library.s.GraphicsPipelineCreateInfoArray(pCreateInfos)
+		pCreateInfos = library.s.GraphicsPipelineCreateInfoArray(pCreateInfos, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
@@ -4903,10 +5217,10 @@ function library.CreateGraphicsPipelines(device, pipelineCache, createInfoCount,
 end
 function library.CreateShaderModule(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.ShaderModuleCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.ShaderModuleCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkShaderModule_T * [1]")
 	local status = CLIB.vkCreateShaderModule(device, pCreateInfo, pAllocator, box)
@@ -4920,10 +5234,10 @@ function library.CreateShaderModule(device, pCreateInfo, pAllocator)
 end
 function library.CreateFramebuffer(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.FramebufferCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.FramebufferCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkFramebuffer_T * [1]")
 	local status = CLIB.vkCreateFramebuffer(device, pCreateInfo, pAllocator, box)
@@ -4940,10 +5254,10 @@ function library.CreateComputePipelines(device, pipelineCache, createInfoCount, 
 		if not createInfoCount then
 			createInfoCount = #pCreateInfos
 		end
-		pCreateInfos = library.s.ComputePipelineCreateInfoArray(pCreateInfos)
+		pCreateInfos = library.s.ComputePipelineCreateInfoArray(pCreateInfos, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkPipeline_T * [1]")
 	local status = CLIB.vkCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, box)
@@ -4957,10 +5271,10 @@ function library.CreateComputePipelines(device, pipelineCache, createInfoCount, 
 end
 function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.DescriptorSetLayoutCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.DescriptorSetLayoutCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkDescriptorSetLayout_T * [1]")
 	local status = CLIB.vkCreateDescriptorSetLayout(device, pCreateInfo, pAllocator, box)
@@ -4974,7 +5288,7 @@ function library.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator)
 end
 function library.AllocateCommandBuffers(device, pAllocateInfo)
 	if type(pAllocateInfo) == "table" then
-		pAllocateInfo = library.s.CommandBufferAllocateInfo(pAllocateInfo)
+		pAllocateInfo = library.s.CommandBufferAllocateInfo(pAllocateInfo, false)
 	end
 	local box = ffi.new("struct VkCommandBuffer_T * [1]")
 	local status = CLIB.vkAllocateCommandBuffers(device, pAllocateInfo, box)
@@ -4988,10 +5302,10 @@ function library.AllocateCommandBuffers(device, pAllocateInfo)
 end
 function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.DescriptorPoolCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.DescriptorPoolCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkDescriptorPool_T * [1]")
 	local status = CLIB.vkCreateDescriptorPool(device, pCreateInfo, pAllocator, box)
@@ -5005,10 +5319,10 @@ function library.CreateDescriptorPool(device, pCreateInfo, pAllocator)
 end
 function library.CreateBuffer(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.BufferCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.BufferCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkBuffer_T * [1]")
 	local status = CLIB.vkCreateBuffer(device, pCreateInfo, pAllocator, box)
@@ -5022,10 +5336,10 @@ function library.CreateBuffer(device, pCreateInfo, pAllocator)
 end
 function library.CreateSemaphore(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.SemaphoreCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.SemaphoreCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkSemaphore_T * [1]")
 	local status = CLIB.vkCreateSemaphore(device, pCreateInfo, pAllocator, box)
@@ -5039,10 +5353,10 @@ function library.CreateSemaphore(device, pCreateInfo, pAllocator)
 end
 function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.PipelineCacheCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.PipelineCacheCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkPipelineCache_T * [1]")
 	local status = CLIB.vkCreatePipelineCache(device, pCreateInfo, pAllocator, box)
@@ -5056,10 +5370,10 @@ function library.CreatePipelineCache(device, pCreateInfo, pAllocator)
 end
 function library.CreateImageView(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.ImageViewCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.ImageViewCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkImageView_T * [1]")
 	local status = CLIB.vkCreateImageView(device, pCreateInfo, pAllocator, box)
@@ -5073,10 +5387,10 @@ function library.CreateImageView(device, pCreateInfo, pAllocator)
 end
 function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.DeviceCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.DeviceCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkDevice_T * [1]")
 	local status = CLIB.vkCreateDevice(physicalDevice, pCreateInfo, pAllocator, box)
@@ -5090,10 +5404,10 @@ function library.CreateDevice(physicalDevice, pCreateInfo, pAllocator)
 end
 function library.CreateInstance(pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.InstanceCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.InstanceCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkInstance_T * [1]")
 	local status = CLIB.vkCreateInstance(pCreateInfo, pAllocator, box)
@@ -5107,10 +5421,10 @@ function library.CreateInstance(pCreateInfo, pAllocator)
 end
 function library.CreateDebugReportCallback(instance, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.DebugReportCallbackCreateInfoEXT(pCreateInfo)
+		pCreateInfo = library.s.DebugReportCallbackCreateInfoEXT(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkDebugReportCallbackEXT_T * [1]")
 	local status = library.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, box)
@@ -5127,10 +5441,10 @@ function library.CreateSharedSwapchains(device, swapchainCount, pCreateInfos, pA
 		if not swapchainCount then
 			swapchainCount = #pCreateInfos
 		end
-		pCreateInfos = library.s.SwapchainCreateInfoKHRArray(pCreateInfos)
+		pCreateInfos = library.s.SwapchainCreateInfoKHRArray(pCreateInfos, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
 	local status = library.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator, box)
@@ -5144,10 +5458,10 @@ function library.CreateSharedSwapchains(device, swapchainCount, pCreateInfos, pA
 end
 function library.CreateDisplayPlaneSurface(instance, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.DisplaySurfaceCreateInfoKHR(pCreateInfo)
+		pCreateInfo = library.s.DisplaySurfaceCreateInfoKHR(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkSurfaceKHR_T * [1]")
 	local status = library.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, box)
@@ -5161,10 +5475,10 @@ function library.CreateDisplayPlaneSurface(instance, pCreateInfo, pAllocator)
 end
 function library.CreateImage(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.ImageCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.ImageCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkImage_T * [1]")
 	local status = CLIB.vkCreateImage(device, pCreateInfo, pAllocator, box)
@@ -5178,10 +5492,10 @@ function library.CreateImage(device, pCreateInfo, pAllocator)
 end
 function library.CreateSwapchain(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.SwapchainCreateInfoKHR(pCreateInfo)
+		pCreateInfo = library.s.SwapchainCreateInfoKHR(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkSwapchainKHR_T * [1]")
 	local status = library.CreateSwapchainKHR(device, pCreateInfo, pAllocator, box)
@@ -5195,10 +5509,10 @@ function library.CreateSwapchain(device, pCreateInfo, pAllocator)
 end
 function library.AllocateMemory(device, pAllocateInfo, pAllocator)
 	if type(pAllocateInfo) == "table" then
-		pAllocateInfo = library.s.MemoryAllocateInfo(pAllocateInfo)
+		pAllocateInfo = library.s.MemoryAllocateInfo(pAllocateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkDeviceMemory_T * [1]")
 	local status = CLIB.vkAllocateMemory(device, pAllocateInfo, pAllocator, box)
@@ -5212,10 +5526,10 @@ function library.AllocateMemory(device, pAllocateInfo, pAllocator)
 end
 function library.CreateDisplayMode(physicalDevice, display, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.DisplayModeCreateInfoKHR(pCreateInfo)
+		pCreateInfo = library.s.DisplayModeCreateInfoKHR(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkDisplayModeKHR_T * [1]")
 	local status = library.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, box)
@@ -5229,10 +5543,10 @@ function library.CreateDisplayMode(physicalDevice, display, pCreateInfo, pAlloca
 end
 function library.CreateFence(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.FenceCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.FenceCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkFence_T * [1]")
 	local status = CLIB.vkCreateFence(device, pCreateInfo, pAllocator, box)
@@ -5246,10 +5560,10 @@ function library.CreateFence(device, pCreateInfo, pAllocator)
 end
 function library.CreateRenderPass(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.RenderPassCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.RenderPassCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkRenderPass_T * [1]")
 	local status = CLIB.vkCreateRenderPass(device, pCreateInfo, pAllocator, box)
@@ -5263,10 +5577,10 @@ function library.CreateRenderPass(device, pCreateInfo, pAllocator)
 end
 function library.CreateQueryPool(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.QueryPoolCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.QueryPoolCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkQueryPool_T * [1]")
 	local status = CLIB.vkCreateQueryPool(device, pCreateInfo, pAllocator, box)
@@ -5280,10 +5594,10 @@ function library.CreateQueryPool(device, pCreateInfo, pAllocator)
 end
 function library.CreateSampler(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.SamplerCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.SamplerCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkSampler_T * [1]")
 	local status = CLIB.vkCreateSampler(device, pCreateInfo, pAllocator, box)
@@ -5297,10 +5611,10 @@ function library.CreateSampler(device, pCreateInfo, pAllocator)
 end
 function library.CreateCommandPool(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.CommandPoolCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.CommandPoolCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkCommandPool_T * [1]")
 	local status = CLIB.vkCreateCommandPool(device, pCreateInfo, pAllocator, box)
@@ -5314,10 +5628,10 @@ function library.CreateCommandPool(device, pCreateInfo, pAllocator)
 end
 function library.CreateEvent(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.EventCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.EventCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkEvent_T * [1]")
 	local status = CLIB.vkCreateEvent(device, pCreateInfo, pAllocator, box)
@@ -5331,7 +5645,7 @@ function library.CreateEvent(device, pCreateInfo, pAllocator)
 end
 function library.AllocateDescriptorSets(device, pAllocateInfo)
 	if type(pAllocateInfo) == "table" then
-		pAllocateInfo = library.s.DescriptorSetAllocateInfo(pAllocateInfo)
+		pAllocateInfo = library.s.DescriptorSetAllocateInfo(pAllocateInfo, false)
 	end
 	local box = ffi.new("struct VkDescriptorSet_T * [1]")
 	local status = CLIB.vkAllocateDescriptorSets(device, pAllocateInfo, box)
@@ -5345,10 +5659,10 @@ function library.AllocateDescriptorSets(device, pAllocateInfo)
 end
 function library.CreatePipelineLayout(device, pCreateInfo, pAllocator)
 	if type(pCreateInfo) == "table" then
-		pCreateInfo = library.s.PipelineLayoutCreateInfo(pCreateInfo)
+		pCreateInfo = library.s.PipelineLayoutCreateInfo(pCreateInfo, false)
 	end
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	local box = ffi.new("struct VkPipelineLayout_T * [1]")
 	local status = CLIB.vkCreatePipelineLayout(device, pCreateInfo, pAllocator, box)
@@ -5372,7 +5686,7 @@ function library.CmdCopyImageToBuffer(commandBuffer, srcImage, srcImageLayout, d
 		if not regionCount then
 			regionCount = #pRegions
 		end
-		pRegions = library.s.BufferImageCopyArray(pRegions)
+		pRegions = library.s.BufferImageCopyArray(pRegions, false)
 	end
 	return CLIB.vkCmdCopyImageToBuffer(commandBuffer, srcImage, srcImageLayout, dstBuffer, regionCount, pRegions)
 end
@@ -5388,18 +5702,23 @@ function library.CmdResolveImage(commandBuffer, srcImage, srcImageLayout, dstIma
 		if not regionCount then
 			regionCount = #pRegions
 		end
-		pRegions = library.s.ImageResolveArray(pRegions)
+		pRegions = library.s.ImageResolveArray(pRegions, false)
 	end
 	return CLIB.vkCmdResolveImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions)
 end
 
 function library.CmdSetStencilCompareMask(commandBuffer, faceMask, compareMask)
+	if type(faceMask) == "table" then
+		faceMask = library.e.stencil_face.make_enums(faceMask)
+	elseif type(faceMask) == "string" then
+		faceMask = library.e.stencil_face[faceMask]
+	end
 	return CLIB.vkCmdSetStencilCompareMask(commandBuffer, faceMask, compareMask)
 end
 
 function library.DestroyInstance(instance, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyInstance(instance, pAllocator)
 end
@@ -5423,12 +5742,17 @@ end
 
 function library.DestroySurface(instance, surface, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return library.DestroySurfaceKHR(instance, surface, pAllocator)
 end
 
 function library.CmdCopyQueryPoolResults(commandBuffer, queryPool, firstQuery, queryCount, dstBuffer, dstOffset, stride, flags)
+	if type(flags) == "table" then
+		flags = library.e.query_result.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.query_result[flags]
+	end
 	return CLIB.vkCmdCopyQueryPoolResults(commandBuffer, queryPool, firstQuery, queryCount, dstBuffer, dstOffset, stride, flags)
 end
 
@@ -5437,16 +5761,26 @@ function library.MergePipelineCaches(device, dstCache, srcCacheCount, pSrcCaches
 		if not srcCacheCount then
 			srcCacheCount = #pSrcCaches
 		end
-		pSrcCaches = library.s.PipelineCacheArray(pSrcCaches)
+		pSrcCaches = library.s.PipelineCacheArray(pSrcCaches, false)
 	end
 	return CLIB.vkMergePipelineCaches(device, dstCache, srcCacheCount, pSrcCaches)
 end
 
 function library.CmdSetStencilWriteMask(commandBuffer, faceMask, writeMask)
+	if type(faceMask) == "table" then
+		faceMask = library.e.stencil_face.make_enums(faceMask)
+	elseif type(faceMask) == "string" then
+		faceMask = library.e.stencil_face[faceMask]
+	end
 	return CLIB.vkCmdSetStencilWriteMask(commandBuffer, faceMask, writeMask)
 end
 
 function library.CmdResetEvent(commandBuffer, event, stageMask)
+	if type(stageMask) == "table" then
+		stageMask = library.e.pipeline_stage.make_enums(stageMask)
+	elseif type(stageMask) == "string" then
+		stageMask = library.e.pipeline_stage[stageMask]
+	end
 	return CLIB.vkCmdResetEvent(commandBuffer, event, stageMask)
 end
 
@@ -5455,6 +5789,11 @@ function library.BindBufferMemory(device, buffer, memory, memoryOffset)
 end
 
 function library.CmdSetEvent(commandBuffer, event, stageMask)
+	if type(stageMask) == "table" then
+		stageMask = library.e.pipeline_stage.make_enums(stageMask)
+	elseif type(stageMask) == "string" then
+		stageMask = library.e.pipeline_stage[stageMask]
+	end
 	return CLIB.vkCmdSetEvent(commandBuffer, event, stageMask)
 end
 
@@ -5466,7 +5805,7 @@ function library.CmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout,
 		if not descriptorSetCount then
 			descriptorSetCount = #pDescriptorSets
 		end
-		pDescriptorSets = library.s.DescriptorSetArray(pDescriptorSets)
+		pDescriptorSets = library.s.DescriptorSetArray(pDescriptorSets, false)
 	end
 	return CLIB.vkCmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets)
 end
@@ -5481,7 +5820,7 @@ end
 
 function library.DestroyEvent(device, event, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyEvent(device, event, pAllocator)
 end
@@ -5498,14 +5837,14 @@ function library.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, regionCount,
 		if not regionCount then
 			regionCount = #pRegions
 		end
-		pRegions = library.s.BufferCopyArray(pRegions)
+		pRegions = library.s.BufferCopyArray(pRegions, false)
 	end
 	return CLIB.vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, regionCount, pRegions)
 end
 
 function library.DestroyBuffer(device, buffer, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyBuffer(device, buffer, pAllocator)
 end
@@ -5521,14 +5860,14 @@ function library.CmdCopyImage(commandBuffer, srcImage, srcImageLayout, dstImage,
 		if not regionCount then
 			regionCount = #pRegions
 		end
-		pRegions = library.s.ImageCopyArray(pRegions)
+		pRegions = library.s.ImageCopyArray(pRegions, false)
 	end
 	return CLIB.vkCmdCopyImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions)
 end
 
 function library.DestroyQueryPool(device, queryPool, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyQueryPool(device, queryPool, pAllocator)
 end
@@ -5538,6 +5877,11 @@ function library.CmdUpdateBuffer(commandBuffer, dstBuffer, dstOffset, dataSize, 
 end
 
 function library.CmdSetStencilReference(commandBuffer, faceMask, reference)
+	if type(faceMask) == "table" then
+		faceMask = library.e.stencil_face.make_enums(faceMask)
+	elseif type(faceMask) == "string" then
+		faceMask = library.e.stencil_face[faceMask]
+	end
 	return CLIB.vkCmdSetStencilReference(commandBuffer, faceMask, reference)
 end
 
@@ -5546,25 +5890,30 @@ function library.FreeCommandBuffers(device, commandPool, commandBufferCount, pCo
 		if not commandBufferCount then
 			commandBufferCount = #pCommandBuffers
 		end
-		pCommandBuffers = library.s.CommandBufferArray(pCommandBuffers)
+		pCommandBuffers = library.s.CommandBufferArray(pCommandBuffers, false)
 	end
 	return CLIB.vkFreeCommandBuffers(device, commandPool, commandBufferCount, pCommandBuffers)
 end
 
 function library.DestroyDebugReportCallback(instance, callback, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return library.DestroyDebugReportCallbackEXT(instance, callback, pAllocator)
 end
 
 function library.CmdBeginQuery(commandBuffer, queryPool, query, flags)
+	if type(flags) == "table" then
+		flags = library.e.query_control.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.query_control[flags]
+	end
 	return CLIB.vkCmdBeginQuery(commandBuffer, queryPool, query, flags)
 end
 
 function library.DestroyPipeline(device, pipeline, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyPipeline(device, pipeline, pAllocator)
 end
@@ -5574,7 +5923,7 @@ function library.QueueSubmit(queue, submitCount, pSubmits, fence)
 		if not submitCount then
 			submitCount = #pSubmits
 		end
-		pSubmits = library.s.SubmitInfoArray(pSubmits)
+		pSubmits = library.s.SubmitInfoArray(pSubmits, false)
 	end
 	return CLIB.vkQueueSubmit(queue, submitCount, pSubmits, fence)
 end
@@ -5590,7 +5939,7 @@ function library.CmdBlitImage(commandBuffer, srcImage, srcImageLayout, dstImage,
 		if not regionCount then
 			regionCount = #pRegions
 		end
-		pRegions = library.s.ImageBlitArray(pRegions)
+		pRegions = library.s.ImageBlitArray(pRegions, false)
 	end
 	if type(filter) == "string" then
 		filter = library.e.filter[filter]
@@ -5608,35 +5957,35 @@ end
 
 function library.DestroyShaderModule(device, shaderModule, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyShaderModule(device, shaderModule, pAllocator)
 end
 
 function library.DestroyPipelineLayout(device, pipelineLayout, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyPipelineLayout(device, pipelineLayout, pAllocator)
 end
 
 function library.DestroySampler(device, sampler, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroySampler(device, sampler, pAllocator)
 end
 
 function library.FreeMemory(device, memory, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkFreeMemory(device, memory, pAllocator)
 end
 
 function library.DestroyFramebuffer(device, framebuffer, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyFramebuffer(device, framebuffer, pAllocator)
 end
@@ -5649,7 +5998,7 @@ function library.CmdCopyBufferToImage(commandBuffer, srcBuffer, dstImage, dstIma
 		if not regionCount then
 			regionCount = #pRegions
 		end
-		pRegions = library.s.BufferImageCopyArray(pRegions)
+		pRegions = library.s.BufferImageCopyArray(pRegions, false)
 	end
 	return CLIB.vkCmdCopyBufferToImage(commandBuffer, srcBuffer, dstImage, dstImageLayout, regionCount, pRegions)
 end
@@ -5659,14 +6008,14 @@ function library.CmdBindVertexBuffers(commandBuffer, firstBinding, bindingCount,
 		if not bindingCount then
 			bindingCount = #pBuffers
 		end
-		pBuffers = library.s.BufferArray(pBuffers)
+		pBuffers = library.s.BufferArray(pBuffers, false)
 	end
 	return CLIB.vkCmdBindVertexBuffers(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets)
 end
 
 function library.DestroyCommandPool(device, commandPool, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyCommandPool(device, commandPool, pAllocator)
 end
@@ -5676,7 +6025,7 @@ function library.InvalidateMappedMemoryRanges(device, memoryRangeCount, pMemoryR
 		if not memoryRangeCount then
 			memoryRangeCount = #pMemoryRanges
 		end
-		pMemoryRanges = library.s.MappedMemoryRangeArray(pMemoryRanges)
+		pMemoryRanges = library.s.MappedMemoryRangeArray(pMemoryRanges, false)
 	end
 	return CLIB.vkInvalidateMappedMemoryRanges(device, memoryRangeCount, pMemoryRanges)
 end
@@ -5690,19 +6039,24 @@ end
 
 function library.DestroyBufferView(device, bufferView, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyBufferView(device, bufferView, pAllocator)
 end
 
 function library.DestroyImageView(device, imageView, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyImageView(device, imageView, pAllocator)
 end
 
 function library.ResetCommandBuffer(commandBuffer, flags)
+	if type(flags) == "table" then
+		flags = library.e.command_buffer_reset.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.command_buffer_reset[flags]
+	end
 	return CLIB.vkResetCommandBuffer(commandBuffer, flags)
 end
 
@@ -5723,20 +6077,20 @@ function library.CmdClearDepthStencilImage(commandBuffer, image, imageLayout, pD
 		imageLayout = library.e.image_layout[imageLayout]
 	end
 	if type(pDepthStencil) == "table" then
-		pDepthStencil = library.s.ClearDepthStencilValue(pDepthStencil)
+		pDepthStencil = library.s.ClearDepthStencilValue(pDepthStencil, false)
 	end
 	if type(pRanges) == "table" then
 		if not rangeCount then
 			rangeCount = #pRanges
 		end
-		pRanges = library.s.ImageSubresourceRangeArray(pRanges)
+		pRanges = library.s.ImageSubresourceRangeArray(pRanges, false)
 	end
 	return CLIB.vkCmdClearDepthStencilImage(commandBuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges)
 end
 
 function library.BeginCommandBuffer(commandBuffer, pBeginInfo)
 	if type(pBeginInfo) == "table" then
-		pBeginInfo = library.s.CommandBufferBeginInfo(pBeginInfo)
+		pBeginInfo = library.s.CommandBufferBeginInfo(pBeginInfo, false)
 	end
 	return CLIB.vkBeginCommandBuffer(commandBuffer, pBeginInfo)
 end
@@ -5746,6 +6100,11 @@ function library.CmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstI
 end
 
 function library.DebugReportMessage(instance, flags, objectType, object, location, messageCode, pLayerPrefix, pMessage)
+	if type(flags) == "table" then
+		flags = library.e.debug_report.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.debug_report[flags]
+	end
 	if type(objectType) == "string" then
 		objectType = library.e.debug_report_object_type[objectType]
 	end
@@ -5761,25 +6120,35 @@ function library.CmdWaitEvents(commandBuffer, eventCount, pEvents, srcStageMask,
 		if not eventCount then
 			eventCount = #pEvents
 		end
-		pEvents = library.s.EventArray(pEvents)
+		pEvents = library.s.EventArray(pEvents, false)
+	end
+	if type(srcStageMask) == "table" then
+		srcStageMask = library.e.pipeline_stage.make_enums(srcStageMask)
+	elseif type(srcStageMask) == "string" then
+		srcStageMask = library.e.pipeline_stage[srcStageMask]
+	end
+	if type(dstStageMask) == "table" then
+		dstStageMask = library.e.pipeline_stage.make_enums(dstStageMask)
+	elseif type(dstStageMask) == "string" then
+		dstStageMask = library.e.pipeline_stage[dstStageMask]
 	end
 	if type(pMemoryBarriers) == "table" then
 		if not memoryBarrierCount then
 			memoryBarrierCount = #pMemoryBarriers
 		end
-		pMemoryBarriers = library.s.MemoryBarrierArray(pMemoryBarriers)
+		pMemoryBarriers = library.s.MemoryBarrierArray(pMemoryBarriers, false)
 	end
 	if type(pBufferMemoryBarriers) == "table" then
 		if not bufferMemoryBarrierCount then
 			bufferMemoryBarrierCount = #pBufferMemoryBarriers
 		end
-		pBufferMemoryBarriers = library.s.BufferMemoryBarrierArray(pBufferMemoryBarriers)
+		pBufferMemoryBarriers = library.s.BufferMemoryBarrierArray(pBufferMemoryBarriers, false)
 	end
 	if type(pImageMemoryBarriers) == "table" then
 		if not imageMemoryBarrierCount then
 			imageMemoryBarrierCount = #pImageMemoryBarriers
 		end
-		pImageMemoryBarriers = library.s.ImageMemoryBarrierArray(pImageMemoryBarriers)
+		pImageMemoryBarriers = library.s.ImageMemoryBarrierArray(pImageMemoryBarriers, false)
 	end
 	return CLIB.vkCmdWaitEvents(commandBuffer, eventCount, pEvents, srcStageMask, dstStageMask, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers)
 end
@@ -5790,21 +6159,21 @@ end
 
 function library.DestroySwapchain(device, swapchain, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return library.DestroySwapchainKHR(device, swapchain, pAllocator)
 end
 
 function library.QueuePresent(queue, pPresentInfo)
 	if type(pPresentInfo) == "table" then
-		pPresentInfo = library.s.PresentInfoKHR(pPresentInfo)
+		pPresentInfo = library.s.PresentInfoKHR(pPresentInfo, false)
 	end
 	return library.QueuePresentKHR(queue, pPresentInfo)
 end
 
 function library.DestroyFence(device, fence, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyFence(device, fence, pAllocator)
 end
@@ -5814,13 +6183,13 @@ function library.CmdClearColorImage(commandBuffer, image, imageLayout, pColor, r
 		imageLayout = library.e.image_layout[imageLayout]
 	end
 	if type(pColor) == "table" then
-		pColor = library.s.ClearColorValue(pColor)
+		pColor = library.s.ClearColorValue(pColor, false)
 	end
 	if type(pRanges) == "table" then
 		if not rangeCount then
 			rangeCount = #pRanges
 		end
-		pRanges = library.s.ImageSubresourceRangeArray(pRanges)
+		pRanges = library.s.ImageSubresourceRangeArray(pRanges, false)
 	end
 	return CLIB.vkCmdClearColorImage(commandBuffer, image, imageLayout, pColor, rangeCount, pRanges)
 end
@@ -5830,14 +6199,14 @@ function library.CmdExecuteCommands(commandBuffer, commandBufferCount, pCommandB
 		if not commandBufferCount then
 			commandBufferCount = #pCommandBuffers
 		end
-		pCommandBuffers = library.s.CommandBufferArray(pCommandBuffers)
+		pCommandBuffers = library.s.CommandBufferArray(pCommandBuffers, false)
 	end
 	return CLIB.vkCmdExecuteCommands(commandBuffer, commandBufferCount, pCommandBuffers)
 end
 
 function library.CmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents)
 	if type(pRenderPassBegin) == "table" then
-		pRenderPassBegin = library.s.RenderPassBeginInfo(pRenderPassBegin)
+		pRenderPassBegin = library.s.RenderPassBeginInfo(pRenderPassBegin, false)
 	end
 	if type(contents) == "string" then
 		contents = library.e.subpass_contents[contents]
@@ -5850,18 +6219,23 @@ function library.CmdClearAttachments(commandBuffer, attachmentCount, pAttachment
 		if not attachmentCount then
 			attachmentCount = #pAttachments
 		end
-		pAttachments = library.s.ClearAttachmentArray(pAttachments)
+		pAttachments = library.s.ClearAttachmentArray(pAttachments, false)
 	end
 	if type(pRects) == "table" then
 		if not rectCount then
 			rectCount = #pRects
 		end
-		pRects = library.s.ClearRectArray(pRects)
+		pRects = library.s.ClearRectArray(pRects, false)
 	end
 	return CLIB.vkCmdClearAttachments(commandBuffer, attachmentCount, pAttachments, rectCount, pRects)
 end
 
 function library.CmdPushConstants(commandBuffer, layout, stageFlags, offset, size, pValues)
+	if type(stageFlags) == "table" then
+		stageFlags = library.e.shader_stage.make_enums(stageFlags)
+	elseif type(stageFlags) == "string" then
+		stageFlags = library.e.shader_stage[stageFlags]
+	end
 	return CLIB.vkCmdPushConstants(commandBuffer, layout, stageFlags, offset, size, pValues)
 end
 
@@ -5886,14 +6260,14 @@ end
 
 function library.DestroyImage(device, image, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyImage(device, image, pAllocator)
 end
 
 function library.DestroySemaphore(device, semaphore, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroySemaphore(device, semaphore, pAllocator)
 end
@@ -5904,7 +6278,7 @@ end
 
 function library.DestroyPipelineCache(device, pipelineCache, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyPipelineCache(device, pipelineCache, pAllocator)
 end
@@ -5919,7 +6293,7 @@ end
 
 function library.DestroyRenderPass(device, renderPass, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyRenderPass(device, renderPass, pAllocator)
 end
@@ -5930,7 +6304,7 @@ end
 
 function library.DestroyDescriptorPool(device, descriptorPool, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyDescriptorPool(device, descriptorPool, pAllocator)
 end
@@ -5948,8 +6322,9 @@ function library.WaitForFences(device, fenceCount, pFences, waitAll, timeout)
 		if not fenceCount then
 			fenceCount = #pFences
 		end
-		pFences = library.s.FenceArray(pFences)
+		pFences = library.s.FenceArray(pFences, false)
 	end
+	tbl.waitAll = waitAll and 1 or 0
 	return CLIB.vkWaitForFences(device, fenceCount, pFences, waitAll, timeout)
 end
 
@@ -5962,14 +6337,14 @@ function library.ResetFences(device, fenceCount, pFences)
 		if not fenceCount then
 			fenceCount = #pFences
 		end
-		pFences = library.s.FenceArray(pFences)
+		pFences = library.s.FenceArray(pFences, false)
 	end
 	return CLIB.vkResetFences(device, fenceCount, pFences)
 end
 
 function library.DestroyDescriptorSetLayout(device, descriptorSetLayout, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyDescriptorSetLayout(device, descriptorSetLayout, pAllocator)
 end
@@ -5979,14 +6354,14 @@ function library.FlushMappedMemoryRanges(device, memoryRangeCount, pMemoryRanges
 		if not memoryRangeCount then
 			memoryRangeCount = #pMemoryRanges
 		end
-		pMemoryRanges = library.s.MappedMemoryRangeArray(pMemoryRanges)
+		pMemoryRanges = library.s.MappedMemoryRangeArray(pMemoryRanges, false)
 	end
 	return CLIB.vkFlushMappedMemoryRanges(device, memoryRangeCount, pMemoryRanges)
 end
 
 function library.DestroyDevice(device, pAllocator)
 	if type(pAllocator) == "table" then
-		pAllocator = library.s.AllocationCallbacks(pAllocator)
+		pAllocator = library.s.AllocationCallbacks(pAllocator, false)
 	end
 	return CLIB.vkDestroyDevice(device, pAllocator)
 end
@@ -5996,7 +6371,7 @@ function library.FreeDescriptorSets(device, descriptorPool, descriptorSetCount, 
 		if not descriptorSetCount then
 			descriptorSetCount = #pDescriptorSets
 		end
-		pDescriptorSets = library.s.DescriptorSetArray(pDescriptorSets)
+		pDescriptorSets = library.s.DescriptorSetArray(pDescriptorSets, false)
 	end
 	return CLIB.vkFreeDescriptorSets(device, descriptorPool, descriptorSetCount, pDescriptorSets)
 end
@@ -6010,7 +6385,7 @@ function library.CmdSetScissor(commandBuffer, firstScissor, scissorCount, pSciss
 		if not scissorCount then
 			scissorCount = #pScissors
 		end
-		pScissors = library.s.Rect2DArray(pScissors)
+		pScissors = library.s.Rect2DArray(pScissors, false)
 	end
 	return CLIB.vkCmdSetScissor(commandBuffer, firstScissor, scissorCount, pScissors)
 end
@@ -6020,7 +6395,7 @@ function library.QueueBindSparse(queue, bindInfoCount, pBindInfo, fence)
 		if not bindInfoCount then
 			bindInfoCount = #pBindInfo
 		end
-		pBindInfo = library.s.BindSparseInfoArray(pBindInfo)
+		pBindInfo = library.s.BindSparseInfoArray(pBindInfo, false)
 	end
 	return CLIB.vkQueueBindSparse(queue, bindInfoCount, pBindInfo, fence)
 end
@@ -6030,18 +6405,23 @@ function library.UpdateDescriptorSets(device, descriptorWriteCount, pDescriptorW
 		if not descriptorWriteCount then
 			descriptorWriteCount = #pDescriptorWrites
 		end
-		pDescriptorWrites = library.s.WriteDescriptorSetArray(pDescriptorWrites)
+		pDescriptorWrites = library.s.WriteDescriptorSetArray(pDescriptorWrites, false)
 	end
 	if type(pDescriptorCopies) == "table" then
 		if not descriptorCopyCount then
 			descriptorCopyCount = #pDescriptorCopies
 		end
-		pDescriptorCopies = library.s.CopyDescriptorSetArray(pDescriptorCopies)
+		pDescriptorCopies = library.s.CopyDescriptorSetArray(pDescriptorCopies, false)
 	end
 	return CLIB.vkUpdateDescriptorSets(device, descriptorWriteCount, pDescriptorWrites, descriptorCopyCount, pDescriptorCopies)
 end
 
 function library.GetQueryPoolResults(device, queryPool, firstQuery, queryCount, dataSize, pData, stride, flags)
+	if type(flags) == "table" then
+		flags = library.e.query_result.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.query_result[flags]
+	end
 	return CLIB.vkGetQueryPoolResults(device, queryPool, firstQuery, queryCount, dataSize, pData, stride, flags)
 end
 
@@ -6056,28 +6436,38 @@ function library.CmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, d
 	elseif type(dstStageMask) == "string" then
 		dstStageMask = library.e.pipeline_stage[dstStageMask]
 	end
+	if type(dependencyFlags) == "table" then
+		dependencyFlags = library.e.dependency.make_enums(dependencyFlags)
+	elseif type(dependencyFlags) == "string" then
+		dependencyFlags = library.e.dependency[dependencyFlags]
+	end
 	if type(pMemoryBarriers) == "table" then
 		if not memoryBarrierCount then
 			memoryBarrierCount = #pMemoryBarriers
 		end
-		pMemoryBarriers = library.s.MemoryBarrierArray(pMemoryBarriers)
+		pMemoryBarriers = library.s.MemoryBarrierArray(pMemoryBarriers, false)
 	end
 	if type(pBufferMemoryBarriers) == "table" then
 		if not bufferMemoryBarrierCount then
 			bufferMemoryBarrierCount = #pBufferMemoryBarriers
 		end
-		pBufferMemoryBarriers = library.s.BufferMemoryBarrierArray(pBufferMemoryBarriers)
+		pBufferMemoryBarriers = library.s.BufferMemoryBarrierArray(pBufferMemoryBarriers, false)
 	end
 	if type(pImageMemoryBarriers) == "table" then
 		if not imageMemoryBarrierCount then
 			imageMemoryBarrierCount = #pImageMemoryBarriers
 		end
-		pImageMemoryBarriers = library.s.ImageMemoryBarrierArray(pImageMemoryBarriers)
+		pImageMemoryBarriers = library.s.ImageMemoryBarrierArray(pImageMemoryBarriers, false)
 	end
 	return CLIB.vkCmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers)
 end
 
 function library.ResetCommandPool(device, commandPool, flags)
+	if type(flags) == "table" then
+		flags = library.e.command_pool_reset.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.command_pool_reset[flags]
+	end
 	return CLIB.vkResetCommandPool(device, commandPool, flags)
 end
 
@@ -6086,7 +6476,7 @@ function library.CmdSetViewport(commandBuffer, firstViewport, viewportCount, pVi
 		if not viewportCount then
 			viewportCount = #pViewports
 		end
-		pViewports = library.s.ViewportArray(pViewports)
+		pViewports = library.s.ViewportArray(pViewports, false)
 	end
 	return CLIB.vkCmdSetViewport(commandBuffer, firstViewport, viewportCount, pViewports)
 end

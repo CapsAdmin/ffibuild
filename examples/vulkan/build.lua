@@ -18,7 +18,7 @@ local header = ffibuild.BuildCHeader([[
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^vk") end, function(name) return name:find("^VK_") end, true, true)
 
-local lua = ffibuild.StartLibrary(header, "metatables")
+local lua = ffibuild.StartLibrary(header)
 
 lua = lua .. "library = {\n"
 
@@ -245,7 +245,7 @@ local function translate_arguments(tbl, arg_prefix, struct_type)
 
 	for i, type in ipairs(tbl) do
 		if type.name ~= "sType" then
-			if type.name:find("Enable$") then
+			if type.name:find("Enable$") or type:GetDeclaration() == "VkBool32" then
 				s = s .. "\ttbl." .. type.name .. " = "..p.."" .. type.name .. " and 1 or 0\n"
 			elseif type.name:find("^pp") and tbl[i - 1] and tbl[i - 1].name:find("Count$") then
 				s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
@@ -254,6 +254,14 @@ local function translate_arguments(tbl, arg_prefix, struct_type)
 				s = s .. "\tend\n"
 			else
 				local basic_type = type:GetBasicType(meta_data)
+
+				-- too basic, type information gets lost
+				if basic_type == "int" then
+					local name = type:GetDeclaration()
+					if name:find("Flags") then
+						basic_type = "enum " .. name:gsub("Flags", "FlagBits")
+					end
+				end
 
 				if flag_translate[struct_type] then
 					basic_type = flag_translate[struct_type][type.name] or basic_type
@@ -271,6 +279,7 @@ local function translate_arguments(tbl, arg_prefix, struct_type)
 						s = s .. "\t\t"..p.."" .. type.name .. " = library.e." .. enum_group_translate[basic_type] .. "["..p.."" .. type.name .. "]\n"
 						s = s .. "\tend\n"
 					end
+
 					if type.name:find("Type$") and tbl[i - 1] and tbl[i - 1].name:find("Count$") then
 						local count_var = tbl[i - 1]
 
@@ -299,11 +308,11 @@ local function translate_arguments(tbl, arg_prefix, struct_type)
 						s = s .. "\t\tif not "..p..""..tbl[i - 1].name.." then\n"
 						s = s .. "\t\t\t"..p..""..tbl[i - 1].name.." = #"..p.."" .. type.name .. "\n"
 						s = s .. "\t\tend\n"
-						s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."Array("..p.."" .. type.name .. ")\n"
+						s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."Array("..p.."" .. type.name .. ", "..(type:GetDeclaration():find("*", nil, true) and "false" or "true")..")\n"
 						s = s .. "\tend\n"
 					elseif not friendly:find("_T$") then
 						s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
-						s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."("..p.."" .. type.name .. ")\n"
+						s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."("..p.."" .. type.name .. ", "..(type:GetDeclaration():find("*", nil, true) and "false" or "true")..")\n"
 						s = s .. "\tend\n"
 					end
 				end
@@ -483,10 +492,10 @@ do -- struct creation helpers
 		local struct = meta_data.structs["struct Vk" .. friendly]
 
 		if struct then
-			lua = lua .. "function library.s." .. friendly .. "(tbl)\n"
+			lua = lua .. "function library.s." .. friendly .. "(tbl, table_only)\n"
 			lua = lua .. "\ttbl.sType = \"" .. info.key .. "\"\n"
 			lua = lua .. translate_arguments(struct.data, "tbl.", "struct Vk" .. friendly)
-			lua = lua .. "\treturn ffi.new(\"struct Vk" .. friendly .. "\", tbl)\nend\n"
+			lua = lua .. "\treturn table_only and tbl or ffi.new(\"struct Vk" .. friendly .. "\", tbl)\nend\n"
 			done[struct] = true
 		end
 	end
@@ -503,9 +512,9 @@ do -- struct creation helpers
 					lua = lua .. 'function library.s.'..friendly..'Array(tbl) return ffi.new("'..basic_type..' *[?]", #tbl, tbl) end\n'
 				else
 					if not done[struct] then
-						lua = lua .. "function library.s." .. friendly .. "(tbl)\n"
+						lua = lua .. "function library.s." .. friendly .. "(tbl, table_only)\n"
 						lua = lua .. translate_arguments(struct.data, "tbl.", basic_type)
-						lua = lua .. "\treturn ffi.new(\""..keyword.." Vk" .. friendly .. "\", tbl)\n"
+						lua = lua .. "\treturn table_only and tbl or ffi.new(\""..keyword.." Vk" .. friendly .. "\", tbl)\n"
 						lua = lua .. "end\n"
 					end
 					lua = lua .. "function library.s."..friendly.."Array(tbl)\n"

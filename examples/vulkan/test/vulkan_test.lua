@@ -1,6 +1,45 @@
 local ffi = require("ffi")
 
-collectgarbage("stop")
+if STRUCT_RECORD then
+	collectgarbage("stop")
+
+	local function dump(o, level)
+		level = level or 0
+		if type(o) == 'table' then
+			local sorted = {}
+			for k,v in pairs(o) do
+				table.insert(sorted, {k=k,v=v})
+			end
+			table.sort(sorted, function(a, b) return a.k > b.k end)
+
+			local s = '{\n'
+
+			for _,kv in ipairs(sorted) do
+				local k = kv.k
+				local v = kv.v
+
+				if type(v) == "string" then
+					v = "\"" .. v .. "\""
+				end
+
+				s = s .. ("\t"):rep(level + 1) .. k .. " = " .. dump(v, level + 1) .. '\n'
+			end
+
+			return s .. ("\t"):rep(level) .. '}\n'
+		else
+			return tostring(o)
+		end
+	end
+
+	local lol = io.open("lol.lua", "wb")
+
+	local old = ffi.new
+	function ffi.new(...)
+		lol:write(dump{...})
+		lol:flush()
+		return old(...)
+	end
+end
 
 package.path = package.path .. ";./../../?.lua"
 
@@ -24,18 +63,14 @@ context.window = nil
 do -- objects
 	local function get_memory_type_from_properties(type_bits, requirements_mask)
 		requirements_mask = vk.e.memory_property[requirements_mask] or requirements_mask
-		if bit.band(type_bits, 1) == 1 then
-			for i = 0, 32 - 1 do
+		for i = 0, 32 - 1 do
+			if bit.band(type_bits, 1) == 1 then
 				if bit.band(context.device_memory_properties.memoryTypes[i].propertyFlags, requirements_mask) == requirements_mask then
 					return i
 				end
 			end
-		else
-			for i = 0, 32 - 1 do
-				type_bits = bit.rshift(type_bits, 1)
-			end
+			type_bits = bit.rshift(type_bits, 1)
 		end
-		return type_bits
 	end
 
 	function Image(info)
@@ -222,7 +257,7 @@ do -- objects
 			size = size,
 		}
 
-		function self:UpdateBuffer()
+		function self:Update()
 			ffi.copy(context.device:MapMemory(self.memory, 0, self.size, 0), self.data, self.size)
 			context.device:UnmapMemory(self.memory)
 		end
@@ -244,11 +279,11 @@ do -- objects
 	end
 
 	do -- static object
-		context.setup_cmd = {}
+		local setup_cmd = {}
 
-		function context.setup_cmd:SetImageLayout(image, aspect_mask, old_layout, new_layout)
-			local src_mask
-			local dst_mask
+		function setup_cmd:SetImageLayout(image, aspect_mask, old_layout, new_layout)
+			local src_mask = 0
+			local dst_mask = 0
 
 			if old_layout == "color_attachment_optimal" then
 				src_mask = "color_attachment_write"
@@ -276,25 +311,27 @@ do -- objects
 				0, nil,
 				0, nil,
 				nil, {
-					srcAccessMask = src_mask,
-					dstAccessMask = dst_mask,
-					oldLayout = old_layout,
-					newLayout = new_layout,
-					image = image,
-					subresourceRange = {
-						aspectMask = aspect_mask,
+					{
+						srcAccessMask = src_mask,
+						dstAccessMask = dst_mask,
+						oldLayout = old_layout,
+						newLayout = new_layout,
+						image = image,
+						subresourceRange = {
+							aspectMask = aspect_mask,
 
-						levelCount = 1,
-						baseMipLevel = 0,
+							levelCount = 1,
+							baseMipLevel = 0,
 
-						layerCount = 1,
-						baseLayerLevel = 0
-					},
+							layerCount = 1,
+							baseLayerLevel = 0
+						},
+					}
 				}
 			)
 		end
 
-		function context.setup_cmd:CopyImage(src, dst, w, h, mip_level)
+		function setup_cmd:CopyImage(src, dst, w, h, mip_level)
 			self.cmd:CopyImage(
 				src, "transfer_src_optimal",
 				dst, "transfer_dst_optimal",
@@ -322,7 +359,7 @@ do -- objects
 			)
 		end
 
-		function context.setup_cmd:Create()
+		function setup_cmd:Create()
 			self.cmd = context.device:AllocateCommandBuffers({
 				commandPool = context.device_command_pool,
 				level = "primary",
@@ -330,7 +367,7 @@ do -- objects
 			})
 		end
 
-		function context.setup_cmd:Begin()
+		function setup_cmd:Begin()
 			self.cmd:Begin({
 				flags = 0,
 				pInheritanceInfo = {
@@ -344,7 +381,7 @@ do -- objects
 			})
 		end
 
-		function context.setup_cmd:Flush()
+		function setup_cmd:Flush()
 			if not self.cmd then return end
 
 			self.cmd:End()
@@ -376,6 +413,8 @@ do -- objects
 			)
 			self.cmd = nil
 		end
+
+		context.setup_cmd = setup_cmd
 	end
 
 end
@@ -452,13 +491,13 @@ do -- find and use a gpu
 			if bit.band(info.queueFlags, vk.e.queue.graphics) ~= 0 then				-- if this queue supports graphics use it
 				queue_index = queue_index - 1
 
-				local device, err = physical_device:CreateDevice({
+				local device = physical_device:CreateDevice({
 					ppEnabledLayerNames = {
 						--"VK_LAYER_LUNARG_threading",
 						--"VK_LAYER_LUNARG_mem_tracker",
 						--"VK_LAYER_LUNARG_object_tracker",
 						--"VK_LAYER_LUNARG_draw_state",
-						"VK_LAYER_LUNARG_param_checker",
+						--"VK_LAYER_LUNARG_param_checker",
 						--"VK_LAYER_LUNARG_swapchain",
 						--"VK_LAYER_LUNARG_device_limits",
 						--"VK_LAYER_LUNARG_image",
@@ -478,6 +517,7 @@ do -- find and use a gpu
 				context.device_queue = device:GetQueue(queue_index, 0)
 				context.device_command_pool = device:CreateCommandPool({queueFamilyIndex = queue_index})
 				context.device_memory_properties = physical_device:GetMemoryProperties()
+
 				context.physical_device = physical_device
 				context.device = device
 
@@ -520,7 +560,7 @@ do -- setup the glfw window buffer
 		imageFormat = prefered_format,
 		imagecolorSpace = formats[1].colorSpace,
 		imageExtent = {context.width, context.height},
-		imageUse = "color_attachment",
+		imageUsage = "color_attachment",
 		preTransform = bit.band(capabilities.supportedTransforms, vk.e.surface_transform.identity) ~= 0 and "identity" or capabilities.currentTransform,
 		compositeAlpha = "opaque",
 		imageArrayLayers = 1,
@@ -543,7 +583,7 @@ do -- setup the glfw window buffer
 			width = context.width,
 			height = context.height,
 			format = format,
-			usage = {"depth_stencil_attachment", "transfer_src"},
+			usage = "depth_stencil_attachment",
 			tiling = "optimal",
 			required_props = "device_local"
 		})
@@ -556,7 +596,7 @@ do -- setup the glfw window buffer
 			format = format,
 			flags = 0,
 			subresourceRange = {
-				aspectMask = {"depth", "stencil"},
+				aspectMask = "depth",
 
 				levelCount = 1,
 				baseMipLevel = 0,
@@ -575,22 +615,22 @@ do -- setup the glfw window buffer
 			{
 				format = prefered_format,
 				samples = "1",
-				loadop = "clear",
-				storeop = "store",
-				stencilloadop = "dont_care",
-				stencilstoreop = "dont_care",
-				initiallayout = "color_attachment_optimal",
-				finallayout = "color_attachment_optimal",
+				loadOp = "clear",
+				storeOp = "store",
+				stencilLoadOp = "dont_care",
+				stencilStoreOp = "dont_care",
+				initialLayout = "color_attachment_optimal",
+				finalLayout = "color_attachment_optimal",
 			},
 			{
 				format = context.depth_buffer.format,
 				samples = "1",
-				loadop = "clear",
-				storeop = "dont_care",
-				stencilloadop = "dont_care",
-				stencilstoreop = "dont_care",
-				initiallayout = "depth_stencil_attachment_optimal",
-				finallayout = "depth_stencil_attachment_optimal",
+				loadOp = "clear",
+				storeOp = "dont_care",
+				stencilLoadOp = "dont_care",
+				stencilStoreOp = "dont_care",
+				initialLayout = "depth_stencil_attachment_optimal",
+				finalLayout = "depth_stencil_attachment_optimal",
 			},
 		},
 		pSubpasses = {
@@ -645,7 +685,7 @@ do -- setup the glfw window buffer
 				baseLayerLevel = 0
 			},
 		})
-
+print("?!??!!")
 		context.swap_chain_buffers[i] = {
 			cmd = context.device:AllocateCommandBuffers({
 				commandPool = context.device_command_pool,
