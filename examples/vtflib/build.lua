@@ -50,7 +50,7 @@ function library.LoadImage(data, format)
 
 	local w, h = library.ImageGetWidth(), library.ImageGetHeight()
 	local size = library.ImageComputeImageSize(w, h, 1, 1, format)
-	local buffer = ffi.new("vlByte[?]", size)
+	local buffer = ffi.new("uint8_t[?]", size)
 
 	library.ImageConvert(library.ImageGetData(0, 0, 0, 0), buffer, w, h, library.ImageGetFormat(), format)
 
