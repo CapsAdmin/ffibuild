@@ -758,6 +758,7 @@ do -- data layout
 end
 
 do
+	-- Texture is a function defined further up that returns a lua object
 	context.texture = Texture("./volcano.png", "b8g8r8a8_unorm")
 end
 
@@ -823,6 +824,7 @@ do
 		vertex.color = {math.random(), math.random(), math.random()}
 	end
 
+	-- Buffer is a function defined further up that returns a lua object
 	context.vertices = Buffer("vertex_buffer", create_vertices(vertices))
 	context.vertices.tbl = vertices
 end
@@ -903,159 +905,162 @@ context.device:UpdateDescriptorSets(
 	0, nil
 )
 
-context.pipeline = context.device:CreateGraphicsPipelines(nil, 1, {
-	{
-		layout = context.pipeline_layout,
-		renderPass = context.render_pass,
+context.pipeline = context.device:CreateGraphicsPipelines(
+	nil,
+	nil, {
+		{
+			layout = context.pipeline_layout,
+			renderPass = context.render_pass,
 
-		pVertexInputState = {
-			pVertexBindingDescriptions = {
-				{
-					binding = 0,
-					stride = ffi.sizeof(context.vertices.data[0]),
-					inputRate = "vertex"
-				}
-			},
-			pVertexAttributeDescriptions = {
-				-- layout(location = 0) in vec3 position;
-				{
-					binding = 0,
-					location = 0,
-					format = "r32g32b32_sfloat",
-					offset = 0,
-				},
-				-- layout(location = 1) in vec2 uv;
-				{
-					binding = 0,
-					location = 1,
-					format = "r32g32_sfloat",
-					offset = ffi.sizeof(context.vertices.data[0].pos),
-				},
-				-- layout(location = 2) in vec3 color;
-				{
-					binding = 0,
-					location = 2,
-					format = "r32g32b32_sfloat",
-					offset = ffi.sizeof(context.vertices.data[0].pos)  + ffi.sizeof(context.vertices.data[0].uv),
-				},
-			},
-		},
-
-		pStages = {
-			{
-				stage = "vertex",
-				module = context.device:CreateShaderModule(vk.util.GLSLToSpirV("vert", [[
-					#version 450
-
-					in layout(location = 0) vec3 position;
-					in layout(location = 1) vec2 uv;
-					in layout(location = 2) vec3 color;
-
-					uniform layout (std140, binding = 0) matrices_t
+			pVertexInputState = {
+				pVertexBindingDescriptions = {
 					{
-						mat4 projection;
-						mat4 view;
-						mat4 world;
-					} matrices;
-
-					// to fragment
-					out layout(location = 0) vec2 frag_uv;
-					out layout(location = 1) vec3 frag_color;
-
-					void main()
+						binding = 0,
+						stride = ffi.sizeof(context.vertices.data[0]),
+						inputRate = "vertex"
+					}
+				},
+				pVertexAttributeDescriptions = {
+					-- layout(location = 0) in vec3 position;
 					{
-						gl_Position = (matrices.projection * matrices.view * matrices.world) * vec4(position, 1);
+						binding = 0,
+						location = 0,
+						format = "r32g32b32_sfloat",
+						offset = 0,
+					},
+					-- layout(location = 1) in vec2 uv;
+					{
+						binding = 0,
+						location = 1,
+						format = "r32g32_sfloat",
+						offset = ffi.sizeof(context.vertices.data[0].pos),
+					},
+					-- layout(location = 2) in vec3 color;
+					{
+						binding = 0,
+						location = 2,
+						format = "r32g32b32_sfloat",
+						offset = ffi.sizeof(context.vertices.data[0].pos)  + ffi.sizeof(context.vertices.data[0].uv),
+					},
+				},
+			},
+
+			pStages = {
+				{
+					stage = "vertex",
+					module = context.device:CreateShaderModule(vk.util.GLSLToSpirV("vert", [[
+						#version 450
+
+						in layout(location = 0) vec3 position;
+						in layout(location = 1) vec2 uv;
+						in layout(location = 2) vec3 color;
+
+						uniform layout (std140, binding = 0) matrices_t
+						{
+							mat4 projection;
+							mat4 view;
+							mat4 world;
+						} matrices;
 
 						// to fragment
-						frag_uv = uv;
-						frag_color = color;
-					}
-				]])),
-				pName = "main",
-			},
-			{
-				stage = "fragment",
-				module = context.device:CreateShaderModule(vk.util.GLSLToSpirV("frag", [[
-					#version 450
+						out layout(location = 0) vec2 frag_uv;
+						out layout(location = 1) vec3 frag_color;
 
-					//from descriptor sets
-					uniform layout(binding = 1) sampler2D tex;
+						void main()
+						{
+							gl_Position = (matrices.projection * matrices.view * matrices.world) * vec4(position, 1);
 
-					//from vertex
-					in layout(location = 0) vec2 uv;
-					in layout(location = 1) vec3 color;
-
-					//to render pass (kinda)
-					out layout(location = 0) vec4 frag_color;
-
-					void main()
-					{
-						frag_color =  texture(tex, uv) * vec4(color, 1);
-					}
-				]])),
-				pName = "main",
-			},
-		},
-
-		pInputAssemblyState = {
-			topology = "triangle_list",
-		},
-
-		pRasterizationState = {
-			polygonMode = "fill",
-			cullMode = "none", -- "BACK",
-			frontFace = "clockwise",
-			depthClampEnable = false,
-			rasterizerDiscardEnable = false,
-			depthBiasEnable = false,
-		},
-
-		pColorBlendState = {
-			pAttachments = {
+							// to fragment
+							frag_uv = uv;
+							frag_color = color;
+						}
+					]])),
+					pName = "main",
+				},
 				{
-					colorWriteMask = 0xf,
-					blendEnable = false,
+					stage = "fragment",
+					module = context.device:CreateShaderModule(vk.util.GLSLToSpirV("frag", [[
+						#version 450
+
+						//from descriptor sets
+						uniform layout(binding = 1) sampler2D tex;
+
+						//from vertex
+						in layout(location = 0) vec2 uv;
+						in layout(location = 1) vec3 color;
+
+						//to render pass (kinda)
+						out layout(location = 0) vec4 frag_color;
+
+						void main()
+						{
+							frag_color =  texture(tex, uv) * vec4(color, 1);
+						}
+					]])),
+					pName = "main",
+				},
+			},
+
+			pInputAssemblyState = {
+				topology = "triangle_list",
+			},
+
+			pRasterizationState = {
+				polygonMode = "fill",
+				cullMode = "none", -- "BACK",
+				frontFace = "clockwise",
+				depthClampEnable = false,
+				rasterizerDiscardEnable = false,
+				depthBiasEnable = false,
+			},
+
+			pColorBlendState = {
+				pAttachments = {
+					{
+						colorWriteMask = 0xf,
+						blendEnable = false,
+					}
 				}
-			}
-		},
-
-		pMultisampleState = {
-			pSampleMask = nil,
-			rasterizationSamples = "1",
-		},
-
-		pViewportState = {
-			viewportCount = 1,
-			scissorCount = 1,
-		},
-
-		pDepthStencilState = {
-			depthTestEnable = true,
-			depthWriteEnable = true,
-			depthCompareOp = "less_or_equal",
-			depthBoundsTestEnable = false,
-			stencilTestEnable = false,
-			back = {
-				failOp = "keep",
-				passOp = "keep",
-				compareOp = "always",
 			},
-			front = {
-				failOp = "keep",
-				passOp = "keep",
-				compareOp = "always",
-			},
-		},
 
-		pDynamicState = {
-			dynamicStateCount = 2,
-			pDynamicStates = ffi.new("enum VkDynamicState[2]",
-				vk.e.dynamic_state.viewport,
-				vk.e.dynamic_state.scissor
-			),
-		},
+			pMultisampleState = {
+				pSampleMask = nil,
+				rasterizationSamples = "1",
+			},
+
+			pViewportState = {
+				viewportCount = 1,
+				scissorCount = 1,
+			},
+
+			pDepthStencilState = {
+				depthTestEnable = true,
+				depthWriteEnable = true,
+				depthCompareOp = "less_or_equal",
+				depthBoundsTestEnable = false,
+				stencilTestEnable = false,
+				back = {
+					failOp = "keep",
+					passOp = "keep",
+					compareOp = "always",
+				},
+				front = {
+					failOp = "keep",
+					passOp = "keep",
+					compareOp = "always",
+				},
+			},
+
+			pDynamicState = {
+				dynamicStateCount = 2,
+				pDynamicStates = ffi.new("enum VkDynamicState[2]",
+					vk.e.dynamic_state.viewport,
+					vk.e.dynamic_state.scissor
+				),
+			},
+		}
 	}
-})
+)
 
 context.setup_cmd:Flush()
 
