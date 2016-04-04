@@ -435,7 +435,7 @@ int COLOR_PAIR(int);
 ffi.cdef("typedef uint64_t chtype;")
 ffi.cdef(header)
 
-local lib = assert(ffi.load(jit.os == "Windows" and "pdcurses" or "ncursesw"))
+local lib = assert(ffi.load(jit.os == "Windows" and "pdcurses" or "ncurses.so.5.9"))
 
 local curses = {
 	lib = lib,
