@@ -35,7 +35,7 @@ end
 
 vfs.Write("bullet_cdef", cdef)
 
-local lines = cdef:explode("\n")
+local lines = cdef:split("\n")
 local objects = {}
 
 for i, line in ipairs(lines) do

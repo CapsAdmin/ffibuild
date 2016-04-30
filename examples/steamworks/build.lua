@@ -184,7 +184,7 @@ for i = 1, 500 do
 	local t, line = res:match("declaration specifier expected near '(.-)' at line (.+)")
 	line = tonumber(line)
 	if t and line then
-		local lines = header:explode("\n")
+		local lines = header:split("\n")
 		lines[line] = lines[line]:gsub(t, function() return prepend .. t end)
 		header = table.concat(lines, "\n")
 	end

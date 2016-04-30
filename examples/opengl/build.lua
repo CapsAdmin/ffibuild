@@ -381,7 +381,7 @@ for name, object_functions in pairs(objects) do
 
 						if info then
 							if info.static_arguments then
-								local tbl = (arg_line2 .. ","):explode(",")
+								local tbl = (arg_line2 .. ","):split(",")
 								for i,v in ipairs(info.static_arguments) do
 									tbl[i] = serializer.GetLibrary("luadata").ToString(v)
 								end
