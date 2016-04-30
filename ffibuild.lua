@@ -1458,6 +1458,20 @@ do -- lua helper functions
 			-- process all single quote strings
 			chunk = chunk:gsub("('%S+')", function(val) return assert(loadstring("return (" .. val .. "):byte()"))() end)
 			chunk = chunk:gsub("' '", string.byte(" "))
+			
+			
+			-- handle *INT*_C macros
+			
+			-- UINT64_C needs to append ULL to the number 
+			chunk = chunk:gsub("UINT64_C%((.-)%)", "%1ULL")
+			-- LL
+			chunk = chunk:gsub("INT64_C%((.-)%)", "%1LL")
+			
+			-- don't care about the other casting functions
+			chunk = chunk:gsub(".INT%d-_C%((.-)%)", "%1")			
+			
+			-- remove C++ comments..
+			chunk = chunk:gsub("(.*)//.+", "%1")
 
 			 -- normalize everything to have equal spacing even between punctation
 			chunk = chunk:gsub("([*%(%){}&%[%],;&|<>=])", " %1 ")
@@ -1465,10 +1479,11 @@ do -- lua helper functions
 			chunk = chunk:gsub(" %((.+)%) ", "%1")
 
 			local key, val = chunk:match(" (%S+) (.+)")
-
+			
 			if not key then
 				key = chunk:match(" (%S+)")
 				val = "1"
+				print("unable to find value for: ", key)
 			end
 
 			if temp_enums[val] then
