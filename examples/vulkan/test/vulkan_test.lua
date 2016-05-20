@@ -86,7 +86,7 @@ do -- objects
 			flags = 0,
 			queueFamilyIndexCount = 0,
 			sharingMode = "exclusive",
-			initialLayout = "undefined",
+			initialLayout = "preinitialized",
 		})
 
 		local memory_requirements = context.device:GetImageMemoryRequirements(image)
@@ -123,7 +123,7 @@ do -- objects
 				width = self.width,
 				height = self.height,
 				format = format,
-				usage = {"transfer_dst", "sampled"},
+				usage = {"transfer_src", "transfer_dst", "sampled"},
 				tiling = "optimal",
 				required_props = "device_local",
 				levels = self.mip_levels,
@@ -139,7 +139,7 @@ do -- objects
 					width = image_info.width,
 					height = image_info.height,
 					format = format,
-					usage = "transfer_dst",
+					usage = "transfer_src",
 					tiling = "linear",
 					required_props = "host_visible",
 				})
@@ -428,20 +428,23 @@ do -- create glfw window
 end
 
 do -- create vulkan instance
-	local instance = vk.CreateInstance({
+	local instance, err = vk.CreateInstance({
 		pApplicationInfo = {
 			pApplicationName = "goluwa",
 			applicationVersion = 0,
 			pEngineName = "goluwa",
 			engineVersion = 0,
-			apiVersion = vk.macros.MAKE_VERSION(1, 0, 2),
+			--apiVersion = vk.macros.MAKE_VERSION(1, 0, 2),
 		},
 		ppEnabledLayerNames = {
 			--"VK_LAYER_LUNARG_threading",
 			--"VK_LAYER_LUNARG_mem_tracker",
 			--"VK_LAYER_LUNARG_object_tracker",
 			--"VK_LAYER_LUNARG_draw_state",
-			"VK_LAYER_LUNARG_param_checker",
+            "VK_LAYER_LUNARG_parameter_validation",
+            "VK_LAYER_LUNARG_core_validation",
+            "VK_LAYER_LUNARG_standard_validation",
+			--"VK_LAYER_LUNARG_parameter_validation",
 			--"VK_LAYER_LUNARG_swapchain",
 			--"VK_LAYER_LUNARG_device_limits",
 			--"VK_LAYER_LUNARG_image",
@@ -451,10 +454,12 @@ do -- create vulkan instance
 			"VK_EXT_debug_report",
 		}),
 	})
+    
+    print(instance, err)
 
 	if instance:LoadProcAddr("vkCreateDebugReportCallbackEXT") then
 		instance:CreateDebugReportCallback({
-			flags = {"information", "warning", "performance_warning", "error", "debug"},
+			flags = {--[["information", "warning", "performance_warning",]] "error", "debug"},
 			pfnCallback = function(msgFlags, objType, srcObject, location, msgCode, pLayerPrefix, pMsg, pUserData)
 
 				local level = 3
@@ -497,13 +502,17 @@ do -- find and use a gpu
 						--"VK_LAYER_LUNARG_mem_tracker",
 						--"VK_LAYER_LUNARG_object_tracker",
 						--"VK_LAYER_LUNARG_draw_state",
-						--"VK_LAYER_LUNARG_param_checker",
+						"VK_LAYER_LUNARG_parameter_validation",
+                        "VK_LAYER_LUNARG_core_validation",
+                        "VK_LAYER_LUNARG_standard_validation",
 						--"VK_LAYER_LUNARG_swapchain",
 						--"VK_LAYER_LUNARG_device_limits",
 						--"VK_LAYER_LUNARG_image",
 						--"VK_LAYER_LUNARG_api_dump",
 					},
-					ppEnabledExtensionNames = {},
+					ppEnabledExtensionNames = {
+                        "VK_KHR_swapchain",
+                    },
 					pQueueCreateInfos = {
 						{
 							queueFamilyIndex = queue_index,
@@ -575,6 +584,7 @@ do -- setup the glfw window buffer
 	})
 
 	context.setup_cmd:Create()
+    context.setup_cmd:Begin()
 
 	do -- depth buffer to use in render pass
 		local format = "d16_unorm"
@@ -685,7 +695,7 @@ do -- setup the glfw window buffer
 				baseLayerLevel = 0
 			},
 		})
-print("?!??!!")
+
 		context.swap_chain_buffers[i] = {
 			cmd = context.device:AllocateCommandBuffers({
 				commandPool = context.device_command_pool,

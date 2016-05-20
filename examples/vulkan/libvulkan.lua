@@ -34,7 +34,7 @@ typedef enum VkAccessFlagBits{VK_ACCESS_INDIRECT_COMMAND_READ_BIT=1,VK_ACCESS_IN
 typedef enum VkFormatFeatureFlagBits{VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT=1,VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT=2,VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT=4,VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT=8,VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT=16,VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT=32,VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT=64,VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT=128,VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT=256,VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT=512,VK_FORMAT_FEATURE_BLIT_SRC_BIT=1024,VK_FORMAT_FEATURE_BLIT_DST_BIT=2048,VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT=4096,VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG=8192,VK_FORMAT_FEATURE_FLAG_BITS_MAX_ENUM=2147483647};
 typedef enum VkCommandPoolResetFlagBits{VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT=1,VK_COMMAND_POOL_RESET_FLAG_BITS_MAX_ENUM=2147483647};
 typedef enum VkMemoryHeapFlagBits{VK_MEMORY_HEAP_DEVICE_LOCAL_BIT=1,VK_MEMORY_HEAP_FLAG_BITS_MAX_ENUM=2147483647};
-typedef enum VkStructureType{VK_STRUCTURE_TYPE_APPLICATION_INFO=0,VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO=1,VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO=2,VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO=3,VK_STRUCTURE_TYPE_SUBMIT_INFO=4,VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO=5,VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE=6,VK_STRUCTURE_TYPE_BIND_SPARSE_INFO=7,VK_STRUCTURE_TYPE_FENCE_CREATE_INFO=8,VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO=9,VK_STRUCTURE_TYPE_EVENT_CREATE_INFO=10,VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO=11,VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO=12,VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO=13,VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO=14,VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO=15,VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO=16,VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO=17,VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO=18,VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO=19,VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO=20,VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO=21,VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO=22,VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO=23,VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO=24,VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO=25,VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO=26,VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO=27,VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO=28,VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO=29,VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO=30,VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO=31,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO=32,VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO=33,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO=34,VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET=35,VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET=36,VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO=37,VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO=38,VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO=39,VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO=40,VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO=41,VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO=42,VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO=43,VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER=44,VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER=45,VK_STRUCTURE_TYPE_MEMORY_BARRIER=46,VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO=47,VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO=48,VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR=1000001000,VK_STRUCTURE_TYPE_PRESENT_INFO_KHR=1000001001,VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR=1000002000,VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR=1000002001,VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR=1000003000,VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR=1000004000,VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR=1000005000,VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR=1000006000,VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR=1000007000,VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR=1000008000,VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR=1000009000,VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT=1000011000,VK_STRUCTURE_TYPE_BEGIN_RANGE=0,VK_STRUCTURE_TYPE_END_RANGE=48,VK_STRUCTURE_TYPE_RANGE_SIZE=49,VK_STRUCTURE_TYPE_MAX_ENUM=2147483647};
+typedef enum VkStructureType{VK_STRUCTURE_TYPE_APPLICATION_INFO=0,VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO=1,VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO=2,VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO=3,VK_STRUCTURE_TYPE_SUBMIT_INFO=4,VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO=5,VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE=6,VK_STRUCTURE_TYPE_BIND_SPARSE_INFO=7,VK_STRUCTURE_TYPE_FENCE_CREATE_INFO=8,VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO=9,VK_STRUCTURE_TYPE_EVENT_CREATE_INFO=10,VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO=11,VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO=12,VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO=13,VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO=14,VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO=15,VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO=16,VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO=17,VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO=18,VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO=19,VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO=20,VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO=21,VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO=22,VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO=23,VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO=24,VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO=25,VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO=26,VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO=27,VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO=28,VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO=29,VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO=30,VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO=31,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO=32,VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO=33,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO=34,VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET=35,VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET=36,VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO=37,VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO=38,VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO=39,VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO=40,VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO=41,VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO=42,VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO=43,VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER=44,VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER=45,VK_STRUCTURE_TYPE_MEMORY_BARRIER=46,VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO=47,VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO=48,VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR=1000001000,VK_STRUCTURE_TYPE_PRESENT_INFO_KHR=1000001001,VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR=1000002000,VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR=1000002001,VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR=1000003000,VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR=1000004000,VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR=1000005000,VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR=1000006000,VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR=1000007000,VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR=1000008000,VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR=1000009000,VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT=1000011000,VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD=1000018000,VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT=1000022000,VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT=1000022001,VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT=1000022002,VK_STRUCTURE_TYPE_BEGIN_RANGE=0,VK_STRUCTURE_TYPE_END_RANGE=48,VK_STRUCTURE_TYPE_RANGE_SIZE=49,VK_STRUCTURE_TYPE_MAX_ENUM=2147483647};
 typedef enum VkVertexInputRate{VK_VERTEX_INPUT_RATE_VERTEX=0,VK_VERTEX_INPUT_RATE_INSTANCE=1,VK_VERTEX_INPUT_RATE_BEGIN_RANGE=0,VK_VERTEX_INPUT_RATE_END_RANGE=1,VK_VERTEX_INPUT_RATE_RANGE_SIZE=2,VK_VERTEX_INPUT_RATE_MAX_ENUM=2147483647};
 typedef enum VkCompositeAlphaFlagBitsKHR{VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR=1,VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR=2,VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR=4,VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR=8,VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR=2147483647};
 typedef enum VkImageTiling{VK_IMAGE_TILING_OPTIMAL=0,VK_IMAGE_TILING_LINEAR=1,VK_IMAGE_TILING_BEGIN_RANGE=0,VK_IMAGE_TILING_END_RANGE=1,VK_IMAGE_TILING_RANGE_SIZE=2,VK_IMAGE_TILING_MAX_ENUM=2147483647};
@@ -48,9 +48,10 @@ typedef enum VkImageType{VK_IMAGE_TYPE_1D=0,VK_IMAGE_TYPE_2D=1,VK_IMAGE_TYPE_3D=
 typedef enum VkSparseImageFormatFlagBits{VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT=1,VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT=2,VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT=4,VK_SPARSE_IMAGE_FORMAT_FLAG_BITS_MAX_ENUM=2147483647};
 typedef enum VkBorderColor{VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK=0,VK_BORDER_COLOR_INT_TRANSPARENT_BLACK=1,VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK=2,VK_BORDER_COLOR_INT_OPAQUE_BLACK=3,VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE=4,VK_BORDER_COLOR_INT_OPAQUE_WHITE=5,VK_BORDER_COLOR_BEGIN_RANGE=0,VK_BORDER_COLOR_END_RANGE=5,VK_BORDER_COLOR_RANGE_SIZE=6,VK_BORDER_COLOR_MAX_ENUM=2147483647};
 typedef enum VkInternalAllocationType{VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE=0,VK_INTERNAL_ALLOCATION_TYPE_BEGIN_RANGE=0,VK_INTERNAL_ALLOCATION_TYPE_END_RANGE=0,VK_INTERNAL_ALLOCATION_TYPE_RANGE_SIZE=1,VK_INTERNAL_ALLOCATION_TYPE_MAX_ENUM=2147483647};
+typedef enum VkRasterizationOrderAMD{VK_RASTERIZATION_ORDER_STRICT_AMD=0,VK_RASTERIZATION_ORDER_RELAXED_AMD=1,VK_RASTERIZATION_ORDER_BEGIN_RANGE_AMD=0,VK_RASTERIZATION_ORDER_END_RANGE_AMD=1,VK_RASTERIZATION_ORDER_RANGE_SIZE_AMD=2,VK_RASTERIZATION_ORDER_MAX_ENUM_AMD=2147483647};
 typedef enum VkDebugReportErrorEXT{VK_DEBUG_REPORT_ERROR_NONE_EXT=0,VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT=1,VK_DEBUG_REPORT_ERROR_BEGIN_RANGE_EXT=0,VK_DEBUG_REPORT_ERROR_END_RANGE_EXT=1,VK_DEBUG_REPORT_ERROR_RANGE_SIZE_EXT=2,VK_DEBUG_REPORT_ERROR_MAX_ENUM_EXT=2147483647};
 typedef enum VkQueryPipelineStatisticFlagBits{VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT=1,VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT=2,VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT=4,VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT=8,VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_PRIMITIVES_BIT=16,VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT=32,VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT=64,VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT=128,VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT=256,VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT=512,VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT=1024,VK_QUERY_PIPELINE_STATISTIC_FLAG_BITS_MAX_ENUM=2147483647};
-typedef enum VkColorSpaceKHR{VK_COLORSPACE_SRGB_NONLINEAR_KHR=0,VK_COLOR_SPACE_BEGIN_RANGE_KHR=0,VK_COLOR_SPACE_END_RANGE_KHR=0,VK_COLOR_SPACE_RANGE_SIZE_KHR=1,VK_COLOR_SPACE_MAX_ENUM_KHR=2147483647};
+typedef enum VkColorSpaceKHR{VK_COLOR_SPACE_SRGB_NONLINEAR_KHR=0,VK_COLOR_SPACE_BEGIN_RANGE_KHR=0,VK_COLOR_SPACE_END_RANGE_KHR=0,VK_COLOR_SPACE_RANGE_SIZE_KHR=1,VK_COLOR_SPACE_MAX_ENUM_KHR=2147483647};
 typedef enum VkFrontFace{VK_FRONT_FACE_COUNTER_CLOCKWISE=0,VK_FRONT_FACE_CLOCKWISE=1,VK_FRONT_FACE_BEGIN_RANGE=0,VK_FRONT_FACE_END_RANGE=1,VK_FRONT_FACE_RANGE_SIZE=2,VK_FRONT_FACE_MAX_ENUM=2147483647};
 typedef enum VkStencilOp{VK_STENCIL_OP_KEEP=0,VK_STENCIL_OP_ZERO=1,VK_STENCIL_OP_REPLACE=2,VK_STENCIL_OP_INCREMENT_AND_CLAMP=3,VK_STENCIL_OP_DECREMENT_AND_CLAMP=4,VK_STENCIL_OP_INVERT=5,VK_STENCIL_OP_INCREMENT_AND_WRAP=6,VK_STENCIL_OP_DECREMENT_AND_WRAP=7,VK_STENCIL_OP_BEGIN_RANGE=0,VK_STENCIL_OP_END_RANGE=7,VK_STENCIL_OP_RANGE_SIZE=8,VK_STENCIL_OP_MAX_ENUM=2147483647};
 typedef enum VkBlendOp{VK_BLEND_OP_ADD=0,VK_BLEND_OP_SUBTRACT=1,VK_BLEND_OP_REVERSE_SUBTRACT=2,VK_BLEND_OP_MIN=3,VK_BLEND_OP_MAX=4,VK_BLEND_OP_BEGIN_RANGE=0,VK_BLEND_OP_END_RANGE=4,VK_BLEND_OP_RANGE_SIZE=5,VK_BLEND_OP_MAX_ENUM=2147483647};
@@ -218,6 +219,9 @@ struct VkDisplayPlanePropertiesKHR {struct VkDisplayKHR_T*currentDisplay;unsigne
 struct VkDisplaySurfaceCreateInfoKHR {enum VkStructureType sType;const void*pNext;unsigned int flags;struct VkDisplayModeKHR_T*displayMode;unsigned int planeIndex;unsigned int planeStackIndex;enum VkSurfaceTransformFlagBitsKHR transform;float globalAlpha;enum VkDisplayPlaneAlphaFlagBitsKHR alphaMode;struct VkExtent2D imageExtent;};
 struct VkDebugReportCallbackEXT_T {};
 struct VkDebugReportCallbackCreateInfoEXT {enum VkStructureType sType;const void*pNext;unsigned int flags;unsigned int(*pfnCallback)(unsigned int,enum VkDebugReportObjectTypeEXT,unsigned long,unsigned long,int,const char*,const char*,void*);void*pUserData;};
+struct VkDebugMarkerObjectNameInfoEXT {enum VkStructureType sType;const void*pNext;enum VkDebugReportObjectTypeEXT objectType;unsigned long object;const char*pObjectName;};
+struct VkDebugMarkerObjectTagInfoEXT {enum VkStructureType sType;const void*pNext;enum VkDebugReportObjectTypeEXT objectType;unsigned long object;unsigned long tagName;unsigned long tagSize;const void*pTag;};
+struct VkDebugMarkerMarkerInfoEXT {enum VkStructureType sType;const void*pNext;const char*pMarkerName;float color[4];};
 void(vkGetBufferMemoryRequirements)(struct VkDevice_T*,struct VkBuffer_T*,struct VkMemoryRequirements*);
 enum VkResult(vkDeviceWaitIdle)(struct VkDevice_T*);
 enum VkResult(vkCreateBufferView)(struct VkDevice_T*,const struct VkBufferViewCreateInfo*,const struct VkAllocationCallbacks*,struct VkBufferView_T**);
@@ -300,14 +304,19 @@ enum VkResult(vkResetCommandBuffer)(struct VkCommandBuffer_T*,unsigned int);
 void(vkCmdDrawIndirect)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned int,unsigned int);
 void(*vkGetInstanceProcAddr(struct VkInstance_T*,const char*))();
 void(vkGetImageMemoryRequirements)(struct VkDevice_T*,struct VkImage_T*,struct VkMemoryRequirements*);
+void(vkDebugReportMessageEXT)(struct VkInstance_T*,unsigned int,enum VkDebugReportObjectTypeEXT,unsigned long,unsigned long,int,const char*,const char*);
 enum VkResult(vkSetEvent)(struct VkDevice_T*,struct VkEvent_T*);
+void(vkCmdDebugMarkerEndEXT)(struct VkCommandBuffer_T*);
 enum VkResult(vkGetEventStatus)(struct VkDevice_T*,struct VkEvent_T*);
+void(vkCmdDebugMarkerBeginEXT)(struct VkCommandBuffer_T*,struct VkDebugMarkerMarkerInfoEXT*);
 enum VkResult(vkCreateDevice)(struct VkPhysicalDevice_T*,const struct VkDeviceCreateInfo*,const struct VkAllocationCallbacks*,struct VkDevice_T**);
 enum VkResult(vkCreateInstance)(const struct VkInstanceCreateInfo*,const struct VkAllocationCallbacks*,struct VkInstance_T**);
 void(vkCmdClearDepthStencilImage)(struct VkCommandBuffer_T*,struct VkImage_T*,enum VkImageLayout,const struct VkClearDepthStencilValue*,unsigned int,const struct VkImageSubresourceRange*);
+void(vkCmdResetQueryPool)(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int);
 enum VkResult(vkBeginCommandBuffer)(struct VkCommandBuffer_T*,const struct VkCommandBufferBeginInfo*);
+enum VkResult(vkDebugMarkerSetObjectTagEXT)(struct VkDevice_T*,struct VkDebugMarkerObjectTagInfoEXT*);
 void(vkCmdDrawIndexed)(struct VkCommandBuffer_T*,unsigned int,unsigned int,unsigned int,int,unsigned int);
-void(vkDebugReportMessageEXT)(struct VkInstance_T*,unsigned int,enum VkDebugReportObjectTypeEXT,unsigned long,unsigned long,int,const char*,const char*);
+void(vkCmdDebugMarkerInsertEXT)(struct VkCommandBuffer_T*,struct VkDebugMarkerMarkerInfoEXT*);
 enum VkResult(vkGetPhysicalDeviceDisplayPlanePropertiesKHR)(struct VkPhysicalDevice_T*,unsigned int*,struct VkDisplayPlanePropertiesKHR*);
 void(vkCmdFillBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned long,unsigned int);
 enum VkResult(vkCreateDebugReportCallbackEXT)(struct VkInstance_T*,const struct VkDebugReportCallbackCreateInfoEXT*,const struct VkAllocationCallbacks*,struct VkDebugReportCallbackEXT_T**);
@@ -333,7 +342,7 @@ enum VkResult(vkCreateDisplayModeKHR)(struct VkPhysicalDevice_T*,struct VkDispla
 void(vkCmdBeginRenderPass)(struct VkCommandBuffer_T*,const struct VkRenderPassBeginInfo*,enum VkSubpassContents);
 void(vkCmdClearAttachments)(struct VkCommandBuffer_T*,unsigned int,const struct VkClearAttachment*,unsigned int,const struct VkClearRect*);
 void(vkCmdPushConstants)(struct VkCommandBuffer_T*,struct VkPipelineLayout_T*,unsigned int,unsigned int,unsigned int,const void*);
-void(vkCmdResetQueryPool)(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int,unsigned int);
+enum VkResult(vkDebugMarkerSetObjectNameEXT)(struct VkDevice_T*,struct VkDebugMarkerObjectNameInfoEXT*);
 void(vkCmdEndQuery)(struct VkCommandBuffer_T*,struct VkQueryPool_T*,unsigned int);
 enum VkResult(vkCreateFence)(struct VkDevice_T*,const struct VkFenceCreateInfo*,const struct VkAllocationCallbacks*,struct VkFence_T**);
 void(vkCmdBindIndexBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,enum VkIndexType);
@@ -460,6 +469,7 @@ library = {
 	CreateDevice = CLIB.vkCreateDevice,
 	CreateInstance = CLIB.vkCreateInstance,
 	CmdClearDepthStencilImage = CLIB.vkCmdClearDepthStencilImage,
+	CmdResetQueryPool = CLIB.vkCmdResetQueryPool,
 	BeginCommandBuffer = CLIB.vkBeginCommandBuffer,
 	CmdDrawIndexed = CLIB.vkCmdDrawIndexed,
 	CmdFillBuffer = CLIB.vkCmdFillBuffer,
@@ -474,7 +484,6 @@ library = {
 	CmdBeginRenderPass = CLIB.vkCmdBeginRenderPass,
 	CmdClearAttachments = CLIB.vkCmdClearAttachments,
 	CmdPushConstants = CLIB.vkCmdPushConstants,
-	CmdResetQueryPool = CLIB.vkCmdResetQueryPool,
 	CmdEndQuery = CLIB.vkCmdEndQuery,
 	CreateFence = CLIB.vkCreateFence,
 	CmdBindIndexBuffer = CLIB.vkCmdBindIndexBuffer,
@@ -559,6 +568,10 @@ extensions.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = {ctype = ffi.typeof("enum
 extensions.vkGetPhysicalDeviceSurfaceSupportKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , unsigned int , struct VkSurfaceKHR_T * , unsigned int * )")}
 extensions.vkGetDisplayPlaneCapabilitiesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkDisplayModeKHR_T * , unsigned int , struct VkDisplayPlaneCapabilitiesKHR * )")}
 extensions.vkDebugReportMessageEXT = {ctype = ffi.typeof("void(* )( struct VkInstance_T * , unsigned int , enum VkDebugReportObjectTypeEXT , unsigned long , unsigned long , int , const char * , const char * )")}
+extensions.vkCmdDebugMarkerEndEXT = {ctype = ffi.typeof("void(* )( struct VkCommandBuffer_T * )")}
+extensions.vkCmdDebugMarkerBeginEXT = {ctype = ffi.typeof("void(* )( struct VkCommandBuffer_T * , struct VkDebugMarkerMarkerInfoEXT * )")}
+extensions.vkDebugMarkerSetObjectTagEXT = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , struct VkDebugMarkerObjectTagInfoEXT * )")}
+extensions.vkCmdDebugMarkerInsertEXT = {ctype = ffi.typeof("void(* )( struct VkCommandBuffer_T * , struct VkDebugMarkerMarkerInfoEXT * )")}
 extensions.vkGetPhysicalDeviceDisplayPlanePropertiesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , unsigned int * , struct VkDisplayPlanePropertiesKHR * )")}
 extensions.vkCreateDebugReportCallbackEXT = {ctype = ffi.typeof("enum VkResult(* )( struct VkInstance_T * , const struct VkDebugReportCallbackCreateInfoEXT * , const struct VkAllocationCallbacks * , struct VkDebugReportCallbackEXT_T * * )")}
 extensions.vkCreateSharedSwapchainsKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , unsigned int , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
@@ -572,6 +585,7 @@ extensions.vkGetDisplayModePropertiesKHR = {ctype = ffi.typeof("enum VkResult(* 
 extensions.vkCreateSwapchainKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , const struct VkSwapchainCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkSwapchainKHR_T * * )")}
 extensions.vkGetPhysicalDeviceSurfacePresentModesKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkSurfaceKHR_T * , unsigned int * , enum VkPresentModeKHR * )")}
 extensions.vkCreateDisplayModeKHR = {ctype = ffi.typeof("enum VkResult(* )( struct VkPhysicalDevice_T * , struct VkDisplayKHR_T * , const struct VkDisplayModeCreateInfoKHR * , const struct VkAllocationCallbacks * , struct VkDisplayModeKHR_T * * )")}
+extensions.vkDebugMarkerSetObjectNameEXT = {ctype = ffi.typeof("enum VkResult(* )( struct VkDevice_T * , struct VkDebugMarkerObjectNameInfoEXT * )")}
 local function load(func, ptr, ext, decl, name)
 	if extensions[ext] and not decl and not name then
 		decl = extensions[ext].ctype
@@ -981,6 +995,10 @@ library.e = {
 	STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR"),
 	STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR"),
 	STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT"),
+	STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD"),
+	STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT"),
+	STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT"),
+	STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT"),
 	STRUCTURE_TYPE_BEGIN_RANGE = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_BEGIN_RANGE"),
 	STRUCTURE_TYPE_END_RANGE = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_END_RANGE"),
 	STRUCTURE_TYPE_RANGE_SIZE = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_RANGE_SIZE"),
@@ -1262,6 +1280,12 @@ library.e = {
 	INTERNAL_ALLOCATION_TYPE_END_RANGE = ffi.cast("enum VkInternalAllocationType", "VK_INTERNAL_ALLOCATION_TYPE_END_RANGE"),
 	INTERNAL_ALLOCATION_TYPE_RANGE_SIZE = ffi.cast("enum VkInternalAllocationType", "VK_INTERNAL_ALLOCATION_TYPE_RANGE_SIZE"),
 	INTERNAL_ALLOCATION_TYPE_MAX_ENUM = ffi.cast("enum VkInternalAllocationType", "VK_INTERNAL_ALLOCATION_TYPE_MAX_ENUM"),
+	RASTERIZATION_ORDER_STRICT_AMD = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_STRICT_AMD"),
+	RASTERIZATION_ORDER_RELAXED_AMD = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_RELAXED_AMD"),
+	RASTERIZATION_ORDER_BEGIN_RANGE_AMD = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_BEGIN_RANGE_AMD"),
+	RASTERIZATION_ORDER_END_RANGE_AMD = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_END_RANGE_AMD"),
+	RASTERIZATION_ORDER_RANGE_SIZE_AMD = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_RANGE_SIZE_AMD"),
+	RASTERIZATION_ORDER_MAX_ENUM_AMD = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_MAX_ENUM_AMD"),
 	DEBUG_REPORT_ERROR_NONE_EXT = ffi.cast("enum VkDebugReportErrorEXT", "VK_DEBUG_REPORT_ERROR_NONE_EXT"),
 	DEBUG_REPORT_ERROR_CALLBACK_REF_EXT = ffi.cast("enum VkDebugReportErrorEXT", "VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT"),
 	DEBUG_REPORT_ERROR_BEGIN_RANGE_EXT = ffi.cast("enum VkDebugReportErrorEXT", "VK_DEBUG_REPORT_ERROR_BEGIN_RANGE_EXT"),
@@ -1280,7 +1304,7 @@ library.e = {
 	QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT"),
 	QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT"),
 	QUERY_PIPELINE_STATISTIC_FLAG_BITS_MAX_ENUM = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_FLAG_BITS_MAX_ENUM"),
-	COLORSPACE_SRGB_NONLINEAR_KHR = ffi.cast("enum VkColorSpaceKHR", "VK_COLORSPACE_SRGB_NONLINEAR_KHR"),
+	COLOR_SPACE_SRGB_NONLINEAR_KHR = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"),
 	COLOR_SPACE_BEGIN_RANGE_KHR = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_BEGIN_RANGE_KHR"),
 	COLOR_SPACE_END_RANGE_KHR = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_END_RANGE_KHR"),
 	COLOR_SPACE_RANGE_SIZE_KHR = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_RANGE_SIZE_KHR"),
@@ -1574,14 +1598,17 @@ library.e = {
 		image_view_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO"),
 		max_enum = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_MAX_ENUM"),
 		shader_module_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO"),
-		xcb_surface_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR"),
-		range_size = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_RANGE_SIZE"),
+		debug_marker_object_name_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT"),
+		command_buffer_begin_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO"),
 		mir_surface_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR"),
 		graphics_pipeline_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO"),
 		event_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_EVENT_CREATE_INFO"),
 		instance_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO"),
 		pipeline_vertex_input_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO"),
+		debug_marker_object_tag_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT"),
+		debug_marker_marker_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT"),
 		command_pool_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO"),
+		pipeline_rasterization_state_rasterization_order_amd = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD"),
 		image_memory_barrier = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER"),
 		buffer_memory_barrier = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER"),
 		application_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_APPLICATION_INFO"),
@@ -1607,6 +1634,7 @@ library.e = {
 		pipeline_tessellation_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO"),
 		pipeline_color_blend_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO"),
 		win32_surface_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR"),
+		range_size = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_RANGE_SIZE"),
 		display_mode_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR"),
 		memory_allocate_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO"),
 		pipeline_viewport_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO"),
@@ -1615,7 +1643,7 @@ library.e = {
 		descriptor_set_layout_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO"),
 		descriptor_pool_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO"),
 		render_pass_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO"),
-		command_buffer_begin_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO"),
+		xcb_surface_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR"),
 		pipeline_depth_stencil_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO"),
 		loader_device_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO"),
 		xlib_surface_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR"),
@@ -2150,6 +2178,14 @@ library.e = {
 		storage_buffer = ffi.cast("enum VkDescriptorType", "VK_DESCRIPTOR_TYPE_STORAGE_BUFFER"),
 		range_size = ffi.cast("enum VkDescriptorType", "VK_DESCRIPTOR_TYPE_RANGE_SIZE"),
 	},
+	rasterization_order_amd = {
+		enum_amd = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_MAX_ENUM_AMD"),
+		ct_amd = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_STRICT_AMD"),
+		e_size_amd = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_RANGE_SIZE_AMD"),
+		xed_amd = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_RELAXED_AMD"),
+		range_amd = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_END_RANGE_AMD"),
+		n_range_amd = ffi.cast("enum VkRasterizationOrderAMD", "VK_RASTERIZATION_ORDER_BEGIN_RANGE_AMD"),
+	},
 	descriptor_pool_create = {
 		flag_bits_max_enum = ffi.cast("enum VkDescriptorPoolCreateFlagBits", "VK_DESCRIPTOR_POOL_CREATE_FLAG_BITS_MAX_ENUM"),
 		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.descriptor_pool_create[v] end return bit.bor(unpack(flags)) end,
@@ -2203,6 +2239,20 @@ library.e = {
 		["1"] = ffi.cast("enum VkSampleCountFlagBits", "VK_SAMPLE_COUNT_1_BIT"),
 		["16"] = ffi.cast("enum VkSampleCountFlagBits", "VK_SAMPLE_COUNT_16_BIT"),
 	},
+	compare_op = {
+		not_equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_NOT_EQUAL"),
+		end_range = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_END_RANGE"),
+		greater_or_equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_GREATER_OR_EQUAL"),
+		max_enum = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_MAX_ENUM"),
+		never = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_NEVER"),
+		equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_EQUAL"),
+		less = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_LESS"),
+		greater = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_GREATER"),
+		less_or_equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_LESS_OR_EQUAL"),
+		always = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_ALWAYS"),
+		begin_range = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_BEGIN_RANGE"),
+		range_size = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_RANGE_SIZE"),
+	},
 	pipeline_stage = {
 		tessellation_control_shader = ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT"),
 		host = ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_HOST_BIT"),
@@ -2228,6 +2278,14 @@ library.e = {
 		signaled = ffi.cast("enum VkFenceCreateFlagBits", "VK_FENCE_CREATE_SIGNALED_BIT"),
 		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.fence_create[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkFenceCreateFlagBits", "VK_FENCE_CREATE_FLAG_BITS_MAX_ENUM"),
+	},
+	index_type = {
+		uint32 = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_UINT32"),
+		uint16 = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_UINT16"),
+		max_enum = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_MAX_ENUM"),
+		begin_range = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_BEGIN_RANGE"),
+		end_range = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_END_RANGE"),
+		range_size = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_RANGE_SIZE"),
 	},
 	debug_report_object_type = {
 		swapchain = ffi.cast("enum VkDebugReportObjectTypeEXT", "VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT"),
@@ -2264,14 +2322,6 @@ library.e = {
 		descriptor_set = ffi.cast("enum VkDebugReportObjectTypeEXT", "VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT"),
 		command_buffer = ffi.cast("enum VkDebugReportObjectTypeEXT", "VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT"),
 	},
-	index_type = {
-		uint32 = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_UINT32"),
-		uint16 = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_UINT16"),
-		max_enum = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_MAX_ENUM"),
-		begin_range = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_BEGIN_RANGE"),
-		end_range = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_END_RANGE"),
-		range_size = ffi.cast("enum VkIndexType", "VK_INDEX_TYPE_RANGE_SIZE"),
-	},
 	border_color = {
 		end_range = ffi.cast("enum VkBorderColor", "VK_BORDER_COLOR_END_RANGE"),
 		float_opaque_white = ffi.cast("enum VkBorderColor", "VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE"),
@@ -2283,15 +2333,6 @@ library.e = {
 		begin_range = ffi.cast("enum VkBorderColor", "VK_BORDER_COLOR_BEGIN_RANGE"),
 		int_transparent_black = ffi.cast("enum VkBorderColor", "VK_BORDER_COLOR_INT_TRANSPARENT_BLACK"),
 		float_opaque_black = ffi.cast("enum VkBorderColor", "VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK"),
-	},
-	attachment_load_op = {
-		load = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_LOAD"),
-		dont_care = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_DONT_CARE"),
-		max_enum = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_MAX_ENUM"),
-		end_range = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_END_RANGE"),
-		begin_range = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_BEGIN_RANGE"),
-		clear = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_CLEAR"),
-		range_size = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_RANGE_SIZE"),
 	},
 	sampler_mipmap_mode = {
 		linear = ffi.cast("enum VkSamplerMipmapMode", "VK_SAMPLER_MIPMAP_MODE_LINEAR"),
@@ -2357,19 +2398,14 @@ library.e = {
 		storage_buffer = ffi.cast("enum VkBufferUsageFlagBits", "VK_BUFFER_USAGE_STORAGE_BUFFER_BIT"),
 		transfer_dst = ffi.cast("enum VkBufferUsageFlagBits", "VK_BUFFER_USAGE_TRANSFER_DST_BIT"),
 	},
-	compare_op = {
-		not_equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_NOT_EQUAL"),
-		end_range = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_END_RANGE"),
-		greater_or_equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_GREATER_OR_EQUAL"),
-		max_enum = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_MAX_ENUM"),
-		never = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_NEVER"),
-		equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_EQUAL"),
-		less = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_LESS"),
-		greater = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_GREATER"),
-		less_or_equal = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_LESS_OR_EQUAL"),
-		always = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_ALWAYS"),
-		begin_range = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_BEGIN_RANGE"),
-		range_size = ffi.cast("enum VkCompareOp", "VK_COMPARE_OP_RANGE_SIZE"),
+	attachment_load_op = {
+		load = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_LOAD"),
+		dont_care = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_DONT_CARE"),
+		max_enum = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_MAX_ENUM"),
+		end_range = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_END_RANGE"),
+		begin_range = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_BEGIN_RANGE"),
+		clear = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_CLEAR"),
+		range_size = ffi.cast("enum VkAttachmentLoadOp", "VK_ATTACHMENT_LOAD_OP_RANGE_SIZE"),
 	},
 	subpass_contents = {
 		end_range = ffi.cast("enum VkSubpassContents", "VK_SUBPASS_CONTENTS_END_RANGE"),
@@ -2407,7 +2443,7 @@ library.e = {
 		_end_range = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_END_RANGE_KHR"),
 		_range_size = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_RANGE_SIZE_KHR"),
 		_max_enum = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_MAX_ENUM_KHR"),
-		srgb_nonlinear = ffi.cast("enum VkColorSpaceKHR", "VK_COLORSPACE_SRGB_NONLINEAR_KHR"),
+		_srgb_nonlinear = ffi.cast("enum VkColorSpaceKHR", "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"),
 	},
 	blend_factor = {
 		src_alpha = ffi.cast("enum VkBlendFactor", "VK_BLEND_FACTOR_SRC_ALPHA"),
@@ -3679,6 +3715,24 @@ function library.s.DebugReportCallbackCreateInfoEXT(tbl, table_only)
 	end
 	return table_only and tbl or ffi.new("struct VkDebugReportCallbackCreateInfoEXT", tbl)
 end
+function library.s.DebugMarkerObjectNameInfoEXT(tbl, table_only)
+	tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT"
+	if type(tbl.objectType) == "string" then
+		tbl.objectType = library.e.debug_report_object_type[tbl.objectType]
+	end
+	return table_only and tbl or ffi.new("struct VkDebugMarkerObjectNameInfoEXT", tbl)
+end
+function library.s.DebugMarkerObjectTagInfoEXT(tbl, table_only)
+	tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT"
+	if type(tbl.objectType) == "string" then
+		tbl.objectType = library.e.debug_report_object_type[tbl.objectType]
+	end
+	return table_only and tbl or ffi.new("struct VkDebugMarkerObjectTagInfoEXT", tbl)
+end
+function library.s.DebugMarkerMarkerInfoEXT(tbl, table_only)
+	tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT"
+	return table_only and tbl or ffi.new("struct VkDebugMarkerMarkerInfoEXT", tbl)
+end
 function library.s.DescriptorPoolArray(tbl) return ffi.new("struct VkDescriptorPool_T *[?]", #tbl, tbl) end
 function library.s.PipelineTessellationStateCreateInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3714,6 +3768,18 @@ end
 function library.s.InstanceArray(tbl) return ffi.new("struct VkInstance_T *[?]", #tbl, tbl) end
 function library.s.ImageViewArray(tbl) return ffi.new("struct VkImageView_T *[?]", #tbl, tbl) end
 function library.s.DescriptorSetArray(tbl) return ffi.new("struct VkDescriptorSet_T *[?]", #tbl, tbl) end
+function library.s.PipelineRasterizationStateRasterizationOrderAMD(tbl, table_only)
+	if type(tbl.rasterizationOrder) == "string" then
+		tbl.rasterizationOrder = library.e.rasterization_order_amd[tbl.rasterizationOrder]
+	end
+	return table_only and tbl or ffi.new("struct VkPipelineRasterizationStateRasterizationOrderAMD", tbl)
+end
+function library.s.PipelineRasterizationStateRasterizationOrderAMDArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.PipelineRasterizationStateRasterizationOrderAMD(v)
+	end
+	return ffi.new("struct VkPipelineRasterizationStateRasterizationOrderAMD[?]", #tbl, tbl)
+end
 function library.s.ComponentMapping(tbl, table_only)
 	if type(tbl.r) == "string" then
 		tbl.r = library.e.component_swizzle[tbl.r]
@@ -3741,6 +3807,18 @@ function library.s.PipelineMultisampleStateCreateInfoArray(tbl)
 	end
 	return ffi.new("struct VkPipelineMultisampleStateCreateInfo[?]", #tbl, tbl)
 end
+function library.s.DebugReportCallbackCreateInfoEXTArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.DebugReportCallbackCreateInfoEXT(v)
+	end
+	return ffi.new("struct VkDebugReportCallbackCreateInfoEXT[?]", #tbl, tbl)
+end
+function library.s.DebugMarkerObjectNameInfoEXTArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.DebugMarkerObjectNameInfoEXT(v)
+	end
+	return ffi.new("struct VkDebugMarkerObjectNameInfoEXT[?]", #tbl, tbl)
+end
 function library.s.DispatchIndirectCommand(tbl, table_only)
 	return table_only and tbl or ffi.new("struct VkDispatchIndirectCommand", tbl)
 end
@@ -3749,6 +3827,12 @@ function library.s.DispatchIndirectCommandArray(tbl)
 		tbl[i] = library.s.DispatchIndirectCommand(v)
 	end
 	return ffi.new("struct VkDispatchIndirectCommand[?]", #tbl, tbl)
+end
+function library.s.DisplayPresentInfoKHRArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.DisplayPresentInfoKHR(v)
+	end
+	return ffi.new("struct VkDisplayPresentInfoKHR[?]", #tbl, tbl)
 end
 function library.s.DescriptorSetAllocateInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3762,11 +3846,11 @@ function library.s.WriteDescriptorSetArray(tbl)
 	end
 	return ffi.new("struct VkWriteDescriptorSet[?]", #tbl, tbl)
 end
-function library.s.DebugReportCallbackCreateInfoEXTArray(tbl)
+function library.s.DebugMarkerObjectTagInfoEXTArray(tbl)
 	for i, v in ipairs(tbl) do
-		tbl[i] = library.s.DebugReportCallbackCreateInfoEXT(v)
+		tbl[i] = library.s.DebugMarkerObjectTagInfoEXT(v)
 	end
-	return ffi.new("struct VkDebugReportCallbackCreateInfoEXT[?]", #tbl, tbl)
+	return ffi.new("struct VkDebugMarkerObjectTagInfoEXT[?]", #tbl, tbl)
 end
 function library.s.PipelineColorBlendStateCreateInfoArray(tbl)
 	for i, v in ipairs(tbl) do
@@ -3779,12 +3863,6 @@ function library.s.BufferArray(tbl) return ffi.new("struct VkBuffer_T *[?]", #tb
 function library.s.PipelineCacheArray(tbl) return ffi.new("struct VkPipelineCache_T *[?]", #tbl, tbl) end
 function library.s.DebugReportCallbackEXTArray(tbl) return ffi.new("struct VkDebugReportCallbackEXT_T *[?]", #tbl, tbl) end
 function library.s.ImageArray(tbl) return ffi.new("struct VkImage_T *[?]", #tbl, tbl) end
-function library.s.DisplayPresentInfoKHRArray(tbl)
-	for i, v in ipairs(tbl) do
-		tbl[i] = library.s.DisplayPresentInfoKHR(v)
-	end
-	return ffi.new("struct VkDisplayPresentInfoKHR[?]", #tbl, tbl)
-end
 function library.s.QueryPoolCreateInfoArray(tbl)
 	for i, v in ipairs(tbl) do
 		tbl[i] = library.s.QueryPoolCreateInfo(v)
@@ -4237,6 +4315,12 @@ function library.s.SparseImageMemoryBindInfoArray(tbl)
 end
 function library.s.SamplerArray(tbl) return ffi.new("struct VkSampler_T *[?]", #tbl, tbl) end
 function library.s.QueryPoolArray(tbl) return ffi.new("struct VkQueryPool_T *[?]", #tbl, tbl) end
+function library.s.DebugMarkerMarkerInfoEXTArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.DebugMarkerMarkerInfoEXT(v)
+	end
+	return ffi.new("struct VkDebugMarkerMarkerInfoEXT[?]", #tbl, tbl)
+end
 function library.s.ImageResolve(tbl, table_only)
 	if type(tbl.srcSubresource) == "table" then
 		tbl.srcSubresource = library.s.ImageSubresourceLayers(tbl.srcSubresource, true)
@@ -6068,8 +6152,31 @@ function library.GetInstanceProcAddr(instance, pName)
 	return CLIB.vkGetInstanceProcAddr(instance, pName)
 end
 
+function library.DebugReportMessage(instance, flags, objectType, object, location, messageCode, pLayerPrefix, pMessage)
+	if type(flags) == "table" then
+		flags = library.e.debug_report.make_enums(flags)
+	elseif type(flags) == "string" then
+		flags = library.e.debug_report[flags]
+	end
+	if type(objectType) == "string" then
+		objectType = library.e.debug_report_object_type[objectType]
+	end
+	return library.DebugReportMessageEXT(instance, flags, objectType, object, location, messageCode, pLayerPrefix, pMessage)
+end
+
 function library.SetEvent(device, event)
 	return CLIB.vkSetEvent(device, event)
+end
+
+function library.CmdDebugMarkerEnd(commandBuffer)
+	return library.CmdDebugMarkerEndEXT(commandBuffer)
+end
+
+function library.CmdDebugMarkerBegin(commandBuffer, pMarkerInfo)
+	if type(pMarkerInfo) == "table" then
+		pMarkerInfo = library.s.DebugMarkerMarkerInfoEXT(pMarkerInfo, false)
+	end
+	return library.CmdDebugMarkerBeginEXT(commandBuffer, pMarkerInfo)
 end
 
 function library.CmdClearDepthStencilImage(commandBuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges)
@@ -6088,6 +6195,10 @@ function library.CmdClearDepthStencilImage(commandBuffer, image, imageLayout, pD
 	return CLIB.vkCmdClearDepthStencilImage(commandBuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges)
 end
 
+function library.CmdResetQueryPool(commandBuffer, queryPool, firstQuery, queryCount)
+	return CLIB.vkCmdResetQueryPool(commandBuffer, queryPool, firstQuery, queryCount)
+end
+
 function library.BeginCommandBuffer(commandBuffer, pBeginInfo)
 	if type(pBeginInfo) == "table" then
 		pBeginInfo = library.s.CommandBufferBeginInfo(pBeginInfo, false)
@@ -6095,20 +6206,22 @@ function library.BeginCommandBuffer(commandBuffer, pBeginInfo)
 	return CLIB.vkBeginCommandBuffer(commandBuffer, pBeginInfo)
 end
 
+function library.DebugMarkerSetObjectTag(device, pTagInfo)
+	if type(pTagInfo) == "table" then
+		pTagInfo = library.s.DebugMarkerObjectTagInfoEXT(pTagInfo, false)
+	end
+	return library.DebugMarkerSetObjectTagEXT(device, pTagInfo)
+end
+
 function library.CmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance)
 	return CLIB.vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance)
 end
 
-function library.DebugReportMessage(instance, flags, objectType, object, location, messageCode, pLayerPrefix, pMessage)
-	if type(flags) == "table" then
-		flags = library.e.debug_report.make_enums(flags)
-	elseif type(flags) == "string" then
-		flags = library.e.debug_report[flags]
+function library.CmdDebugMarkerInsert(commandBuffer, pMarkerInfo)
+	if type(pMarkerInfo) == "table" then
+		pMarkerInfo = library.s.DebugMarkerMarkerInfoEXT(pMarkerInfo, false)
 	end
-	if type(objectType) == "string" then
-		objectType = library.e.debug_report_object_type[objectType]
-	end
-	return library.DebugReportMessageEXT(instance, flags, objectType, object, location, messageCode, pLayerPrefix, pMessage)
+	return library.CmdDebugMarkerInsertEXT(commandBuffer, pMarkerInfo)
 end
 
 function library.CmdFillBuffer(commandBuffer, dstBuffer, dstOffset, size, data)
@@ -6239,8 +6352,11 @@ function library.CmdPushConstants(commandBuffer, layout, stageFlags, offset, siz
 	return CLIB.vkCmdPushConstants(commandBuffer, layout, stageFlags, offset, size, pValues)
 end
 
-function library.CmdResetQueryPool(commandBuffer, queryPool, firstQuery, queryCount)
-	return CLIB.vkCmdResetQueryPool(commandBuffer, queryPool, firstQuery, queryCount)
+function library.DebugMarkerSetObjectName(device, pNameInfo)
+	if type(pNameInfo) == "table" then
+		pNameInfo = library.s.DebugMarkerObjectNameInfoEXT(pNameInfo, false)
+	end
+	return library.DebugMarkerSetObjectNameEXT(device, pNameInfo)
 end
 
 function library.CmdEndQuery(commandBuffer, queryPool, query)
@@ -6503,11 +6619,12 @@ do
 		DrawIndexedIndirect = library.CmdDrawIndexedIndirect,
 		SetBlendConstants = library.CmdSetBlendConstants,
 		CopyBuffer = library.CmdCopyBuffer,
-		BindPipeline = library.CmdBindPipeline,
+		BindVertexBuffers = library.CmdBindVertexBuffers,
 		SetLineWidth = library.CmdSetLineWidth,
 		PushConstants = library.CmdPushConstants,
 		DispatchIndirect = library.CmdDispatchIndirect,
 		ClearColorImage = library.CmdClearColorImage,
+		DebugMarkerInsert = library.CmdDebugMarkerInsert,
 		ResolveImage = library.CmdResolveImage,
 		WriteTimestamp = library.CmdWriteTimestamp,
 		SetStencilReference = library.CmdSetStencilReference,
@@ -6516,32 +6633,34 @@ do
 		End = library.EndCommandBuffer,
 		ClearAttachments = library.CmdClearAttachments,
 		SetDepthBias = library.CmdSetDepthBias,
+		SetScissor = library.CmdSetScissor,
 		WaitEvents = library.CmdWaitEvents,
-		BindVertexBuffers = library.CmdBindVertexBuffers,
+		FillBuffer = library.CmdFillBuffer,
+		BindDescriptorSets = library.CmdBindDescriptorSets,
 		Reset = library.ResetCommandBuffer,
 		Dispatch = library.CmdDispatch,
 		CopyQueryPoolResults = library.CmdCopyQueryPoolResults,
 		SetEvent = library.CmdSetEvent,
-		SetScissor = library.CmdSetScissor,
-		FillBuffer = library.CmdFillBuffer,
-		BlitImage = library.CmdBlitImage,
-		BindDescriptorSets = library.CmdBindDescriptorSets,
+		BindPipeline = library.CmdBindPipeline,
 		SetDepthBounds = library.CmdSetDepthBounds,
-		EndQuery = library.CmdEndQuery,
-		ResetEvent = library.CmdResetEvent,
+		BlitImage = library.CmdBlitImage,
 		ResetQueryPool = library.CmdResetQueryPool,
-		CopyImageToBuffer = library.CmdCopyImageToBuffer,
-		ClearDepthStencilImage = library.CmdClearDepthStencilImage,
+		ResetEvent = library.CmdResetEvent,
 		Draw = library.CmdDraw,
 		SetStencilWriteMask = library.CmdSetStencilWriteMask,
+		EndRenderPass = library.CmdEndRenderPass,
+		CopyImageToBuffer = library.CmdCopyImageToBuffer,
+		ClearDepthStencilImage = library.CmdClearDepthStencilImage,
+		EndQuery = library.CmdEndQuery,
+		DebugMarkerEnd = library.CmdDebugMarkerEnd,
 		DrawIndexed = library.CmdDrawIndexed,
 		SetStencilCompareMask = library.CmdSetStencilCompareMask,
 		ExecuteCommands = library.CmdExecuteCommands,
-		NextSubpass = library.CmdNextSubpass,
-		EndRenderPass = library.CmdEndRenderPass,
-		CopyImage = library.CmdCopyImage,
 		UpdateBuffer = library.CmdUpdateBuffer,
 		BeginRenderPass = library.CmdBeginRenderPass,
+		CopyImage = library.CmdCopyImage,
+		NextSubpass = library.CmdNextSubpass,
+		DebugMarkerBegin = library.CmdDebugMarkerBegin,
 		BeginQuery = library.CmdBeginQuery,
 		PipelineBarrier = library.CmdPipelineBarrier,
 		Begin = library.BeginCommandBuffer,
@@ -6556,12 +6675,13 @@ do
 		CreateFramebuffer = library.CreateFramebuffer,
 		DestroyPipelineLayout = library.DestroyPipelineLayout,
 		GetEventStatus = library.GetEventStatus,
-		GetQueue = library.GetDeviceQueue,
+		DebugMarkerSetObjectName = library.DebugMarkerSetObjectName,
+		DestroySwapchain = library.DestroySwapchain,
 		GetFenceStatus = library.GetFenceStatus,
-		DestroyDescriptorPool = library.DestroyDescriptorPool,
+		CreateComputePipelines = library.CreateComputePipelines,
 		GetPipelineCacheData = library.GetPipelineCacheData,
 		GetQueryPoolResults = library.GetQueryPoolResults,
-		DestroyImageView = library.DestroyImageView,
+		DestroyBufferView = library.DestroyBufferView,
 		WaitIdle = library.DeviceWaitIdle,
 		CreateDescriptorSetLayout = library.CreateDescriptorSetLayout,
 		DestroyCommandPool = library.DestroyCommandPool,
@@ -6575,7 +6695,7 @@ do
 		BindImageMemory = library.BindImageMemory,
 		UnmapMemory = library.UnmapMemory,
 		Destroy = library.DestroyDevice,
-		DestroyShaderModule = library.DestroyShaderModule,
+		DestroyQueryPool = library.DestroyQueryPool,
 		CreateSampler = library.CreateSampler,
 		FreeDescriptorSets = library.FreeDescriptorSets,
 		CreateQueryPool = library.CreateQueryPool,
@@ -6588,46 +6708,47 @@ do
 		CreateImageView = library.CreateImageView,
 		CreateDescriptorPool = library.CreateDescriptorPool,
 		DestroyFramebuffer = library.DestroyFramebuffer,
-		DestroyPipeline = library.DestroyPipeline,
+		DestroyDescriptorSetLayout = library.DestroyDescriptorSetLayout,
 		AllocateMemory = library.AllocateMemory,
 		FreeCommandBuffers = library.FreeCommandBuffers,
 		ResetEvent = library.ResetEvent,
 		GetImageSparseMemoryRequirements = library.GetImageSparseMemoryRequirements,
+		DebugMarkerSetObjectTag = library.DebugMarkerSetObjectTag,
 		LoadProcAddr = library.util.LoadDeviceProcAddr,
-		ResetFences = library.ResetFences,
+		DestroyBuffer = library.DestroyBuffer,
 		FreeMemory = library.FreeMemory,
-		DestroyImage = library.DestroyImage,
+		DestroyShaderModule = library.DestroyShaderModule,
 		FlushMappedMemoryRanges = library.FlushMappedMemoryRanges,
 		UpdateDescriptorSets = library.UpdateDescriptorSets,
 		CreateBuffer = library.CreateBuffer,
+		GetSwapchainImages = library.GetSwapchainImages,
 		DestroyPipelineCache = library.DestroyPipelineCache,
-		CreateComputePipelines = library.CreateComputePipelines,
 		AcquireNextImage = library.AcquireNextImage,
 		GetMemoryCommitment = library.GetDeviceMemoryCommitment,
 		SetEvent = library.SetEvent,
+		DestroyPipeline = library.DestroyPipeline,
+		GetQueue = library.GetDeviceQueue,
+		DestroyEvent = library.DestroyEvent,
 		BindBufferMemory = library.BindBufferMemory,
 		MergePipelineCaches = library.MergePipelineCaches,
-		DestroyEvent = library.DestroyEvent,
-		GetSwapchainImages = library.GetSwapchainImages,
-		DestroyQueryPool = library.DestroyQueryPool,
+		DestroyImageView = library.DestroyImageView,
 		CreateRenderPass = library.CreateRenderPass,
-		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
 		CreateEvent = library.CreateEvent,
-		DestroyBuffer = library.DestroyBuffer,
-		DestroyDescriptorSetLayout = library.DestroyDescriptorSetLayout,
+		GetRenderAreaGranularity = library.GetRenderAreaGranularity,
+		DestroyDescriptorPool = library.DestroyDescriptorPool,
 		InvalidateMappedMemoryRanges = library.InvalidateMappedMemoryRanges,
 		CreateSemaphore = library.CreateSemaphore,
+		DestroyImage = library.DestroyImage,
 		GetImageSubresourceLayout = library.GetImageSubresourceLayout,
 		CreateGraphicsPipelines = library.CreateGraphicsPipelines,
-		AllocateDescriptorSets = library.AllocateDescriptorSets,
 		CreatePipelineCache = library.CreatePipelineCache,
-		DestroyBufferView = library.DestroyBufferView,
+		AllocateDescriptorSets = library.AllocateDescriptorSets,
 		MapMemory = library.MapMemory,
 		DestroyRenderPass = library.DestroyRenderPass,
 		AllocateCommandBuffers = library.AllocateCommandBuffers,
 		CreateSharedSwapchains = library.CreateSharedSwapchains,
 		CreateShaderModule = library.CreateShaderModule,
-		DestroySwapchain = library.DestroySwapchain,
+		ResetFences = library.ResetFences,
 	}
 	META.__index = META
 	ffi.metatype("struct VkDevice_T", META)
