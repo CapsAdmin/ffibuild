@@ -808,9 +808,9 @@ library = {
 }
 library.e = {
 	H_INCLUDED = 1,
-	VERSION_NUMBER = 3002000,
-	VERSION_ONLY_STRING = "3.2.0",
-	VERSION_STRING = "libarchive 3.2.0",
+	VERSION_NUMBER = 3002001,
+	VERSION_ONLY_STRING = "3.2.1",
+	VERSION_STRING = "libarchive 3.2.1",
 	EOF = 1,
 	OK = 0,
 	RETRY = -10,

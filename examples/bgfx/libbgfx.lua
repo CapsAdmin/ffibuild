@@ -9,11 +9,11 @@ typedef enum bgfx_attrib{BGFX_ATTRIB_POSITION=0,BGFX_ATTRIB_NORMAL=1,BGFX_ATTRIB
 typedef enum bgfx_access{BGFX_ACCESS_READ=0,BGFX_ACCESS_WRITE=1,BGFX_ACCESS_READWRITE=2,BGFX_ACCESS_COUNT=3};
 typedef enum bgfx_attrib_type{BGFX_ATTRIB_TYPE_UINT8=0,BGFX_ATTRIB_TYPE_UINT10=1,BGFX_ATTRIB_TYPE_INT16=2,BGFX_ATTRIB_TYPE_HALF=3,BGFX_ATTRIB_TYPE_FLOAT=4,BGFX_ATTRIB_TYPE_COUNT=5};
 typedef enum bgfx_occlusion_query_result{BGFX_OCCLUSION_QUERY_RESULT_INVISIBLE=0,BGFX_OCCLUSION_QUERY_RESULT_VISIBLE=1,BGFX_OCCLUSION_QUERY_RESULT_NORESULT=2,BGFX_OCCLUSION_QUERY_RESULT_COUNT=3};
-struct bgfx_indirect_buffer_handle {unsigned short idx;};
 struct bgfx_dynamic_index_buffer_handle {unsigned short idx;};
 struct bgfx_dynamic_vertex_buffer_handle {unsigned short idx;};
 struct bgfx_frame_buffer_handle {unsigned short idx;};
 struct bgfx_index_buffer_handle {unsigned short idx;};
+struct bgfx_indirect_buffer_handle {unsigned short idx;};
 struct bgfx_occlusion_query_handle {unsigned short idx;};
 struct bgfx_program_handle {unsigned short idx;};
 struct bgfx_shader_handle {unsigned short idx;};
@@ -25,7 +25,7 @@ struct bgfx_memory {unsigned char*data;unsigned int size;};
 struct bgfx_transform {float*data;unsigned short num;};
 struct bgfx_hmd_eye {float rotation[4];float translation[3];float fov[4];float viewOffset[3];float projection[16];float pixelsPerTanAngle[2];};
 struct bgfx_hmd {struct bgfx_hmd_eye eye[2];unsigned short width;unsigned short height;unsigned int deviceWidth;unsigned int deviceHeight;unsigned char flags;};
-struct bgfx_stats {unsigned long cpuTimeBegin;unsigned long cpuTimeEnd;unsigned long cpuTimerFreq;unsigned long gpuTimeBegin;unsigned long gpuTimeEnd;unsigned long gpuTimerFreq;};
+struct bgfx_stats {unsigned long cpuTimeBegin;unsigned long cpuTimeEnd;unsigned long cpuTimerFreq;unsigned long gpuTimeBegin;unsigned long gpuTimeEnd;unsigned long gpuTimerFreq;long waitRender;long waitSubmit;};
 struct bgfx_vertex_decl {unsigned int hash;unsigned short stride;unsigned short offset[BGFX_ATTRIB_COUNT];unsigned short attributes[BGFX_ATTRIB_COUNT];};
 struct bgfx_transient_index_buffer {unsigned char*data;unsigned int size;struct bgfx_index_buffer_handle handle;unsigned int startIndex;};
 struct bgfx_transient_vertex_buffer {unsigned char*data;unsigned int size;unsigned int startVertex;unsigned short stride;struct bgfx_vertex_buffer_handle handle;struct bgfx_vertex_decl_handle decl;};
@@ -89,7 +89,7 @@ _Bool(bgfx_check_avail_transient_buffers)(unsigned int,const struct bgfx_vertex_
 void(bgfx_set_view_frame_buffer)(unsigned char,struct bgfx_frame_buffer_handle);
 void(bgfx_destroy_index_buffer)(struct bgfx_index_buffer_handle);
 void(bgfx_set_transient_vertex_buffer)(const struct bgfx_transient_vertex_buffer*,unsigned int,unsigned int);
-unsigned int(bgfx_frame)();
+unsigned int(bgfx_frame)(_Bool);
 void(bgfx_set_transient_index_buffer)(const struct bgfx_transient_index_buffer*,unsigned int,unsigned int);
 const struct bgfx_memory*(bgfx_make_ref)(const void*,unsigned int);
 void(bgfx_set_dynamic_vertex_buffer)(struct bgfx_dynamic_vertex_buffer_handle,unsigned int,unsigned int);
@@ -132,8 +132,8 @@ struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer_scaled)(enum bgfx_backb
 void(bgfx_vertex_pack)(const float,_Bool,enum bgfx_attrib,const struct bgfx_vertex_decl*,void*,unsigned int);
 struct bgfx_dynamic_index_buffer_handle(bgfx_create_dynamic_index_buffer_mem)(const struct bgfx_memory*,unsigned short);
 struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer)(unsigned short,unsigned short,enum bgfx_texture_format,unsigned int);
-void(bgfx_read_frame_buffer)(struct bgfx_frame_buffer_handle,unsigned char,void*);
-void(bgfx_read_texture)(struct bgfx_texture_handle,void*);
+unsigned int(bgfx_read_frame_buffer)(struct bgfx_frame_buffer_handle,unsigned char,void*);
+unsigned int(bgfx_read_texture)(struct bgfx_texture_handle,void*);
 void(bgfx_set_view_name)(unsigned char,const char*);
 struct bgfx_program_handle(bgfx_create_compute_program)(struct bgfx_shader_handle,_Bool);
 void(bgfx_set_view_clear_mrt)(unsigned char,unsigned short,float,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char);
@@ -445,7 +445,7 @@ library.e = {
 	OCCLUSION_QUERY_RESULT_NORESULT = ffi.cast("enum bgfx_occlusion_query_result", "BGFX_OCCLUSION_QUERY_RESULT_NORESULT"),
 	OCCLUSION_QUERY_RESULT_COUNT = ffi.cast("enum bgfx_occlusion_query_result", "BGFX_OCCLUSION_QUERY_RESULT_COUNT"),
 	DEFINES_H_HEADER_GUARD = 1,
-	API_VERSION = 14,
+	API_VERSION = 16,
 	STATE_RGB_WRITE = 0x0000000000000001ULL ,
 	STATE_ALPHA_WRITE = 0x0000000000000002ULL ,
 	STATE_DEPTH_WRITE = 0x0000000000000004ULL ,
