@@ -24,6 +24,7 @@ struct FT_BBox_ {signed long xMin;signed long yMin;signed long xMax;signed long 
 struct FT_Bitmap_ {unsigned int rows;unsigned int width;int pitch;unsigned char*buffer;unsigned short num_grays;unsigned char pixel_mode;unsigned char palette_mode;void*palette;};
 struct FT_Outline_ {short n_contours;short n_points;struct FT_Vector_*points;char*tags;short*contours;int flags;};
 struct FT_Outline_Funcs_ {int(*move_to)(const struct FT_Vector_*,void*);int(*line_to)(const struct FT_Vector_*,void*);int(*conic_to)(const struct FT_Vector_*,const struct FT_Vector_*,void*);int(*cubic_to)(const struct FT_Vector_*,const struct FT_Vector_*,const struct FT_Vector_*,void*);int shift;signed long delta;};
+struct FT_Span_ {short x;unsigned short len;unsigned char coverage;};
 struct FT_Raster_Params_ {const struct FT_Bitmap_*target;const void*source;int flags;void(*gray_spans)(int,int,const struct FT_Span_*,void*);void(*black_spans)(int,int,const struct FT_Span_*,void*);int(*bit_test)(int,int,void*);void(*bit_set)(int,int,void*);void*user;struct FT_BBox_ clip_box;};
 struct FT_Matrix_ {signed long xx;signed long xy;signed long yx;signed long yy;};
 struct FT_Generic_ {void*data;void(*finalizer)(void*);};

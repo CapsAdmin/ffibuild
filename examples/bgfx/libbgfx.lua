@@ -1,5 +1,6 @@
 local ffi = require("ffi")
-ffi.cdef([[typedef enum bgfx_renderer_type{BGFX_RENDERER_TYPE_NULL=0,BGFX_RENDERER_TYPE_DIRECT3D9=1,BGFX_RENDERER_TYPE_DIRECT3D11=2,BGFX_RENDERER_TYPE_DIRECT3D12=3,BGFX_RENDERER_TYPE_METAL=4,BGFX_RENDERER_TYPE_OPENGLES=5,BGFX_RENDERER_TYPE_OPENGL=6,BGFX_RENDERER_TYPE_VULKAN=7,BGFX_RENDERER_TYPE_COUNT=8};
+ffi.cdef([[typedef enum bgfx_topology_sort{BGFX_TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_MIN=0,BGFX_TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_AVG=1,BGFX_TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_MAX=2,BGFX_TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_MIN=3,BGFX_TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_AVG=4,BGFX_TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_MAX=5,BGFX_TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_MIN=6,BGFX_TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_AVG=7,BGFX_TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_MAX=8,BGFX_TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_MIN=9,BGFX_TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_AVG=10,BGFX_TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_MAX=11,BGFX_TOPOLOGY_SORT_COUNT=12};
+typedef enum bgfx_renderer_type{BGFX_RENDERER_TYPE_NULL=0,BGFX_RENDERER_TYPE_DIRECT3D9=1,BGFX_RENDERER_TYPE_DIRECT3D11=2,BGFX_RENDERER_TYPE_DIRECT3D12=3,BGFX_RENDERER_TYPE_METAL=4,BGFX_RENDERER_TYPE_OPENGLES=5,BGFX_RENDERER_TYPE_OPENGL=6,BGFX_RENDERER_TYPE_VULKAN=7,BGFX_RENDERER_TYPE_COUNT=8};
 typedef enum bgfx_fatal{BGFX_FATAL_DEBUG_CHECK=0,BGFX_FATAL_MINIMUM_REQUIRED_SPECS=1,BGFX_FATAL_INVALID_SHADER=2,BGFX_FATAL_UNABLE_TO_INITIALIZE=3,BGFX_FATAL_UNABLE_TO_CREATE_TEXTURE=4,BGFX_FATAL_DEVICE_LOST=5,BGFX_FATAL_COUNT=6};
 typedef enum bgfx_backbuffer_ratio{BGFX_BACKBUFFER_RATIO_EQUAL=0,BGFX_BACKBUFFER_RATIO_HALF=1,BGFX_BACKBUFFER_RATIO_QUARTER=2,BGFX_BACKBUFFER_RATIO_EIGHTH=3,BGFX_BACKBUFFER_RATIO_SIXTEENTH=4,BGFX_BACKBUFFER_RATIO_DOUBLE=5,BGFX_BACKBUFFER_RATIO_COUNT=6};
 typedef enum bgfx_topology_convert{BGFX_TOPOLOGY_CONVERT_TRI_LIST_FLIP_WINDING=0,BGFX_TOPOLOGY_CONVERT_TRI_LIST_TO_LINE_LIST=1,BGFX_TOPOLOGY_CONVERT_TRI_STRIP_TO_TRI_LIST=2,BGFX_TOPOLOGY_CONVERT_LINE_STRIP_TO_LINE_LIST=3,BGFX_TOPOLOGY_CONVERT_COUNT=4};
@@ -9,11 +10,11 @@ typedef enum bgfx_attrib{BGFX_ATTRIB_POSITION=0,BGFX_ATTRIB_NORMAL=1,BGFX_ATTRIB
 typedef enum bgfx_access{BGFX_ACCESS_READ=0,BGFX_ACCESS_WRITE=1,BGFX_ACCESS_READWRITE=2,BGFX_ACCESS_COUNT=3};
 typedef enum bgfx_attrib_type{BGFX_ATTRIB_TYPE_UINT8=0,BGFX_ATTRIB_TYPE_UINT10=1,BGFX_ATTRIB_TYPE_INT16=2,BGFX_ATTRIB_TYPE_HALF=3,BGFX_ATTRIB_TYPE_FLOAT=4,BGFX_ATTRIB_TYPE_COUNT=5};
 typedef enum bgfx_occlusion_query_result{BGFX_OCCLUSION_QUERY_RESULT_INVISIBLE=0,BGFX_OCCLUSION_QUERY_RESULT_VISIBLE=1,BGFX_OCCLUSION_QUERY_RESULT_NORESULT=2,BGFX_OCCLUSION_QUERY_RESULT_COUNT=3};
-struct bgfx_indirect_buffer_handle {unsigned short idx;};
 struct bgfx_dynamic_index_buffer_handle {unsigned short idx;};
 struct bgfx_dynamic_vertex_buffer_handle {unsigned short idx;};
 struct bgfx_frame_buffer_handle {unsigned short idx;};
 struct bgfx_index_buffer_handle {unsigned short idx;};
+struct bgfx_indirect_buffer_handle {unsigned short idx;};
 struct bgfx_occlusion_query_handle {unsigned short idx;};
 struct bgfx_program_handle {unsigned short idx;};
 struct bgfx_shader_handle {unsigned short idx;};
@@ -25,7 +26,7 @@ struct bgfx_memory {unsigned char*data;unsigned int size;};
 struct bgfx_transform {float*data;unsigned short num;};
 struct bgfx_hmd_eye {float rotation[4];float translation[3];float fov[4];float viewOffset[3];float projection[16];float pixelsPerTanAngle[2];};
 struct bgfx_hmd {struct bgfx_hmd_eye eye[2];unsigned short width;unsigned short height;unsigned int deviceWidth;unsigned int deviceHeight;unsigned char flags;};
-struct bgfx_stats {unsigned long cpuTimeBegin;unsigned long cpuTimeEnd;unsigned long cpuTimerFreq;unsigned long gpuTimeBegin;unsigned long gpuTimeEnd;unsigned long gpuTimerFreq;};
+struct bgfx_stats {unsigned long cpuTimeBegin;unsigned long cpuTimeEnd;unsigned long cpuTimerFreq;unsigned long gpuTimeBegin;unsigned long gpuTimeEnd;unsigned long gpuTimerFreq;long waitRender;long waitSubmit;};
 struct bgfx_vertex_decl {unsigned int hash;unsigned short stride;unsigned short offset[BGFX_ATTRIB_COUNT];unsigned short attributes[BGFX_ATTRIB_COUNT];};
 struct bgfx_transient_index_buffer {unsigned char*data;unsigned int size;struct bgfx_index_buffer_handle handle;unsigned int startIndex;};
 struct bgfx_transient_vertex_buffer {unsigned char*data;unsigned int size;unsigned int startVertex;unsigned short stride;struct bgfx_vertex_buffer_handle handle;struct bgfx_vertex_decl_handle decl;};
@@ -44,116 +45,119 @@ struct bgfx_dynamic_vertex_buffer_handle(bgfx_create_dynamic_vertex_buffer)(unsi
 struct bgfx_dynamic_vertex_buffer_handle(bgfx_create_dynamic_vertex_buffer_mem)(const struct bgfx_memory*,const struct bgfx_vertex_decl*,unsigned short);
 void(bgfx_set_compute_dynamic_vertex_buffer)(unsigned char,struct bgfx_dynamic_vertex_buffer_handle,enum bgfx_access);
 struct bgfx_occlusion_query_handle(bgfx_create_occlusion_query)();
+unsigned int(bgfx_topology_convert)(enum bgfx_topology_convert,void*,unsigned int,const void*,unsigned int,_Bool);
 void(bgfx_dbg_text_clear)(unsigned char,_Bool);
 _Bool(bgfx_check_avail_transient_index_buffer)(unsigned int);
 void(bgfx_set_palette_color)(unsigned char,const float);
 const struct bgfx_instance_data_buffer*(bgfx_alloc_instance_data_buffer)(unsigned int,unsigned short);
 struct bgfx_texture_handle(bgfx_create_texture_2d)(unsigned short,unsigned short,unsigned char,enum bgfx_texture_format,unsigned int,const struct bgfx_memory*);
 unsigned int(bgfx_set_transform)(const void*,unsigned short);
+void(bgfx_topology_sort_tri_list)(enum bgfx_topology_sort,void*,unsigned int,const float,const float,const void*,unsigned int,const void*,unsigned int,_Bool);
 const struct bgfx_memory*(bgfx_make_ref_release)(const void*,unsigned int,void(*_releaseFn)(void*,void*),void*);
 const struct bgfx_memory*(bgfx_alloc)(unsigned int);
+void(bgfx_save_screen_shot)(const char*);
+void(bgfx_blit_frame_buffer)(unsigned char,struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,struct bgfx_frame_buffer_handle,unsigned char,unsigned char,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short);
 void(bgfx_image_rgba8_downsample_2x2)(unsigned int,unsigned int,unsigned int,const void*,void*);
+void(bgfx_blit)(unsigned char,struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short);
 void(bgfx_update_texture_2d)(struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,unsigned short,const struct bgfx_memory*,unsigned short);
 struct bgfx_texture_handle(bgfx_create_texture_3d)(unsigned short,unsigned short,unsigned short,unsigned char,enum bgfx_texture_format,unsigned int,const struct bgfx_memory*);
-void(bgfx_save_screen_shot)(const char*);
+void(bgfx_discard)();
 void(bgfx_update_texture_3d)(struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short,const struct bgfx_memory*);
 enum bgfx_occlusion_query_result(bgfx_get_result)(struct bgfx_occlusion_query_handle);
 void(bgfx_set_view_remap)(unsigned char,unsigned char,const void*);
-void(bgfx_blit_frame_buffer)(unsigned char,struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,struct bgfx_frame_buffer_handle,unsigned char,unsigned char,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short);
+unsigned int(bgfx_dispatch_indirect)(unsigned char,struct bgfx_program_handle,struct bgfx_indirect_buffer_handle,unsigned short,unsigned short,unsigned char);
 void(bgfx_vertex_decl_skip)(struct bgfx_vertex_decl*,unsigned char);
 void(bgfx_alloc_transient_vertex_buffer)(struct bgfx_transient_vertex_buffer*,unsigned int,const struct bgfx_vertex_decl*);
-void(bgfx_blit)(unsigned char,struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,struct bgfx_texture_handle,unsigned char,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short,unsigned short);
-struct bgfx_program_handle(bgfx_create_program)(struct bgfx_shader_handle,struct bgfx_shader_handle,_Bool);
-void(bgfx_discard)();
-unsigned int(bgfx_dispatch_indirect)(unsigned char,struct bgfx_program_handle,struct bgfx_indirect_buffer_handle,unsigned short,unsigned short,unsigned char);
 unsigned int(bgfx_dispatch)(unsigned char,struct bgfx_program_handle,unsigned short,unsigned short,unsigned short,unsigned char);
-_Bool(bgfx_check_avail_instance_data_buffer)(unsigned int,unsigned short);
+struct bgfx_program_handle(bgfx_create_program)(struct bgfx_shader_handle,struct bgfx_shader_handle,_Bool);
 void(bgfx_set_compute_dynamic_index_buffer)(unsigned char,struct bgfx_dynamic_index_buffer_handle,enum bgfx_access);
 void(bgfx_set_compute_vertex_buffer)(unsigned char,struct bgfx_vertex_buffer_handle,enum bgfx_access);
-void(bgfx_vertex_decl_end)(struct bgfx_vertex_decl*);
+_Bool(bgfx_check_avail_instance_data_buffer)(unsigned int,unsigned short);
 void(bgfx_set_compute_index_buffer)(unsigned char,struct bgfx_index_buffer_handle,enum bgfx_access);
+struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer)(unsigned short,unsigned short,enum bgfx_texture_format,unsigned int);
+void(bgfx_vertex_decl_end)(struct bgfx_vertex_decl*);
 struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer_from_attachment)(unsigned char,const struct bgfx_attachment*,_Bool);
-void(bgfx_set_view_transform)(unsigned char,const void*,const void*);
-void(bgfx_set_state)(unsigned long,unsigned int);
-void(bgfx_vertex_decl_add)(struct bgfx_vertex_decl*,enum bgfx_attrib,unsigned char,enum bgfx_attrib_type,_Bool,_Bool);
-void(bgfx_destroy_occlusion_query)(struct bgfx_occlusion_query_handle);
-struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer_from_nwh)(void*,unsigned short,unsigned short,enum bgfx_texture_format);
 unsigned int(bgfx_submit_occlusion_query)(unsigned char,struct bgfx_program_handle,struct bgfx_occlusion_query_handle,int,_Bool);
 unsigned int(bgfx_submit)(unsigned char,struct bgfx_program_handle,int,_Bool);
-unsigned short(bgfx_get_shader_uniforms)(struct bgfx_shader_handle,struct bgfx_uniform_handle*,unsigned short);
+void(bgfx_set_state)(unsigned long,unsigned int);
+void(bgfx_vertex_decl_add)(struct bgfx_vertex_decl*,enum bgfx_attrib,unsigned char,enum bgfx_attrib_type,_Bool,_Bool);
 unsigned int(bgfx_touch)(unsigned char);
+struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer_from_nwh)(void*,unsigned short,unsigned short,enum bgfx_texture_format);
+void(bgfx_destroy_dynamic_index_buffer)(struct bgfx_dynamic_index_buffer_handle);
+void(bgfx_set_view_clear)(unsigned char,unsigned short,unsigned int,float,unsigned char);
+unsigned short(bgfx_get_shader_uniforms)(struct bgfx_shader_handle,struct bgfx_uniform_handle*,unsigned short);
 void(bgfx_set_index_buffer)(struct bgfx_index_buffer_handle,unsigned int,unsigned int);
 void(bgfx_destroy_indirect_buffer)(struct bgfx_indirect_buffer_handle);
 void(bgfx_reset)(unsigned int,unsigned int,unsigned int);
-_Bool(bgfx_check_avail_transient_buffers)(unsigned int,const struct bgfx_vertex_decl*,unsigned int);
-void(bgfx_set_view_frame_buffer)(unsigned char,struct bgfx_frame_buffer_handle);
-void(bgfx_destroy_index_buffer)(struct bgfx_index_buffer_handle);
+void(bgfx_dbg_text_printf)(unsigned short,unsigned short,unsigned char,const char*,...);
 void(bgfx_set_transient_vertex_buffer)(const struct bgfx_transient_vertex_buffer*,unsigned int,unsigned int);
-unsigned int(bgfx_frame)();
-void(bgfx_set_transient_index_buffer)(const struct bgfx_transient_index_buffer*,unsigned int,unsigned int);
-const struct bgfx_memory*(bgfx_make_ref)(const void*,unsigned int);
 void(bgfx_set_dynamic_vertex_buffer)(struct bgfx_dynamic_vertex_buffer_handle,unsigned int,unsigned int);
-void(bgfx_set_scissor_cached)(unsigned short);
 void(bgfx_set_vertex_buffer)(struct bgfx_vertex_buffer_handle,unsigned int,unsigned int);
 void(bgfx_set_dynamic_index_buffer)(struct bgfx_dynamic_index_buffer_handle,unsigned int,unsigned int);
+unsigned int(bgfx_frame)(_Bool);
+void(bgfx_set_transient_index_buffer)(const struct bgfx_transient_index_buffer*,unsigned int,unsigned int);
+const struct bgfx_memory*(bgfx_make_ref)(const void*,unsigned int);
 void(bgfx_set_uniform)(struct bgfx_uniform_handle,const void*,unsigned short);
+void(bgfx_set_scissor_cached)(unsigned short);
 void(bgfx_set_transform_cached)(unsigned int,unsigned short);
-void(bgfx_destroy_dynamic_vertex_buffer)(struct bgfx_dynamic_vertex_buffer_handle);
 unsigned int(bgfx_alloc_transform)(struct bgfx_transform*,unsigned short);
-void(bgfx_reset_view)(unsigned char);
 unsigned short(bgfx_set_scissor)(unsigned short,unsigned short,unsigned short,unsigned short);
 void(bgfx_set_stencil)(unsigned int,unsigned int);
+void(bgfx_destroy_dynamic_vertex_buffer)(struct bgfx_dynamic_vertex_buffer_handle);
+void(bgfx_alloc_transient_index_buffer)(struct bgfx_transient_index_buffer*,unsigned int);
+void(bgfx_reset_view)(unsigned char);
+void(bgfx_set_view_transform)(unsigned char,const void*,const void*);
+void(bgfx_set_view_transform_stereo)(unsigned char,const void*,const void*,unsigned char,const void*);
 void(bgfx_destroy_program)(struct bgfx_program_handle);
 void(bgfx_destroy_vertex_buffer)(struct bgfx_vertex_buffer_handle);
 void(bgfx_set_marker)(const char*);
-void(bgfx_set_view_transform_stereo)(unsigned char,const void*,const void*,unsigned char,const void*);
+void(bgfx_set_view_frame_buffer)(unsigned char,struct bgfx_frame_buffer_handle);
+void(bgfx_vertex_unpack)(float,enum bgfx_attrib,const struct bgfx_vertex_decl*,const void*,unsigned int);
 void(bgfx_set_image)(unsigned char,struct bgfx_uniform_handle,struct bgfx_texture_handle,unsigned char,enum bgfx_access,enum bgfx_texture_format);
 void(bgfx_set_texture)(unsigned char,struct bgfx_uniform_handle,struct bgfx_texture_handle,unsigned int);
 _Bool(bgfx_alloc_transient_buffers)(struct bgfx_transient_vertex_buffer*,const struct bgfx_vertex_decl*,unsigned int,struct bgfx_transient_index_buffer*,unsigned int);
 void(bgfx_calc_texture_size)(struct bgfx_texture_info*,unsigned short,unsigned short,unsigned short,_Bool,unsigned char,enum bgfx_texture_format);
 void(bgfx_vertex_convert)(const struct bgfx_vertex_decl*,void*,const struct bgfx_vertex_decl*,const void*,unsigned int);
-void(bgfx_vertex_unpack)(float,enum bgfx_attrib,const struct bgfx_vertex_decl*,const void*,unsigned int);
-void(bgfx_destroy_texture)(struct bgfx_texture_handle);
-void(bgfx_destroy_shader)(struct bgfx_shader_handle);
-void(bgfx_set_view_clear)(unsigned char,unsigned short,unsigned int,float,unsigned char);
 void(bgfx_set_view_scissor)(unsigned char,unsigned short,unsigned short,unsigned short,unsigned short);
+void(bgfx_destroy_texture)(struct bgfx_texture_handle);
 void(bgfx_set_view_rect_auto)(unsigned char,unsigned short,unsigned short,enum bgfx_backbuffer_ratio);
 void(bgfx_set_view_rect)(unsigned char,unsigned short,unsigned short,unsigned short,unsigned short);
+void(bgfx_destroy_shader)(struct bgfx_shader_handle);
+void(bgfx_destroy_occlusion_query)(struct bgfx_occlusion_query_handle);
+void(bgfx_destroy_frame_buffer)(struct bgfx_frame_buffer_handle);
 struct bgfx_texture_handle(bgfx_create_texture_2d_scaled)(enum bgfx_backbuffer_ratio,unsigned char,enum bgfx_texture_format,unsigned int);
-struct bgfx_texture_handle(bgfx_create_texture)(const struct bgfx_memory*,unsigned int,unsigned char,struct bgfx_texture_info*);
+struct bgfx_uniform_handle(bgfx_create_uniform)(const char*,enum bgfx_uniform_type,unsigned short);
 void(bgfx_destroy_uniform)(struct bgfx_uniform_handle);
 void(bgfx_shutdown)();
 void(bgfx_vertex_decl_begin)(struct bgfx_vertex_decl*,enum bgfx_renderer_type);
 unsigned int(bgfx_submit_indirect)(unsigned char,struct bgfx_program_handle,struct bgfx_indirect_buffer_handle,unsigned short,unsigned short,int,_Bool);
-struct bgfx_uniform_handle(bgfx_create_uniform)(const char*,enum bgfx_uniform_type,unsigned short);
-void(bgfx_destroy_frame_buffer)(struct bgfx_frame_buffer_handle);
-void(bgfx_set_image_from_frame_buffer)(unsigned char,struct bgfx_uniform_handle,struct bgfx_frame_buffer_handle,unsigned char,enum bgfx_access,enum bgfx_texture_format);
+struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer_from_handles)(unsigned char,const struct bgfx_texture_handle*,_Bool);
 struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer_scaled)(enum bgfx_backbuffer_ratio,enum bgfx_texture_format,unsigned int);
+void(bgfx_set_image_from_frame_buffer)(unsigned char,struct bgfx_uniform_handle,struct bgfx_frame_buffer_handle,unsigned char,enum bgfx_access,enum bgfx_texture_format);
+unsigned int(bgfx_read_frame_buffer)(struct bgfx_frame_buffer_handle,unsigned char,void*);
 void(bgfx_vertex_pack)(const float,_Bool,enum bgfx_attrib,const struct bgfx_vertex_decl*,void*,unsigned int);
 struct bgfx_dynamic_index_buffer_handle(bgfx_create_dynamic_index_buffer_mem)(const struct bgfx_memory*,unsigned short);
-struct bgfx_frame_buffer_handle(bgfx_create_frame_buffer)(unsigned short,unsigned short,enum bgfx_texture_format,unsigned int);
-void(bgfx_read_frame_buffer)(struct bgfx_frame_buffer_handle,unsigned char,void*);
-void(bgfx_read_texture)(struct bgfx_texture_handle,void*);
-void(bgfx_set_view_name)(unsigned char,const char*);
+unsigned int(bgfx_read_texture)(struct bgfx_texture_handle,void*);
+struct bgfx_texture_handle(bgfx_create_texture)(const struct bgfx_memory*,unsigned int,unsigned char,struct bgfx_texture_info*);
 struct bgfx_program_handle(bgfx_create_compute_program)(struct bgfx_shader_handle,_Bool);
+void(bgfx_set_view_name)(unsigned char,const char*);
 void(bgfx_set_view_clear_mrt)(unsigned char,unsigned short,float,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char,unsigned char);
 void(bgfx_set_condition)(struct bgfx_occlusion_query_handle,_Bool);
 unsigned char(bgfx_get_supported_renderers)(enum bgfx_renderer_type);
 const struct bgfx_memory*(bgfx_copy)(const void*,unsigned int);
 enum bgfx_renderer_type(bgfx_get_renderer_type)();
-void(bgfx_alloc_transient_index_buffer)(struct bgfx_transient_index_buffer*,unsigned int);
-void(bgfx_set_texture_from_frame_buffer)(unsigned char,struct bgfx_uniform_handle,struct bgfx_frame_buffer_handle,unsigned char,unsigned int);
+_Bool(bgfx_check_avail_transient_buffers)(unsigned int,const struct bgfx_vertex_decl*,unsigned int);
 _Bool(bgfx_check_avail_transient_vertex_buffer)(unsigned int,const struct bgfx_vertex_decl*);
-void(bgfx_destroy_dynamic_index_buffer)(struct bgfx_dynamic_index_buffer_handle);
+void(bgfx_set_texture_from_frame_buffer)(unsigned char,struct bgfx_uniform_handle,struct bgfx_frame_buffer_handle,unsigned char,unsigned int);
+struct bgfx_dynamic_index_buffer_handle(bgfx_create_dynamic_index_buffer)(unsigned int,unsigned short);
 const char*(bgfx_get_renderer_name)(enum bgfx_renderer_type);
 const struct bgfx_stats*(bgfx_get_stats)();
+struct bgfx_vertex_buffer_handle(bgfx_create_vertex_buffer)(const struct bgfx_memory*,const struct bgfx_vertex_decl*,unsigned short);
 void(bgfx_set_debug)(unsigned int);
 struct bgfx_index_buffer_handle(bgfx_create_index_buffer)(const struct bgfx_memory*,unsigned short);
-struct bgfx_dynamic_index_buffer_handle(bgfx_create_dynamic_index_buffer)(unsigned int,unsigned short);
-struct bgfx_vertex_buffer_handle(bgfx_create_vertex_buffer)(const struct bgfx_memory*,const struct bgfx_vertex_decl*,unsigned short);
-void(bgfx_set_instance_data_buffer)(const struct bgfx_instance_data_buffer*,unsigned int);
+void(bgfx_destroy_index_buffer)(struct bgfx_index_buffer_handle);
 void(bgfx_dbg_text_image)(unsigned short,unsigned short,unsigned short,unsigned short,const void*,unsigned short);
-void(bgfx_dbg_text_printf)(unsigned short,unsigned short,unsigned char,const char*,...);
+void(bgfx_set_instance_data_buffer)(const struct bgfx_instance_data_buffer*,unsigned int);
 const struct bgfx_caps*(bgfx_get_caps)();
 const struct bgfx_hmd*(bgfx_get_hmd)();
 struct bgfx_texture_handle(bgfx_create_texture_cube)(unsigned short,unsigned char,enum bgfx_texture_format,unsigned int,const struct bgfx_memory*);
@@ -177,116 +181,119 @@ library = {
 	CreateDynamicVertexBufferMem = CLIB.bgfx_create_dynamic_vertex_buffer_mem,
 	SetComputeDynamicVertexBuffer = CLIB.bgfx_set_compute_dynamic_vertex_buffer,
 	CreateOcclusionQuery = CLIB.bgfx_create_occlusion_query,
+	TopologyConvert = CLIB.bgfx_topology_convert,
 	DbgTextClear = CLIB.bgfx_dbg_text_clear,
 	CheckAvailTransientIndexBuffer = CLIB.bgfx_check_avail_transient_index_buffer,
 	SetPaletteColor = CLIB.bgfx_set_palette_color,
 	AllocInstanceDataBuffer = CLIB.bgfx_alloc_instance_data_buffer,
 	CreateTexture_2d = CLIB.bgfx_create_texture_2d,
 	SetTransform = CLIB.bgfx_set_transform,
+	TopologySortTriList = CLIB.bgfx_topology_sort_tri_list,
 	MakeRefRelease = CLIB.bgfx_make_ref_release,
 	Alloc = CLIB.bgfx_alloc,
+	SaveScreenShot = CLIB.bgfx_save_screen_shot,
+	BlitFrameBuffer = CLIB.bgfx_blit_frame_buffer,
 	ImageRgba8Downsample_2x2 = CLIB.bgfx_image_rgba8_downsample_2x2,
+	Blit = CLIB.bgfx_blit,
 	UpdateTexture_2d = CLIB.bgfx_update_texture_2d,
 	CreateTexture_3d = CLIB.bgfx_create_texture_3d,
-	SaveScreenShot = CLIB.bgfx_save_screen_shot,
+	Discard = CLIB.bgfx_discard,
 	UpdateTexture_3d = CLIB.bgfx_update_texture_3d,
 	GetResult = CLIB.bgfx_get_result,
 	SetViewRemap = CLIB.bgfx_set_view_remap,
-	BlitFrameBuffer = CLIB.bgfx_blit_frame_buffer,
+	DispatchIndirect = CLIB.bgfx_dispatch_indirect,
 	VertexDeclSkip = CLIB.bgfx_vertex_decl_skip,
 	AllocTransientVertexBuffer = CLIB.bgfx_alloc_transient_vertex_buffer,
-	Blit = CLIB.bgfx_blit,
-	CreateProgram = CLIB.bgfx_create_program,
-	Discard = CLIB.bgfx_discard,
-	DispatchIndirect = CLIB.bgfx_dispatch_indirect,
 	Dispatch = CLIB.bgfx_dispatch,
-	CheckAvailInstanceDataBuffer = CLIB.bgfx_check_avail_instance_data_buffer,
+	CreateProgram = CLIB.bgfx_create_program,
 	SetComputeDynamicIndexBuffer = CLIB.bgfx_set_compute_dynamic_index_buffer,
 	SetComputeVertexBuffer = CLIB.bgfx_set_compute_vertex_buffer,
-	VertexDeclEnd = CLIB.bgfx_vertex_decl_end,
+	CheckAvailInstanceDataBuffer = CLIB.bgfx_check_avail_instance_data_buffer,
 	SetComputeIndexBuffer = CLIB.bgfx_set_compute_index_buffer,
+	CreateFrameBuffer = CLIB.bgfx_create_frame_buffer,
+	VertexDeclEnd = CLIB.bgfx_vertex_decl_end,
 	CreateFrameBufferFromAttachment = CLIB.bgfx_create_frame_buffer_from_attachment,
-	SetViewTransform = CLIB.bgfx_set_view_transform,
-	SetState = CLIB.bgfx_set_state,
-	VertexDeclAdd = CLIB.bgfx_vertex_decl_add,
-	DestroyOcclusionQuery = CLIB.bgfx_destroy_occlusion_query,
-	CreateFrameBufferFromNwh = CLIB.bgfx_create_frame_buffer_from_nwh,
 	SubmitOcclusionQuery = CLIB.bgfx_submit_occlusion_query,
 	Submit = CLIB.bgfx_submit,
-	GetShaderUniforms = CLIB.bgfx_get_shader_uniforms,
+	SetState = CLIB.bgfx_set_state,
+	VertexDeclAdd = CLIB.bgfx_vertex_decl_add,
 	Touch = CLIB.bgfx_touch,
+	CreateFrameBufferFromNwh = CLIB.bgfx_create_frame_buffer_from_nwh,
+	DestroyDynamicIndexBuffer = CLIB.bgfx_destroy_dynamic_index_buffer,
+	SetViewClear = CLIB.bgfx_set_view_clear,
+	GetShaderUniforms = CLIB.bgfx_get_shader_uniforms,
 	SetIndexBuffer = CLIB.bgfx_set_index_buffer,
 	DestroyIndirectBuffer = CLIB.bgfx_destroy_indirect_buffer,
 	Reset = CLIB.bgfx_reset,
-	CheckAvailTransientBuffers = CLIB.bgfx_check_avail_transient_buffers,
-	SetViewFrameBuffer = CLIB.bgfx_set_view_frame_buffer,
-	DestroyIndexBuffer = CLIB.bgfx_destroy_index_buffer,
+	DbgTextPrintf = CLIB.bgfx_dbg_text_printf,
 	SetTransientVertexBuffer = CLIB.bgfx_set_transient_vertex_buffer,
+	SetDynamicVertexBuffer = CLIB.bgfx_set_dynamic_vertex_buffer,
+	SetVertexBuffer = CLIB.bgfx_set_vertex_buffer,
+	SetDynamicIndexBuffer = CLIB.bgfx_set_dynamic_index_buffer,
 	Frame = CLIB.bgfx_frame,
 	SetTransientIndexBuffer = CLIB.bgfx_set_transient_index_buffer,
 	MakeRef = CLIB.bgfx_make_ref,
-	SetDynamicVertexBuffer = CLIB.bgfx_set_dynamic_vertex_buffer,
-	SetScissorCached = CLIB.bgfx_set_scissor_cached,
-	SetVertexBuffer = CLIB.bgfx_set_vertex_buffer,
-	SetDynamicIndexBuffer = CLIB.bgfx_set_dynamic_index_buffer,
 	SetUniform = CLIB.bgfx_set_uniform,
+	SetScissorCached = CLIB.bgfx_set_scissor_cached,
 	SetTransformCached = CLIB.bgfx_set_transform_cached,
-	DestroyDynamicVertexBuffer = CLIB.bgfx_destroy_dynamic_vertex_buffer,
 	AllocTransform = CLIB.bgfx_alloc_transform,
-	ResetView = CLIB.bgfx_reset_view,
 	SetScissor = CLIB.bgfx_set_scissor,
 	SetStencil = CLIB.bgfx_set_stencil,
+	DestroyDynamicVertexBuffer = CLIB.bgfx_destroy_dynamic_vertex_buffer,
+	AllocTransientIndexBuffer = CLIB.bgfx_alloc_transient_index_buffer,
+	ResetView = CLIB.bgfx_reset_view,
+	SetViewTransform = CLIB.bgfx_set_view_transform,
+	SetViewTransformStereo = CLIB.bgfx_set_view_transform_stereo,
 	DestroyProgram = CLIB.bgfx_destroy_program,
 	DestroyVertexBuffer = CLIB.bgfx_destroy_vertex_buffer,
 	SetMarker = CLIB.bgfx_set_marker,
-	SetViewTransformStereo = CLIB.bgfx_set_view_transform_stereo,
+	SetViewFrameBuffer = CLIB.bgfx_set_view_frame_buffer,
+	VertexUnpack = CLIB.bgfx_vertex_unpack,
 	SetImage = CLIB.bgfx_set_image,
 	SetTexture = CLIB.bgfx_set_texture,
 	AllocTransientBuffers = CLIB.bgfx_alloc_transient_buffers,
 	CalcTextureSize = CLIB.bgfx_calc_texture_size,
 	VertexConvert = CLIB.bgfx_vertex_convert,
-	VertexUnpack = CLIB.bgfx_vertex_unpack,
-	DestroyTexture = CLIB.bgfx_destroy_texture,
-	DestroyShader = CLIB.bgfx_destroy_shader,
-	SetViewClear = CLIB.bgfx_set_view_clear,
 	SetViewScissor = CLIB.bgfx_set_view_scissor,
+	DestroyTexture = CLIB.bgfx_destroy_texture,
 	SetViewRectAuto = CLIB.bgfx_set_view_rect_auto,
 	SetViewRect = CLIB.bgfx_set_view_rect,
+	DestroyShader = CLIB.bgfx_destroy_shader,
+	DestroyOcclusionQuery = CLIB.bgfx_destroy_occlusion_query,
+	DestroyFrameBuffer = CLIB.bgfx_destroy_frame_buffer,
 	CreateTexture_2dScaled = CLIB.bgfx_create_texture_2d_scaled,
-	CreateTexture = CLIB.bgfx_create_texture,
+	CreateUniform = CLIB.bgfx_create_uniform,
 	DestroyUniform = CLIB.bgfx_destroy_uniform,
 	Shutdown = CLIB.bgfx_shutdown,
 	VertexDeclBegin = CLIB.bgfx_vertex_decl_begin,
 	SubmitIndirect = CLIB.bgfx_submit_indirect,
-	CreateUniform = CLIB.bgfx_create_uniform,
-	DestroyFrameBuffer = CLIB.bgfx_destroy_frame_buffer,
-	SetImageFromFrameBuffer = CLIB.bgfx_set_image_from_frame_buffer,
+	CreateFrameBufferFromHandles = CLIB.bgfx_create_frame_buffer_from_handles,
 	CreateFrameBufferScaled = CLIB.bgfx_create_frame_buffer_scaled,
+	SetImageFromFrameBuffer = CLIB.bgfx_set_image_from_frame_buffer,
+	ReadFrameBuffer = CLIB.bgfx_read_frame_buffer,
 	VertexPack = CLIB.bgfx_vertex_pack,
 	CreateDynamicIndexBufferMem = CLIB.bgfx_create_dynamic_index_buffer_mem,
-	CreateFrameBuffer = CLIB.bgfx_create_frame_buffer,
-	ReadFrameBuffer = CLIB.bgfx_read_frame_buffer,
 	ReadTexture = CLIB.bgfx_read_texture,
-	SetViewName = CLIB.bgfx_set_view_name,
+	CreateTexture = CLIB.bgfx_create_texture,
 	CreateComputeProgram = CLIB.bgfx_create_compute_program,
+	SetViewName = CLIB.bgfx_set_view_name,
 	SetViewClearMrt = CLIB.bgfx_set_view_clear_mrt,
 	SetCondition = CLIB.bgfx_set_condition,
 	GetSupportedRenderers = CLIB.bgfx_get_supported_renderers,
 	Copy = CLIB.bgfx_copy,
 	GetRendererType = CLIB.bgfx_get_renderer_type,
-	AllocTransientIndexBuffer = CLIB.bgfx_alloc_transient_index_buffer,
-	SetTextureFromFrameBuffer = CLIB.bgfx_set_texture_from_frame_buffer,
+	CheckAvailTransientBuffers = CLIB.bgfx_check_avail_transient_buffers,
 	CheckAvailTransientVertexBuffer = CLIB.bgfx_check_avail_transient_vertex_buffer,
-	DestroyDynamicIndexBuffer = CLIB.bgfx_destroy_dynamic_index_buffer,
+	SetTextureFromFrameBuffer = CLIB.bgfx_set_texture_from_frame_buffer,
+	CreateDynamicIndexBuffer = CLIB.bgfx_create_dynamic_index_buffer,
 	GetRendererName = CLIB.bgfx_get_renderer_name,
 	GetStats = CLIB.bgfx_get_stats,
+	CreateVertexBuffer = CLIB.bgfx_create_vertex_buffer,
 	SetDebug = CLIB.bgfx_set_debug,
 	CreateIndexBuffer = CLIB.bgfx_create_index_buffer,
-	CreateDynamicIndexBuffer = CLIB.bgfx_create_dynamic_index_buffer,
-	CreateVertexBuffer = CLIB.bgfx_create_vertex_buffer,
-	SetInstanceDataBuffer = CLIB.bgfx_set_instance_data_buffer,
+	DestroyIndexBuffer = CLIB.bgfx_destroy_index_buffer,
 	DbgTextImage = CLIB.bgfx_dbg_text_image,
-	DbgTextPrintf = CLIB.bgfx_dbg_text_printf,
+	SetInstanceDataBuffer = CLIB.bgfx_set_instance_data_buffer,
 	GetCaps = CLIB.bgfx_get_caps,
 	GetHmd = CLIB.bgfx_get_hmd,
 	CreateTextureCube = CLIB.bgfx_create_texture_cube,
@@ -302,6 +309,19 @@ library = {
 	WeldVertices = CLIB.bgfx_weld_vertices,
 }
 library.e = {
+	TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_MIN = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_MIN"),
+	TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_AVG = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_AVG"),
+	TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_MAX = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DIRECTION_FRONT_TO_BACK_MAX"),
+	TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_MIN = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_MIN"),
+	TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_AVG = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_AVG"),
+	TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_MAX = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DIRECTION_BACK_TO_FRONT_MAX"),
+	TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_MIN = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_MIN"),
+	TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_AVG = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_AVG"),
+	TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_MAX = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DISTANCE_FRONT_TO_BACK_MAX"),
+	TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_MIN = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_MIN"),
+	TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_AVG = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_AVG"),
+	TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_MAX = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_DISTANCE_BACK_TO_FRONT_MAX"),
+	TOPOLOGY_SORT_COUNT = ffi.cast("enum bgfx_topology_sort", "BGFX_TOPOLOGY_SORT_COUNT"),
 	RENDERER_TYPE_NULL = ffi.cast("enum bgfx_renderer_type", "BGFX_RENDERER_TYPE_NULL"),
 	RENDERER_TYPE_DIRECT3D9 = ffi.cast("enum bgfx_renderer_type", "BGFX_RENDERER_TYPE_DIRECT3D9"),
 	RENDERER_TYPE_DIRECT3D11 = ffi.cast("enum bgfx_renderer_type", "BGFX_RENDERER_TYPE_DIRECT3D11"),
@@ -445,7 +465,7 @@ library.e = {
 	OCCLUSION_QUERY_RESULT_NORESULT = ffi.cast("enum bgfx_occlusion_query_result", "BGFX_OCCLUSION_QUERY_RESULT_NORESULT"),
 	OCCLUSION_QUERY_RESULT_COUNT = ffi.cast("enum bgfx_occlusion_query_result", "BGFX_OCCLUSION_QUERY_RESULT_COUNT"),
 	DEFINES_H_HEADER_GUARD = 1,
-	API_VERSION = 14,
+	API_VERSION = 17,
 	STATE_RGB_WRITE = 0x0000000000000001ULL ,
 	STATE_ALPHA_WRITE = 0x0000000000000002ULL ,
 	STATE_DEPTH_WRITE = 0x0000000000000004ULL ,
@@ -707,6 +727,7 @@ library.e = {
 	CAPS_FORMAT_TEXTURE_FRAMEBUFFER = 2048,
 	CAPS_FORMAT_TEXTURE_FRAMEBUFFER_MSAA = 4096,
 	CAPS_FORMAT_TEXTURE_MSAA = 8192,
+	CAPS_FORMAT_TEXTURE_MIP_AUTOGEN = 16384,
 	VIEW_NONE = 0,
 	VIEW_STEREO = 1,
 	SUBMIT_EYE_LEFT = 1,

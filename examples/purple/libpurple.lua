@@ -3,7 +3,7 @@ ffi.cdef([[typedef enum PurpleXferStatusType{PURPLE_XFER_STATUS_UNKNOWN=0,PURPLE
 typedef enum PurpleMediaNetworkProtocol{PURPLE_MEDIA_NETWORK_PROTOCOL_UDP=0,PURPLE_MEDIA_NETWORK_PROTOCOL_TCP_PASSIVE=1,PURPLE_MEDIA_NETWORK_PROTOCOL_TCP_ACTIVE=2,PURPLE_MEDIA_NETWORK_PROTOCOL_TCP_SO=3};
 typedef enum PurpleConvUpdateType{PURPLE_CONV_UPDATE_ADD=0,PURPLE_CONV_UPDATE_REMOVE=1,PURPLE_CONV_UPDATE_ACCOUNT=2,PURPLE_CONV_UPDATE_TYPING=3,PURPLE_CONV_UPDATE_UNSEEN=4,PURPLE_CONV_UPDATE_LOGGING=5,PURPLE_CONV_UPDATE_TOPIC=6,PURPLE_CONV_ACCOUNT_ONLINE=7,PURPLE_CONV_ACCOUNT_OFFLINE=8,PURPLE_CONV_UPDATE_AWAY=9,PURPLE_CONV_UPDATE_ICON=10,PURPLE_CONV_UPDATE_TITLE=11,PURPLE_CONV_UPDATE_CHATLEFT=12,PURPLE_CONV_UPDATE_FEATURES=13};
 typedef enum PurplePluginPrefType{PURPLE_PLUGIN_PREF_NONE=0,PURPLE_PLUGIN_PREF_CHOICE=1,PURPLE_PLUGIN_PREF_INFO=2,PURPLE_PLUGIN_PREF_STRING_FORMAT=3};
-typedef enum PurpleStatusPrimitive{PURPLE_STATUS_UNSET=0,PURPLE_STATUS_OFFLINE=1,PURPLE_STATUS_AVAILABLE=2,PURPLE_STATUS_UNAVAILABLE=3,PURPLE_STATUS_INVISIBLE=4,PURPLE_STATUS_AWAY=5,PURPLE_STATUS_EXTENDED_AWAY=6,PURPLE_STATUS_MOBILE=7,PURPLE_STATUS_TUNE=8,PURPLE_STATUS_MOOD=9,PURPLE_STATUS_NUM_PRIMITIVES=10};
+typedef enum PurpleConversationType{PURPLE_CONV_TYPE_UNKNOWN=0,PURPLE_CONV_TYPE_IM=1,PURPLE_CONV_TYPE_CHAT=2,PURPLE_CONV_TYPE_MISC=3,PURPLE_CONV_TYPE_ANY=4};
 typedef enum PurpleRoomlistFieldType{PURPLE_ROOMLIST_FIELD_BOOL=0,PURPLE_ROOMLIST_FIELD_INT=1,PURPLE_ROOMLIST_FIELD_STRING=2};
 typedef enum PurpleMediaCandidateType{PURPLE_MEDIA_CANDIDATE_TYPE_HOST=0,PURPLE_MEDIA_CANDIDATE_TYPE_SRFLX=1,PURPLE_MEDIA_CANDIDATE_TYPE_PRFLX=2,PURPLE_MEDIA_CANDIDATE_TYPE_RELAY=3,PURPLE_MEDIA_CANDIDATE_TYPE_MULTICAST=4};
 typedef enum _PurplePrefType{PURPLE_PREF_NONE=0,PURPLE_PREF_BOOLEAN=1,PURPLE_PREF_INT=2,PURPLE_PREF_STRING=3,PURPLE_PREF_STRING_LIST=4,PURPLE_PREF_PATH=5,PURPLE_PREF_PATH_LIST=6};
@@ -11,6 +11,7 @@ typedef enum PurpleLogReadFlags{PURPLE_LOG_READ_NO_NEWLINE=1};
 typedef enum PurplePounceOption{PURPLE_POUNCE_OPTION_NONE=0,PURPLE_POUNCE_OPTION_AWAY=1};
 typedef enum PurpleProxyType{PURPLE_PROXY_USE_GLOBAL=-1,PURPLE_PROXY_NONE=0,PURPLE_PROXY_HTTP=1,PURPLE_PROXY_SOCKS4=2,PURPLE_PROXY_SOCKS5=3,PURPLE_PROXY_USE_ENVVAR=4,PURPLE_PROXY_TOR=5};
 typedef enum PurpleBlistNodeType{PURPLE_BLIST_GROUP_NODE=0,PURPLE_BLIST_CONTACT_NODE=1,PURPLE_BLIST_BUDDY_NODE=2,PURPLE_BLIST_CHAT_NODE=3,PURPLE_BLIST_OTHER_NODE=4};
+typedef enum PurpleConvChatBuddyFlags{PURPLE_CBFLAGS_NONE=0,PURPLE_CBFLAGS_VOICE=1,PURPLE_CBFLAGS_HALFOP=2,PURPLE_CBFLAGS_OP=4,PURPLE_CBFLAGS_FOUNDER=8,PURPLE_CBFLAGS_TYPING=16,PURPLE_CBFLAGS_AWAY=32};
 typedef enum PurpleXferType{PURPLE_XFER_UNKNOWN=0,PURPLE_XFER_SEND=1,PURPLE_XFER_RECEIVE=2};
 typedef enum PurpleStringFormatType{PURPLE_STRING_FORMAT_TYPE_NONE=0,PURPLE_STRING_FORMAT_TYPE_MULTILINE=1,PURPLE_STRING_FORMAT_TYPE_HTML=2};
 typedef enum _PurpleSoundEventID{PURPLE_SOUND_BUDDY_ARRIVE=0,PURPLE_SOUND_BUDDY_LEAVE=1,PURPLE_SOUND_RECEIVE=2,PURPLE_SOUND_FIRST_RECEIVE=3,PURPLE_SOUND_SEND=4,PURPLE_SOUND_CHAT_JOIN=5,PURPLE_SOUND_CHAT_LEAVE=6,PURPLE_SOUND_CHAT_YOU_SAY=7,PURPLE_SOUND_CHAT_SAY=8,PURPLE_SOUND_POUNCE_DEFAULT=9,PURPLE_SOUND_CHAT_NICK=10,PURPLE_SOUND_GOT_ATTENTION=11,PURPLE_NUM_SOUNDS=12};
@@ -18,41 +19,40 @@ typedef enum PurpleLogType{PURPLE_LOG_IM=0,PURPLE_LOG_CHAT=1,PURPLE_LOG_SYSTEM=2
 typedef enum PurplePluginType{PURPLE_PLUGIN_UNKNOWN=-1,PURPLE_PLUGIN_STANDARD=0,PURPLE_PLUGIN_LOADER=1,PURPLE_PLUGIN_PROTOCOL=2};
 typedef enum _PurpleCmdStatus{PURPLE_CMD_STATUS_OK=0,PURPLE_CMD_STATUS_FAILED=1,PURPLE_CMD_STATUS_NOT_FOUND=2,PURPLE_CMD_STATUS_WRONG_ARGS=3,PURPLE_CMD_STATUS_WRONG_PRPL=4,PURPLE_CMD_STATUS_WRONG_TYPE=5};
 typedef enum PurpleRequestFieldType{PURPLE_REQUEST_FIELD_NONE=0,PURPLE_REQUEST_FIELD_STRING=1,PURPLE_REQUEST_FIELD_INTEGER=2,PURPLE_REQUEST_FIELD_BOOLEAN=3,PURPLE_REQUEST_FIELD_CHOICE=4,PURPLE_REQUEST_FIELD_LIST=5,PURPLE_REQUEST_FIELD_LABEL=6,PURPLE_REQUEST_FIELD_IMAGE=7,PURPLE_REQUEST_FIELD_ACCOUNT=8};
-typedef enum PurpleIconScaleRules{PURPLE_ICON_SCALE_DISPLAY=1,PURPLE_ICON_SCALE_SEND=2};
 typedef enum PurpleConnectionError{PURPLE_CONNECTION_ERROR_NETWORK_ERROR=0,PURPLE_CONNECTION_ERROR_INVALID_USERNAME=1,PURPLE_CONNECTION_ERROR_AUTHENTICATION_FAILED=2,PURPLE_CONNECTION_ERROR_AUTHENTICATION_IMPOSSIBLE=3,PURPLE_CONNECTION_ERROR_NO_SSL_SUPPORT=4,PURPLE_CONNECTION_ERROR_ENCRYPTION_ERROR=5,PURPLE_CONNECTION_ERROR_NAME_IN_USE=6,PURPLE_CONNECTION_ERROR_INVALID_SETTINGS=7,PURPLE_CONNECTION_ERROR_CERT_NOT_PROVIDED=8,PURPLE_CONNECTION_ERROR_CERT_UNTRUSTED=9,PURPLE_CONNECTION_ERROR_CERT_EXPIRED=10,PURPLE_CONNECTION_ERROR_CERT_NOT_ACTIVATED=11,PURPLE_CONNECTION_ERROR_CERT_HOSTNAME_MISMATCH=12,PURPLE_CONNECTION_ERROR_CERT_FINGERPRINT_MISMATCH=13,PURPLE_CONNECTION_ERROR_CERT_SELF_SIGNED=14,PURPLE_CONNECTION_ERROR_CERT_OTHER_ERROR=15,PURPLE_CONNECTION_ERROR_OTHER_ERROR=16};
-typedef enum PurpleDesktopItemType{PURPLE_DESKTOP_ITEM_TYPE_NULL=0,PURPLE_DESKTOP_ITEM_TYPE_OTHER=1,PURPLE_DESKTOP_ITEM_TYPE_APPLICATION=2,PURPLE_DESKTOP_ITEM_TYPE_LINK=3,PURPLE_DESKTOP_ITEM_TYPE_FSDEVICE=4,PURPLE_DESKTOP_ITEM_TYPE_MIME_TYPE=5,PURPLE_DESKTOP_ITEM_TYPE_DIRECTORY=6,PURPLE_DESKTOP_ITEM_TYPE_SERVICE=7,PURPLE_DESKTOP_ITEM_TYPE_SERVICE_TYPE=8};
+typedef enum PurpleType{PURPLE_TYPE_UNKNOWN=0,PURPLE_TYPE_SUBTYPE=1,PURPLE_TYPE_CHAR=2,PURPLE_TYPE_UCHAR=3,PURPLE_TYPE_BOOLEAN=4,PURPLE_TYPE_SHORT=5,PURPLE_TYPE_USHORT=6,PURPLE_TYPE_INT=7,PURPLE_TYPE_UINT=8,PURPLE_TYPE_LONG=9,PURPLE_TYPE_ULONG=10,PURPLE_TYPE_INT64=11,PURPLE_TYPE_UINT64=12,PURPLE_TYPE_STRING=13,PURPLE_TYPE_OBJECT=14,PURPLE_TYPE_POINTER=15,PURPLE_TYPE_ENUM=16,PURPLE_TYPE_BOXED=17};
 typedef enum PurpleMediaInfoType{PURPLE_MEDIA_INFO_HANGUP=0,PURPLE_MEDIA_INFO_ACCEPT=1,PURPLE_MEDIA_INFO_REJECT=2,PURPLE_MEDIA_INFO_MUTE=3,PURPLE_MEDIA_INFO_UNMUTE=4,PURPLE_MEDIA_INFO_PAUSE=5,PURPLE_MEDIA_INFO_UNPAUSE=6,PURPLE_MEDIA_INFO_HOLD=7,PURPLE_MEDIA_INFO_UNHOLD=8};
-typedef enum PurpleCertificateVerificationStatus{PURPLE_CERTIFICATE_INVALID=0,PURPLE_CERTIFICATE_VALID=1};
 typedef enum PurpleNotifySearchButtonType{PURPLE_NOTIFY_BUTTON_LABELED=0,PURPLE_NOTIFY_BUTTON_CONTINUE=1,PURPLE_NOTIFY_BUTTON_ADD=2,PURPLE_NOTIFY_BUTTON_INFO=3,PURPLE_NOTIFY_BUTTON_IM=4,PURPLE_NOTIFY_BUTTON_JOIN=5,PURPLE_NOTIFY_BUTTON_INVITE=6};
-typedef enum PurpleSslErrorType{PURPLE_SSL_HANDSHAKE_FAILED=1,PURPLE_SSL_CONNECT_FAILED=2,PURPLE_SSL_CERTIFICATE_INVALID=3};
 typedef enum _PurplePrivacyType{PURPLE_PRIVACY_ALLOW_ALL=1,PURPLE_PRIVACY_DENY_ALL=2,PURPLE_PRIVACY_ALLOW_USERS=3,PURPLE_PRIVACY_DENY_USERS=4,PURPLE_PRIVACY_ALLOW_BUDDYLIST=5};
 typedef enum PurpleStunNatType{PURPLE_STUN_NAT_TYPE_PUBLIC_IP=0,PURPLE_STUN_NAT_TYPE_UNKNOWN_NAT=1,PURPLE_STUN_NAT_TYPE_FULL_CONE=2,PURPLE_STUN_NAT_TYPE_RESTRICTED_CONE=3,PURPLE_STUN_NAT_TYPE_PORT_RESTRICTED_CONE=4,PURPLE_STUN_NAT_TYPE_SYMMETRIC=5};
-typedef enum PurpleType{PURPLE_TYPE_UNKNOWN=0,PURPLE_TYPE_SUBTYPE=1,PURPLE_TYPE_CHAR=2,PURPLE_TYPE_UCHAR=3,PURPLE_TYPE_BOOLEAN=4,PURPLE_TYPE_SHORT=5,PURPLE_TYPE_USHORT=6,PURPLE_TYPE_INT=7,PURPLE_TYPE_UINT=8,PURPLE_TYPE_LONG=9,PURPLE_TYPE_ULONG=10,PURPLE_TYPE_INT64=11,PURPLE_TYPE_UINT64=12,PURPLE_TYPE_STRING=13,PURPLE_TYPE_OBJECT=14,PURPLE_TYPE_POINTER=15,PURPLE_TYPE_ENUM=16,PURPLE_TYPE_BOXED=17};
-typedef enum _PurpleCmdPriority{PURPLE_CMD_P_VERY_LOW=-1000,PURPLE_CMD_P_LOW=0,PURPLE_CMD_P_DEFAULT=1000,PURPLE_CMD_P_PRPL=2000,PURPLE_CMD_P_PLUGIN=3000,PURPLE_CMD_P_ALIAS=4000,PURPLE_CMD_P_HIGH=5000,PURPLE_CMD_P_VERY_HIGH=6000};
 typedef enum _PurpleCipherBatchMode{PURPLE_CIPHER_BATCH_MODE_ECB=0,PURPLE_CIPHER_BATCH_MODE_CBC=1};
+typedef enum PurpleMediaCaps{PURPLE_MEDIA_CAPS_NONE=0,PURPLE_MEDIA_CAPS_AUDIO=1,PURPLE_MEDIA_CAPS_AUDIO_SINGLE_DIRECTION=2,PURPLE_MEDIA_CAPS_VIDEO=4,PURPLE_MEDIA_CAPS_VIDEO_SINGLE_DIRECTION=8,PURPLE_MEDIA_CAPS_AUDIO_VIDEO=16,PURPLE_MEDIA_CAPS_MODIFY_SESSION=32,PURPLE_MEDIA_CAPS_CHANGE_DIRECTION=64};
 typedef enum PurpleNotifyType{PURPLE_NOTIFY_MESSAGE=0,PURPLE_NOTIFY_EMAIL=1,PURPLE_NOTIFY_EMAILS=2,PURPLE_NOTIFY_FORMATTED=3,PURPLE_NOTIFY_SEARCHRESULTS=4,PURPLE_NOTIFY_USERINFO=5,PURPLE_NOTIFY_URI=6};
 typedef enum PurplePresenceContext{PURPLE_PRESENCE_CONTEXT_UNSET=0,PURPLE_PRESENCE_CONTEXT_ACCOUNT=1,PURPLE_PRESENCE_CONTEXT_CONV=2,PURPLE_PRESENCE_CONTEXT_BUDDY=3};
 typedef enum PurpleCertificateInvalidityFlags{PURPLE_CERTIFICATE_UNKNOWN_ERROR=-1,PURPLE_CERTIFICATE_NO_PROBLEMS=0,PURPLE_CERTIFICATE_NON_FATALS_MASK=65535,PURPLE_CERTIFICATE_SELF_SIGNED=1,PURPLE_CERTIFICATE_CA_UNKNOWN=2,PURPLE_CERTIFICATE_NOT_ACTIVATED=4,PURPLE_CERTIFICATE_EXPIRED=8,PURPLE_CERTIFICATE_NAME_MISMATCH=16,PURPLE_CERTIFICATE_NO_CA_POOL=32,PURPLE_CERTIFICATE_FATALS_MASK=4294901760,PURPLE_CERTIFICATE_INVALID_CHAIN=65536,PURPLE_CERTIFICATE_REVOKED=131072,PURPLE_CERTIFICATE_LAST=262144};
-typedef enum PurpleRequestType{PURPLE_REQUEST_INPUT=0,PURPLE_REQUEST_CHOICE=1,PURPLE_REQUEST_ACTION=2,PURPLE_REQUEST_FIELDS=3,PURPLE_REQUEST_FILE=4,PURPLE_REQUEST_FOLDER=5};
-typedef enum PurpleMediaCaps{PURPLE_MEDIA_CAPS_NONE=0,PURPLE_MEDIA_CAPS_AUDIO=1,PURPLE_MEDIA_CAPS_AUDIO_SINGLE_DIRECTION=2,PURPLE_MEDIA_CAPS_VIDEO=4,PURPLE_MEDIA_CAPS_VIDEO_SINGLE_DIRECTION=8,PURPLE_MEDIA_CAPS_AUDIO_VIDEO=16,PURPLE_MEDIA_CAPS_MODIFY_SESSION=32,PURPLE_MEDIA_CAPS_CHANGE_DIRECTION=64};
-typedef enum PurpleNotifyUserInfoEntryType{PURPLE_NOTIFY_USER_INFO_ENTRY_PAIR=0,PURPLE_NOTIFY_USER_INFO_ENTRY_SECTION_BREAK=1,PURPLE_NOTIFY_USER_INFO_ENTRY_SECTION_HEADER=2};
+typedef enum PurpleIconScaleRules{PURPLE_ICON_SCALE_DISPLAY=1,PURPLE_ICON_SCALE_SEND=2};
+typedef enum PurpleDesktopItemType{PURPLE_DESKTOP_ITEM_TYPE_NULL=0,PURPLE_DESKTOP_ITEM_TYPE_OTHER=1,PURPLE_DESKTOP_ITEM_TYPE_APPLICATION=2,PURPLE_DESKTOP_ITEM_TYPE_LINK=3,PURPLE_DESKTOP_ITEM_TYPE_FSDEVICE=4,PURPLE_DESKTOP_ITEM_TYPE_MIME_TYPE=5,PURPLE_DESKTOP_ITEM_TYPE_DIRECTORY=6,PURPLE_DESKTOP_ITEM_TYPE_SERVICE=7,PURPLE_DESKTOP_ITEM_TYPE_SERVICE_TYPE=8};
 typedef enum PurpleNotifyMsgType{PURPLE_NOTIFY_MSG_ERROR=0,PURPLE_NOTIFY_MSG_WARNING=1,PURPLE_NOTIFY_MSG_INFO=2};
+typedef enum PurpleNotifyUserInfoEntryType{PURPLE_NOTIFY_USER_INFO_ENTRY_PAIR=0,PURPLE_NOTIFY_USER_INFO_ENTRY_SECTION_BREAK=1,PURPLE_NOTIFY_USER_INFO_ENTRY_SECTION_HEADER=2};
+typedef enum PurpleSslErrorType{PURPLE_SSL_HANDSHAKE_FAILED=1,PURPLE_SSL_CONNECT_FAILED=2,PURPLE_SSL_CERTIFICATE_INVALID=3};
 typedef enum PurpleTypingState{PURPLE_NOT_TYPING=0,PURPLE_TYPING=1,PURPLE_TYPED=2};
 typedef enum PurpleDebugLevel{PURPLE_DEBUG_ALL=0,PURPLE_DEBUG_MISC=1,PURPLE_DEBUG_INFO=2,PURPLE_DEBUG_WARNING=3,PURPLE_DEBUG_ERROR=4,PURPLE_DEBUG_FATAL=5};
 typedef enum PurpleMessageFlags{PURPLE_MESSAGE_SEND=1,PURPLE_MESSAGE_RECV=2,PURPLE_MESSAGE_SYSTEM=4,PURPLE_MESSAGE_AUTO_RESP=8,PURPLE_MESSAGE_ACTIVE_ONLY=16,PURPLE_MESSAGE_NICK=32,PURPLE_MESSAGE_NO_LOG=64,PURPLE_MESSAGE_WHISPER=128,PURPLE_MESSAGE_ERROR=512,PURPLE_MESSAGE_DELAYED=1024,PURPLE_MESSAGE_RAW=2048,PURPLE_MESSAGE_IMAGES=4096,PURPLE_MESSAGE_NOTIFY=8192,PURPLE_MESSAGE_NO_LINKIFY=16384,PURPLE_MESSAGE_INVISIBLE=32768};
 typedef enum PurpleConnectionFlags{PURPLE_CONNECTION_HTML=1,PURPLE_CONNECTION_NO_BGCOLOR=2,PURPLE_CONNECTION_AUTO_RESP=4,PURPLE_CONNECTION_FORMATTING_WBFO=8,PURPLE_CONNECTION_NO_NEWLINES=16,PURPLE_CONNECTION_NO_FONTSIZE=32,PURPLE_CONNECTION_NO_URLDESC=64,PURPLE_CONNECTION_NO_IMAGES=128,PURPLE_CONNECTION_ALLOW_CUSTOM_SMILEY=256,PURPLE_CONNECTION_SUPPORT_MOODS=512,PURPLE_CONNECTION_SUPPORT_MOOD_MESSAGES=1024};
-typedef enum PurpleBlistNodeFlags{PURPLE_BLIST_NODE_FLAG_NO_SAVE=1};
 typedef enum PurplePmpType{PURPLE_PMP_TYPE_UDP=0,PURPLE_PMP_TYPE_TCP=1};
+typedef enum PurpleBlistNodeFlags{PURPLE_BLIST_NODE_FLAG_NO_SAVE=1};
 typedef enum _PurpleCmdFlag{PURPLE_CMD_FLAG_IM=1,PURPLE_CMD_FLAG_CHAT=2,PURPLE_CMD_FLAG_PRPL_ONLY=4,PURPLE_CMD_FLAG_ALLOW_WRONG_ARGS=8};
-typedef enum PurpleStunStatus{PURPLE_STUN_STATUS_UNDISCOVERED=-1,PURPLE_STUN_STATUS_UNKNOWN=0,PURPLE_STUN_STATUS_DISCOVERING=1,PURPLE_STUN_STATUS_DISCOVERED=2};
+typedef enum _PurpleCmdPriority{PURPLE_CMD_P_VERY_LOW=-1000,PURPLE_CMD_P_LOW=0,PURPLE_CMD_P_DEFAULT=1000,PURPLE_CMD_P_PRPL=2000,PURPLE_CMD_P_PLUGIN=3000,PURPLE_CMD_P_ALIAS=4000,PURPLE_CMD_P_HIGH=5000,PURPLE_CMD_P_VERY_HIGH=6000};
 typedef enum _XMLNodeType{XMLNODE_TYPE_TAG=0,XMLNODE_TYPE_ATTRIB=1,XMLNODE_TYPE_DATA=2};
-typedef enum PurpleConvChatBuddyFlags{PURPLE_CBFLAGS_NONE=0,PURPLE_CBFLAGS_VOICE=1,PURPLE_CBFLAGS_HALFOP=2,PURPLE_CBFLAGS_OP=4,PURPLE_CBFLAGS_FOUNDER=8,PURPLE_CBFLAGS_TYPING=16,PURPLE_CBFLAGS_AWAY=32};
+typedef enum PurpleRequestType{PURPLE_REQUEST_INPUT=0,PURPLE_REQUEST_CHOICE=1,PURPLE_REQUEST_ACTION=2,PURPLE_REQUEST_FIELDS=3,PURPLE_REQUEST_FILE=4,PURPLE_REQUEST_FOLDER=5};
 typedef enum PurpleRoomlistRoomType{PURPLE_ROOMLIST_ROOMTYPE_CATEGORY=1,PURPLE_ROOMLIST_ROOMTYPE_ROOM=2};
 typedef enum PurpleInputCondition{PURPLE_INPUT_READ=1,PURPLE_INPUT_WRITE=2};
+typedef enum PurpleCertificateVerificationStatus{PURPLE_CERTIFICATE_INVALID=0,PURPLE_CERTIFICATE_VALID=1};
 typedef enum PurpleMediaSessionType{PURPLE_MEDIA_NONE=0,PURPLE_MEDIA_RECV_AUDIO=1,PURPLE_MEDIA_SEND_AUDIO=2,PURPLE_MEDIA_RECV_VIDEO=4,PURPLE_MEDIA_SEND_VIDEO=8,PURPLE_MEDIA_RECV_APPLICATION=16,PURPLE_MEDIA_SEND_APPLICATION=32,PURPLE_MEDIA_AUDIO=3,PURPLE_MEDIA_VIDEO=12,PURPLE_MEDIA_APPLICATION=48};
 typedef enum PurpleConnectionState{PURPLE_DISCONNECTED=0,PURPLE_CONNECTED=1,PURPLE_CONNECTING=2};
+typedef enum PurpleStunStatus{PURPLE_STUN_STATUS_UNDISCOVERED=-1,PURPLE_STUN_STATUS_UNKNOWN=0,PURPLE_STUN_STATUS_DISCOVERING=1,PURPLE_STUN_STATUS_DISCOVERED=2};
+typedef enum PurpleStatusPrimitive{PURPLE_STATUS_UNSET=0,PURPLE_STATUS_OFFLINE=1,PURPLE_STATUS_AVAILABLE=2,PURPLE_STATUS_UNAVAILABLE=3,PURPLE_STATUS_INVISIBLE=4,PURPLE_STATUS_AWAY=5,PURPLE_STATUS_EXTENDED_AWAY=6,PURPLE_STATUS_MOBILE=7,PURPLE_STATUS_TUNE=8,PURPLE_STATUS_MOOD=9,PURPLE_STATUS_NUM_PRIMITIVES=10};
 typedef enum PurplePounceEvent{PURPLE_POUNCE_NONE=0,PURPLE_POUNCE_SIGNON=1,PURPLE_POUNCE_SIGNOFF=2,PURPLE_POUNCE_AWAY=4,PURPLE_POUNCE_AWAY_RETURN=8,PURPLE_POUNCE_IDLE=16,PURPLE_POUNCE_IDLE_RETURN=32,PURPLE_POUNCE_TYPING=64,PURPLE_POUNCE_TYPED=128,PURPLE_POUNCE_TYPING_STOPPED=256,PURPLE_POUNCE_MESSAGE_RECEIVED=512};
-typedef enum PurpleConversationType{PURPLE_CONV_TYPE_UNKNOWN=0,PURPLE_CONV_TYPE_IM=1,PURPLE_CONV_TYPE_CHAT=2,PURPLE_CONV_TYPE_MISC=3,PURPLE_CONV_TYPE_ANY=4};
 struct tm {int tm_sec;int tm_min;int tm_hour;int tm_mday;int tm_mon;int tm_year;int tm_wday;int tm_yday;int tm_isdst;long tm_gmtoff;const char*tm_zone;};
 struct _GByteArray {unsigned char*data;unsigned int len;};
 struct _GData {};
@@ -1863,25 +1863,13 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleSavedStatus"),
-		GetTitle = function(self) local v = CLIB.purple_savedstatus_get_title(self.ptr) v = chars_to_string(v) return v end,
-		GetMessage = function(self) local v = CLIB.purple_savedstatus_get_message(self.ptr) v = chars_to_string(v) return v end,
-		DeleteByStatus = function(self) local v = CLIB.purple_savedstatus_delete_by_status(self.ptr)  return v end,
-		SetSubstatus = function(self, account, type, message) local v = CLIB.purple_savedstatus_set_substatus(self.ptr, account.ptr, type.ptr, message)  return v end,
-		GetCreationTime = function(self) local v = CLIB.purple_savedstatus_get_creation_time(self.ptr)  return v end,
-		HasSubstatuses = function(self) local v = CLIB.purple_savedstatus_has_substatuses(self.ptr)  return v end,
-		SetType = function(self, type) local v = CLIB.purple_savedstatus_set_type(self.ptr, type)  return v end,
-		GetSubstatus = function(self, account) local v = CLIB.purple_savedstatus_get_substatus(self.ptr, account.ptr)  return v end,
-		GetType = function(self) local v = CLIB.purple_savedstatus_get_type(self.ptr)  return v end,
-		UnsetSubstatus = function(self, account) local v = CLIB.purple_savedstatus_unset_substatus(self.ptr, account.ptr)  return v end,
-		ActivateForAccount = function(self, account) local v = CLIB.purple_savedstatus_activate_for_account(self.ptr, account.ptr)  return v end,
-		SetTitle = function(self, title) local v = CLIB.purple_savedstatus_set_title(self.ptr, title)  return v end,
-		SetMessage = function(self, message) local v = CLIB.purple_savedstatus_set_message(self.ptr, message)  return v end,
-		Activate = function(self) local v = CLIB.purple_savedstatus_activate(self.ptr)  return v end,
-		IsTransient = function(self) local v = CLIB.purple_savedstatus_is_transient(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleSrvTxtQueryData"),
+		GetQuery = function(self) local v = CLIB.purple_srv_txt_query_get_query(self.ptr) v = chars_to_string(v) return v end,
+		Destroy = function(self) local v = CLIB.purple_srv_txt_query_destroy(self.ptr)  return v end,
+		GetType = function(self) local v = CLIB.purple_srv_txt_query_get_type(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.SavedStatus = META
+	metatables.SrvQueryData = META
 end
 do
 	local META = {
@@ -1904,352 +1892,6 @@ do
 	}
 	META.__index = META
 	metatables.Stringref = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleAttentionType"),
-		GetIconName = function(self) local v = CLIB.purple_attention_type_get_icon_name(self.ptr) v = chars_to_string(v) return v end,
-		GetName = function(self) local v = CLIB.purple_attention_type_get_name(self.ptr) v = chars_to_string(v) return v end,
-		GetIncomingDesc = function(self) local v = CLIB.purple_attention_type_get_incoming_desc(self.ptr) v = chars_to_string(v) return v end,
-		SetName = function(self, name) local v = CLIB.purple_attention_type_set_name(self.ptr, name)  return v end,
-		SetUnlocalizedName = function(self, ulname) local v = CLIB.purple_attention_type_set_unlocalized_name(self.ptr, ulname)  return v end,
-		SetOutgoingDesc = function(self, desc) local v = CLIB.purple_attention_type_set_outgoing_desc(self.ptr, desc)  return v end,
-		SetIncomingDesc = function(self, desc) local v = CLIB.purple_attention_type_set_incoming_desc(self.ptr, desc)  return v end,
-		GetOutgoingDesc = function(self) local v = CLIB.purple_attention_type_get_outgoing_desc(self.ptr) v = chars_to_string(v) return v end,
-		GetUnlocalizedName = function(self) local v = CLIB.purple_attention_type_get_unlocalized_name(self.ptr) v = chars_to_string(v) return v end,
-		SetIconName = function(self, name) local v = CLIB.purple_attention_type_set_icon_name(self.ptr, name)  return v end,
-	}
-	META.__index = META
-	metatables.AttentionType = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleMediaCodec"),
-		GetClockRate = function(self) local v = CLIB.purple_media_codec_get_clock_rate(self.ptr)  return v end,
-		GetChannels = function(self) local v = CLIB.purple_media_codec_get_channels(self.ptr)  return v end,
-		GetOptionalParameter = function(self, name, value) local v = CLIB.purple_media_codec_get_optional_parameter(self.ptr, name, value)  return v end,
-		GetEncodingName = function(self) local v = CLIB.purple_media_codec_get_encoding_name(self.ptr) v = chars_to_string(v) return v end,
-		RemoveOptionalParameter = function(self, param) local v = CLIB.purple_media_codec_remove_optional_parameter(self.ptr, param)  return v end,
-		AddOptionalParameter = function(self, name, value) local v = CLIB.purple_media_codec_add_optional_parameter(self.ptr, name, value)  return v end,
-		GetOptionalParameters = function(selfcast_type) local v = CLIB.purple_media_codec_get_optional_parameters(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		Copy = function(self) local v = CLIB.purple_media_codec_copy(self.ptr) v = wrap_pointer(v, "MediaCodec") return v end,
-		ToString = function(self) local v = CLIB.purple_media_codec_to_string(self.ptr) v = chars_to_string(v) return v end,
-		GetId = function(self) local v = CLIB.purple_media_codec_get_id(self.ptr)  return v end,
-	}
-	META.__index = META
-	metatables.MediaCodec = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurplePluginAction"),
-		Free = function(self) local v = CLIB.purple_plugin_action_free(self.ptr)  return v end,
-	}
-	META.__index = META
-	metatables.PluginAction = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleSoundTheme"),
-		SetFile = function(self, event, filename) local v = CLIB.purple_sound_theme_set_file(self.ptr, event, filename)  return v end,
-		GetFileFull = function(self, event) local v = CLIB.purple_sound_theme_get_file_full(self.ptr, event) v = chars_to_string(v) return v end,
-		GetFile = function(self, event) local v = CLIB.purple_sound_theme_get_file(self.ptr, event) v = chars_to_string(v) return v end,
-	}
-	META.__index = META
-	metatables.SoundTheme = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleConvChat"),
-		Unignore = function(self, name) local v = CLIB.purple_conv_chat_unignore(self.ptr, name)  return v end,
-		GetId = function(self) local v = CLIB.purple_conv_chat_get_id(self.ptr)  return v end,
-		GetIgnored = function(selfcast_type) local v = CLIB.purple_conv_chat_get_ignored(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		GetNick = function(self) local v = CLIB.purple_conv_chat_get_nick(self.ptr) v = chars_to_string(v) return v end,
-		GetUsers = function(selfcast_type) local v = CLIB.purple_conv_chat_get_users(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		UserGetFlags = function(self, user) local v = CLIB.purple_conv_chat_user_get_flags(self.ptr, user)  return v end,
-		RenameUser = function(self, old_user, new_user) local v = CLIB.purple_conv_chat_rename_user(self.ptr, old_user, new_user)  return v end,
-		Left = function(self) local v = CLIB.purple_conv_chat_left(self.ptr)  return v end,
-		AddUsers = function(self, users, extra_msgs, flags, new_arrivals) local v = CLIB.purple_conv_chat_add_users(self.ptr, table_to_glist(users), table_to_glist(extra_msgs), table_to_glist(flags), new_arrivals)  return v end,
-		GetConversation = function(self) local v = CLIB.purple_conv_chat_get_conversation(self.ptr) v = wrap_pointer(v, "Conversation") return v end,
-		SetUsers = function(self, users, cast_type) local v = CLIB.purple_conv_chat_set_users(self.ptr, table_to_glist(users)) v = glist_to_table(v, cast_type) return v end,
-		SetIgnored = function(self, ignored, cast_type) local v = CLIB.purple_conv_chat_set_ignored(self.ptr, table_to_glist(ignored)) v = glist_to_table(v, cast_type) return v end,
-		UserSetFlags = function(self, user, flags) local v = CLIB.purple_conv_chat_user_set_flags(self.ptr, user, flags)  return v end,
-		Send = function(self, message) local v = CLIB.purple_conv_chat_send(self.ptr, message)  return v end,
-		HasLeft = function(self) local v = CLIB.purple_conv_chat_has_left(self.ptr)  return v end,
-		IsUserIgnored = function(self, user) local v = CLIB.purple_conv_chat_is_user_ignored(self.ptr, user)  return v end,
-		SetId = function(self, id) local v = CLIB.purple_conv_chat_set_id(self.ptr, id)  return v end,
-		RemoveUsers = function(self, users, reason) local v = CLIB.purple_conv_chat_remove_users(self.ptr, table_to_glist(users), reason)  return v end,
-		CbSetAttributes = function(self, cb, keys, values) local v = CLIB.purple_conv_chat_cb_set_attributes(self.ptr, cb, table_to_glist(keys), table_to_glist(values))  return v end,
-		ClearUsers = function(self) local v = CLIB.purple_conv_chat_clear_users(self.ptr)  return v end,
-		AddUser = function(self, user, extra_msg, flags, new_arrival) local v = CLIB.purple_conv_chat_add_user(self.ptr, user, extra_msg, flags, new_arrival)  return v end,
-		RemoveUser = function(self, user, reason) local v = CLIB.purple_conv_chat_remove_user(self.ptr, user, reason)  return v end,
-		SendWithFlags = function(self, message, flags) local v = CLIB.purple_conv_chat_send_with_flags(self.ptr, message, flags)  return v end,
-		Write = function(self, who, message, flags, mtime) local v = CLIB.purple_conv_chat_write(self.ptr, who, message, flags, mtime)  return v end,
-		CbFind = function(self, name) local v = CLIB.purple_conv_chat_cb_find(self.ptr, name)  return v end,
-		GetIgnoredUser = function(self, user) local v = CLIB.purple_conv_chat_get_ignored_user(self.ptr, user) v = chars_to_string(v) return v end,
-		Ignore = function(self, name) local v = CLIB.purple_conv_chat_ignore(self.ptr, name)  return v end,
-		GetTopic = function(self) local v = CLIB.purple_conv_chat_get_topic(self.ptr) v = chars_to_string(v) return v end,
-		CbSetAttribute = function(self, cb, key, value) local v = CLIB.purple_conv_chat_cb_set_attribute(self.ptr, cb, key, value)  return v end,
-		SetNick = function(self, nick) local v = CLIB.purple_conv_chat_set_nick(self.ptr, nick)  return v end,
-		FindUser = function(self, user) local v = CLIB.purple_conv_chat_find_user(self.ptr, user)  return v end,
-		InviteUser = function(self, user, message, confirm) local v = CLIB.purple_conv_chat_invite_user(self.ptr, user, message, confirm)  return v end,
-		SetTopic = function(self, who, topic) local v = CLIB.purple_conv_chat_set_topic(self.ptr, who, topic)  return v end,
-	}
-	META.__index = META
-	metatables.ConvChat = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurplePluginPref"),
-		GetChoices = function(selfcast_type) local v = CLIB.purple_plugin_pref_get_choices(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		SetBounds = function(self, min, max) local v = CLIB.purple_plugin_pref_set_bounds(self.ptr, min, max)  return v end,
-		GetType = function(self) local v = CLIB.purple_plugin_pref_get_type(self.ptr)  return v end,
-		GetBounds = function(self, min, max) local v = CLIB.purple_plugin_pref_get_bounds(self.ptr, min, max)  return v end,
-		SetFormatType = function(self, format) local v = CLIB.purple_plugin_pref_set_format_type(self.ptr, format)  return v end,
-		SetMaxLength = function(self, max_length) local v = CLIB.purple_plugin_pref_set_max_length(self.ptr, max_length)  return v end,
-		GetFormatType = function(self) local v = CLIB.purple_plugin_pref_get_format_type(self.ptr)  return v end,
-		SetLabel = function(self, label) local v = CLIB.purple_plugin_pref_set_label(self.ptr, label)  return v end,
-		Destroy = function(self) local v = CLIB.purple_plugin_pref_destroy(self.ptr)  return v end,
-		GetName = function(self) local v = CLIB.purple_plugin_pref_get_name(self.ptr) v = chars_to_string(v) return v end,
-		SetName = function(self, name) local v = CLIB.purple_plugin_pref_set_name(self.ptr, name)  return v end,
-		GetLabel = function(self) local v = CLIB.purple_plugin_pref_get_label(self.ptr) v = chars_to_string(v) return v end,
-		GetMaxLength = function(self) local v = CLIB.purple_plugin_pref_get_max_length(self.ptr)  return v end,
-		SetMasked = function(self, mask) local v = CLIB.purple_plugin_pref_set_masked(self.ptr, mask)  return v end,
-		GetMasked = function(self) local v = CLIB.purple_plugin_pref_get_masked(self.ptr)  return v end,
-		SetType = function(self, type) local v = CLIB.purple_plugin_pref_set_type(self.ptr, type)  return v end,
-		AddChoice = function(self, label, choice) local v = CLIB.purple_plugin_pref_add_choice(self.ptr, label, choice)  return v end,
-	}
-	META.__index = META
-	metatables.PluginPref = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleBlistNode"),
-		GetBool = function(self, key) local v = CLIB.purple_blist_node_get_bool(self.ptr, key)  return v end,
-		SetUiData = function(self, ui_data) local v = CLIB.purple_blist_node_set_ui_data(self.ptr, ui_data)  return v end,
-		GetType = function(self) local v = CLIB.purple_blist_node_get_type(self.ptr)  return v end,
-		GetSiblingNext = function(self) local v = CLIB.purple_blist_node_get_sibling_next(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
-		GetString = function(self, key) local v = CLIB.purple_blist_node_get_string(self.ptr, key) v = chars_to_string(v) return v end,
-		GetFirstChild = function(self) local v = CLIB.purple_blist_node_get_first_child(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
-		GetSiblingPrev = function(self) local v = CLIB.purple_blist_node_get_sibling_prev(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
-		GetFlags = function(self) local v = CLIB.purple_blist_node_get_flags(self.ptr)  return v end,
-		SetString = function(self, key, value) local v = CLIB.purple_blist_node_set_string(self.ptr, key, value)  return v end,
-		SetBool = function(self, key, value) local v = CLIB.purple_blist_node_set_bool(self.ptr, key, value)  return v end,
-		GetInt = function(self, key) local v = CLIB.purple_blist_node_get_int(self.ptr, key)  return v end,
-		GetUiData = function(self) local v = CLIB.purple_blist_node_get_ui_data(self.ptr)  return v end,
-		GetExtendedMenu = function(selfcast_type) local v = CLIB.purple_blist_node_get_extended_menu(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		SetFlags = function(self, flags) local v = CLIB.purple_blist_node_set_flags(self.ptr, flags)  return v end,
-		Next = function(self, offline) local v = CLIB.purple_blist_node_next(self.ptr, offline) v = wrap_pointer(v, "BlistNode") return v end,
-		GetParent = function(self) local v = CLIB.purple_blist_node_get_parent(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
-		RemoveSetting = function(self, key) local v = CLIB.purple_blist_node_remove_setting(self.ptr, key)  return v end,
-		SetInt = function(self, key, value) local v = CLIB.purple_blist_node_set_int(self.ptr, key, value)  return v end,
-	}
-	META.__index = META
-	metatables.BlistNode = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleRoomlist"),
-		GetFields = function(selfcast_type) local v = CLIB.purple_roomlist_get_fields(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		RoomAddField = function(self, room, field) local v = CLIB.purple_roomlist_room_add_field(self.ptr, room.ptr, field)  return v end,
-		Ref = function(self) local v = CLIB.purple_roomlist_ref(self.ptr)  return v end,
-		CancelGetList = function(self) local v = CLIB.purple_roomlist_cancel_get_list(self.ptr)  return v end,
-		GetInProgress = function(self) local v = CLIB.purple_roomlist_get_in_progress(self.ptr)  return v end,
-		RoomAdd = function(self, room) local v = CLIB.purple_roomlist_room_add(self.ptr, room.ptr)  return v end,
-		SetInProgress = function(self, in_progress) local v = CLIB.purple_roomlist_set_in_progress(self.ptr, in_progress)  return v end,
-		SetFields = function(self, fields) local v = CLIB.purple_roomlist_set_fields(self.ptr, table_to_glist(fields))  return v end,
-		ExpandCategory = function(self, category) local v = CLIB.purple_roomlist_expand_category(self.ptr, category.ptr)  return v end,
-		RoomJoin = function(self, room) local v = CLIB.purple_roomlist_room_join(self.ptr, room.ptr)  return v end,
-		Unref = function(self) local v = CLIB.purple_roomlist_unref(self.ptr)  return v end,
-	}
-	META.__index = META
-	metatables.Roomlist = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleRoomlistRoom"),
-		GetFields = function(selfcast_type) local v = CLIB.purple_roomlist_room_get_fields(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		GetParent = function(self) local v = CLIB.purple_roomlist_room_get_parent(self.ptr) v = wrap_pointer(v, "RoomlistRoom") return v end,
-		GetName = function(self) local v = CLIB.purple_roomlist_room_get_name(self.ptr) v = chars_to_string(v) return v end,
-		GetType = function(self) local v = CLIB.purple_roomlist_room_get_type(self.ptr)  return v end,
-	}
-	META.__index = META
-	metatables.RoomlistRoom = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleRequestField"),
-		ChoiceGetLabels = function(selfcast_type) local v = CLIB.purple_request_field_choice_get_labels(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		ImageGetScaleY = function(self) local v = CLIB.purple_request_field_image_get_scale_y(self.ptr)  return v end,
-		Destroy = function(self) local v = CLIB.purple_request_field_destroy(self.ptr)  return v end,
-		ChoiceSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_choice_set_default_value(self.ptr, default_value)  return v end,
-		GetType = function(self) local v = CLIB.purple_request_field_get_type(self.ptr)  return v end,
-		StringGetDefaultValue = function(self) local v = CLIB.purple_request_field_string_get_default_value(self.ptr) v = chars_to_string(v) return v end,
-		GetTypeHint = function(self) local v = CLIB.purple_request_field_get_type_hint(self.ptr) v = chars_to_string(v) return v end,
-		ListAdd = function(self, item, data) local v = CLIB.purple_request_field_list_add(self.ptr, item, data)  return v end,
-		IsRequired = function(self) local v = CLIB.purple_request_field_is_required(self.ptr)  return v end,
-		ChoiceAdd = function(self, label) local v = CLIB.purple_request_field_choice_add(self.ptr, label)  return v end,
-		AccountSetValue = function(self, value) local v = CLIB.purple_request_field_account_set_value(self.ptr, value.ptr)  return v end,
-		StringGetValue = function(self) local v = CLIB.purple_request_field_string_get_value(self.ptr) v = chars_to_string(v) return v end,
-		ListSetSelected = function(self, items) local v = CLIB.purple_request_field_list_set_selected(self.ptr, table_to_glist(items))  return v end,
-		BoolSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_bool_set_default_value(self.ptr, default_value)  return v end,
-		ImageSetScale = function(self, x, y) local v = CLIB.purple_request_field_image_set_scale(self.ptr, x, y)  return v end,
-		ListSetMultiSelect = function(self, multi_select) local v = CLIB.purple_request_field_list_set_multi_select(self.ptr, multi_select)  return v end,
-		AccountGetShowAll = function(self) local v = CLIB.purple_request_field_account_get_show_all(self.ptr)  return v end,
-		BoolGetDefaultValue = function(self) local v = CLIB.purple_request_field_bool_get_default_value(self.ptr)  return v end,
-		ListAddIcon = function(self, item, icon_path, data) local v = CLIB.purple_request_field_list_add_icon(self.ptr, item, icon_path, data)  return v end,
-		AccountGetFilter = function(self) local v = CLIB.purple_request_field_account_get_filter(self.ptr)  return v end,
-		SetLabel = function(self, label) local v = CLIB.purple_request_field_set_label(self.ptr, label)  return v end,
-		AccountGetDefaultValue = function(self) local v = CLIB.purple_request_field_account_get_default_value(self.ptr) v = wrap_pointer(v, "Account") return v end,
-		ListAddSelected = function(self, item) local v = CLIB.purple_request_field_list_add_selected(self.ptr, item)  return v end,
-		SetRequired = function(self, required) local v = CLIB.purple_request_field_set_required(self.ptr, required)  return v end,
-		GetLabel = function(self) local v = CLIB.purple_request_field_get_label(self.ptr) v = chars_to_string(v) return v end,
-		ListGetIcons = function(selfcast_type) local v = CLIB.purple_request_field_list_get_icons(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		StringSetEditable = function(self, editable) local v = CLIB.purple_request_field_string_set_editable(self.ptr, editable)  return v end,
-		ListGetData = function(self, text) local v = CLIB.purple_request_field_list_get_data(self.ptr, text)  return v end,
-		SetVisible = function(self, visible) local v = CLIB.purple_request_field_set_visible(self.ptr, visible)  return v end,
-		ChoiceSetValue = function(self, value) local v = CLIB.purple_request_field_choice_set_value(self.ptr, value)  return v end,
-		BoolSetValue = function(self, value) local v = CLIB.purple_request_field_bool_set_value(self.ptr, value)  return v end,
-		ListClearSelected = function(self) local v = CLIB.purple_request_field_list_clear_selected(self.ptr)  return v end,
-		BoolGetValue = function(self) local v = CLIB.purple_request_field_bool_get_value(self.ptr)  return v end,
-		AccountGetValue = function(self) local v = CLIB.purple_request_field_account_get_value(self.ptr) v = wrap_pointer(v, "Account") return v end,
-		ChoiceGetDefaultValue = function(self) local v = CLIB.purple_request_field_choice_get_default_value(self.ptr)  return v end,
-		SetUiData = function(self, ui_data) local v = CLIB.purple_request_field_set_ui_data(self.ptr, ui_data)  return v end,
-		IsVisible = function(self) local v = CLIB.purple_request_field_is_visible(self.ptr)  return v end,
-		StringIsEditable = function(self) local v = CLIB.purple_request_field_string_is_editable(self.ptr)  return v end,
-		AccountSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_account_set_default_value(self.ptr, default_value.ptr)  return v end,
-		IntSetValue = function(self, value) local v = CLIB.purple_request_field_int_set_value(self.ptr, value)  return v end,
-		StringIsMasked = function(self) local v = CLIB.purple_request_field_string_is_masked(self.ptr)  return v end,
-		IntGetDefaultValue = function(self) local v = CLIB.purple_request_field_int_get_default_value(self.ptr)  return v end,
-		AccountSetFilter = function(self, filter_func) local v = CLIB.purple_request_field_account_set_filter(self.ptr, filter_func)  return v end,
-		ChoiceGetValue = function(self) local v = CLIB.purple_request_field_choice_get_value(self.ptr)  return v end,
-		StringSetValue = function(self, value) local v = CLIB.purple_request_field_string_set_value(self.ptr, value)  return v end,
-		StringIsMultiline = function(self) local v = CLIB.purple_request_field_string_is_multiline(self.ptr)  return v end,
-		ImageGetSize = function(self) local v = CLIB.purple_request_field_image_get_size(self.ptr)  return v end,
-		GetUiData = function(self) local v = CLIB.purple_request_field_get_ui_data(self.ptr)  return v end,
-		ListGetItems = function(selfcast_type) local v = CLIB.purple_request_field_list_get_items(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		StringSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_string_set_default_value(self.ptr, default_value)  return v end,
-		SetTypeHint = function(self, type_hint) local v = CLIB.purple_request_field_set_type_hint(self.ptr, type_hint)  return v end,
-		IntGetValue = function(self) local v = CLIB.purple_request_field_int_get_value(self.ptr)  return v end,
-		ListGetMultiSelect = function(self) local v = CLIB.purple_request_field_list_get_multi_select(self.ptr)  return v end,
-		AccountSetShowAll = function(self, show_all) local v = CLIB.purple_request_field_account_set_show_all(self.ptr, show_all)  return v end,
-		GetId = function(self) local v = CLIB.purple_request_field_get_id(self.ptr) v = chars_to_string(v) return v end,
-		ImageGetScaleX = function(self) local v = CLIB.purple_request_field_image_get_scale_x(self.ptr)  return v end,
-		ListGetSelected = function(selfcast_type) local v = CLIB.purple_request_field_list_get_selected(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		ListIsSelected = function(self, item) local v = CLIB.purple_request_field_list_is_selected(self.ptr, item)  return v end,
-		GetGroup = function(self) local v = CLIB.purple_request_field_get_group(self.ptr) v = wrap_pointer(v, "RequestFieldGroup") return v end,
-		StringSetMasked = function(self, masked) local v = CLIB.purple_request_field_string_set_masked(self.ptr, masked)  return v end,
-		ImageGetBuffer = function(self) local v = CLIB.purple_request_field_image_get_buffer(self.ptr) v = chars_to_string(v) return v end,
-		IntSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_int_set_default_value(self.ptr, default_value)  return v end,
-	}
-	META.__index = META
-	metatables.RequestField = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleCipherContext"),
-		GetBatchMode = function(self) local v = CLIB.purple_cipher_context_get_batch_mode(self.ptr)  return v end,
-		SetKeyWithLen = function(self, key, len) local v = CLIB.purple_cipher_context_set_key_with_len(self.ptr, key, len)  return v end,
-		Reset = function(self, extra) local v = CLIB.purple_cipher_context_reset(self.ptr, extra)  return v end,
-		SetKey = function(self, key) local v = CLIB.purple_cipher_context_set_key(self.ptr, key)  return v end,
-		GetSaltSize = function(self) local v = CLIB.purple_cipher_context_get_salt_size(self.ptr)  return v end,
-		DigestToStr = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest_to_str(self.ptr, in_len, unknown_3, out_len)  return v end,
-		GetKeySize = function(self) local v = CLIB.purple_cipher_context_get_key_size(self.ptr)  return v end,
-		SetIv = function(self, iv, len) local v = CLIB.purple_cipher_context_set_iv(self.ptr, iv, len)  return v end,
-		Append = function(self, data, len) local v = CLIB.purple_cipher_context_append(self.ptr, data, len)  return v end,
-		Digest = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest(self.ptr, in_len, unknown_3, out_len)  return v end,
-		SetData = function(self, data) local v = CLIB.purple_cipher_context_set_data(self.ptr, data)  return v end,
-		Destroy = function(self) local v = CLIB.purple_cipher_context_destroy(self.ptr)  return v end,
-		Decrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_decrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
-		SetSalt = function(self, salt) local v = CLIB.purple_cipher_context_set_salt(self.ptr, salt)  return v end,
-		GetBlockSize = function(self) local v = CLIB.purple_cipher_context_get_block_size(self.ptr)  return v end,
-		SetOption = function(self, name, value) local v = CLIB.purple_cipher_context_set_option(self.ptr, name, value)  return v end,
-		GetOption = function(self, name) local v = CLIB.purple_cipher_context_get_option(self.ptr, name)  return v end,
-		GetData = function(self) local v = CLIB.purple_cipher_context_get_data(self.ptr)  return v end,
-		Encrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_encrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
-		SetBatchMode = function(self, mode) local v = CLIB.purple_cipher_context_set_batch_mode(self.ptr, mode)  return v end,
-	}
-	META.__index = META
-	metatables.CipherContext = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleSrvTxtQueryData"),
-		GetQuery = function(self) local v = CLIB.purple_srv_txt_query_get_query(self.ptr) v = chars_to_string(v) return v end,
-		Destroy = function(self) local v = CLIB.purple_srv_txt_query_destroy(self.ptr)  return v end,
-		GetType = function(self) local v = CLIB.purple_srv_txt_query_get_type(self.ptr)  return v end,
-	}
-	META.__index = META
-	metatables.SrvQueryData = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleMimeDocument"),
-		GetParts = function(selfcast_type) local v = CLIB.purple_mime_document_get_parts(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		Write = function(self, str) local v = CLIB.purple_mime_document_write(self.ptr, str)  return v end,
-		Free = function(self) local v = CLIB.purple_mime_document_free(self.ptr)  return v end,
-		GetField = function(self, field) local v = CLIB.purple_mime_document_get_field(self.ptr, field) v = chars_to_string(v) return v end,
-		SetField = function(self, field, value) local v = CLIB.purple_mime_document_set_field(self.ptr, field, value)  return v end,
-		GetFields = function(selfcast_type) local v = CLIB.purple_mime_document_get_fields(self.ptr) v = glist_to_table(v, cast_type) return v end,
-	}
-	META.__index = META
-	metatables.MimeDocument = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleCertificate"),
-		GetIssuerUniqueId = function(self) local v = CLIB.purple_certificate_get_issuer_unique_id(self.ptr) v = chars_to_string(v) return v end,
-		GetTimes = function(self, activation, expiration) local v = CLIB.purple_certificate_get_times(self.ptr, activation, expiration)  return v end,
-		DisplayX509 = function(self) local v = CLIB.purple_certificate_display_x509(self.ptr)  return v end,
-		Destroy = function(self) local v = CLIB.purple_certificate_destroy(self.ptr)  return v end,
-		SignedBy = function(self, issuer) local v = CLIB.purple_certificate_signed_by(self.ptr, issuer.ptr)  return v end,
-		GetFingerprintSha1 = function(self) local v = CLIB.purple_certificate_get_fingerprint_sha1(self.ptr)  return v end,
-		CheckSubjectName = function(self, name) local v = CLIB.purple_certificate_check_subject_name(self.ptr, name)  return v end,
-		GetUniqueId = function(self) local v = CLIB.purple_certificate_get_unique_id(self.ptr) v = chars_to_string(v) return v end,
-		Copy = function(self) local v = CLIB.purple_certificate_copy(self.ptr) v = wrap_pointer(v, "Certificate") return v end,
-		GetSubjectName = function(self) local v = CLIB.purple_certificate_get_subject_name(self.ptr) v = chars_to_string(v) return v end,
-	}
-	META.__index = META
-	metatables.Certificate = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct _PurpleMediaCandidate"),
-		GetBasePort = function(self) local v = CLIB.purple_media_candidate_get_base_port(self.ptr)  return v end,
-		GetFoundation = function(self) local v = CLIB.purple_media_candidate_get_foundation(self.ptr) v = chars_to_string(v) return v end,
-		GetProtocol = function(self) local v = CLIB.purple_media_candidate_get_protocol(self.ptr)  return v end,
-		Copy = function(self) local v = CLIB.purple_media_candidate_copy(self.ptr) v = wrap_pointer(v, "MediaCandidate") return v end,
-		GetPriority = function(self) local v = CLIB.purple_media_candidate_get_priority(self.ptr)  return v end,
-		GetTtl = function(self) local v = CLIB.purple_media_candidate_get_ttl(self.ptr)  return v end,
-		GetIp = function(self) local v = CLIB.purple_media_candidate_get_ip(self.ptr) v = chars_to_string(v) return v end,
-		GetUsername = function(self) local v = CLIB.purple_media_candidate_get_username(self.ptr) v = chars_to_string(v) return v end,
-		GetBaseIp = function(self) local v = CLIB.purple_media_candidate_get_base_ip(self.ptr) v = chars_to_string(v) return v end,
-		GetComponentId = function(self) local v = CLIB.purple_media_candidate_get_component_id(self.ptr)  return v end,
-		GetCandidateType = function(self) local v = CLIB.purple_media_candidate_get_candidate_type(self.ptr)  return v end,
-		GetPassword = function(self) local v = CLIB.purple_media_candidate_get_password(self.ptr) v = chars_to_string(v) return v end,
-		GetPort = function(self) local v = CLIB.purple_media_candidate_get_port(self.ptr)  return v end,
-	}
-	META.__index = META
-	metatables.MediaCandidate = META
-end
-do
-	local META = {
-		ctype = ffi.typeof("struct PurpleRequestFields"),
-		GetBool = function(self, id) local v = CLIB.purple_request_fields_get_bool(self.ptr, id)  return v end,
-		GetGroups = function(selfcast_type) local v = CLIB.purple_request_fields_get_groups(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		GetField = function(self, id) local v = CLIB.purple_request_fields_get_field(self.ptr, id) v = wrap_pointer(v, "RequestField") return v end,
-		GetRequired = function(selfcast_type) local v = CLIB.purple_request_fields_get_required(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		Destroy = function(self) local v = CLIB.purple_request_fields_destroy(self.ptr)  return v end,
-		GetAccount = function(self, id) local v = CLIB.purple_request_fields_get_account(self.ptr, id) v = wrap_pointer(v, "Account") return v end,
-		GetInteger = function(self, id) local v = CLIB.purple_request_fields_get_integer(self.ptr, id)  return v end,
-		GetString = function(self, id) local v = CLIB.purple_request_fields_get_string(self.ptr, id) v = chars_to_string(v) return v end,
-		AddGroup = function(self, group) local v = CLIB.purple_request_fields_add_group(self.ptr, group.ptr)  return v end,
-		GetChoice = function(self, id) local v = CLIB.purple_request_fields_get_choice(self.ptr, id)  return v end,
-		IsFieldRequired = function(self, id) local v = CLIB.purple_request_fields_is_field_required(self.ptr, id)  return v end,
-		AllRequiredFilled = function(self) local v = CLIB.purple_request_fields_all_required_filled(self.ptr)  return v end,
-		Exists = function(self, id) local v = CLIB.purple_request_fields_exists(self.ptr, id)  return v end,
-	}
-	META.__index = META
-	metatables.RequestFields = META
 end
 do
 	local META = {
@@ -2343,6 +1985,260 @@ do
 end
 do
 	local META = {
+		ctype = ffi.typeof("struct _PurpleMediaCodec"),
+		GetClockRate = function(self) local v = CLIB.purple_media_codec_get_clock_rate(self.ptr)  return v end,
+		GetChannels = function(self) local v = CLIB.purple_media_codec_get_channels(self.ptr)  return v end,
+		GetOptionalParameter = function(self, name, value) local v = CLIB.purple_media_codec_get_optional_parameter(self.ptr, name, value)  return v end,
+		GetEncodingName = function(self) local v = CLIB.purple_media_codec_get_encoding_name(self.ptr) v = chars_to_string(v) return v end,
+		RemoveOptionalParameter = function(self, param) local v = CLIB.purple_media_codec_remove_optional_parameter(self.ptr, param)  return v end,
+		AddOptionalParameter = function(self, name, value) local v = CLIB.purple_media_codec_add_optional_parameter(self.ptr, name, value)  return v end,
+		GetOptionalParameters = function(selfcast_type) local v = CLIB.purple_media_codec_get_optional_parameters(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		Copy = function(self) local v = CLIB.purple_media_codec_copy(self.ptr) v = wrap_pointer(v, "MediaCodec") return v end,
+		ToString = function(self) local v = CLIB.purple_media_codec_to_string(self.ptr) v = chars_to_string(v) return v end,
+		GetId = function(self) local v = CLIB.purple_media_codec_get_id(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.MediaCodec = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurplePluginAction"),
+		Free = function(self) local v = CLIB.purple_plugin_action_free(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.PluginAction = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleSoundTheme"),
+		SetFile = function(self, event, filename) local v = CLIB.purple_sound_theme_set_file(self.ptr, event, filename)  return v end,
+		GetFileFull = function(self, event) local v = CLIB.purple_sound_theme_get_file_full(self.ptr, event) v = chars_to_string(v) return v end,
+		GetFile = function(self, event) local v = CLIB.purple_sound_theme_get_file(self.ptr, event) v = chars_to_string(v) return v end,
+	}
+	META.__index = META
+	metatables.SoundTheme = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleChat"),
+		GetGroup = function(self) local v = CLIB.purple_chat_get_group(self.ptr) v = wrap_pointer(v, "Group") return v end,
+		GetName = function(self) local v = CLIB.purple_chat_get_name(self.ptr) v = chars_to_string(v) return v end,
+		GetComponents = function(self) local v = CLIB.purple_chat_get_components(self.ptr)  return v end,
+		GetAccount = function(self) local v = CLIB.purple_chat_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
+		Destroy = function(self) local v = CLIB.purple_chat_destroy(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.Chat = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurplePluginPref"),
+		GetChoices = function(selfcast_type) local v = CLIB.purple_plugin_pref_get_choices(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		SetBounds = function(self, min, max) local v = CLIB.purple_plugin_pref_set_bounds(self.ptr, min, max)  return v end,
+		GetType = function(self) local v = CLIB.purple_plugin_pref_get_type(self.ptr)  return v end,
+		GetBounds = function(self, min, max) local v = CLIB.purple_plugin_pref_get_bounds(self.ptr, min, max)  return v end,
+		SetFormatType = function(self, format) local v = CLIB.purple_plugin_pref_set_format_type(self.ptr, format)  return v end,
+		SetMaxLength = function(self, max_length) local v = CLIB.purple_plugin_pref_set_max_length(self.ptr, max_length)  return v end,
+		GetFormatType = function(self) local v = CLIB.purple_plugin_pref_get_format_type(self.ptr)  return v end,
+		SetLabel = function(self, label) local v = CLIB.purple_plugin_pref_set_label(self.ptr, label)  return v end,
+		Destroy = function(self) local v = CLIB.purple_plugin_pref_destroy(self.ptr)  return v end,
+		GetName = function(self) local v = CLIB.purple_plugin_pref_get_name(self.ptr) v = chars_to_string(v) return v end,
+		SetName = function(self, name) local v = CLIB.purple_plugin_pref_set_name(self.ptr, name)  return v end,
+		GetLabel = function(self) local v = CLIB.purple_plugin_pref_get_label(self.ptr) v = chars_to_string(v) return v end,
+		GetMaxLength = function(self) local v = CLIB.purple_plugin_pref_get_max_length(self.ptr)  return v end,
+		SetMasked = function(self, mask) local v = CLIB.purple_plugin_pref_set_masked(self.ptr, mask)  return v end,
+		GetMasked = function(self) local v = CLIB.purple_plugin_pref_get_masked(self.ptr)  return v end,
+		SetType = function(self, type) local v = CLIB.purple_plugin_pref_set_type(self.ptr, type)  return v end,
+		AddChoice = function(self, label, choice) local v = CLIB.purple_plugin_pref_add_choice(self.ptr, label, choice)  return v end,
+	}
+	META.__index = META
+	metatables.PluginPref = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleBlistNode"),
+		GetBool = function(self, key) local v = CLIB.purple_blist_node_get_bool(self.ptr, key)  return v end,
+		SetUiData = function(self, ui_data) local v = CLIB.purple_blist_node_set_ui_data(self.ptr, ui_data)  return v end,
+		GetType = function(self) local v = CLIB.purple_blist_node_get_type(self.ptr)  return v end,
+		GetSiblingNext = function(self) local v = CLIB.purple_blist_node_get_sibling_next(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
+		GetString = function(self, key) local v = CLIB.purple_blist_node_get_string(self.ptr, key) v = chars_to_string(v) return v end,
+		GetFirstChild = function(self) local v = CLIB.purple_blist_node_get_first_child(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
+		GetSiblingPrev = function(self) local v = CLIB.purple_blist_node_get_sibling_prev(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
+		GetFlags = function(self) local v = CLIB.purple_blist_node_get_flags(self.ptr)  return v end,
+		SetString = function(self, key, value) local v = CLIB.purple_blist_node_set_string(self.ptr, key, value)  return v end,
+		SetBool = function(self, key, value) local v = CLIB.purple_blist_node_set_bool(self.ptr, key, value)  return v end,
+		GetInt = function(self, key) local v = CLIB.purple_blist_node_get_int(self.ptr, key)  return v end,
+		GetUiData = function(self) local v = CLIB.purple_blist_node_get_ui_data(self.ptr)  return v end,
+		GetExtendedMenu = function(selfcast_type) local v = CLIB.purple_blist_node_get_extended_menu(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		SetFlags = function(self, flags) local v = CLIB.purple_blist_node_set_flags(self.ptr, flags)  return v end,
+		Next = function(self, offline) local v = CLIB.purple_blist_node_next(self.ptr, offline) v = wrap_pointer(v, "BlistNode") return v end,
+		GetParent = function(self) local v = CLIB.purple_blist_node_get_parent(self.ptr) v = wrap_pointer(v, "BlistNode") return v end,
+		RemoveSetting = function(self, key) local v = CLIB.purple_blist_node_remove_setting(self.ptr, key)  return v end,
+		SetInt = function(self, key, value) local v = CLIB.purple_blist_node_set_int(self.ptr, key, value)  return v end,
+	}
+	META.__index = META
+	metatables.BlistNode = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleRoomlist"),
+		GetFields = function(selfcast_type) local v = CLIB.purple_roomlist_get_fields(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		RoomAddField = function(self, room, field) local v = CLIB.purple_roomlist_room_add_field(self.ptr, room.ptr, field)  return v end,
+		Ref = function(self) local v = CLIB.purple_roomlist_ref(self.ptr)  return v end,
+		CancelGetList = function(self) local v = CLIB.purple_roomlist_cancel_get_list(self.ptr)  return v end,
+		GetInProgress = function(self) local v = CLIB.purple_roomlist_get_in_progress(self.ptr)  return v end,
+		RoomAdd = function(self, room) local v = CLIB.purple_roomlist_room_add(self.ptr, room.ptr)  return v end,
+		SetInProgress = function(self, in_progress) local v = CLIB.purple_roomlist_set_in_progress(self.ptr, in_progress)  return v end,
+		SetFields = function(self, fields) local v = CLIB.purple_roomlist_set_fields(self.ptr, table_to_glist(fields))  return v end,
+		ExpandCategory = function(self, category) local v = CLIB.purple_roomlist_expand_category(self.ptr, category.ptr)  return v end,
+		RoomJoin = function(self, room) local v = CLIB.purple_roomlist_room_join(self.ptr, room.ptr)  return v end,
+		Unref = function(self) local v = CLIB.purple_roomlist_unref(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.Roomlist = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleRoomlistRoom"),
+		GetFields = function(selfcast_type) local v = CLIB.purple_roomlist_room_get_fields(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		GetParent = function(self) local v = CLIB.purple_roomlist_room_get_parent(self.ptr) v = wrap_pointer(v, "RoomlistRoom") return v end,
+		GetName = function(self) local v = CLIB.purple_roomlist_room_get_name(self.ptr) v = chars_to_string(v) return v end,
+		GetType = function(self) local v = CLIB.purple_roomlist_room_get_type(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.RoomlistRoom = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleTheme"),
+		GetDir = function(self) local v = CLIB.purple_theme_get_dir(self.ptr) v = chars_to_string(v) return v end,
+		SetDescription = function(self, description) local v = CLIB.purple_theme_set_description(self.ptr, description)  return v end,
+		SetAuthor = function(self, author) local v = CLIB.purple_theme_set_author(self.ptr, author)  return v end,
+		ManagerRemoveTheme = function(self) local v = CLIB.purple_theme_manager_remove_theme(self.ptr)  return v end,
+		SetImage = function(self, img) local v = CLIB.purple_theme_set_image(self.ptr, img)  return v end,
+		ManagerAddTheme = function(self) local v = CLIB.purple_theme_manager_add_theme(self.ptr)  return v end,
+		GetAuthor = function(self) local v = CLIB.purple_theme_get_author(self.ptr) v = chars_to_string(v) return v end,
+		GetName = function(self) local v = CLIB.purple_theme_get_name(self.ptr) v = chars_to_string(v) return v end,
+		GetImage = function(self) local v = CLIB.purple_theme_get_image(self.ptr) v = chars_to_string(v) return v end,
+		SetName = function(self, name) local v = CLIB.purple_theme_set_name(self.ptr, name)  return v end,
+		GetDescription = function(self) local v = CLIB.purple_theme_get_description(self.ptr) v = chars_to_string(v) return v end,
+		GetTypeString = function(self) local v = CLIB.purple_theme_get_type_string(self.ptr) v = chars_to_string(v) return v end,
+		GetImageFull = function(self) local v = CLIB.purple_theme_get_image_full(self.ptr) v = chars_to_string(v) return v end,
+		SetDir = function(self, dir) local v = CLIB.purple_theme_set_dir(self.ptr, dir)  return v end,
+	}
+	META.__index = META
+	metatables.Theme = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleCipherContext"),
+		GetBatchMode = function(self) local v = CLIB.purple_cipher_context_get_batch_mode(self.ptr)  return v end,
+		SetKeyWithLen = function(self, key, len) local v = CLIB.purple_cipher_context_set_key_with_len(self.ptr, key, len)  return v end,
+		Reset = function(self, extra) local v = CLIB.purple_cipher_context_reset(self.ptr, extra)  return v end,
+		SetKey = function(self, key) local v = CLIB.purple_cipher_context_set_key(self.ptr, key)  return v end,
+		GetSaltSize = function(self) local v = CLIB.purple_cipher_context_get_salt_size(self.ptr)  return v end,
+		DigestToStr = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest_to_str(self.ptr, in_len, unknown_3, out_len)  return v end,
+		GetKeySize = function(self) local v = CLIB.purple_cipher_context_get_key_size(self.ptr)  return v end,
+		SetIv = function(self, iv, len) local v = CLIB.purple_cipher_context_set_iv(self.ptr, iv, len)  return v end,
+		Append = function(self, data, len) local v = CLIB.purple_cipher_context_append(self.ptr, data, len)  return v end,
+		Digest = function(self, in_len, unknown_3, out_len) local v = CLIB.purple_cipher_context_digest(self.ptr, in_len, unknown_3, out_len)  return v end,
+		SetData = function(self, data) local v = CLIB.purple_cipher_context_set_data(self.ptr, data)  return v end,
+		Destroy = function(self) local v = CLIB.purple_cipher_context_destroy(self.ptr)  return v end,
+		Decrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_decrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
+		SetSalt = function(self, salt) local v = CLIB.purple_cipher_context_set_salt(self.ptr, salt)  return v end,
+		GetBlockSize = function(self) local v = CLIB.purple_cipher_context_get_block_size(self.ptr)  return v end,
+		SetOption = function(self, name, value) local v = CLIB.purple_cipher_context_set_option(self.ptr, name, value)  return v end,
+		GetOption = function(self, name) local v = CLIB.purple_cipher_context_get_option(self.ptr, name)  return v end,
+		GetData = function(self) local v = CLIB.purple_cipher_context_get_data(self.ptr)  return v end,
+		Encrypt = function(self, unknown_2, len, unknown_4, outlen) local v = CLIB.purple_cipher_context_encrypt(self.ptr, unknown_2, len, unknown_4, outlen)  return v end,
+		SetBatchMode = function(self, mode) local v = CLIB.purple_cipher_context_set_batch_mode(self.ptr, mode)  return v end,
+	}
+	META.__index = META
+	metatables.CipherContext = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleCircBuffer"),
+		GetMaxRead = function(self) local v = CLIB.purple_circ_buffer_get_max_read(self.ptr)  return v end,
+		Append = function(self, src, len) local v = CLIB.purple_circ_buffer_append(self.ptr, src, len)  return v end,
+		MarkRead = function(self, len) local v = CLIB.purple_circ_buffer_mark_read(self.ptr, len)  return v end,
+		Destroy = function(self) local v = CLIB.purple_circ_buffer_destroy(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.CircBuffer = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleMimeDocument"),
+		GetParts = function(selfcast_type) local v = CLIB.purple_mime_document_get_parts(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		Write = function(self, str) local v = CLIB.purple_mime_document_write(self.ptr, str)  return v end,
+		Free = function(self) local v = CLIB.purple_mime_document_free(self.ptr)  return v end,
+		GetField = function(self, field) local v = CLIB.purple_mime_document_get_field(self.ptr, field) v = chars_to_string(v) return v end,
+		SetField = function(self, field, value) local v = CLIB.purple_mime_document_set_field(self.ptr, field, value)  return v end,
+		GetFields = function(selfcast_type) local v = CLIB.purple_mime_document_get_fields(self.ptr) v = glist_to_table(v, cast_type) return v end,
+	}
+	META.__index = META
+	metatables.MimeDocument = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleCertificate"),
+		GetIssuerUniqueId = function(self) local v = CLIB.purple_certificate_get_issuer_unique_id(self.ptr) v = chars_to_string(v) return v end,
+		GetTimes = function(self, activation, expiration) local v = CLIB.purple_certificate_get_times(self.ptr, activation, expiration)  return v end,
+		DisplayX509 = function(self) local v = CLIB.purple_certificate_display_x509(self.ptr)  return v end,
+		Destroy = function(self) local v = CLIB.purple_certificate_destroy(self.ptr)  return v end,
+		SignedBy = function(self, issuer) local v = CLIB.purple_certificate_signed_by(self.ptr, issuer.ptr)  return v end,
+		GetFingerprintSha1 = function(self) local v = CLIB.purple_certificate_get_fingerprint_sha1(self.ptr)  return v end,
+		CheckSubjectName = function(self, name) local v = CLIB.purple_certificate_check_subject_name(self.ptr, name)  return v end,
+		GetUniqueId = function(self) local v = CLIB.purple_certificate_get_unique_id(self.ptr) v = chars_to_string(v) return v end,
+		Copy = function(self) local v = CLIB.purple_certificate_copy(self.ptr) v = wrap_pointer(v, "Certificate") return v end,
+		GetSubjectName = function(self) local v = CLIB.purple_certificate_get_subject_name(self.ptr) v = chars_to_string(v) return v end,
+	}
+	META.__index = META
+	metatables.Certificate = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleMediaCandidate"),
+		GetBasePort = function(self) local v = CLIB.purple_media_candidate_get_base_port(self.ptr)  return v end,
+		GetFoundation = function(self) local v = CLIB.purple_media_candidate_get_foundation(self.ptr) v = chars_to_string(v) return v end,
+		GetProtocol = function(self) local v = CLIB.purple_media_candidate_get_protocol(self.ptr)  return v end,
+		Copy = function(self) local v = CLIB.purple_media_candidate_copy(self.ptr) v = wrap_pointer(v, "MediaCandidate") return v end,
+		GetPriority = function(self) local v = CLIB.purple_media_candidate_get_priority(self.ptr)  return v end,
+		GetTtl = function(self) local v = CLIB.purple_media_candidate_get_ttl(self.ptr)  return v end,
+		GetIp = function(self) local v = CLIB.purple_media_candidate_get_ip(self.ptr) v = chars_to_string(v) return v end,
+		GetUsername = function(self) local v = CLIB.purple_media_candidate_get_username(self.ptr) v = chars_to_string(v) return v end,
+		GetBaseIp = function(self) local v = CLIB.purple_media_candidate_get_base_ip(self.ptr) v = chars_to_string(v) return v end,
+		GetComponentId = function(self) local v = CLIB.purple_media_candidate_get_component_id(self.ptr)  return v end,
+		GetCandidateType = function(self) local v = CLIB.purple_media_candidate_get_candidate_type(self.ptr)  return v end,
+		GetPassword = function(self) local v = CLIB.purple_media_candidate_get_password(self.ptr) v = chars_to_string(v) return v end,
+		GetPort = function(self) local v = CLIB.purple_media_candidate_get_port(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.MediaCandidate = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct PurpleRequestFields"),
+		GetBool = function(self, id) local v = CLIB.purple_request_fields_get_bool(self.ptr, id)  return v end,
+		GetGroups = function(selfcast_type) local v = CLIB.purple_request_fields_get_groups(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		GetField = function(self, id) local v = CLIB.purple_request_fields_get_field(self.ptr, id) v = wrap_pointer(v, "RequestField") return v end,
+		GetRequired = function(selfcast_type) local v = CLIB.purple_request_fields_get_required(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		Destroy = function(self) local v = CLIB.purple_request_fields_destroy(self.ptr)  return v end,
+		GetAccount = function(self, id) local v = CLIB.purple_request_fields_get_account(self.ptr, id) v = wrap_pointer(v, "Account") return v end,
+		GetInteger = function(self, id) local v = CLIB.purple_request_fields_get_integer(self.ptr, id)  return v end,
+		GetString = function(self, id) local v = CLIB.purple_request_fields_get_string(self.ptr, id) v = chars_to_string(v) return v end,
+		AddGroup = function(self, group) local v = CLIB.purple_request_fields_add_group(self.ptr, group.ptr)  return v end,
+		GetChoice = function(self, id) local v = CLIB.purple_request_fields_get_choice(self.ptr, id)  return v end,
+		IsFieldRequired = function(self, id) local v = CLIB.purple_request_fields_is_field_required(self.ptr, id)  return v end,
+		AllRequiredFilled = function(self) local v = CLIB.purple_request_fields_all_required_filled(self.ptr)  return v end,
+		Exists = function(self, id) local v = CLIB.purple_request_fields_exists(self.ptr, id)  return v end,
+	}
+	META.__index = META
+	metatables.RequestFields = META
+end
+do
+	local META = {
 		ctype = ffi.typeof("struct _PurpleConversation"),
 		GetGc = function(self) local v = CLIB.purple_conversation_get_gc(self.ptr) v = wrap_pointer(v, "Connection") return v end,
 		GetType = function(self) local v = CLIB.purple_conversation_get_type(self.ptr)  return v end,
@@ -2383,36 +2279,44 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleRoomlistField"),
-		GetLabel = function(self) local v = CLIB.purple_roomlist_field_get_label(self.ptr) v = chars_to_string(v) return v end,
-		GetHidden = function(self) local v = CLIB.purple_roomlist_field_get_hidden(self.ptr)  return v end,
-		GetType = function(self) local v = CLIB.purple_roomlist_field_get_type(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleLogLogger"),
+		Free = function(self) local v = CLIB.purple_log_logger_free(self.ptr)  return v end,
+		Add = function(self) local v = CLIB.purple_log_logger_add(self.ptr)  return v end,
+		Remove = function(self) local v = CLIB.purple_log_logger_remove(self.ptr)  return v end,
+		Set = function(self) local v = CLIB.purple_log_logger_set(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.RoomlistField = META
+	metatables.LogLogger = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct PurpleAccountOption"),
-		GetSetting = function(self) local v = CLIB.purple_account_option_get_setting(self.ptr) v = chars_to_string(v) return v end,
-		GetDefaultString = function(self) local v = CLIB.purple_account_option_get_default_string(self.ptr) v = chars_to_string(v) return v end,
-		GetMasked = function(self) local v = CLIB.purple_account_option_get_masked(self.ptr)  return v end,
-		AddListItem = function(self, key, value) local v = CLIB.purple_account_option_add_list_item(self.ptr, key, value)  return v end,
-		SetMasked = function(self, masked) local v = CLIB.purple_account_option_set_masked(self.ptr, masked)  return v end,
-		SetDefaultBool = function(self, value) local v = CLIB.purple_account_option_set_default_bool(self.ptr, value)  return v end,
-		GetList = function(selfcast_type) local v = CLIB.purple_account_option_get_list(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		GetType = function(self) local v = CLIB.purple_account_option_get_type(self.ptr)  return v end,
-		Destroy = function(self) local v = CLIB.purple_account_option_destroy(self.ptr)  return v end,
-		GetDefaultBool = function(self) local v = CLIB.purple_account_option_get_default_bool(self.ptr)  return v end,
-		SetDefaultInt = function(self, value) local v = CLIB.purple_account_option_set_default_int(self.ptr, value)  return v end,
-		GetDefaultInt = function(self) local v = CLIB.purple_account_option_get_default_int(self.ptr)  return v end,
-		GetText = function(self) local v = CLIB.purple_account_option_get_text(self.ptr) v = chars_to_string(v) return v end,
-		GetDefaultListValue = function(self) local v = CLIB.purple_account_option_get_default_list_value(self.ptr) v = chars_to_string(v) return v end,
-		SetList = function(self, values) local v = CLIB.purple_account_option_set_list(self.ptr, table_to_glist(values))  return v end,
-		SetDefaultString = function(self, value) local v = CLIB.purple_account_option_set_default_string(self.ptr, value)  return v end,
+		ctype = ffi.typeof("struct _PurplePresence"),
+		GetStatus = function(self, status_id) local v = CLIB.purple_presence_get_status(self.ptr, status_id) v = wrap_pointer(v, "Status") return v end,
+		IsStatusActive = function(self, status_id) local v = CLIB.purple_presence_is_status_active(self.ptr, status_id)  return v end,
+		IsAvailable = function(self) local v = CLIB.purple_presence_is_available(self.ptr)  return v end,
+		GetContext = function(self) local v = CLIB.purple_presence_get_context(self.ptr)  return v end,
+		SetLoginTime = function(self, login_time) local v = CLIB.purple_presence_set_login_time(self.ptr, login_time)  return v end,
+		AddList = function(self, source_list) local v = CLIB.purple_presence_add_list(self.ptr, table_to_glist(source_list))  return v end,
+		GetActiveStatus = function(self) local v = CLIB.purple_presence_get_active_status(self.ptr) v = wrap_pointer(v, "Status") return v end,
+		SwitchStatus = function(self, status_id) local v = CLIB.purple_presence_switch_status(self.ptr, status_id)  return v end,
+		IsOnline = function(self) local v = CLIB.purple_presence_is_online(self.ptr)  return v end,
+		IsStatusPrimitiveActive = function(self, primitive) local v = CLIB.purple_presence_is_status_primitive_active(self.ptr, primitive)  return v end,
+		GetIdleTime = function(self) local v = CLIB.purple_presence_get_idle_time(self.ptr)  return v end,
+		GetConversation = function(self) local v = CLIB.purple_presence_get_conversation(self.ptr) v = wrap_pointer(v, "Conversation") return v end,
+		GetBuddy = function(self) local v = CLIB.purple_presence_get_buddy(self.ptr) v = wrap_pointer(v, "Buddy") return v end,
+		SetIdle = function(self, idle, idle_time) local v = CLIB.purple_presence_set_idle(self.ptr, idle, idle_time)  return v end,
+		Destroy = function(self) local v = CLIB.purple_presence_destroy(self.ptr)  return v end,
+		GetAccount = function(self) local v = CLIB.purple_presence_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
+		IsIdle = function(self) local v = CLIB.purple_presence_is_idle(self.ptr)  return v end,
+		GetStatuses = function(selfcast_type) local v = CLIB.purple_presence_get_statuses(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		GetLoginTime = function(self) local v = CLIB.purple_presence_get_login_time(self.ptr)  return v end,
+		SetStatusActive = function(self, status_id, active) local v = CLIB.purple_presence_set_status_active(self.ptr, status_id, active)  return v end,
+		Compare = function(self, presence2) local v = CLIB.purple_presence_compare(self.ptr, presence2.ptr)  return v end,
+		AddStatus = function(self, status) local v = CLIB.purple_presence_add_status(self.ptr, status.ptr)  return v end,
+		GetChatUser = function(self) local v = CLIB.purple_presence_get_chat_user(self.ptr) v = chars_to_string(v) return v end,
 	}
 	META.__index = META
-	metatables.AccountOption = META
+	metatables.Presence = META
 end
 do
 	local META = {
@@ -2424,6 +2328,17 @@ do
 	}
 	META.__index = META
 	metatables.RequestFieldGroup = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleGroup"),
+		OnAccount = function(self, account) local v = CLIB.purple_group_on_account(self.ptr, account.ptr)  return v end,
+		GetName = function(self) local v = CLIB.purple_group_get_name(self.ptr) v = chars_to_string(v) return v end,
+		GetAccounts = function(self) local v = CLIB.purple_group_get_accounts(self.ptr)  return v end,
+		Destroy = function(self) local v = CLIB.purple_group_destroy(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.Group = META
 end
 do
 	local META = {
@@ -2466,35 +2381,24 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleNotifyUserInfoEntry"),
-		SetValue = function(self, value) local v = CLIB.purple_notify_user_info_entry_set_value(self.ptr, value)  return v end,
-		GetLabel = function(self) local v = CLIB.purple_notify_user_info_entry_get_label(self.ptr) v = chars_to_string(v) return v end,
-		GetValue = function(self) local v = CLIB.purple_notify_user_info_entry_get_value(self.ptr) v = chars_to_string(v) return v end,
-		GetType = function(self) local v = CLIB.purple_notify_user_info_entry_get_type(self.ptr)  return v end,
-		SetLabel = function(self, label) local v = CLIB.purple_notify_user_info_entry_set_label(self.ptr, label)  return v end,
-		SetType = function(self, type) local v = CLIB.purple_notify_user_info_entry_set_type(self.ptr, type)  return v end,
+		ctype = ffi.typeof("struct _PurpleRoomlistField"),
+		GetLabel = function(self) local v = CLIB.purple_roomlist_field_get_label(self.ptr) v = chars_to_string(v) return v end,
+		GetHidden = function(self) local v = CLIB.purple_roomlist_field_get_hidden(self.ptr)  return v end,
+		GetType = function(self) local v = CLIB.purple_roomlist_field_get_type(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.NotifyUserInfoEntry = META
+	metatables.RoomlistField = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleNotifyUserInfo"),
-		AddSectionHeader = function(self, label) local v = CLIB.purple_notify_user_info_add_section_header(self.ptr, label)  return v end,
-		RemoveEntry = function(self, user_info_entry) local v = CLIB.purple_notify_user_info_remove_entry(self.ptr, user_info_entry.ptr)  return v end,
-		GetTextWithNewline = function(self, newline) local v = CLIB.purple_notify_user_info_get_text_with_newline(self.ptr, newline) v = chars_to_string(v) return v end,
-		PrependSectionBreak = function(self) local v = CLIB.purple_notify_user_info_prepend_section_break(self.ptr)  return v end,
-		AddPairPlaintext = function(self, label, value) local v = CLIB.purple_notify_user_info_add_pair_plaintext(self.ptr, label, value)  return v end,
-		Destroy = function(self) local v = CLIB.purple_notify_user_info_destroy(self.ptr)  return v end,
-		RemoveLastItem = function(self) local v = CLIB.purple_notify_user_info_remove_last_item(self.ptr)  return v end,
-		AddPair = function(self, label, value) local v = CLIB.purple_notify_user_info_add_pair(self.ptr, label, value)  return v end,
-		GetEntries = function(selfcast_type) local v = CLIB.purple_notify_user_info_get_entries(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		PrependSectionHeader = function(self, label) local v = CLIB.purple_notify_user_info_prepend_section_header(self.ptr, label)  return v end,
-		AddSectionBreak = function(self) local v = CLIB.purple_notify_user_info_add_section_break(self.ptr)  return v end,
-		PrependPair = function(self, label, value) local v = CLIB.purple_notify_user_info_prepend_pair(self.ptr, label, value)  return v end,
+		ctype = ffi.typeof("struct _PurpleDesktopItem"),
+		GetEntryType = function(self) local v = CLIB.purple_desktop_item_get_entry_type(self.ptr)  return v end,
+		Unref = function(self) local v = CLIB.purple_desktop_item_unref(self.ptr)  return v end,
+		GetString = function(self, attr) local v = CLIB.purple_desktop_item_get_string(self.ptr, attr) v = chars_to_string(v) return v end,
+		Copy = function(self) local v = CLIB.purple_desktop_item_copy(self.ptr) v = wrap_pointer(v, "DesktopItem") return v end,
 	}
 	META.__index = META
-	metatables.NotifyUserInfo = META
+	metatables.DesktopItem = META
 end
 do
 	local META = {
@@ -2527,57 +2431,61 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleWhiteboard"),
-		DrawPoint = function(self, x, y, color, size) local v = CLIB.purple_whiteboard_draw_point(self.ptr, x, y, color, size)  return v end,
-		SetDimensions = function(self, width, height) local v = CLIB.purple_whiteboard_set_dimensions(self.ptr, width, height)  return v end,
-		SendDrawList = function(self, list) local v = CLIB.purple_whiteboard_send_draw_list(self.ptr, table_to_glist(list))  return v end,
-		Destroy = function(self) local v = CLIB.purple_whiteboard_destroy(self.ptr)  return v end,
-		GetDimensions = function(self, width, height) local v = CLIB.purple_whiteboard_get_dimensions(self.ptr, width, height)  return v end,
-		SetPrplOps = function(self, ops) local v = CLIB.purple_whiteboard_set_prpl_ops(self.ptr, ops)  return v end,
-		Start = function(self) local v = CLIB.purple_whiteboard_start(self.ptr)  return v end,
-		SendClear = function(self) local v = CLIB.purple_whiteboard_send_clear(self.ptr)  return v end,
-		SendBrush = function(self, size, color) local v = CLIB.purple_whiteboard_send_brush(self.ptr, size, color)  return v end,
-		SetBrush = function(self, size, color) local v = CLIB.purple_whiteboard_set_brush(self.ptr, size, color)  return v end,
-		GetBrush = function(self, size, color) local v = CLIB.purple_whiteboard_get_brush(self.ptr, size, color)  return v end,
-		DrawLine = function(self, x1, y1, x2, y2, color, size) local v = CLIB.purple_whiteboard_draw_line(self.ptr, x1, y1, x2, y2, color, size)  return v end,
-		Clear = function(self) local v = CLIB.purple_whiteboard_clear(self.ptr)  return v end,
+		ctype = ffi.typeof("struct PurpleAccountUserSplit"),
+		GetSeparator = function(self) local v = CLIB.purple_account_user_split_get_separator(self.ptr)  return v end,
+		SetReverse = function(self, reverse) local v = CLIB.purple_account_user_split_set_reverse(self.ptr, reverse)  return v end,
+		GetText = function(self) local v = CLIB.purple_account_user_split_get_text(self.ptr) v = chars_to_string(v) return v end,
+		GetDefaultValue = function(self) local v = CLIB.purple_account_user_split_get_default_value(self.ptr) v = chars_to_string(v) return v end,
+		Destroy = function(self) local v = CLIB.purple_account_user_split_destroy(self.ptr)  return v end,
+		GetReverse = function(self) local v = CLIB.purple_account_user_split_get_reverse(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.Whiteboard = META
+	metatables.AccountUserSplit = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleConvIm"),
-		StopTypingTimeout = function(self) local v = CLIB.purple_conv_im_stop_typing_timeout(self.ptr)  return v end,
-		GetSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_get_send_typed_timeout(self.ptr)  return v end,
-		GetTypeAgain = function(self) local v = CLIB.purple_conv_im_get_type_again(self.ptr)  return v end,
-		GetTypingTimeout = function(self) local v = CLIB.purple_conv_im_get_typing_timeout(self.ptr)  return v end,
-		SendWithFlags = function(self, message, flags) local v = CLIB.purple_conv_im_send_with_flags(self.ptr, message, flags)  return v end,
-		Write = function(self, who, message, flags, mtime) local v = CLIB.purple_conv_im_write(self.ptr, who, message, flags, mtime)  return v end,
-		GetConversation = function(self) local v = CLIB.purple_conv_im_get_conversation(self.ptr) v = wrap_pointer(v, "Conversation") return v end,
-		GetIcon = function(self) local v = CLIB.purple_conv_im_get_icon(self.ptr) v = wrap_pointer(v, "BuddyIcon") return v end,
-		UpdateTyping = function(self) local v = CLIB.purple_conv_im_update_typing(self.ptr)  return v end,
-		StopSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_stop_send_typed_timeout(self.ptr)  return v end,
-		StartTypingTimeout = function(self, timeout) local v = CLIB.purple_conv_im_start_typing_timeout(self.ptr, timeout)  return v end,
-		SetIcon = function(self, icon) local v = CLIB.purple_conv_im_set_icon(self.ptr, icon.ptr)  return v end,
-		StartSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_start_send_typed_timeout(self.ptr)  return v end,
-		SetTypeAgain = function(self, val) local v = CLIB.purple_conv_im_set_type_again(self.ptr, val)  return v end,
-		Send = function(self, message) local v = CLIB.purple_conv_im_send(self.ptr, message)  return v end,
-		SetTypingState = function(self, state) local v = CLIB.purple_conv_im_set_typing_state(self.ptr, state)  return v end,
-		GetTypingState = function(self) local v = CLIB.purple_conv_im_get_typing_state(self.ptr)  return v end,
+		ctype = ffi.typeof("struct PurpleAccountOption"),
+		GetSetting = function(self) local v = CLIB.purple_account_option_get_setting(self.ptr) v = chars_to_string(v) return v end,
+		GetDefaultString = function(self) local v = CLIB.purple_account_option_get_default_string(self.ptr) v = chars_to_string(v) return v end,
+		GetMasked = function(self) local v = CLIB.purple_account_option_get_masked(self.ptr)  return v end,
+		AddListItem = function(self, key, value) local v = CLIB.purple_account_option_add_list_item(self.ptr, key, value)  return v end,
+		SetMasked = function(self, masked) local v = CLIB.purple_account_option_set_masked(self.ptr, masked)  return v end,
+		SetDefaultBool = function(self, value) local v = CLIB.purple_account_option_set_default_bool(self.ptr, value)  return v end,
+		GetList = function(selfcast_type) local v = CLIB.purple_account_option_get_list(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		GetType = function(self) local v = CLIB.purple_account_option_get_type(self.ptr)  return v end,
+		Destroy = function(self) local v = CLIB.purple_account_option_destroy(self.ptr)  return v end,
+		GetDefaultBool = function(self) local v = CLIB.purple_account_option_get_default_bool(self.ptr)  return v end,
+		SetDefaultInt = function(self, value) local v = CLIB.purple_account_option_set_default_int(self.ptr, value)  return v end,
+		GetDefaultInt = function(self) local v = CLIB.purple_account_option_get_default_int(self.ptr)  return v end,
+		GetText = function(self) local v = CLIB.purple_account_option_get_text(self.ptr) v = chars_to_string(v) return v end,
+		GetDefaultListValue = function(self) local v = CLIB.purple_account_option_get_default_list_value(self.ptr) v = chars_to_string(v) return v end,
+		SetList = function(self, values) local v = CLIB.purple_account_option_set_list(self.ptr, table_to_glist(values))  return v end,
+		SetDefaultString = function(self, value) local v = CLIB.purple_account_option_set_default_string(self.ptr, value)  return v end,
 	}
 	META.__index = META
-	metatables.ConvIm = META
+	metatables.AccountOption = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurplePluginPrefFrame"),
-		Add = function(self, pref) local v = CLIB.purple_plugin_pref_frame_add(self.ptr, pref.ptr)  return v end,
-		GetPrefs = function(selfcast_type) local v = CLIB.purple_plugin_pref_frame_get_prefs(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		Destroy = function(self) local v = CLIB.purple_plugin_pref_frame_destroy(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleSavedStatus"),
+		GetTitle = function(self) local v = CLIB.purple_savedstatus_get_title(self.ptr) v = chars_to_string(v) return v end,
+		GetMessage = function(self) local v = CLIB.purple_savedstatus_get_message(self.ptr) v = chars_to_string(v) return v end,
+		DeleteByStatus = function(self) local v = CLIB.purple_savedstatus_delete_by_status(self.ptr)  return v end,
+		SetSubstatus = function(self, account, type, message) local v = CLIB.purple_savedstatus_set_substatus(self.ptr, account.ptr, type.ptr, message)  return v end,
+		GetCreationTime = function(self) local v = CLIB.purple_savedstatus_get_creation_time(self.ptr)  return v end,
+		HasSubstatuses = function(self) local v = CLIB.purple_savedstatus_has_substatuses(self.ptr)  return v end,
+		SetType = function(self, type) local v = CLIB.purple_savedstatus_set_type(self.ptr, type)  return v end,
+		GetSubstatus = function(self, account) local v = CLIB.purple_savedstatus_get_substatus(self.ptr, account.ptr)  return v end,
+		GetType = function(self) local v = CLIB.purple_savedstatus_get_type(self.ptr)  return v end,
+		UnsetSubstatus = function(self, account) local v = CLIB.purple_savedstatus_unset_substatus(self.ptr, account.ptr)  return v end,
+		ActivateForAccount = function(self, account) local v = CLIB.purple_savedstatus_activate_for_account(self.ptr, account.ptr)  return v end,
+		SetTitle = function(self, title) local v = CLIB.purple_savedstatus_set_title(self.ptr, title)  return v end,
+		SetMessage = function(self, message) local v = CLIB.purple_savedstatus_set_message(self.ptr, message)  return v end,
+		Activate = function(self) local v = CLIB.purple_savedstatus_activate(self.ptr)  return v end,
+		IsTransient = function(self) local v = CLIB.purple_savedstatus_is_transient(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.PluginPrefFrame = META
+	metatables.SavedStatus = META
 end
 do
 	local META = {
@@ -2625,49 +2533,57 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleLogSet"),
-		Free = function(self) local v = CLIB.purple_log_set_free(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleConvMessage"),
+		GetFlags = function(self) local v = CLIB.purple_conversation_message_get_flags(self.ptr)  return v end,
+		GetTimestamp = function(self) local v = CLIB.purple_conversation_message_get_timestamp(self.ptr)  return v end,
+		GetMessage = function(self) local v = CLIB.purple_conversation_message_get_message(self.ptr) v = chars_to_string(v) return v end,
+		GetSender = function(self) local v = CLIB.purple_conversation_message_get_sender(self.ptr) v = chars_to_string(v) return v end,
 	}
 	META.__index = META
-	metatables.LogSet = META
+	metatables.ConvMessage = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurplePresence"),
-		GetStatus = function(self, status_id) local v = CLIB.purple_presence_get_status(self.ptr, status_id) v = wrap_pointer(v, "Status") return v end,
-		IsStatusActive = function(self, status_id) local v = CLIB.purple_presence_is_status_active(self.ptr, status_id)  return v end,
-		IsAvailable = function(self) local v = CLIB.purple_presence_is_available(self.ptr)  return v end,
-		GetContext = function(self) local v = CLIB.purple_presence_get_context(self.ptr)  return v end,
-		SetLoginTime = function(self, login_time) local v = CLIB.purple_presence_set_login_time(self.ptr, login_time)  return v end,
-		AddList = function(self, source_list) local v = CLIB.purple_presence_add_list(self.ptr, table_to_glist(source_list))  return v end,
-		GetActiveStatus = function(self) local v = CLIB.purple_presence_get_active_status(self.ptr) v = wrap_pointer(v, "Status") return v end,
-		SwitchStatus = function(self, status_id) local v = CLIB.purple_presence_switch_status(self.ptr, status_id)  return v end,
-		IsOnline = function(self) local v = CLIB.purple_presence_is_online(self.ptr)  return v end,
-		IsStatusPrimitiveActive = function(self, primitive) local v = CLIB.purple_presence_is_status_primitive_active(self.ptr, primitive)  return v end,
-		GetIdleTime = function(self) local v = CLIB.purple_presence_get_idle_time(self.ptr)  return v end,
-		GetConversation = function(self) local v = CLIB.purple_presence_get_conversation(self.ptr) v = wrap_pointer(v, "Conversation") return v end,
-		GetBuddy = function(self) local v = CLIB.purple_presence_get_buddy(self.ptr) v = wrap_pointer(v, "Buddy") return v end,
-		SetIdle = function(self, idle, idle_time) local v = CLIB.purple_presence_set_idle(self.ptr, idle, idle_time)  return v end,
-		Destroy = function(self) local v = CLIB.purple_presence_destroy(self.ptr)  return v end,
-		GetAccount = function(self) local v = CLIB.purple_presence_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
-		IsIdle = function(self) local v = CLIB.purple_presence_is_idle(self.ptr)  return v end,
-		GetStatuses = function(selfcast_type) local v = CLIB.purple_presence_get_statuses(self.ptr) v = glist_to_table(v, cast_type) return v end,
-		GetLoginTime = function(self) local v = CLIB.purple_presence_get_login_time(self.ptr)  return v end,
-		SetStatusActive = function(self, status_id, active) local v = CLIB.purple_presence_set_status_active(self.ptr, status_id, active)  return v end,
-		Compare = function(self, presence2) local v = CLIB.purple_presence_compare(self.ptr, presence2.ptr)  return v end,
-		AddStatus = function(self, status) local v = CLIB.purple_presence_add_status(self.ptr, status.ptr)  return v end,
-		GetChatUser = function(self) local v = CLIB.purple_presence_get_chat_user(self.ptr) v = chars_to_string(v) return v end,
+		ctype = ffi.typeof("struct _PurpleConvIm"),
+		StopTypingTimeout = function(self) local v = CLIB.purple_conv_im_stop_typing_timeout(self.ptr)  return v end,
+		GetSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_get_send_typed_timeout(self.ptr)  return v end,
+		GetTypeAgain = function(self) local v = CLIB.purple_conv_im_get_type_again(self.ptr)  return v end,
+		GetTypingTimeout = function(self) local v = CLIB.purple_conv_im_get_typing_timeout(self.ptr)  return v end,
+		SendWithFlags = function(self, message, flags) local v = CLIB.purple_conv_im_send_with_flags(self.ptr, message, flags)  return v end,
+		Write = function(self, who, message, flags, mtime) local v = CLIB.purple_conv_im_write(self.ptr, who, message, flags, mtime)  return v end,
+		GetConversation = function(self) local v = CLIB.purple_conv_im_get_conversation(self.ptr) v = wrap_pointer(v, "Conversation") return v end,
+		GetIcon = function(self) local v = CLIB.purple_conv_im_get_icon(self.ptr) v = wrap_pointer(v, "BuddyIcon") return v end,
+		UpdateTyping = function(self) local v = CLIB.purple_conv_im_update_typing(self.ptr)  return v end,
+		StopSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_stop_send_typed_timeout(self.ptr)  return v end,
+		StartTypingTimeout = function(self, timeout) local v = CLIB.purple_conv_im_start_typing_timeout(self.ptr, timeout)  return v end,
+		SetIcon = function(self, icon) local v = CLIB.purple_conv_im_set_icon(self.ptr, icon.ptr)  return v end,
+		StartSendTypedTimeout = function(self) local v = CLIB.purple_conv_im_start_send_typed_timeout(self.ptr)  return v end,
+		SetTypeAgain = function(self, val) local v = CLIB.purple_conv_im_set_type_again(self.ptr, val)  return v end,
+		Send = function(self, message) local v = CLIB.purple_conv_im_send(self.ptr, message)  return v end,
+		SetTypingState = function(self, state) local v = CLIB.purple_conv_im_set_typing_state(self.ptr, state)  return v end,
+		GetTypingState = function(self) local v = CLIB.purple_conv_im_get_typing_state(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.Presence = META
+	metatables.ConvIm = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleMenuAction"),
-		Free = function(self) local v = CLIB.purple_menu_action_free(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleNotifyUserInfo"),
+		AddSectionHeader = function(self, label) local v = CLIB.purple_notify_user_info_add_section_header(self.ptr, label)  return v end,
+		RemoveEntry = function(self, user_info_entry) local v = CLIB.purple_notify_user_info_remove_entry(self.ptr, user_info_entry.ptr)  return v end,
+		GetTextWithNewline = function(self, newline) local v = CLIB.purple_notify_user_info_get_text_with_newline(self.ptr, newline) v = chars_to_string(v) return v end,
+		PrependSectionBreak = function(self) local v = CLIB.purple_notify_user_info_prepend_section_break(self.ptr)  return v end,
+		AddPairPlaintext = function(self, label, value) local v = CLIB.purple_notify_user_info_add_pair_plaintext(self.ptr, label, value)  return v end,
+		Destroy = function(self) local v = CLIB.purple_notify_user_info_destroy(self.ptr)  return v end,
+		RemoveLastItem = function(self) local v = CLIB.purple_notify_user_info_remove_last_item(self.ptr)  return v end,
+		AddPair = function(self, label, value) local v = CLIB.purple_notify_user_info_add_pair(self.ptr, label, value)  return v end,
+		GetEntries = function(selfcast_type) local v = CLIB.purple_notify_user_info_get_entries(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		PrependSectionHeader = function(self, label) local v = CLIB.purple_notify_user_info_prepend_section_header(self.ptr, label)  return v end,
+		AddSectionBreak = function(self) local v = CLIB.purple_notify_user_info_add_section_break(self.ptr)  return v end,
+		PrependPair = function(self, label, value) local v = CLIB.purple_notify_user_info_prepend_pair(self.ptr, label, value)  return v end,
 	}
 	META.__index = META
-	metatables.MenuAction = META
+	metatables.NotifyUserInfo = META
 end
 do
 	local META = {
@@ -2716,17 +2632,6 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleCircBuffer"),
-		GetMaxRead = function(self) local v = CLIB.purple_circ_buffer_get_max_read(self.ptr)  return v end,
-		Append = function(self, src, len) local v = CLIB.purple_circ_buffer_append(self.ptr, src, len)  return v end,
-		MarkRead = function(self, len) local v = CLIB.purple_circ_buffer_mark_read(self.ptr, len)  return v end,
-		Destroy = function(self) local v = CLIB.purple_circ_buffer_destroy(self.ptr)  return v end,
-	}
-	META.__index = META
-	metatables.CircBuffer = META
-end
-do
-	local META = {
 		ctype = ffi.typeof("struct _PurplePlugin"),
 		Disable = function(self) local v = CLIB.purple_plugin_disable(self.ptr)  return v end,
 		Reload = function(self) local v = CLIB.purple_plugin_reload(self.ptr)  return v end,
@@ -2751,6 +2656,14 @@ do
 	}
 	META.__index = META
 	metatables.Plugin = META
+end
+do
+	local META = {
+		ctype = ffi.typeof("struct _PurpleMenuAction"),
+		Free = function(self) local v = CLIB.purple_menu_action_free(self.ptr)  return v end,
+	}
+	META.__index = META
+	metatables.MenuAction = META
 end
 do
 	local META = {
@@ -2786,56 +2699,61 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleDesktopItem"),
-		GetEntryType = function(self) local v = CLIB.purple_desktop_item_get_entry_type(self.ptr)  return v end,
-		Unref = function(self) local v = CLIB.purple_desktop_item_unref(self.ptr)  return v end,
-		GetString = function(self, attr) local v = CLIB.purple_desktop_item_get_string(self.ptr, attr) v = chars_to_string(v) return v end,
-		Copy = function(self) local v = CLIB.purple_desktop_item_copy(self.ptr) v = wrap_pointer(v, "DesktopItem") return v end,
+		ctype = ffi.typeof("struct _PurpleWhiteboard"),
+		DrawPoint = function(self, x, y, color, size) local v = CLIB.purple_whiteboard_draw_point(self.ptr, x, y, color, size)  return v end,
+		SetDimensions = function(self, width, height) local v = CLIB.purple_whiteboard_set_dimensions(self.ptr, width, height)  return v end,
+		SendDrawList = function(self, list) local v = CLIB.purple_whiteboard_send_draw_list(self.ptr, table_to_glist(list))  return v end,
+		Destroy = function(self) local v = CLIB.purple_whiteboard_destroy(self.ptr)  return v end,
+		GetDimensions = function(self, width, height) local v = CLIB.purple_whiteboard_get_dimensions(self.ptr, width, height)  return v end,
+		SetPrplOps = function(self, ops) local v = CLIB.purple_whiteboard_set_prpl_ops(self.ptr, ops)  return v end,
+		Start = function(self) local v = CLIB.purple_whiteboard_start(self.ptr)  return v end,
+		SendClear = function(self) local v = CLIB.purple_whiteboard_send_clear(self.ptr)  return v end,
+		SendBrush = function(self, size, color) local v = CLIB.purple_whiteboard_send_brush(self.ptr, size, color)  return v end,
+		SetBrush = function(self, size, color) local v = CLIB.purple_whiteboard_set_brush(self.ptr, size, color)  return v end,
+		GetBrush = function(self, size, color) local v = CLIB.purple_whiteboard_get_brush(self.ptr, size, color)  return v end,
+		DrawLine = function(self, x1, y1, x2, y2, color, size) local v = CLIB.purple_whiteboard_draw_line(self.ptr, x1, y1, x2, y2, color, size)  return v end,
+		Clear = function(self) local v = CLIB.purple_whiteboard_clear(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.DesktopItem = META
+	metatables.Whiteboard = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleStoredImage"),
-		GetSize = function(self) local v = CLIB.purple_imgstore_get_size(self.ptr)  return v end,
-		GetExtension = function(self) local v = CLIB.purple_imgstore_get_extension(self.ptr) v = chars_to_string(v) return v end,
-		Ref = function(self) local v = CLIB.purple_imgstore_ref(self.ptr) v = wrap_pointer(v, "StoredImage") return v end,
-		GetFilename = function(self) local v = CLIB.purple_imgstore_get_filename(self.ptr) v = chars_to_string(v) return v end,
-		GetData = function(self) local v = CLIB.purple_imgstore_get_data(self.ptr)  return v end,
-		Unref = function(self) local v = CLIB.purple_imgstore_unref(self.ptr) v = wrap_pointer(v, "StoredImage") return v end,
+		ctype = ffi.typeof("struct _PurpleNotifyUserInfoEntry"),
+		SetValue = function(self, value) local v = CLIB.purple_notify_user_info_entry_set_value(self.ptr, value)  return v end,
+		GetLabel = function(self) local v = CLIB.purple_notify_user_info_entry_get_label(self.ptr) v = chars_to_string(v) return v end,
+		GetValue = function(self) local v = CLIB.purple_notify_user_info_entry_get_value(self.ptr) v = chars_to_string(v) return v end,
+		GetType = function(self) local v = CLIB.purple_notify_user_info_entry_get_type(self.ptr)  return v end,
+		SetLabel = function(self, label) local v = CLIB.purple_notify_user_info_entry_set_label(self.ptr, label)  return v end,
+		SetType = function(self, type) local v = CLIB.purple_notify_user_info_entry_set_type(self.ptr, type)  return v end,
 	}
 	META.__index = META
-	metatables.StoredImage = META
+	metatables.NotifyUserInfoEntry = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleLogLogger"),
-		Free = function(self) local v = CLIB.purple_log_logger_free(self.ptr)  return v end,
-		Add = function(self) local v = CLIB.purple_log_logger_add(self.ptr)  return v end,
-		Remove = function(self) local v = CLIB.purple_log_logger_remove(self.ptr)  return v end,
-		Set = function(self) local v = CLIB.purple_log_logger_set(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleContact"),
+		GetGroup = function(self) local v = CLIB.purple_contact_get_group(self.ptr) v = wrap_pointer(v, "Group") return v end,
+		GetPriorityBuddy = function(self) local v = CLIB.purple_contact_get_priority_buddy(self.ptr) v = wrap_pointer(v, "Buddy") return v end,
+		SetAlias = function(self, alias) local v = CLIB.purple_contact_set_alias(self.ptr, alias)  return v end,
+		OnAccount = function(self, account) local v = CLIB.purple_contact_on_account(self.ptr, account.ptr)  return v end,
+		InvalidatePriorityBuddy = function(self) local v = CLIB.purple_contact_invalidate_priority_buddy(self.ptr)  return v end,
+		GetAlias = function(self) local v = CLIB.purple_contact_get_alias(self.ptr) v = chars_to_string(v) return v end,
+		Destroy = function(self) local v = CLIB.purple_contact_destroy(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.LogLogger = META
+	metatables.Contact = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct PurpleProxyInfo"),
-		GetPassword = function(self) local v = CLIB.purple_proxy_info_get_password(self.ptr) v = chars_to_string(v) return v end,
-		SetUsername = function(self, username) local v = CLIB.purple_proxy_info_set_username(self.ptr, username)  return v end,
-		SetType = function(self, type) local v = CLIB.purple_proxy_info_set_type(self.ptr, type)  return v end,
-		SetPassword = function(self, password) local v = CLIB.purple_proxy_info_set_password(self.ptr, password)  return v end,
-		SetHost = function(self, host) local v = CLIB.purple_proxy_info_set_host(self.ptr, host)  return v end,
-		GetUsername = function(self) local v = CLIB.purple_proxy_info_get_username(self.ptr) v = chars_to_string(v) return v end,
-		GetPort = function(self) local v = CLIB.purple_proxy_info_get_port(self.ptr)  return v end,
-		Destroy = function(self) local v = CLIB.purple_proxy_info_destroy(self.ptr)  return v end,
-		GetType = function(self) local v = CLIB.purple_proxy_info_get_type(self.ptr)  return v end,
-		SetPort = function(self, port) local v = CLIB.purple_proxy_info_set_port(self.ptr, port)  return v end,
-		GetHost = function(self) local v = CLIB.purple_proxy_info_get_host(self.ptr) v = chars_to_string(v) return v end,
+		ctype = ffi.typeof("struct _PurpleStatusAttr"),
+		GetValue = function(self) local v = CLIB.purple_status_attr_get_value(self.ptr) v = wrap_pointer(v, "Value") return v end,
+		GetId = function(self) local v = CLIB.purple_status_attr_get_id(self.ptr) v = chars_to_string(v) return v end,
+		GetName = function(self) local v = CLIB.purple_status_attr_get_name(self.ptr) v = chars_to_string(v) return v end,
+		Destroy = function(self) local v = CLIB.purple_status_attr_destroy(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.ProxyInfo = META
+	metatables.StatusAttr = META
 end
 do
 	local META = {
@@ -2892,53 +2810,74 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleStatusAttr"),
-		GetValue = function(self) local v = CLIB.purple_status_attr_get_value(self.ptr) v = wrap_pointer(v, "Value") return v end,
-		GetId = function(self) local v = CLIB.purple_status_attr_get_id(self.ptr) v = chars_to_string(v) return v end,
-		GetName = function(self) local v = CLIB.purple_status_attr_get_name(self.ptr) v = chars_to_string(v) return v end,
-		Destroy = function(self) local v = CLIB.purple_status_attr_destroy(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleStoredImage"),
+		GetSize = function(self) local v = CLIB.purple_imgstore_get_size(self.ptr)  return v end,
+		GetExtension = function(self) local v = CLIB.purple_imgstore_get_extension(self.ptr) v = chars_to_string(v) return v end,
+		Ref = function(self) local v = CLIB.purple_imgstore_ref(self.ptr) v = wrap_pointer(v, "StoredImage") return v end,
+		GetFilename = function(self) local v = CLIB.purple_imgstore_get_filename(self.ptr) v = chars_to_string(v) return v end,
+		GetData = function(self) local v = CLIB.purple_imgstore_get_data(self.ptr)  return v end,
+		Unref = function(self) local v = CLIB.purple_imgstore_unref(self.ptr) v = wrap_pointer(v, "StoredImage") return v end,
 	}
 	META.__index = META
-	metatables.StatusAttr = META
+	metatables.StoredImage = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleContact"),
-		GetGroup = function(self) local v = CLIB.purple_contact_get_group(self.ptr) v = wrap_pointer(v, "Group") return v end,
-		GetPriorityBuddy = function(self) local v = CLIB.purple_contact_get_priority_buddy(self.ptr) v = wrap_pointer(v, "Buddy") return v end,
-		SetAlias = function(self, alias) local v = CLIB.purple_contact_set_alias(self.ptr, alias)  return v end,
-		OnAccount = function(self, account) local v = CLIB.purple_contact_on_account(self.ptr, account.ptr)  return v end,
-		InvalidatePriorityBuddy = function(self) local v = CLIB.purple_contact_invalidate_priority_buddy(self.ptr)  return v end,
-		GetAlias = function(self) local v = CLIB.purple_contact_get_alias(self.ptr) v = chars_to_string(v) return v end,
-		Destroy = function(self) local v = CLIB.purple_contact_destroy(self.ptr)  return v end,
+		ctype = ffi.typeof("struct PurpleProxyInfo"),
+		GetPassword = function(self) local v = CLIB.purple_proxy_info_get_password(self.ptr) v = chars_to_string(v) return v end,
+		SetUsername = function(self, username) local v = CLIB.purple_proxy_info_set_username(self.ptr, username)  return v end,
+		SetType = function(self, type) local v = CLIB.purple_proxy_info_set_type(self.ptr, type)  return v end,
+		SetPassword = function(self, password) local v = CLIB.purple_proxy_info_set_password(self.ptr, password)  return v end,
+		SetHost = function(self, host) local v = CLIB.purple_proxy_info_set_host(self.ptr, host)  return v end,
+		GetUsername = function(self) local v = CLIB.purple_proxy_info_get_username(self.ptr) v = chars_to_string(v) return v end,
+		GetPort = function(self) local v = CLIB.purple_proxy_info_get_port(self.ptr)  return v end,
+		Destroy = function(self) local v = CLIB.purple_proxy_info_destroy(self.ptr)  return v end,
+		GetType = function(self) local v = CLIB.purple_proxy_info_get_type(self.ptr)  return v end,
+		SetPort = function(self, port) local v = CLIB.purple_proxy_info_set_port(self.ptr, port)  return v end,
+		GetHost = function(self) local v = CLIB.purple_proxy_info_get_host(self.ptr) v = chars_to_string(v) return v end,
 	}
 	META.__index = META
-	metatables.Contact = META
+	metatables.ProxyInfo = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurplePounce"),
-		ActionRegister = function(self, name) local v = CLIB.purple_pounce_action_register(self.ptr, name)  return v end,
-		GetEvents = function(self) local v = CLIB.purple_pounce_get_events(self.ptr)  return v end,
-		GetSave = function(self) local v = CLIB.purple_pounce_get_save(self.ptr)  return v end,
-		SetPouncer = function(self, pouncer) local v = CLIB.purple_pounce_set_pouncer(self.ptr, pouncer.ptr)  return v end,
-		SetPouncee = function(self, pouncee) local v = CLIB.purple_pounce_set_pouncee(self.ptr, pouncee)  return v end,
-		SetEvents = function(self, events) local v = CLIB.purple_pounce_set_events(self.ptr, events)  return v end,
-		GetPouncer = function(self) local v = CLIB.purple_pounce_get_pouncer(self.ptr) v = wrap_pointer(v, "Account") return v end,
-		SetOptions = function(self, options) local v = CLIB.purple_pounce_set_options(self.ptr, options)  return v end,
-		ActionGetAttribute = function(self, action, attr) local v = CLIB.purple_pounce_action_get_attribute(self.ptr, action, attr) v = chars_to_string(v) return v end,
-		ActionIsEnabled = function(self, action) local v = CLIB.purple_pounce_action_is_enabled(self.ptr, action)  return v end,
-		SetData = function(self, data) local v = CLIB.purple_pounce_set_data(self.ptr, data)  return v end,
-		Destroy = function(self) local v = CLIB.purple_pounce_destroy(self.ptr)  return v end,
-		ActionSetEnabled = function(self, action, enabled) local v = CLIB.purple_pounce_action_set_enabled(self.ptr, action, enabled)  return v end,
-		GetPouncee = function(self) local v = CLIB.purple_pounce_get_pouncee(self.ptr) v = chars_to_string(v) return v end,
-		SetSave = function(self, save) local v = CLIB.purple_pounce_set_save(self.ptr, save)  return v end,
-		GetOptions = function(self) local v = CLIB.purple_pounce_get_options(self.ptr)  return v end,
-		GetData = function(self) local v = CLIB.purple_pounce_get_data(self.ptr)  return v end,
-		ActionSetAttribute = function(self, action, attr, value) local v = CLIB.purple_pounce_action_set_attribute(self.ptr, action, attr, value)  return v end,
+		ctype = ffi.typeof("struct _PurpleConvChat"),
+		Unignore = function(self, name) local v = CLIB.purple_conv_chat_unignore(self.ptr, name)  return v end,
+		GetId = function(self) local v = CLIB.purple_conv_chat_get_id(self.ptr)  return v end,
+		GetIgnored = function(selfcast_type) local v = CLIB.purple_conv_chat_get_ignored(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		GetNick = function(self) local v = CLIB.purple_conv_chat_get_nick(self.ptr) v = chars_to_string(v) return v end,
+		GetUsers = function(selfcast_type) local v = CLIB.purple_conv_chat_get_users(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		UserGetFlags = function(self, user) local v = CLIB.purple_conv_chat_user_get_flags(self.ptr, user)  return v end,
+		RenameUser = function(self, old_user, new_user) local v = CLIB.purple_conv_chat_rename_user(self.ptr, old_user, new_user)  return v end,
+		Left = function(self) local v = CLIB.purple_conv_chat_left(self.ptr)  return v end,
+		AddUsers = function(self, users, extra_msgs, flags, new_arrivals) local v = CLIB.purple_conv_chat_add_users(self.ptr, table_to_glist(users), table_to_glist(extra_msgs), table_to_glist(flags), new_arrivals)  return v end,
+		GetConversation = function(self) local v = CLIB.purple_conv_chat_get_conversation(self.ptr) v = wrap_pointer(v, "Conversation") return v end,
+		SetUsers = function(self, users, cast_type) local v = CLIB.purple_conv_chat_set_users(self.ptr, table_to_glist(users)) v = glist_to_table(v, cast_type) return v end,
+		SetIgnored = function(self, ignored, cast_type) local v = CLIB.purple_conv_chat_set_ignored(self.ptr, table_to_glist(ignored)) v = glist_to_table(v, cast_type) return v end,
+		UserSetFlags = function(self, user, flags) local v = CLIB.purple_conv_chat_user_set_flags(self.ptr, user, flags)  return v end,
+		Send = function(self, message) local v = CLIB.purple_conv_chat_send(self.ptr, message)  return v end,
+		HasLeft = function(self) local v = CLIB.purple_conv_chat_has_left(self.ptr)  return v end,
+		IsUserIgnored = function(self, user) local v = CLIB.purple_conv_chat_is_user_ignored(self.ptr, user)  return v end,
+		SetId = function(self, id) local v = CLIB.purple_conv_chat_set_id(self.ptr, id)  return v end,
+		RemoveUsers = function(self, users, reason) local v = CLIB.purple_conv_chat_remove_users(self.ptr, table_to_glist(users), reason)  return v end,
+		CbSetAttributes = function(self, cb, keys, values) local v = CLIB.purple_conv_chat_cb_set_attributes(self.ptr, cb, table_to_glist(keys), table_to_glist(values))  return v end,
+		ClearUsers = function(self) local v = CLIB.purple_conv_chat_clear_users(self.ptr)  return v end,
+		AddUser = function(self, user, extra_msg, flags, new_arrival) local v = CLIB.purple_conv_chat_add_user(self.ptr, user, extra_msg, flags, new_arrival)  return v end,
+		RemoveUser = function(self, user, reason) local v = CLIB.purple_conv_chat_remove_user(self.ptr, user, reason)  return v end,
+		SendWithFlags = function(self, message, flags) local v = CLIB.purple_conv_chat_send_with_flags(self.ptr, message, flags)  return v end,
+		Write = function(self, who, message, flags, mtime) local v = CLIB.purple_conv_chat_write(self.ptr, who, message, flags, mtime)  return v end,
+		CbFind = function(self, name) local v = CLIB.purple_conv_chat_cb_find(self.ptr, name)  return v end,
+		GetIgnoredUser = function(self, user) local v = CLIB.purple_conv_chat_get_ignored_user(self.ptr, user) v = chars_to_string(v) return v end,
+		Ignore = function(self, name) local v = CLIB.purple_conv_chat_ignore(self.ptr, name)  return v end,
+		GetTopic = function(self) local v = CLIB.purple_conv_chat_get_topic(self.ptr) v = chars_to_string(v) return v end,
+		CbSetAttribute = function(self, cb, key, value) local v = CLIB.purple_conv_chat_cb_set_attribute(self.ptr, cb, key, value)  return v end,
+		SetNick = function(self, nick) local v = CLIB.purple_conv_chat_set_nick(self.ptr, nick)  return v end,
+		FindUser = function(self, user) local v = CLIB.purple_conv_chat_find_user(self.ptr, user)  return v end,
+		InviteUser = function(self, user, message, confirm) local v = CLIB.purple_conv_chat_invite_user(self.ptr, user, message, confirm)  return v end,
+		SetTopic = function(self, who, topic) local v = CLIB.purple_conv_chat_set_topic(self.ptr, who, topic)  return v end,
 	}
 	META.__index = META
-	metatables.Pounce = META
+	metatables.ConvChat = META
 end
 do
 	local META = {
@@ -3016,16 +2955,13 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct PurpleAccountUserSplit"),
-		GetSeparator = function(self) local v = CLIB.purple_account_user_split_get_separator(self.ptr)  return v end,
-		SetReverse = function(self, reverse) local v = CLIB.purple_account_user_split_set_reverse(self.ptr, reverse)  return v end,
-		GetText = function(self) local v = CLIB.purple_account_user_split_get_text(self.ptr) v = chars_to_string(v) return v end,
-		GetDefaultValue = function(self) local v = CLIB.purple_account_user_split_get_default_value(self.ptr) v = chars_to_string(v) return v end,
-		Destroy = function(self) local v = CLIB.purple_account_user_split_destroy(self.ptr)  return v end,
-		GetReverse = function(self) local v = CLIB.purple_account_user_split_get_reverse(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurplePluginPrefFrame"),
+		Add = function(self, pref) local v = CLIB.purple_plugin_pref_frame_add(self.ptr, pref.ptr)  return v end,
+		GetPrefs = function(selfcast_type) local v = CLIB.purple_plugin_pref_frame_get_prefs(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		Destroy = function(self) local v = CLIB.purple_plugin_pref_frame_destroy(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.AccountUserSplit = META
+	metatables.PluginPrefFrame = META
 end
 do
 	local META = {
@@ -3044,58 +2980,122 @@ do
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleConvMessage"),
-		GetFlags = function(self) local v = CLIB.purple_conversation_message_get_flags(self.ptr)  return v end,
-		GetTimestamp = function(self) local v = CLIB.purple_conversation_message_get_timestamp(self.ptr)  return v end,
-		GetMessage = function(self) local v = CLIB.purple_conversation_message_get_message(self.ptr) v = chars_to_string(v) return v end,
-		GetSender = function(self) local v = CLIB.purple_conversation_message_get_sender(self.ptr) v = chars_to_string(v) return v end,
+		ctype = ffi.typeof("struct _PurpleLogSet"),
+		Free = function(self) local v = CLIB.purple_log_set_free(self.ptr)  return v end,
 	}
 	META.__index = META
-	metatables.ConvMessage = META
+	metatables.LogSet = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleGroup"),
-		OnAccount = function(self, account) local v = CLIB.purple_group_on_account(self.ptr, account.ptr)  return v end,
-		GetName = function(self) local v = CLIB.purple_group_get_name(self.ptr) v = chars_to_string(v) return v end,
-		GetAccounts = function(self) local v = CLIB.purple_group_get_accounts(self.ptr)  return v end,
-		Destroy = function(self) local v = CLIB.purple_group_destroy(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurpleAttentionType"),
+		GetIconName = function(self) local v = CLIB.purple_attention_type_get_icon_name(self.ptr) v = chars_to_string(v) return v end,
+		GetName = function(self) local v = CLIB.purple_attention_type_get_name(self.ptr) v = chars_to_string(v) return v end,
+		GetIncomingDesc = function(self) local v = CLIB.purple_attention_type_get_incoming_desc(self.ptr) v = chars_to_string(v) return v end,
+		SetName = function(self, name) local v = CLIB.purple_attention_type_set_name(self.ptr, name)  return v end,
+		SetUnlocalizedName = function(self, ulname) local v = CLIB.purple_attention_type_set_unlocalized_name(self.ptr, ulname)  return v end,
+		SetOutgoingDesc = function(self, desc) local v = CLIB.purple_attention_type_set_outgoing_desc(self.ptr, desc)  return v end,
+		SetIncomingDesc = function(self, desc) local v = CLIB.purple_attention_type_set_incoming_desc(self.ptr, desc)  return v end,
+		GetOutgoingDesc = function(self) local v = CLIB.purple_attention_type_get_outgoing_desc(self.ptr) v = chars_to_string(v) return v end,
+		GetUnlocalizedName = function(self) local v = CLIB.purple_attention_type_get_unlocalized_name(self.ptr) v = chars_to_string(v) return v end,
+		SetIconName = function(self, name) local v = CLIB.purple_attention_type_set_icon_name(self.ptr, name)  return v end,
 	}
 	META.__index = META
-	metatables.Group = META
+	metatables.AttentionType = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleChat"),
-		GetGroup = function(self) local v = CLIB.purple_chat_get_group(self.ptr) v = wrap_pointer(v, "Group") return v end,
-		GetName = function(self) local v = CLIB.purple_chat_get_name(self.ptr) v = chars_to_string(v) return v end,
-		GetComponents = function(self) local v = CLIB.purple_chat_get_components(self.ptr)  return v end,
-		GetAccount = function(self) local v = CLIB.purple_chat_get_account(self.ptr) v = wrap_pointer(v, "Account") return v end,
-		Destroy = function(self) local v = CLIB.purple_chat_destroy(self.ptr)  return v end,
+		ctype = ffi.typeof("struct _PurplePounce"),
+		ActionRegister = function(self, name) local v = CLIB.purple_pounce_action_register(self.ptr, name)  return v end,
+		GetEvents = function(self) local v = CLIB.purple_pounce_get_events(self.ptr)  return v end,
+		GetSave = function(self) local v = CLIB.purple_pounce_get_save(self.ptr)  return v end,
+		SetPouncer = function(self, pouncer) local v = CLIB.purple_pounce_set_pouncer(self.ptr, pouncer.ptr)  return v end,
+		SetPouncee = function(self, pouncee) local v = CLIB.purple_pounce_set_pouncee(self.ptr, pouncee)  return v end,
+		SetEvents = function(self, events) local v = CLIB.purple_pounce_set_events(self.ptr, events)  return v end,
+		GetPouncer = function(self) local v = CLIB.purple_pounce_get_pouncer(self.ptr) v = wrap_pointer(v, "Account") return v end,
+		SetOptions = function(self, options) local v = CLIB.purple_pounce_set_options(self.ptr, options)  return v end,
+		ActionGetAttribute = function(self, action, attr) local v = CLIB.purple_pounce_action_get_attribute(self.ptr, action, attr) v = chars_to_string(v) return v end,
+		ActionIsEnabled = function(self, action) local v = CLIB.purple_pounce_action_is_enabled(self.ptr, action)  return v end,
+		SetData = function(self, data) local v = CLIB.purple_pounce_set_data(self.ptr, data)  return v end,
+		Destroy = function(self) local v = CLIB.purple_pounce_destroy(self.ptr)  return v end,
+		ActionSetEnabled = function(self, action, enabled) local v = CLIB.purple_pounce_action_set_enabled(self.ptr, action, enabled)  return v end,
+		GetPouncee = function(self) local v = CLIB.purple_pounce_get_pouncee(self.ptr) v = chars_to_string(v) return v end,
+		SetSave = function(self, save) local v = CLIB.purple_pounce_set_save(self.ptr, save)  return v end,
+		GetOptions = function(self) local v = CLIB.purple_pounce_get_options(self.ptr)  return v end,
+		GetData = function(self) local v = CLIB.purple_pounce_get_data(self.ptr)  return v end,
+		ActionSetAttribute = function(self, action, attr, value) local v = CLIB.purple_pounce_action_set_attribute(self.ptr, action, attr, value)  return v end,
 	}
 	META.__index = META
-	metatables.Chat = META
+	metatables.Pounce = META
 end
 do
 	local META = {
-		ctype = ffi.typeof("struct _PurpleTheme"),
-		GetDir = function(self) local v = CLIB.purple_theme_get_dir(self.ptr) v = chars_to_string(v) return v end,
-		SetDescription = function(self, description) local v = CLIB.purple_theme_set_description(self.ptr, description)  return v end,
-		SetAuthor = function(self, author) local v = CLIB.purple_theme_set_author(self.ptr, author)  return v end,
-		ManagerRemoveTheme = function(self) local v = CLIB.purple_theme_manager_remove_theme(self.ptr)  return v end,
-		SetImage = function(self, img) local v = CLIB.purple_theme_set_image(self.ptr, img)  return v end,
-		ManagerAddTheme = function(self) local v = CLIB.purple_theme_manager_add_theme(self.ptr)  return v end,
-		GetAuthor = function(self) local v = CLIB.purple_theme_get_author(self.ptr) v = chars_to_string(v) return v end,
-		GetName = function(self) local v = CLIB.purple_theme_get_name(self.ptr) v = chars_to_string(v) return v end,
-		GetImage = function(self) local v = CLIB.purple_theme_get_image(self.ptr) v = chars_to_string(v) return v end,
-		SetName = function(self, name) local v = CLIB.purple_theme_set_name(self.ptr, name)  return v end,
-		GetDescription = function(self) local v = CLIB.purple_theme_get_description(self.ptr) v = chars_to_string(v) return v end,
-		GetTypeString = function(self) local v = CLIB.purple_theme_get_type_string(self.ptr) v = chars_to_string(v) return v end,
-		GetImageFull = function(self) local v = CLIB.purple_theme_get_image_full(self.ptr) v = chars_to_string(v) return v end,
-		SetDir = function(self, dir) local v = CLIB.purple_theme_set_dir(self.ptr, dir)  return v end,
+		ctype = ffi.typeof("struct _PurpleRequestField"),
+		ChoiceGetLabels = function(selfcast_type) local v = CLIB.purple_request_field_choice_get_labels(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		ImageGetScaleY = function(self) local v = CLIB.purple_request_field_image_get_scale_y(self.ptr)  return v end,
+		Destroy = function(self) local v = CLIB.purple_request_field_destroy(self.ptr)  return v end,
+		ChoiceSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_choice_set_default_value(self.ptr, default_value)  return v end,
+		GetType = function(self) local v = CLIB.purple_request_field_get_type(self.ptr)  return v end,
+		StringGetDefaultValue = function(self) local v = CLIB.purple_request_field_string_get_default_value(self.ptr) v = chars_to_string(v) return v end,
+		GetTypeHint = function(self) local v = CLIB.purple_request_field_get_type_hint(self.ptr) v = chars_to_string(v) return v end,
+		ListAdd = function(self, item, data) local v = CLIB.purple_request_field_list_add(self.ptr, item, data)  return v end,
+		IsRequired = function(self) local v = CLIB.purple_request_field_is_required(self.ptr)  return v end,
+		ChoiceAdd = function(self, label) local v = CLIB.purple_request_field_choice_add(self.ptr, label)  return v end,
+		AccountSetValue = function(self, value) local v = CLIB.purple_request_field_account_set_value(self.ptr, value.ptr)  return v end,
+		StringGetValue = function(self) local v = CLIB.purple_request_field_string_get_value(self.ptr) v = chars_to_string(v) return v end,
+		ListSetSelected = function(self, items) local v = CLIB.purple_request_field_list_set_selected(self.ptr, table_to_glist(items))  return v end,
+		BoolSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_bool_set_default_value(self.ptr, default_value)  return v end,
+		ImageSetScale = function(self, x, y) local v = CLIB.purple_request_field_image_set_scale(self.ptr, x, y)  return v end,
+		ListSetMultiSelect = function(self, multi_select) local v = CLIB.purple_request_field_list_set_multi_select(self.ptr, multi_select)  return v end,
+		AccountGetShowAll = function(self) local v = CLIB.purple_request_field_account_get_show_all(self.ptr)  return v end,
+		BoolGetDefaultValue = function(self) local v = CLIB.purple_request_field_bool_get_default_value(self.ptr)  return v end,
+		ListAddIcon = function(self, item, icon_path, data) local v = CLIB.purple_request_field_list_add_icon(self.ptr, item, icon_path, data)  return v end,
+		AccountGetFilter = function(self) local v = CLIB.purple_request_field_account_get_filter(self.ptr)  return v end,
+		SetLabel = function(self, label) local v = CLIB.purple_request_field_set_label(self.ptr, label)  return v end,
+		AccountGetDefaultValue = function(self) local v = CLIB.purple_request_field_account_get_default_value(self.ptr) v = wrap_pointer(v, "Account") return v end,
+		ListAddSelected = function(self, item) local v = CLIB.purple_request_field_list_add_selected(self.ptr, item)  return v end,
+		SetRequired = function(self, required) local v = CLIB.purple_request_field_set_required(self.ptr, required)  return v end,
+		GetLabel = function(self) local v = CLIB.purple_request_field_get_label(self.ptr) v = chars_to_string(v) return v end,
+		ListGetIcons = function(selfcast_type) local v = CLIB.purple_request_field_list_get_icons(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		StringSetEditable = function(self, editable) local v = CLIB.purple_request_field_string_set_editable(self.ptr, editable)  return v end,
+		ListGetData = function(self, text) local v = CLIB.purple_request_field_list_get_data(self.ptr, text)  return v end,
+		SetVisible = function(self, visible) local v = CLIB.purple_request_field_set_visible(self.ptr, visible)  return v end,
+		ChoiceSetValue = function(self, value) local v = CLIB.purple_request_field_choice_set_value(self.ptr, value)  return v end,
+		BoolSetValue = function(self, value) local v = CLIB.purple_request_field_bool_set_value(self.ptr, value)  return v end,
+		ListClearSelected = function(self) local v = CLIB.purple_request_field_list_clear_selected(self.ptr)  return v end,
+		BoolGetValue = function(self) local v = CLIB.purple_request_field_bool_get_value(self.ptr)  return v end,
+		AccountGetValue = function(self) local v = CLIB.purple_request_field_account_get_value(self.ptr) v = wrap_pointer(v, "Account") return v end,
+		ChoiceGetDefaultValue = function(self) local v = CLIB.purple_request_field_choice_get_default_value(self.ptr)  return v end,
+		SetUiData = function(self, ui_data) local v = CLIB.purple_request_field_set_ui_data(self.ptr, ui_data)  return v end,
+		IsVisible = function(self) local v = CLIB.purple_request_field_is_visible(self.ptr)  return v end,
+		StringIsEditable = function(self) local v = CLIB.purple_request_field_string_is_editable(self.ptr)  return v end,
+		AccountSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_account_set_default_value(self.ptr, default_value.ptr)  return v end,
+		IntSetValue = function(self, value) local v = CLIB.purple_request_field_int_set_value(self.ptr, value)  return v end,
+		StringIsMasked = function(self) local v = CLIB.purple_request_field_string_is_masked(self.ptr)  return v end,
+		IntGetDefaultValue = function(self) local v = CLIB.purple_request_field_int_get_default_value(self.ptr)  return v end,
+		AccountSetFilter = function(self, filter_func) local v = CLIB.purple_request_field_account_set_filter(self.ptr, filter_func)  return v end,
+		ChoiceGetValue = function(self) local v = CLIB.purple_request_field_choice_get_value(self.ptr)  return v end,
+		StringSetValue = function(self, value) local v = CLIB.purple_request_field_string_set_value(self.ptr, value)  return v end,
+		StringIsMultiline = function(self) local v = CLIB.purple_request_field_string_is_multiline(self.ptr)  return v end,
+		ImageGetSize = function(self) local v = CLIB.purple_request_field_image_get_size(self.ptr)  return v end,
+		GetUiData = function(self) local v = CLIB.purple_request_field_get_ui_data(self.ptr)  return v end,
+		ListGetItems = function(selfcast_type) local v = CLIB.purple_request_field_list_get_items(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		StringSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_string_set_default_value(self.ptr, default_value)  return v end,
+		SetTypeHint = function(self, type_hint) local v = CLIB.purple_request_field_set_type_hint(self.ptr, type_hint)  return v end,
+		IntGetValue = function(self) local v = CLIB.purple_request_field_int_get_value(self.ptr)  return v end,
+		ListGetMultiSelect = function(self) local v = CLIB.purple_request_field_list_get_multi_select(self.ptr)  return v end,
+		AccountSetShowAll = function(self, show_all) local v = CLIB.purple_request_field_account_set_show_all(self.ptr, show_all)  return v end,
+		GetId = function(self) local v = CLIB.purple_request_field_get_id(self.ptr) v = chars_to_string(v) return v end,
+		ImageGetScaleX = function(self) local v = CLIB.purple_request_field_image_get_scale_x(self.ptr)  return v end,
+		ListGetSelected = function(selfcast_type) local v = CLIB.purple_request_field_list_get_selected(self.ptr) v = glist_to_table(v, cast_type) return v end,
+		ListIsSelected = function(self, item) local v = CLIB.purple_request_field_list_is_selected(self.ptr, item)  return v end,
+		GetGroup = function(self) local v = CLIB.purple_request_field_get_group(self.ptr) v = wrap_pointer(v, "RequestFieldGroup") return v end,
+		StringSetMasked = function(self, masked) local v = CLIB.purple_request_field_string_set_masked(self.ptr, masked)  return v end,
+		ImageGetBuffer = function(self) local v = CLIB.purple_request_field_image_get_buffer(self.ptr) v = chars_to_string(v) return v end,
+		IntSetDefaultValue = function(self, default_value) local v = CLIB.purple_request_field_int_set_default_value(self.ptr, default_value)  return v end,
 	}
 	META.__index = META
-	metatables.Theme = META
+	metatables.RequestField = META
 end
 do
 	local META = {

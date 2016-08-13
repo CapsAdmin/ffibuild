@@ -10,19 +10,19 @@ typedef enum aiPrimitiveType{aiPrimitiveType_POINT=1,aiPrimitiveType_LINE=2,aiPr
 typedef enum aiBlendMode{aiBlendMode_Default=0,aiBlendMode_Additive=1};
 typedef enum aiGrrr{aiProcess_ConvertToLeftHanded=25165828,aiProcessPreset_TargetRealtime_Fast=294955,aiProcessPreset_TargetRealtime_Quality=498379,aiProcessPreset_TargetRealtime_MaxQuality=3645131};
 typedef enum aiTextureFlags{aiTextureFlags_Invert=1,aiTextureFlags_UseAlpha=2,aiTextureFlags_IgnoreAlpha=4};
-typedef enum aiLightSourceType{aiLightSource_UNDEFINED=0,aiLightSource_DIRECTIONAL=1,aiLightSource_POINT=2,aiLightSource_SPOT=3,aiLightSource_AMBIENT=4};
+typedef enum aiLightSourceType{aiLightSource_UNDEFINED=0,aiLightSource_DIRECTIONAL=1,aiLightSource_POINT=2,aiLightSource_SPOT=3,aiLightSource_AMBIENT=4,aiLightSource_AREA=5};
 typedef enum aiTextureMapMode{aiTextureMapMode_Wrap=0,aiTextureMapMode_Clamp=1,aiTextureMapMode_Decal=3,aiTextureMapMode_Mirror=2};
-typedef enum aiPropertyTypeInfo{aiPTI_Float=1,aiPTI_String=3,aiPTI_Integer=4,aiPTI_Buffer=5};
-typedef enum aiMetadataType{aiBOOL=0,aiINT=1,aiUINT64=2,aiFLOAT=3,aiAISTRING=4,aiAIVECTOR3D=5};
+typedef enum aiPropertyTypeInfo{aiPTI_Float=1,aiPTI_Double=2,aiPTI_String=3,aiPTI_Integer=4,aiPTI_Buffer=5};
+typedef enum aiMetadataType{aiBOOL=0,aiINT=1,aiUINT64=2,aiFLOAT=3,aiDOUBLE=4,aiAISTRING=5,aiAIVECTOR3D=6};
 typedef enum aiDefaultLogStream{aiDefaultLogStream_FILE=1,aiDefaultLogStream_STDOUT=2,aiDefaultLogStream_STDERR=4,aiDefaultLogStream_DEBUGGER=8};
 typedef enum aiAnimBehaviour{aiAnimBehaviour_DEFAULT=0,aiAnimBehaviour_CONSTANT=1,aiAnimBehaviour_LINEAR=2,aiAnimBehaviour_REPEAT=3};
 typedef enum aiImporterFlags{aiImporterFlags_SupportTextFlavour=1,aiImporterFlags_SupportBinaryFlavour=2,aiImporterFlags_SupportCompressedFlavour=4,aiImporterFlags_LimitedSupport=8,aiImporterFlags_Experimental=16};
 typedef enum aiReturn{aiReturn_SUCCESS=0,aiReturn_FAILURE=-1,aiReturn_OUTOFMEMORY=-3};
-struct aiVector3D {union {struct {float x;float y;float z;};float v[3];};};
-struct aiVector2D {union {struct {float x;float y;};float v[2];};};
-struct aiColor4D {union {struct {float r;float g;float b;float a;};float c[4];};};
-struct aiMatrix3x3 {union {struct {float a1;float a2;float a3;float b1;float b2;float b3;float c1;float c2;float c3;};float m[3][3];float mData[9];};};
-struct aiMatrix4x4 {union {struct {float a1;float a2;float a3;float a4;float b1;float b2;float b3;float b4;float c1;float c2;float c3;float c4;float d1;float d2;float d3;float d4;};float m[4][4];float mData[16];};};
+struct aiVector3D {float x;float y;float z;};
+struct aiVector2D {float x;float y;};
+struct aiColor4D {float r;float g;float b;float a;};
+struct aiMatrix3x3 {float a1;float a2;float a3;float b1;float b2;float b3;float c1;float c2;float c3;};
+struct aiMatrix4x4 {float a1;float a2;float a3;float a4;float b1;float b2;float b3;float b4;float c1;float c2;float c3;float c4;float d1;float d2;float d3;float d4;};
 struct aiQuaternion {float w;float x;float y;float z;};
 struct aiColor3D {float r;float g;float b;};
 struct aiString {unsigned long length;char data[1024];};
@@ -38,6 +38,7 @@ struct aiNodeAnim {struct aiString mNodeName;unsigned int mNumPositionKeys;struc
 struct aiMeshAnim {struct aiString mName;unsigned int mNumKeys;struct aiMeshKey*mKeys;};
 struct aiAnimation {struct aiString mName;double mDuration;double mTicksPerSecond;unsigned int mNumChannels;struct aiNodeAnim**mChannels;unsigned int mNumMeshChannels;struct aiMeshAnim**mMeshChannels;};
 struct aiFileIO {struct aiFile*(*OpenProc)(struct aiFileIO*,const char*,const char*);void(*CloseProc)(struct aiFileIO*,struct aiFile*);char*UserData;};
+struct aiFile {unsigned long(*ReadProc)(struct aiFile*,char*,unsigned long,unsigned long);unsigned long(*WriteProc)(struct aiFile*,const char*,unsigned long,unsigned long);unsigned long(*TellProc)(struct aiFile*);unsigned long(*FileSizeProc)(struct aiFile*);enum aiReturn(*SeekProc)(struct aiFile*,unsigned long,enum aiOrigin);void(*FlushProc)(struct aiFile*);char*UserData;};
 struct aiImporterDesc {const char*mName;const char*mAuthor;const char*mMaintainer;const char*mComments;unsigned int mFlags;unsigned int mMinMajor;unsigned int mMinMinor;unsigned int mMaxMajor;unsigned int mMaxMinor;const char*mFileExtensions;};
 struct aiTexel {unsigned int b;unsigned int g;unsigned int r;unsigned int a;};
 struct aiTexture {unsigned int mWidth;unsigned int mHeight;char achFormatHint[4];struct aiTexel*pcData;};
@@ -46,7 +47,7 @@ struct aiVertexWeight {unsigned int mVertexId;float mWeight;};
 struct aiBone {struct aiString mName;unsigned int mNumWeights;struct aiVertexWeight*mWeights;struct aiMatrix4x4 mOffsetMatrix;};
 struct aiAnimMesh {struct aiVector3D*mVertices;struct aiVector3D*mNormals;struct aiVector3D*mTangents;struct aiVector3D*mBitangents;struct aiColor4D*mColors[0x8];struct aiVector3D*mTextureCoords[0x8];unsigned int mNumVertices;};
 struct aiMesh {unsigned int mPrimitiveTypes;unsigned int mNumVertices;unsigned int mNumFaces;struct aiVector3D*mVertices;struct aiVector3D*mNormals;struct aiVector3D*mTangents;struct aiVector3D*mBitangents;struct aiColor4D*mColors[0x8];struct aiVector3D*mTextureCoords[0x8];unsigned int mNumUVComponents[0x8];struct aiFace*mFaces;unsigned int mNumBones;struct aiBone**mBones;unsigned int mMaterialIndex;struct aiString mName;unsigned int mNumAnimMeshes;struct aiAnimMesh**mAnimMeshes;};
-struct aiLight {struct aiString mName;enum aiLightSourceType mType;struct aiVector3D mPosition;struct aiVector3D mDirection;float mAttenuationConstant;float mAttenuationLinear;float mAttenuationQuadratic;struct aiColor3D mColorDiffuse;struct aiColor3D mColorSpecular;struct aiColor3D mColorAmbient;float mAngleInnerCone;float mAngleOuterCone;};
+struct aiLight {struct aiString mName;enum aiLightSourceType mType;struct aiVector3D mPosition;struct aiVector3D mDirection;struct aiVector3D mUp;float mAttenuationConstant;float mAttenuationLinear;float mAttenuationQuadratic;struct aiColor3D mColorDiffuse;struct aiColor3D mColorSpecular;struct aiColor3D mColorAmbient;float mAngleInnerCone;float mAngleOuterCone;struct aiVector2D mSize;};
 struct aiCamera {struct aiString mName;struct aiVector3D mPosition;struct aiVector3D mUp;struct aiVector3D mLookAt;float mHorizontalFOV;float mClipPlaneNear;float mClipPlaneFar;float mAspect;};
 struct aiUVTransform {struct aiVector2D mTranslation;struct aiVector2D mScaling;float mRotation;};
 struct aiMaterialProperty {struct aiString mKey;unsigned int mSemantic;unsigned int mIndex;unsigned int mDataLength;enum aiPropertyTypeInfo mType;char*mData;};
@@ -266,11 +267,13 @@ library.e = {
 	POINT = ffi.cast("enum aiLightSourceType", "aiLightSource_POINT"),
 	SPOT = ffi.cast("enum aiLightSourceType", "aiLightSource_SPOT"),
 	AMBIENT = ffi.cast("enum aiLightSourceType", "aiLightSource_AMBIENT"),
+	AREA = ffi.cast("enum aiLightSourceType", "aiLightSource_AREA"),
 	Wrap = ffi.cast("enum aiTextureMapMode", "aiTextureMapMode_Wrap"),
 	Clamp = ffi.cast("enum aiTextureMapMode", "aiTextureMapMode_Clamp"),
 	Decal = ffi.cast("enum aiTextureMapMode", "aiTextureMapMode_Decal"),
 	Mirror = ffi.cast("enum aiTextureMapMode", "aiTextureMapMode_Mirror"),
 	Float = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Float"),
+	Double = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Double"),
 	String = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_String"),
 	Integer = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Integer"),
 	Buffer = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Buffer"),

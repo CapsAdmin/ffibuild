@@ -218,7 +218,14 @@ function ffibuild.GetMetaData(header)
 
 					line = content
 				else
-					meta_data.typedefs[alias] = create_type("type", content)
+					local array_size
+
+					if line:find("%b[]") then
+						content, alias, arr = line:match("^(.+) ([%a%d_]+) (%b[])")
+						array_size = arr
+					end
+
+					meta_data.typedefs[alias] = create_type("type", content, array_size)
 
 					line = nil
 				end
@@ -1022,6 +1029,10 @@ do -- type metatables
 							name = "unknown_" .. i
 						end
 
+						if meta_data and meta_data.enums["enum " .. declaration] then
+							declaration = "enum " .. declaration
+						end
+
 						type = ffibuild.CreateType("type", declaration)
 						type.name = name
 					end
@@ -1226,7 +1237,13 @@ do -- type metatables
 				else
 					local declaration, name, array_size = match_type_declaration(line)
 
-					local type = ffibuild.CreateType("type", declaration, array_size)
+					local type
+					if meta_data and meta_data.typedefs[declaration] then
+						type = meta_data.typedefs[declaration]:GetCopy()
+					else
+						type = ffibuild.CreateType("type", declaration, array_size)
+					end
+					type.array_size = type.array_size or array_size
 					type.name = name
 
 					table.insert(out, type)
@@ -1261,7 +1278,10 @@ do -- type metatables
 
 			local str = " { "
 			for _, type in ipairs(self.data) do
-				if type.GetPrimitive and meta_data then type = type:GetPrimitive(meta_data) end
+				if type.GetPrimitive and meta_data then
+					type = type:GetPrimitive(meta_data)
+				end
+
 				if type.MetaType == "function" then
 					str = str .. type:GetDeclaration(meta_data) .. " ; "
 				elseif type.MetaType == "struct" then
@@ -1458,18 +1478,18 @@ do -- lua helper functions
 			-- process all single quote strings
 			chunk = chunk:gsub("('%S+')", function(val) return assert(loadstring("return (" .. val .. "):byte()"))() end)
 			chunk = chunk:gsub("' '", string.byte(" "))
-			
-			
+
+
 			-- handle *INT*_C macros
-			
-			-- UINT64_C needs to append ULL to the number 
+
+			-- UINT64_C needs to append ULL to the number
 			chunk = chunk:gsub("UINT64_C%((.-)%)", "%1ULL")
 			-- LL
 			chunk = chunk:gsub("INT64_C%((.-)%)", "%1LL")
-			
+
 			-- don't care about the other casting functions
-			chunk = chunk:gsub(".INT%d-_C%((.-)%)", "%1")			
-			
+			chunk = chunk:gsub(".INT%d-_C%((.-)%)", "%1")
+
 			-- remove C++ comments..
 			chunk = chunk:gsub("(.*)//.+", "%1")
 
@@ -1479,7 +1499,7 @@ do -- lua helper functions
 			chunk = chunk:gsub(" %((.+)%) ", "%1")
 
 			local key, val = chunk:match(" (%S+) (.+)")
-			
+
 			if not key then
 				key = chunk:match(" (%S+)")
 				val = "1"

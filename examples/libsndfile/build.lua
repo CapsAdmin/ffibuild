@@ -15,15 +15,25 @@ local header = ffibuild.BuildCHeader([[
 local meta_data = ffibuild.GetMetaData(header)
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^sf_") end, function(name) return name:find("^SF") end, true, true)
 
-local extra = ""
+do
+    local extra = {}
 
-for name, struct in pairs(meta_data.structs) do
-	if name:find("^struct SF_") and not header:find(name) then
-		extra = extra .. name .. struct:GetDeclaration(meta_data) .. ";\n"
-	end
+    for name, struct in pairs(meta_data.structs) do
+        if name:find("^struct SF_") and not header:find(name) then
+            table.insert(extra, {str = name .. struct:GetDeclaration(meta_data) .. ";\n", pos = struct.i})
+        end
+    end
+
+    table.sort(extra, function(a, b) return a.pos < b.pos end)
+
+    local str = ""
+
+    for i,v in ipairs(extra) do
+        str = str .. v.str
+    end
+
+    header = header .. str
 end
-
-header = header .. extra
 
 local lua = ffibuild.StartLibrary(header)
 
