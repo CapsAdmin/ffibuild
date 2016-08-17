@@ -71,4 +71,19 @@ local lua = ffibuild.StartLibrary(header)
 lua = lua .. "library = " .. meta_data:BuildFunctions("^FT_(.+)", "Foo_Bar", "FooBar")
 lua = lua .. "library.e = " .. meta_data:BuildEnums("^FT_(.+)")
 
+lua = lua .. "local error_code_to_str = {\n"
+
+for _, enums in pairs(meta_data.global_enums) do
+    for _, enum in ipairs(enums.enums) do
+        local err = enum.key:match("^FT_Err_(.+)")
+        if err then
+           err = err:gsub("_", " "):lower()
+           lua = lua .. "\t[" .. enum.val .. "] = \"" .. err .. "\",\n"
+        end
+    end
+end
+
+lua = lua .. "}\n"
+lua = lua .. "function library.ErrorCodeToString(code) return error_code_to_str[code] end\n"
+
 ffibuild.EndLibrary(lua, header)

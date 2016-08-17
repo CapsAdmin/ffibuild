@@ -34,7 +34,7 @@ typedef enum VkAccessFlagBits{VK_ACCESS_INDIRECT_COMMAND_READ_BIT=1,VK_ACCESS_IN
 typedef enum VkFormatFeatureFlagBits{VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT=1,VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT=2,VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT=4,VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT=8,VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT=16,VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT=32,VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT=64,VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT=128,VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT=256,VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT=512,VK_FORMAT_FEATURE_BLIT_SRC_BIT=1024,VK_FORMAT_FEATURE_BLIT_DST_BIT=2048,VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT=4096,VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG=8192,VK_FORMAT_FEATURE_FLAG_BITS_MAX_ENUM=2147483647};
 typedef enum VkCommandPoolResetFlagBits{VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT=1,VK_COMMAND_POOL_RESET_FLAG_BITS_MAX_ENUM=2147483647};
 typedef enum VkMemoryHeapFlagBits{VK_MEMORY_HEAP_DEVICE_LOCAL_BIT=1,VK_MEMORY_HEAP_FLAG_BITS_MAX_ENUM=2147483647};
-typedef enum VkStructureType{VK_STRUCTURE_TYPE_APPLICATION_INFO=0,VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO=1,VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO=2,VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO=3,VK_STRUCTURE_TYPE_SUBMIT_INFO=4,VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO=5,VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE=6,VK_STRUCTURE_TYPE_BIND_SPARSE_INFO=7,VK_STRUCTURE_TYPE_FENCE_CREATE_INFO=8,VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO=9,VK_STRUCTURE_TYPE_EVENT_CREATE_INFO=10,VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO=11,VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO=12,VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO=13,VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO=14,VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO=15,VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO=16,VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO=17,VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO=18,VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO=19,VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO=20,VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO=21,VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO=22,VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO=23,VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO=24,VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO=25,VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO=26,VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO=27,VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO=28,VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO=29,VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO=30,VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO=31,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO=32,VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO=33,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO=34,VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET=35,VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET=36,VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO=37,VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO=38,VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO=39,VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO=40,VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO=41,VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO=42,VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO=43,VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER=44,VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER=45,VK_STRUCTURE_TYPE_MEMORY_BARRIER=46,VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO=47,VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO=48,VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR=1000001000,VK_STRUCTURE_TYPE_PRESENT_INFO_KHR=1000001001,VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR=1000002000,VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR=1000002001,VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR=1000003000,VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR=1000004000,VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR=1000005000,VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR=1000006000,VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR=1000007000,VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR=1000008000,VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR=1000009000,VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT=1000011000,VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD=1000018000,VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT=1000022000,VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT=1000022001,VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT=1000022002,VK_STRUCTURE_TYPE_BEGIN_RANGE=0,VK_STRUCTURE_TYPE_END_RANGE=48,VK_STRUCTURE_TYPE_RANGE_SIZE=49,VK_STRUCTURE_TYPE_MAX_ENUM=2147483647};
+typedef enum VkStructureType{VK_STRUCTURE_TYPE_APPLICATION_INFO=0,VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO=1,VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO=2,VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO=3,VK_STRUCTURE_TYPE_SUBMIT_INFO=4,VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO=5,VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE=6,VK_STRUCTURE_TYPE_BIND_SPARSE_INFO=7,VK_STRUCTURE_TYPE_FENCE_CREATE_INFO=8,VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO=9,VK_STRUCTURE_TYPE_EVENT_CREATE_INFO=10,VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO=11,VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO=12,VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO=13,VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO=14,VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO=15,VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO=16,VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO=17,VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO=18,VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO=19,VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO=20,VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO=21,VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO=22,VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO=23,VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO=24,VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO=25,VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO=26,VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO=27,VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO=28,VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO=29,VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO=30,VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO=31,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO=32,VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO=33,VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO=34,VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET=35,VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET=36,VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO=37,VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO=38,VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO=39,VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO=40,VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO=41,VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO=42,VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO=43,VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER=44,VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER=45,VK_STRUCTURE_TYPE_MEMORY_BARRIER=46,VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO=47,VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO=48,VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR=1000001000,VK_STRUCTURE_TYPE_PRESENT_INFO_KHR=1000001001,VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR=1000002000,VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR=1000002001,VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR=1000003000,VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR=1000004000,VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR=1000005000,VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR=1000006000,VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR=1000007000,VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR=1000008000,VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR=1000009000,VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT=1000011000,VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD=1000018000,VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT=1000022000,VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT=1000022001,VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT=1000022002,VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV=1000026000,VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV=1000026001,VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV=1000026002,VK_STRUCTURE_TYPE_BEGIN_RANGE=0,VK_STRUCTURE_TYPE_END_RANGE=48,VK_STRUCTURE_TYPE_RANGE_SIZE=49,VK_STRUCTURE_TYPE_MAX_ENUM=2147483647};
 typedef enum VkVertexInputRate{VK_VERTEX_INPUT_RATE_VERTEX=0,VK_VERTEX_INPUT_RATE_INSTANCE=1,VK_VERTEX_INPUT_RATE_BEGIN_RANGE=0,VK_VERTEX_INPUT_RATE_END_RANGE=1,VK_VERTEX_INPUT_RATE_RANGE_SIZE=2,VK_VERTEX_INPUT_RATE_MAX_ENUM=2147483647};
 typedef enum VkCompositeAlphaFlagBitsKHR{VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR=1,VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR=2,VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR=4,VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR=8,VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR=2147483647};
 typedef enum VkImageTiling{VK_IMAGE_TILING_OPTIMAL=0,VK_IMAGE_TILING_LINEAR=1,VK_IMAGE_TILING_BEGIN_RANGE=0,VK_IMAGE_TILING_END_RANGE=1,VK_IMAGE_TILING_RANGE_SIZE=2,VK_IMAGE_TILING_MAX_ENUM=2147483647};
@@ -265,7 +265,7 @@ enum VkResult(vkGetPhysicalDeviceSurfaceFormatsKHR)(struct VkPhysicalDevice_T*,s
 void(vkDestroyQueryPool)(struct VkDevice_T*,struct VkQueryPool_T*,const struct VkAllocationCallbacks*);
 enum VkResult(vkCreateDescriptorPool)(struct VkDevice_T*,const struct VkDescriptorPoolCreateInfo*,const struct VkAllocationCallbacks*,struct VkDescriptorPool_T**);
 void(vkGetImageSubresourceLayout)(struct VkDevice_T*,struct VkImage_T*,const struct VkImageSubresource*,struct VkSubresourceLayout*);
-void(vkCmdUpdateBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned long,const unsigned int*);
+void(vkCmdUpdateBuffer)(struct VkCommandBuffer_T*,struct VkBuffer_T*,unsigned long,unsigned long,const void*);
 void(vkCmdSetStencilReference)(struct VkCommandBuffer_T*,unsigned int,unsigned int);
 enum VkResult(vkCreateBuffer)(struct VkDevice_T*,const struct VkBufferCreateInfo*,const struct VkAllocationCallbacks*,struct VkBuffer_T**);
 void(vkFreeCommandBuffers)(struct VkDevice_T*,struct VkCommandPool_T*,unsigned int,struct VkCommandBuffer_T*const*);
@@ -999,6 +999,9 @@ library.e = {
 	STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT"),
 	STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT"),
 	STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT"),
+	STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV"),
+	STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV"),
+	STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV"),
 	STRUCTURE_TYPE_BEGIN_RANGE = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_BEGIN_RANGE"),
 	STRUCTURE_TYPE_END_RANGE = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_END_RANGE"),
 	STRUCTURE_TYPE_RANGE_SIZE = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_RANGE_SIZE"),
@@ -1632,11 +1635,14 @@ library.e = {
 		buffer_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO"),
 		pipeline_shader_stage_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO"),
 		pipeline_tessellation_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO"),
-		pipeline_color_blend_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO"),
-		win32_surface_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR"),
 		range_size = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_RANGE_SIZE"),
-		display_mode_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR"),
+		pipeline_color_blend_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO"),
+		dedicated_allocation_memory_allocate_info_nv = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV"),
+		win32_surface_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR"),
 		memory_allocate_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO"),
+		dedicated_allocation_image_create_info_nv = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV"),
+		display_mode_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR"),
+		dedicated_allocation_buffer_create_info_nv = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV"),
 		pipeline_viewport_state_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO"),
 		submit_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_SUBMIT_INFO"),
 		semaphore_create_info = ffi.cast("enum VkStructureType", "VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO"),
@@ -3077,11 +3083,6 @@ function library.s.BindSparseInfo(tbl, table_only)
 end
 function library.s.FenceCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.fence_create.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.fence_create[tbl.flags]
-	end
 	return table_only and tbl or ffi.new("struct VkFenceCreateInfo", tbl)
 end
 function library.s.SemaphoreCreateInfo(tbl, table_only)
@@ -3097,20 +3098,10 @@ function library.s.QueryPoolCreateInfo(tbl, table_only)
 	if type(tbl.queryType) == "string" then
 		tbl.queryType = library.e.query_type[tbl.queryType]
 	end
-	if type(tbl.pipelineStatistics) == "table" then
-		tbl.pipelineStatistics = library.e.query_pipeline_statistic.make_enums(tbl.pipelineStatistics)
-	elseif type(tbl.pipelineStatistics) == "string" then
-		tbl.pipelineStatistics = library.e.query_pipeline_statistic[tbl.pipelineStatistics]
-	end
 	return table_only and tbl or ffi.new("struct VkQueryPoolCreateInfo", tbl)
 end
 function library.s.BufferCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.buffer_create.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.buffer_create[tbl.flags]
-	end
 	if type(tbl.usage) == "table" then
 		tbl.usage = library.e.buffer_usage.make_enums(tbl.usage)
 	elseif type(tbl.usage) == "string" then
@@ -3130,11 +3121,6 @@ function library.s.BufferViewCreateInfo(tbl, table_only)
 end
 function library.s.ImageCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.image_create.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.image_create[tbl.flags]
-	end
 	if type(tbl.imageType) == "string" then
 		tbl.imageType = library.e.image_type[tbl.imageType]
 	end
@@ -3315,11 +3301,6 @@ function library.s.PipelineDynamicStateCreateInfo(tbl, table_only)
 end
 function library.s.GraphicsPipelineCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.pipeline_create.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.pipeline_create[tbl.flags]
-	end
 	if type(tbl.pStages) == "table" then
 		if not tbl.stageCount then
 			tbl.stageCount = #tbl.pStages
@@ -3357,11 +3338,6 @@ function library.s.GraphicsPipelineCreateInfo(tbl, table_only)
 end
 function library.s.ComputePipelineCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.pipeline_create.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.pipeline_create[tbl.flags]
-	end
 	if type(tbl.stage) == "table" then
 		tbl.stage = library.s.PipelineShaderStageCreateInfo(tbl.stage, true)
 	end
@@ -3411,7 +3387,6 @@ function library.s.SamplerCreateInfo(tbl, table_only)
 	if type(tbl.borderColor) == "string" then
 		tbl.borderColor = library.e.border_color[tbl.borderColor]
 	end
-	tbl.unnormalizedCoordinates = tbl.unnormalizedCoordinates and 1 or 0
 	return table_only and tbl or ffi.new("struct VkSamplerCreateInfo", tbl)
 end
 function library.s.DescriptorSetLayoutCreateInfo(tbl, table_only)
@@ -3426,11 +3401,6 @@ function library.s.DescriptorSetLayoutCreateInfo(tbl, table_only)
 end
 function library.s.DescriptorPoolCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.descriptor_pool_create.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.descriptor_pool_create[tbl.flags]
-	end
 	if type(tbl.pPoolSizes) == "table" then
 		if not tbl.poolSizeCount then
 			tbl.poolSizeCount = #tbl.pPoolSizes
@@ -3512,11 +3482,6 @@ function library.s.RenderPassCreateInfo(tbl, table_only)
 end
 function library.s.CommandPoolCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.command_pool_create.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.command_pool_create[tbl.flags]
-	end
 	return table_only and tbl or ffi.new("struct VkCommandPoolCreateInfo", tbl)
 end
 function library.s.CommandBufferAllocateInfo(tbl, table_only)
@@ -3529,25 +3494,10 @@ end
 function library.s.CommandBufferInheritanceInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO"
 	tbl.occlusionQueryEnable = tbl.occlusionQueryEnable and 1 or 0
-	if type(tbl.queryFlags) == "table" then
-		tbl.queryFlags = library.e.query_control.make_enums(tbl.queryFlags)
-	elseif type(tbl.queryFlags) == "string" then
-		tbl.queryFlags = library.e.query_control[tbl.queryFlags]
-	end
-	if type(tbl.pipelineStatistics) == "table" then
-		tbl.pipelineStatistics = library.e.query_pipeline_statistic.make_enums(tbl.pipelineStatistics)
-	elseif type(tbl.pipelineStatistics) == "string" then
-		tbl.pipelineStatistics = library.e.query_pipeline_statistic[tbl.pipelineStatistics]
-	end
 	return table_only and tbl or ffi.new("struct VkCommandBufferInheritanceInfo", tbl)
 end
 function library.s.CommandBufferBeginInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO"
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.command_buffer_usage.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.command_buffer_usage[tbl.flags]
-	end
 	if type(tbl.pInheritanceInfo) == "table" then
 		tbl.pInheritanceInfo = library.s.CommandBufferInheritanceInfo(tbl.pInheritanceInfo, false)
 	end
@@ -3568,16 +3518,6 @@ function library.s.RenderPassBeginInfo(tbl, table_only)
 end
 function library.s.BufferMemoryBarrier(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER"
-	if type(tbl.srcAccessMask) == "table" then
-		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
-	elseif type(tbl.srcAccessMask) == "string" then
-		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
-	end
-	if type(tbl.dstAccessMask) == "table" then
-		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
-	elseif type(tbl.dstAccessMask) == "string" then
-		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
-	end
 	return table_only and tbl or ffi.new("struct VkBufferMemoryBarrier", tbl)
 end
 function library.s.ImageMemoryBarrier(tbl, table_only)
@@ -3605,16 +3545,6 @@ function library.s.ImageMemoryBarrier(tbl, table_only)
 end
 function library.s.MemoryBarrier(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER"
-	if type(tbl.srcAccessMask) == "table" then
-		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
-	elseif type(tbl.srcAccessMask) == "string" then
-		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
-	end
-	if type(tbl.dstAccessMask) == "table" then
-		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
-	elseif type(tbl.dstAccessMask) == "string" then
-		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
-	end
 	return table_only and tbl or ffi.new("struct VkMemoryBarrier", tbl)
 end
 function library.s.SwapchainCreateInfoKHR(tbl, table_only)
@@ -3627,11 +3557,6 @@ function library.s.SwapchainCreateInfoKHR(tbl, table_only)
 	end
 	if type(tbl.imageExtent) == "table" then
 		tbl.imageExtent = library.s.Extent2D(tbl.imageExtent, true)
-	end
-	if type(tbl.imageUsage) == "table" then
-		tbl.imageUsage = library.e.image_usage.make_enums(tbl.imageUsage)
-	elseif type(tbl.imageUsage) == "string" then
-		tbl.imageUsage = library.e.image_usage[tbl.imageUsage]
 	end
 	if type(tbl.imageSharingMode) == "string" then
 		tbl.imageSharingMode = library.e.sharing_mode[tbl.imageSharingMode]
@@ -3649,7 +3574,6 @@ function library.s.SwapchainCreateInfoKHR(tbl, table_only)
 	if type(tbl.presentMode) == "string" then
 		tbl.presentMode = library.e.present_mode[tbl.presentMode]
 	end
-	tbl.clipped = tbl.clipped and 1 or 0
 	return table_only and tbl or ffi.new("struct VkSwapchainCreateInfoKHR", tbl)
 end
 function library.s.PresentInfoKHR(tbl, table_only)
@@ -3703,7 +3627,6 @@ function library.s.DisplayPresentInfoKHR(tbl, table_only)
 	if type(tbl.dstRect) == "table" then
 		tbl.dstRect = library.s.Rect2D(tbl.dstRect, true)
 	end
-	tbl.persistent = tbl.persistent and 1 or 0
 	return table_only and tbl or ffi.new("struct VkDisplayPresentInfoKHR", tbl)
 end
 function library.s.DebugReportCallbackCreateInfoEXT(tbl, table_only)
@@ -3732,6 +3655,15 @@ end
 function library.s.DebugMarkerMarkerInfoEXT(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT"
 	return table_only and tbl or ffi.new("struct VkDebugMarkerMarkerInfoEXT", tbl)
+end
+function library.s.DedicatedAllocationMemoryAllocateInfoNV(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDedicatedAllocationMemoryAllocateInfoNV", tbl)
+end
+function library.s.DedicatedAllocationMemoryAllocateInfoNVArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.DedicatedAllocationMemoryAllocateInfoNV(v)
+	end
+	return ffi.new("struct VkDedicatedAllocationMemoryAllocateInfoNV[?]", #tbl, tbl)
 end
 function library.s.DescriptorPoolArray(tbl) return ffi.new("struct VkDescriptorPool_T *[?]", #tbl, tbl) end
 function library.s.PipelineTessellationStateCreateInfoArray(tbl)
@@ -3767,6 +3699,15 @@ function library.s.SparseBufferMemoryBindInfoArray(tbl)
 end
 function library.s.InstanceArray(tbl) return ffi.new("struct VkInstance_T *[?]", #tbl, tbl) end
 function library.s.ImageViewArray(tbl) return ffi.new("struct VkImageView_T *[?]", #tbl, tbl) end
+function library.s.DedicatedAllocationBufferCreateInfoNV(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDedicatedAllocationBufferCreateInfoNV", tbl)
+end
+function library.s.DedicatedAllocationBufferCreateInfoNVArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.DedicatedAllocationBufferCreateInfoNV(v)
+	end
+	return ffi.new("struct VkDedicatedAllocationBufferCreateInfoNV[?]", #tbl, tbl)
+end
 function library.s.DescriptorSetArray(tbl) return ffi.new("struct VkDescriptorSet_T *[?]", #tbl, tbl) end
 function library.s.PipelineRasterizationStateRasterizationOrderAMD(tbl, table_only)
 	if type(tbl.rasterizationOrder) == "string" then
@@ -3939,11 +3880,6 @@ function library.s.RenderPassBeginInfoArray(tbl)
 	return ffi.new("struct VkRenderPassBeginInfo[?]", #tbl, tbl)
 end
 function library.s.DisplayPlaneCapabilitiesKHR(tbl, table_only)
-	if type(tbl.supportedAlpha) == "table" then
-		tbl.supportedAlpha = library.e.display_plane_alpha.make_enums(tbl.supportedAlpha)
-	elseif type(tbl.supportedAlpha) == "string" then
-		tbl.supportedAlpha = library.e.display_plane_alpha[tbl.supportedAlpha]
-	end
 	if type(tbl.minSrcPosition) == "table" then
 		tbl.minSrcPosition = library.s.Offset2D(tbl.minSrcPosition, true)
 	end
@@ -3983,13 +3919,6 @@ function library.s.DisplayPropertiesKHR(tbl, table_only)
 	if type(tbl.physicalResolution) == "table" then
 		tbl.physicalResolution = library.s.Extent2D(tbl.physicalResolution, true)
 	end
-	if type(tbl.supportedTransforms) == "table" then
-		tbl.supportedTransforms = library.e.surface_transform.make_enums(tbl.supportedTransforms)
-	elseif type(tbl.supportedTransforms) == "string" then
-		tbl.supportedTransforms = library.e.surface_transform[tbl.supportedTransforms]
-	end
-	tbl.planeReorderPossible = tbl.planeReorderPossible and 1 or 0
-	tbl.persistentContent = tbl.persistentContent and 1 or 0
 	return table_only and tbl or ffi.new("struct VkDisplayPropertiesKHR", tbl)
 end
 function library.s.DisplayPropertiesKHRArray(tbl)
@@ -4013,11 +3942,6 @@ function library.s.ComputePipelineCreateInfoArray(tbl)
 	return ffi.new("struct VkComputePipelineCreateInfo[?]", #tbl, tbl)
 end
 function library.s.SparseMemoryBind(tbl, table_only)
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.sparse_memory_bind.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.sparse_memory_bind[tbl.flags]
-	end
 	return table_only and tbl or ffi.new("struct VkSparseMemoryBind", tbl)
 end
 function library.s.SparseMemoryBindArray(tbl)
@@ -4055,11 +3979,6 @@ function library.s.DescriptorSetLayoutCreateInfoArray(tbl)
 end
 function library.s.PhysicalDeviceArray(tbl) return ffi.new("struct VkPhysicalDevice_T *[?]", #tbl, tbl) end
 function library.s.PhysicalDeviceSparseProperties(tbl, table_only)
-	tbl.residencyStandard2DBlockShape = tbl.residencyStandard2DBlockShape and 1 or 0
-	tbl.residencyStandard2DMultisampleBlockShape = tbl.residencyStandard2DMultisampleBlockShape and 1 or 0
-	tbl.residencyStandard3DBlockShape = tbl.residencyStandard3DBlockShape and 1 or 0
-	tbl.residencyAlignedMipSize = tbl.residencyAlignedMipSize and 1 or 0
-	tbl.residencyNonResidentStrict = tbl.residencyNonResidentStrict and 1 or 0
 	return table_only and tbl or ffi.new("struct VkPhysicalDeviceSparseProperties", tbl)
 end
 function library.s.PhysicalDeviceSparsePropertiesArray(tbl)
@@ -4088,11 +4007,6 @@ function library.s.PipelineColorBlendAttachmentState(tbl, table_only)
 	end
 	if type(tbl.alphaBlendOp) == "string" then
 		tbl.alphaBlendOp = library.e.blend_op[tbl.alphaBlendOp]
-	end
-	if type(tbl.colorWriteMask) == "table" then
-		tbl.colorWriteMask = library.e.color_component.make_enums(tbl.colorWriteMask)
-	elseif type(tbl.colorWriteMask) == "string" then
-		tbl.colorWriteMask = library.e.color_component[tbl.colorWriteMask]
 	end
 	return table_only and tbl or ffi.new("struct VkPipelineColorBlendAttachmentState", tbl)
 end
@@ -4158,25 +4072,10 @@ function library.s.SurfaceCapabilitiesKHR(tbl, table_only)
 	if type(tbl.maxImageExtent) == "table" then
 		tbl.maxImageExtent = library.s.Extent2D(tbl.maxImageExtent, true)
 	end
-	if type(tbl.supportedTransforms) == "table" then
-		tbl.supportedTransforms = library.e.surface_transform.make_enums(tbl.supportedTransforms)
-	elseif type(tbl.supportedTransforms) == "string" then
-		tbl.supportedTransforms = library.e.surface_transform[tbl.supportedTransforms]
-	end
 	if type(tbl.currentTransform) == "table" then
 		tbl.currentTransform = library.e.surface_transform.make_enums(tbl.currentTransform)
 	elseif type(tbl.currentTransform) == "string" then
 		tbl.currentTransform = library.e.surface_transform[tbl.currentTransform]
-	end
-	if type(tbl.supportedCompositeAlpha) == "table" then
-		tbl.supportedCompositeAlpha = library.e.composite_alpha.make_enums(tbl.supportedCompositeAlpha)
-	elseif type(tbl.supportedCompositeAlpha) == "string" then
-		tbl.supportedCompositeAlpha = library.e.composite_alpha[tbl.supportedCompositeAlpha]
-	end
-	if type(tbl.supportedUsageFlags) == "table" then
-		tbl.supportedUsageFlags = library.e.image_usage.make_enums(tbl.supportedUsageFlags)
-	elseif type(tbl.supportedUsageFlags) == "string" then
-		tbl.supportedUsageFlags = library.e.image_usage[tbl.supportedUsageFlags]
 	end
 	return table_only and tbl or ffi.new("struct VkSurfaceCapabilitiesKHR", tbl)
 end
@@ -4196,11 +4095,6 @@ function library.s.ImageFormatProperties(tbl, table_only)
 	if type(tbl.maxExtent) == "table" then
 		tbl.maxExtent = library.s.Extent3D(tbl.maxExtent, true)
 	end
-	if type(tbl.sampleCounts) == "table" then
-		tbl.sampleCounts = library.e.sample_count.make_enums(tbl.sampleCounts)
-	elseif type(tbl.sampleCounts) == "string" then
-		tbl.sampleCounts = library.e.sample_count[tbl.sampleCounts]
-	end
 	return table_only and tbl or ffi.new("struct VkImageFormatProperties", tbl)
 end
 function library.s.ImageFormatPropertiesArray(tbl)
@@ -4210,11 +4104,6 @@ function library.s.ImageFormatPropertiesArray(tbl)
 	return ffi.new("struct VkImageFormatProperties[?]", #tbl, tbl)
 end
 function library.s.AttachmentDescription(tbl, table_only)
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.attachment_description.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.attachment_description[tbl.flags]
-	end
 	if type(tbl.format) == "string" then
 		tbl.format = library.e.format[tbl.format]
 	end
@@ -4410,11 +4299,6 @@ function library.s.SubpassDescriptionArray(tbl)
 	return ffi.new("struct VkSubpassDescription[?]", #tbl, tbl)
 end
 function library.s.ClearAttachment(tbl, table_only)
-	if type(tbl.aspectMask) == "table" then
-		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
-	elseif type(tbl.aspectMask) == "string" then
-		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
-	end
 	if type(tbl.clearValue) == "table" then
 		tbl.clearValue = library.s.ClearValue(tbl.clearValue, true)
 	end
@@ -4436,18 +4320,8 @@ function library.s.SubresourceLayoutArray(tbl)
 	return ffi.new("struct VkSubresourceLayout[?]", #tbl, tbl)
 end
 function library.s.SparseImageFormatProperties(tbl, table_only)
-	if type(tbl.aspectMask) == "table" then
-		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
-	elseif type(tbl.aspectMask) == "string" then
-		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
-	end
 	if type(tbl.imageGranularity) == "table" then
 		tbl.imageGranularity = library.s.Extent3D(tbl.imageGranularity, true)
-	end
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.sparse_image_format.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.sparse_image_format[tbl.flags]
 	end
 	return table_only and tbl or ffi.new("struct VkSparseImageFormatProperties", tbl)
 end
@@ -4459,11 +4333,6 @@ function library.s.SparseImageFormatPropertiesArray(tbl)
 end
 function library.s.DeviceMemoryArray(tbl) return ffi.new("struct VkDeviceMemory_T *[?]", #tbl, tbl) end
 function library.s.QueueFamilyProperties(tbl, table_only)
-	if type(tbl.queueFlags) == "table" then
-		tbl.queueFlags = library.e.queue.make_enums(tbl.queueFlags)
-	elseif type(tbl.queueFlags) == "string" then
-		tbl.queueFlags = library.e.queue[tbl.queueFlags]
-	end
 	if type(tbl.minImageTransferGranularity) == "table" then
 		tbl.minImageTransferGranularity = library.s.Extent3D(tbl.minImageTransferGranularity, true)
 	end
@@ -4569,21 +4438,6 @@ function library.s.CommandBufferAllocateInfoArray(tbl)
 	return ffi.new("struct VkCommandBufferAllocateInfo[?]", #tbl, tbl)
 end
 function library.s.FormatProperties(tbl, table_only)
-	if type(tbl.linearTilingFeatures) == "table" then
-		tbl.linearTilingFeatures = library.e.format_feature.make_enums(tbl.linearTilingFeatures)
-	elseif type(tbl.linearTilingFeatures) == "string" then
-		tbl.linearTilingFeatures = library.e.format_feature[tbl.linearTilingFeatures]
-	end
-	if type(tbl.optimalTilingFeatures) == "table" then
-		tbl.optimalTilingFeatures = library.e.format_feature.make_enums(tbl.optimalTilingFeatures)
-	elseif type(tbl.optimalTilingFeatures) == "string" then
-		tbl.optimalTilingFeatures = library.e.format_feature[tbl.optimalTilingFeatures]
-	end
-	if type(tbl.bufferFeatures) == "table" then
-		tbl.bufferFeatures = library.e.format_feature.make_enums(tbl.bufferFeatures)
-	elseif type(tbl.bufferFeatures) == "string" then
-		tbl.bufferFeatures = library.e.format_feature[tbl.bufferFeatures]
-	end
 	return table_only and tbl or ffi.new("struct VkFormatProperties", tbl)
 end
 function library.s.FormatPropertiesArray(tbl)
@@ -4593,11 +4447,6 @@ function library.s.FormatPropertiesArray(tbl)
 	return ffi.new("struct VkFormatProperties[?]", #tbl, tbl)
 end
 function library.s.ImageSubresource(tbl, table_only)
-	if type(tbl.aspectMask) == "table" then
-		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
-	elseif type(tbl.aspectMask) == "string" then
-		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
-	end
 	return table_only and tbl or ffi.new("struct VkImageSubresource", tbl)
 end
 function library.s.ImageSubresourceArray(tbl)
@@ -4660,6 +4509,15 @@ function library.s.PresentInfoKHRArray(tbl)
 	end
 	return ffi.new("struct VkPresentInfoKHR[?]", #tbl, tbl)
 end
+function library.s.DedicatedAllocationImageCreateInfoNV(tbl, table_only)
+	return table_only and tbl or ffi.new("struct VkDedicatedAllocationImageCreateInfoNV", tbl)
+end
+function library.s.DedicatedAllocationImageCreateInfoNVArray(tbl)
+	for i, v in ipairs(tbl) do
+		tbl[i] = library.s.DedicatedAllocationImageCreateInfoNV(v)
+	end
+	return ffi.new("struct VkDedicatedAllocationImageCreateInfoNV[?]", #tbl, tbl)
+end
 function library.s.GraphicsPipelineCreateInfoArray(tbl)
 	for i, v in ipairs(tbl) do
 		tbl[i] = library.s.GraphicsPipelineCreateInfo(v)
@@ -4694,31 +4552,6 @@ function library.s.SparseImageMemoryRequirementsArray(tbl)
 	return ffi.new("struct VkSparseImageMemoryRequirements[?]", #tbl, tbl)
 end
 function library.s.SubpassDependency(tbl, table_only)
-	if type(tbl.srcStageMask) == "table" then
-		tbl.srcStageMask = library.e.pipeline_stage.make_enums(tbl.srcStageMask)
-	elseif type(tbl.srcStageMask) == "string" then
-		tbl.srcStageMask = library.e.pipeline_stage[tbl.srcStageMask]
-	end
-	if type(tbl.dstStageMask) == "table" then
-		tbl.dstStageMask = library.e.pipeline_stage.make_enums(tbl.dstStageMask)
-	elseif type(tbl.dstStageMask) == "string" then
-		tbl.dstStageMask = library.e.pipeline_stage[tbl.dstStageMask]
-	end
-	if type(tbl.srcAccessMask) == "table" then
-		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
-	elseif type(tbl.srcAccessMask) == "string" then
-		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
-	end
-	if type(tbl.dstAccessMask) == "table" then
-		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
-	elseif type(tbl.dstAccessMask) == "string" then
-		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
-	end
-	if type(tbl.dependencyFlags) == "table" then
-		tbl.dependencyFlags = library.e.dependency.make_enums(tbl.dependencyFlags)
-	elseif type(tbl.dependencyFlags) == "string" then
-		tbl.dependencyFlags = library.e.dependency[tbl.dependencyFlags]
-	end
 	return table_only and tbl or ffi.new("struct VkSubpassDependency", tbl)
 end
 function library.s.SubpassDependencyArray(tbl)
@@ -4891,54 +4724,6 @@ function library.s.PhysicalDeviceMemoryPropertiesArray(tbl)
 	return ffi.new("struct VkPhysicalDeviceMemoryProperties[?]", #tbl, tbl)
 end
 function library.s.PhysicalDeviceLimits(tbl, table_only)
-	if type(tbl.framebufferColorSampleCounts) == "table" then
-		tbl.framebufferColorSampleCounts = library.e.sample_count.make_enums(tbl.framebufferColorSampleCounts)
-	elseif type(tbl.framebufferColorSampleCounts) == "string" then
-		tbl.framebufferColorSampleCounts = library.e.sample_count[tbl.framebufferColorSampleCounts]
-	end
-	if type(tbl.framebufferDepthSampleCounts) == "table" then
-		tbl.framebufferDepthSampleCounts = library.e.sample_count.make_enums(tbl.framebufferDepthSampleCounts)
-	elseif type(tbl.framebufferDepthSampleCounts) == "string" then
-		tbl.framebufferDepthSampleCounts = library.e.sample_count[tbl.framebufferDepthSampleCounts]
-	end
-	if type(tbl.framebufferStencilSampleCounts) == "table" then
-		tbl.framebufferStencilSampleCounts = library.e.sample_count.make_enums(tbl.framebufferStencilSampleCounts)
-	elseif type(tbl.framebufferStencilSampleCounts) == "string" then
-		tbl.framebufferStencilSampleCounts = library.e.sample_count[tbl.framebufferStencilSampleCounts]
-	end
-	if type(tbl.framebufferNoAttachmentsSampleCounts) == "table" then
-		tbl.framebufferNoAttachmentsSampleCounts = library.e.sample_count.make_enums(tbl.framebufferNoAttachmentsSampleCounts)
-	elseif type(tbl.framebufferNoAttachmentsSampleCounts) == "string" then
-		tbl.framebufferNoAttachmentsSampleCounts = library.e.sample_count[tbl.framebufferNoAttachmentsSampleCounts]
-	end
-	if type(tbl.sampledImageColorSampleCounts) == "table" then
-		tbl.sampledImageColorSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageColorSampleCounts)
-	elseif type(tbl.sampledImageColorSampleCounts) == "string" then
-		tbl.sampledImageColorSampleCounts = library.e.sample_count[tbl.sampledImageColorSampleCounts]
-	end
-	if type(tbl.sampledImageIntegerSampleCounts) == "table" then
-		tbl.sampledImageIntegerSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageIntegerSampleCounts)
-	elseif type(tbl.sampledImageIntegerSampleCounts) == "string" then
-		tbl.sampledImageIntegerSampleCounts = library.e.sample_count[tbl.sampledImageIntegerSampleCounts]
-	end
-	if type(tbl.sampledImageDepthSampleCounts) == "table" then
-		tbl.sampledImageDepthSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageDepthSampleCounts)
-	elseif type(tbl.sampledImageDepthSampleCounts) == "string" then
-		tbl.sampledImageDepthSampleCounts = library.e.sample_count[tbl.sampledImageDepthSampleCounts]
-	end
-	if type(tbl.sampledImageStencilSampleCounts) == "table" then
-		tbl.sampledImageStencilSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageStencilSampleCounts)
-	elseif type(tbl.sampledImageStencilSampleCounts) == "string" then
-		tbl.sampledImageStencilSampleCounts = library.e.sample_count[tbl.sampledImageStencilSampleCounts]
-	end
-	if type(tbl.storageImageSampleCounts) == "table" then
-		tbl.storageImageSampleCounts = library.e.sample_count.make_enums(tbl.storageImageSampleCounts)
-	elseif type(tbl.storageImageSampleCounts) == "string" then
-		tbl.storageImageSampleCounts = library.e.sample_count[tbl.storageImageSampleCounts]
-	end
-	tbl.timestampComputeAndGraphics = tbl.timestampComputeAndGraphics and 1 or 0
-	tbl.strictLines = tbl.strictLines and 1 or 0
-	tbl.standardSampleLocations = tbl.standardSampleLocations and 1 or 0
 	return table_only and tbl or ffi.new("struct VkPhysicalDeviceLimits", tbl)
 end
 function library.s.PhysicalDeviceLimitsArray(tbl)
@@ -4956,11 +4741,6 @@ function library.s.SparseImageMemoryBind(tbl, table_only)
 	end
 	if type(tbl.extent) == "table" then
 		tbl.extent = library.s.Extent3D(tbl.extent, true)
-	end
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.sparse_memory_bind.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.sparse_memory_bind[tbl.flags]
 	end
 	return table_only and tbl or ffi.new("struct VkSparseImageMemoryBind", tbl)
 end
@@ -4983,11 +4763,6 @@ function library.s.MemoryAllocateInfoArray(tbl)
 	return ffi.new("struct VkMemoryAllocateInfo[?]", #tbl, tbl)
 end
 function library.s.MemoryHeap(tbl, table_only)
-	if type(tbl.flags) == "table" then
-		tbl.flags = library.e.memory_heap.make_enums(tbl.flags)
-	elseif type(tbl.flags) == "string" then
-		tbl.flags = library.e.memory_heap[tbl.flags]
-	end
 	return table_only and tbl or ffi.new("struct VkMemoryHeap", tbl)
 end
 function library.s.MemoryHeapArray(tbl)
@@ -5003,11 +4778,6 @@ function library.s.SemaphoreCreateInfoArray(tbl)
 	return ffi.new("struct VkSemaphoreCreateInfo[?]", #tbl, tbl)
 end
 function library.s.MemoryType(tbl, table_only)
-	if type(tbl.propertyFlags) == "table" then
-		tbl.propertyFlags = library.e.memory_property.make_enums(tbl.propertyFlags)
-	elseif type(tbl.propertyFlags) == "string" then
-		tbl.propertyFlags = library.e.memory_property[tbl.propertyFlags]
-	end
 	return table_only and tbl or ffi.new("struct VkMemoryType", tbl)
 end
 function library.s.MemoryTypeArray(tbl)
@@ -5096,61 +4866,6 @@ function library.s.ExtensionPropertiesArray(tbl)
 end
 function library.s.EventArray(tbl) return ffi.new("struct VkEvent_T *[?]", #tbl, tbl) end
 function library.s.PhysicalDeviceFeatures(tbl, table_only)
-	tbl.robustBufferAccess = tbl.robustBufferAccess and 1 or 0
-	tbl.fullDrawIndexUint32 = tbl.fullDrawIndexUint32 and 1 or 0
-	tbl.imageCubeArray = tbl.imageCubeArray and 1 or 0
-	tbl.independentBlend = tbl.independentBlend and 1 or 0
-	tbl.geometryShader = tbl.geometryShader and 1 or 0
-	tbl.tessellationShader = tbl.tessellationShader and 1 or 0
-	tbl.sampleRateShading = tbl.sampleRateShading and 1 or 0
-	tbl.dualSrcBlend = tbl.dualSrcBlend and 1 or 0
-	tbl.logicOp = tbl.logicOp and 1 or 0
-	tbl.multiDrawIndirect = tbl.multiDrawIndirect and 1 or 0
-	tbl.drawIndirectFirstInstance = tbl.drawIndirectFirstInstance and 1 or 0
-	tbl.depthClamp = tbl.depthClamp and 1 or 0
-	tbl.depthBiasClamp = tbl.depthBiasClamp and 1 or 0
-	tbl.fillModeNonSolid = tbl.fillModeNonSolid and 1 or 0
-	tbl.depthBounds = tbl.depthBounds and 1 or 0
-	tbl.wideLines = tbl.wideLines and 1 or 0
-	tbl.largePoints = tbl.largePoints and 1 or 0
-	tbl.alphaToOne = tbl.alphaToOne and 1 or 0
-	tbl.multiViewport = tbl.multiViewport and 1 or 0
-	tbl.samplerAnisotropy = tbl.samplerAnisotropy and 1 or 0
-	tbl.textureCompressionETC2 = tbl.textureCompressionETC2 and 1 or 0
-	tbl.textureCompressionASTC_LDR = tbl.textureCompressionASTC_LDR and 1 or 0
-	tbl.textureCompressionBC = tbl.textureCompressionBC and 1 or 0
-	tbl.occlusionQueryPrecise = tbl.occlusionQueryPrecise and 1 or 0
-	tbl.pipelineStatisticsQuery = tbl.pipelineStatisticsQuery and 1 or 0
-	tbl.vertexPipelineStoresAndAtomics = tbl.vertexPipelineStoresAndAtomics and 1 or 0
-	tbl.fragmentStoresAndAtomics = tbl.fragmentStoresAndAtomics and 1 or 0
-	tbl.shaderTessellationAndGeometryPointSize = tbl.shaderTessellationAndGeometryPointSize and 1 or 0
-	tbl.shaderImageGatherExtended = tbl.shaderImageGatherExtended and 1 or 0
-	tbl.shaderStorageImageExtendedFormats = tbl.shaderStorageImageExtendedFormats and 1 or 0
-	tbl.shaderStorageImageMultisample = tbl.shaderStorageImageMultisample and 1 or 0
-	tbl.shaderStorageImageReadWithoutFormat = tbl.shaderStorageImageReadWithoutFormat and 1 or 0
-	tbl.shaderStorageImageWriteWithoutFormat = tbl.shaderStorageImageWriteWithoutFormat and 1 or 0
-	tbl.shaderUniformBufferArrayDynamicIndexing = tbl.shaderUniformBufferArrayDynamicIndexing and 1 or 0
-	tbl.shaderSampledImageArrayDynamicIndexing = tbl.shaderSampledImageArrayDynamicIndexing and 1 or 0
-	tbl.shaderStorageBufferArrayDynamicIndexing = tbl.shaderStorageBufferArrayDynamicIndexing and 1 or 0
-	tbl.shaderStorageImageArrayDynamicIndexing = tbl.shaderStorageImageArrayDynamicIndexing and 1 or 0
-	tbl.shaderClipDistance = tbl.shaderClipDistance and 1 or 0
-	tbl.shaderCullDistance = tbl.shaderCullDistance and 1 or 0
-	tbl.shaderFloat64 = tbl.shaderFloat64 and 1 or 0
-	tbl.shaderInt64 = tbl.shaderInt64 and 1 or 0
-	tbl.shaderInt16 = tbl.shaderInt16 and 1 or 0
-	tbl.shaderResourceResidency = tbl.shaderResourceResidency and 1 or 0
-	tbl.shaderResourceMinLod = tbl.shaderResourceMinLod and 1 or 0
-	tbl.sparseBinding = tbl.sparseBinding and 1 or 0
-	tbl.sparseResidencyBuffer = tbl.sparseResidencyBuffer and 1 or 0
-	tbl.sparseResidencyImage2D = tbl.sparseResidencyImage2D and 1 or 0
-	tbl.sparseResidencyImage3D = tbl.sparseResidencyImage3D and 1 or 0
-	tbl.sparseResidency2Samples = tbl.sparseResidency2Samples and 1 or 0
-	tbl.sparseResidency4Samples = tbl.sparseResidency4Samples and 1 or 0
-	tbl.sparseResidency8Samples = tbl.sparseResidency8Samples and 1 or 0
-	tbl.sparseResidency16Samples = tbl.sparseResidency16Samples and 1 or 0
-	tbl.sparseResidencyAliased = tbl.sparseResidencyAliased and 1 or 0
-	tbl.variableMultisampleRate = tbl.variableMultisampleRate and 1 or 0
-	tbl.inheritedQueries = tbl.inheritedQueries and 1 or 0
 	return table_only and tbl or ffi.new("struct VkPhysicalDeviceFeatures", tbl)
 end
 function library.s.PhysicalDeviceFeaturesArray(tbl)
@@ -5249,11 +4964,6 @@ function library.s.MemoryBarrierArray(tbl)
 	return ffi.new("struct VkMemoryBarrier[?]", #tbl, tbl)
 end
 function library.s.PushConstantRange(tbl, table_only)
-	if type(tbl.stageFlags) == "table" then
-		tbl.stageFlags = library.e.shader_stage.make_enums(tbl.stageFlags)
-	elseif type(tbl.stageFlags) == "string" then
-		tbl.stageFlags = library.e.shader_stage[tbl.stageFlags]
-	end
 	return table_only and tbl or ffi.new("struct VkPushConstantRange", tbl)
 end
 function library.s.PushConstantRangeArray(tbl)

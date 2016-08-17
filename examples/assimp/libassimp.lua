@@ -12,8 +12,8 @@ typedef enum aiGrrr{aiProcess_ConvertToLeftHanded=25165828,aiProcessPreset_Targe
 typedef enum aiTextureFlags{aiTextureFlags_Invert=1,aiTextureFlags_UseAlpha=2,aiTextureFlags_IgnoreAlpha=4};
 typedef enum aiLightSourceType{aiLightSource_UNDEFINED=0,aiLightSource_DIRECTIONAL=1,aiLightSource_POINT=2,aiLightSource_SPOT=3,aiLightSource_AMBIENT=4,aiLightSource_AREA=5};
 typedef enum aiTextureMapMode{aiTextureMapMode_Wrap=0,aiTextureMapMode_Clamp=1,aiTextureMapMode_Decal=3,aiTextureMapMode_Mirror=2};
-typedef enum aiPropertyTypeInfo{aiPTI_Float=1,aiPTI_String=3,aiPTI_Integer=4,aiPTI_Buffer=5};
-typedef enum aiMetadataType{aiBOOL=0,aiINT=1,aiUINT64=2,aiFLOAT=3,aiAISTRING=4,aiAIVECTOR3D=5};
+typedef enum aiPropertyTypeInfo{aiPTI_Float=1,aiPTI_Double=2,aiPTI_String=3,aiPTI_Integer=4,aiPTI_Buffer=5};
+typedef enum aiMetadataType{aiBOOL=0,aiINT=1,aiUINT64=2,aiFLOAT=3,aiDOUBLE=4,aiAISTRING=5,aiAIVECTOR3D=6};
 typedef enum aiDefaultLogStream{aiDefaultLogStream_FILE=1,aiDefaultLogStream_STDOUT=2,aiDefaultLogStream_STDERR=4,aiDefaultLogStream_DEBUGGER=8};
 typedef enum aiAnimBehaviour{aiAnimBehaviour_DEFAULT=0,aiAnimBehaviour_CONSTANT=1,aiAnimBehaviour_LINEAR=2,aiAnimBehaviour_REPEAT=3};
 typedef enum aiImporterFlags{aiImporterFlags_SupportTextFlavour=1,aiImporterFlags_SupportBinaryFlavour=2,aiImporterFlags_SupportCompressedFlavour=4,aiImporterFlags_LimitedSupport=8,aiImporterFlags_Experimental=16};
@@ -38,6 +38,7 @@ struct aiNodeAnim {struct aiString mNodeName;unsigned int mNumPositionKeys;struc
 struct aiMeshAnim {struct aiString mName;unsigned int mNumKeys;struct aiMeshKey*mKeys;};
 struct aiAnimation {struct aiString mName;double mDuration;double mTicksPerSecond;unsigned int mNumChannels;struct aiNodeAnim**mChannels;unsigned int mNumMeshChannels;struct aiMeshAnim**mMeshChannels;};
 struct aiFileIO {struct aiFile*(*OpenProc)(struct aiFileIO*,const char*,const char*);void(*CloseProc)(struct aiFileIO*,struct aiFile*);char*UserData;};
+struct aiFile {unsigned long(*ReadProc)(struct aiFile*,char*,unsigned long,unsigned long);unsigned long(*WriteProc)(struct aiFile*,const char*,unsigned long,unsigned long);unsigned long(*TellProc)(struct aiFile*);unsigned long(*FileSizeProc)(struct aiFile*);enum aiReturn(*SeekProc)(struct aiFile*,unsigned long,enum aiOrigin);void(*FlushProc)(struct aiFile*);char*UserData;};
 struct aiImporterDesc {const char*mName;const char*mAuthor;const char*mMaintainer;const char*mComments;unsigned int mFlags;unsigned int mMinMajor;unsigned int mMinMinor;unsigned int mMaxMajor;unsigned int mMaxMinor;const char*mFileExtensions;};
 struct aiTexel {unsigned int b;unsigned int g;unsigned int r;unsigned int a;};
 struct aiTexture {unsigned int mWidth;unsigned int mHeight;char achFormatHint[4];struct aiTexel*pcData;};
@@ -272,6 +273,7 @@ library.e = {
 	Decal = ffi.cast("enum aiTextureMapMode", "aiTextureMapMode_Decal"),
 	Mirror = ffi.cast("enum aiTextureMapMode", "aiTextureMapMode_Mirror"),
 	Float = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Float"),
+	Double = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Double"),
 	String = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_String"),
 	Integer = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Integer"),
 	Buffer = ffi.cast("enum aiPropertyTypeInfo", "aiPTI_Buffer"),

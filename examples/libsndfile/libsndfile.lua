@@ -52,15 +52,15 @@ int(sf_perror)(struct SNDFILE_tag*);
 int(sf_error)(struct SNDFILE_tag*);
 struct SNDFILE_tag*(sf_open_fd)(int,int,struct SF_INFO*,int);
 int(sf_current_byterate)(struct SNDFILE_tag*);
-struct SF_CUES { unsigned int cue_count ; struct SF_CUE_POINT cue_points[ 100 ] ;  };
-struct SF_CART_TIMER { char usage[ 4 ] ; int value ;  };
-struct SF_INSTRUMENT { int gain ; char basenote ; char detune ; char velocity_lo ; char velocity_hi ; char key_lo ; char key_hi ; int loop_count ; struct  { int mode ; unsigned int start ; unsigned int end ; unsigned int count ;  } loops [ 16 ] ;  };
-struct SF_BROADCAST_INFO { char description[ 256 ] ; char originator[ 32 ] ; char originator_reference[ 32 ] ; char origination_date[ 10 ] ; char origination_time[ 8 ] ; unsigned int time_reference_low ; unsigned int time_reference_high ; short version ; char umid[ 64 ] ; char reserved[ 190 ] ; unsigned int coding_history_size ; char coding_history[ 256 ] ;  };
-struct SF_EMBED_FILE_INFO { long offset ; long length ;  };
 struct SF_FORMAT_INFO { int format ; const char * name ; const char * extension ;  };
-struct SF_CUE_POINT { int indx ; unsigned int position ; int fcc_chunk ; int chunk_start ; int block_start ; unsigned int sample_offset ; char name[ 256 ] ;  };
 struct SF_DITHER_INFO { int type ; double level ; const char * name ;  };
+struct SF_EMBED_FILE_INFO { long offset ; long length ;  };
+struct SF_CUE_POINT { int indx ; unsigned int position ; int fcc_chunk ; int chunk_start ; int block_start ; unsigned int sample_offset ; char name[ 256 ] ;  };
+struct SF_CUES { unsigned int cue_count ; struct SF_CUE_POINT cue_points[ 100 ] ;  };
+struct SF_INSTRUMENT { int gain ; char basenote ; char detune ; char velocity_lo ; char velocity_hi ; char key_lo ; char key_hi ; int loop_count ; struct  { int mode ; unsigned int start ; unsigned int end ; unsigned int count ;  } loops [ 16 ] ;  };
 struct SF_LOOP_INFO { short time_sig_num ; short time_sig_den ; int loop_mode ; int num_beats ; float bpm ; int root_key ; int future[ 6 ] ;  };
+struct SF_BROADCAST_INFO { char description[ 256 ] ; char originator[ 32 ] ; char originator_reference[ 32 ] ; char origination_date[ 10 ] ; char origination_time[ 8 ] ; unsigned int time_reference_low ; unsigned int time_reference_high ; short version ; char umid[ 64 ] ; char reserved[ 190 ] ; unsigned int coding_history_size ; char coding_history[ 256 ] ;  };
+struct SF_CART_TIMER { char usage[ 4 ] ; int value ;  };
 struct SF_CART_INFO { char version[ 4 ] ; char title[ 64 ] ; char artist[ 64 ] ; char cut_id[ 64 ] ; char client_id[ 64 ] ; char category[ 64 ] ; char classification[ 64 ] ; char out_cue[ 64 ] ; char start_date[ 10 ] ; char start_time[ 8 ] ; char end_date[ 10 ] ; char end_time[ 8 ] ; char producer_app_id[ 64 ] ; char producer_app_version[ 64 ] ; char user_def[ 64 ] ; int level_reference ; struct SF_CART_TIMER post_timers[ 8 ] ; char reserved[ 276 ] ; char url[ 1024 ] ; unsigned int tag_text_size ; char tag_text[ 256 ] ;  };
 ]])
 local CLIB = ffi.load(_G.FFI_LIB or "sndfile")
