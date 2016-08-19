@@ -1619,5 +1619,22 @@ function library.GenAuxiliaryEffectSlot()
 	library.GenAuxiliaryEffectSlots(1, id)
 	return id[0]
 end
+function library.GetErrorString()
+	local num = library.GetError()
+
+	if num == library.e.NO_ERROR then
+		return "no error"
+	elseif num == library.e.INVALID_NAME then
+		return "invalid name"
+	elseif num == library.e.INVALID_ENUM then
+		return "invalid enum"
+	elseif num == library.e.INVALID_VALUE then
+		return "invalid value"
+	elseif num == library.e.INVALID_OPERATION then
+		return "invalid operation"
+	elseif num == library.e.OUT_OF_MEMORY then
+		return "out of memory"
+	end
+end
 library.clib = CLIB
 return library

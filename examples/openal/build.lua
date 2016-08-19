@@ -174,5 +174,49 @@ end
 		end
 	end
 
+
+	if lib_name == "alc" then
+		lua = lua .. [[
+function library.GetErrorString(device)
+	local num = library.GetError(device)
+
+	if num == library.e.NO_ERROR then
+		return "no error"
+	elseif num == library.e.INVALID_DEVICE then
+		return "invalid device"
+	elseif num == library.e.INVALID_CONTEXT then
+		return "invalid context"
+	elseif num == library.e.INVALID_ENUM then
+		return "invalid enum"
+	elseif num == library.e.INVALID_VALUE then
+		return "invalid value"
+	elseif num == library.e.OUT_OF_MEMORY then
+		return "out of memory"
+	end
+end
+]]
+	elseif lib_name == "al" then
+		lua = lua .. [[
+function library.GetErrorString()
+	local num = library.GetError()
+
+	if num == library.e.NO_ERROR then
+		return "no error"
+	elseif num == library.e.INVALID_NAME then
+		return "invalid name"
+	elseif num == library.e.INVALID_ENUM then
+		return "invalid enum"
+	elseif num == library.e.INVALID_VALUE then
+		return "invalid value"
+	elseif num == library.e.INVALID_OPERATION then
+		return "invalid operation"
+	elseif num == library.e.OUT_OF_MEMORY then
+		return "out of memory"
+	end
+end
+]]
+	end
+
+
 	ffibuild.EndLibrary(lua, header)
 end
