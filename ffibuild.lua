@@ -504,7 +504,11 @@ function ffibuild.GetMetaData(header)
 
 			if type(define_file) == "table" then
 				for i,v in ipairs(define_file) do
-					s = s .. ffibuild.BuildDefineEnums(v[1], v[2], "\t", ",\n", pattern)
+					if type(v) == "string" then
+						s = s .. ffibuild.BuildDefineEnums(v, define_starts_with, "\t", ",\n", pattern)
+					else
+						s = s .. ffibuild.BuildDefineEnums(v[1], v[2], "\t", ",\n", pattern)
+					end
 				end
 			else
 				if define_file and define_starts_with then
@@ -1544,7 +1548,7 @@ do -- lua helper functions
 					end
 				end
 
-				if loadstring("return " .. val) then
+				if val and loadstring("return " .. val) then
 					s = s .. prepend .. key .. " = " .. tostring(val) .. append
 				else
 					print("unable to parse define enum: ", chunk)
