@@ -1033,11 +1033,19 @@ do -- type metatables
 							name = "unknown_" .. i
 						end
 
-						if meta_data and meta_data.enums["enum " .. declaration] then
-							declaration = "enum " .. declaration
-						end
+                        if meta_data then
+                            if meta_data.enums["enum " .. declaration] then
+                                declaration = "enum " .. declaration
+                            end
+                        end
 
 						type = ffibuild.CreateType("type", declaration)
+
+                        -- TODO
+                        if meta_data and meta_data.typedefs[type:GetBasicType()] then
+                            type.array_size = meta_data.typedefs[type:GetBasicType()].array_size
+                        end
+
 						type.name = name
 					end
 

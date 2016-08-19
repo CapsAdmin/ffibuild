@@ -5,7 +5,7 @@ local ffibuild = require("ffibuild")
 ffibuild.BuildSharedLibrary(
 	"ode",
 	"hg clone https://bitbucket.org/odedevs/ode repo",
-	"./bootstrap && ./configure --enable-shared && make"
+	"./bootstrap && ./configure --enable-shared --enable-double-precision --with-libccd=system --with-gimpact --with-libccd && make"
 )
 
 local header = ffibuild.BuildCHeader([[
@@ -13,6 +13,7 @@ local header = ffibuild.BuildCHeader([[
 
 ]], "-I./repo/include")
 local meta_data = ffibuild.GetMetaData(header)
+
 meta_data.functions.dThreadingImplementationGetFunctions = nil
 meta_data.functions.dWorldSetStepThreadingImplementation = nil
 meta_data.functions.dCreateGeomClass = nil
