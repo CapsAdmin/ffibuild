@@ -7,9 +7,20 @@ ffibuild.BuildSharedLibrary(
 )
 
 local extensions = {
-	EXT = true,
-	KHR = true
+	"EXT",
+	"KHR",
+	"AMD",
+	"NV",
 }
+
+local function is_extension(func_name)
+	for _, ext in ipairs(extensions) do
+		if func_name:sub(-#ext):upper() == ext then
+			return true
+		end
+	end
+	return false
+end
 
 local header = ffibuild.BuildCHeader([[
 	#include "vulkan/vulkan.h"
@@ -24,7 +35,7 @@ lua = lua .. "library = {\n"
 
 for func_name, func_type in pairs(meta_data.functions) do
 	local friendly_name = func_name:match("^vk(.+)")
-	if friendly_name and not extensions[friendly_name:sub(-3):upper()] then
+	if friendly_name and not is_extension(friendly_name) then
 		lua = lua .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type) .. ",\n"
 	end
 end
@@ -78,7 +89,7 @@ do -- extensions
 
 	for func_name, func_type in pairs(meta_data.functions) do
 		local friendly_name = func_name:match("^vk(.+)")
-		if friendly_name and extensions[friendly_name:sub(-3):upper()] then
+		if friendly_name and is_extension(friendly_name) then
 			lua = lua .. "extensions." .. func_name .. " = {ctype = ffi.typeof(\""..func_type:GetDeclaration(meta_data, "*", "").."\")}\n"
 		end
 	end
@@ -326,7 +337,7 @@ do -- enumerate helpers so you don't have to make boxed count and array values
 	for func_name, func_type in pairs(meta_data.functions) do
 		if func_name:find("^vkEnumerate") then
 			local friendly = func_name:match("^vkEnumerate(.+)")
-			local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+			local lib = is_extension(friendly) and "library" or "CLIB"
 
 			if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
@@ -370,7 +381,7 @@ do -- get helpers so you don't have to make a boxed value
 				local type = func_type.arguments[#func_type.arguments]
 				if type:GetDeclaration(meta_data):sub(-1) == "*" then
 					local friendly = func_name:match("^vk(.+)")
-					local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+					local lib = is_extension(friendly) and "library" or "CLIB"
 
 					if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
@@ -485,7 +496,7 @@ do -- struct creation helpers
 		local name = info.key:match("VK_STRUCTURE_TYPE_(.+)")
 		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
 
-		if extensions[friendly:sub(-3):upper()] then
+		if is_extension(friendly) then
 			friendly = friendly:sub(0, -4) .. friendly:sub(-3):upper()
 		end
 
@@ -536,7 +547,7 @@ do -- *Create helpers so you don't have to make a boxed value
 
 		if func_name:find("^vkCreate") or func_name:find("^vkAllocate") then
 			local friendly = func_name:match("^vk(.+)")
-			local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+			local lib = is_extension(friendly) and "library" or "CLIB"
 
 			if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
@@ -579,7 +590,7 @@ for func_name, func_type in pairs(meta_data.functions) do
 	if not helper_functions[func_name] then
 		local parameters, call, args = func_type:GetParameters()
 		local friendly = func_name:match("^vk(.+)")
-		local lib = extensions[friendly:sub(-3):upper()] and "library" or "CLIB"
+		local lib = is_extension(friendly) and "library" or "CLIB"
 
 		if lib == "library" then func_name = func_name:match("^vk(.+)") friendly = friendly:sub(0, -4) end
 
@@ -610,7 +621,7 @@ do
 					friendly_name = friendly_name:gsub("Cmd", "")
 				end
 
-				if extensions[friendly_name:sub(-3):upper()] then
+				if is_extension(friendly_name) then
 					local ext_friendly_name = friendly_name:sub(0, -4)
 					ext_friendly_name = ext_friendly_name:gsub("^Enumerate", "Get")
 
