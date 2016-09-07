@@ -61,19 +61,27 @@ context.physical_device = nil
 context.window = nil
 
 do -- objects
-	local function get_memory_type_from_properties(type_bits, requirements_mask)
+	local function allocate_memory(size, type_bits, requirements_mask)
 		requirements_mask = vk.e.memory_property.make_enums(requirements_mask)
+
+		local index = 0
+
 		for i = 0, 32 - 1 do
 			if bit.band(type_bits, 1) == 1 then
 				if bit.band(context.device_memory_properties.memoryTypes[i].propertyFlags, requirements_mask) == requirements_mask then
-					return i
+					index = i
 				end
 			end
 			type_bits = bit.rshift(type_bits, 1)
 		end
+
+		return context.device:AllocateMemory({
+			allocationSize = size,
+			memoryTypeIndex = index,
+		})
 	end
 
-	function Image(info)
+	function CreateImage(info)
 		local image = context.device:CreateImage({
 			imageType = "2d",
 			format = info.format,
@@ -91,10 +99,7 @@ do -- objects
 
 		local memory_requirements = context.device:GetImageMemoryRequirements(image)
 
-		local memory = context.device:AllocateMemory({
-			allocationSize = memory_requirements.size,
-			memoryTypeIndex = get_memory_type_from_properties(memory_requirements.memoryTypeBits, info.required_props),
-		})
+		local memory = allocate_memory(memory_requirements.size, memory_requirements.memoryTypeBits, info.required_props)
 
 		context.device:BindImageMemory(image, memory, 0)
 
@@ -105,7 +110,7 @@ do -- objects
 		}
 	end
 
-	function Texture(file_name, format)
+	function CreateTexture(file_name, format)
 		format = format or "b8g8r8a8_unorm"
 
 		local image_infos = freeimage.LoadImageMipMaps(file_name)
@@ -118,11 +123,11 @@ do -- objects
 
 		local properties = context.physical_device:GetFormatProperties(format)
 
-		local cmd = CommandBuffer()
+		local cmd = CreateCommandBuffer()
 		cmd:Begin()
 
 		if bit.band(properties.linearTilingFeatures, vk.e.format_feature.sampled_image) ~= 0 then
-			local image = Image({
+			local image = CreateImage({
 				width = self.width,
 				height = self.height,
 				format = format,
@@ -140,7 +145,7 @@ do -- objects
 
 			-- copy the mip maps into temporary images
 			for i, image_info in ipairs(image_infos) do
-				local image = Image({
+				local image = CreateImage({
 					width = image_info.width,
 					height = image_info.height,
 					format = format,
@@ -174,7 +179,7 @@ do -- objects
 		else
 			self.mip_levels = 1
 
-			local info = Image({
+			local info = CreateImage({
 				width = self.width,
 				height = self.height,
 				format = format,
@@ -237,17 +242,14 @@ do -- objects
 		return self
 	end
 
-	function Buffer(usage, data)
+	function CreateBuffer(usage, data)
 		local size = ffi.sizeof(data)
 		local buffer = context.device:CreateBuffer({
 			size = size,
 			usage = usage,
 		})
 
-		local memory = context.device:AllocateMemory({
-			allocationSize = size,
-			memoryTypeIndex = get_memory_type_from_properties(context.device:GetBufferMemoryRequirements(buffer).memoryTypeBits, {"host_visible"}),
-		})
+		local memory = allocate_memory(size, context.device:GetBufferMemoryRequirements(buffer).memoryTypeBits, {"host_visible"})
 
 		context.device:MapMemory(memory, 0, size, 0, "float", function(cdata)
 			ffi.copy(cdata, data, size)
@@ -439,7 +441,7 @@ do -- objects
 			)
 		end
 
-		function CommandBuffer()
+		function CreateCommandBuffer()
 			local self = {}
 			self.cmd = context.device:AllocateCommandBuffers({
 				commandPool = context.device_command_pool,
@@ -617,7 +619,7 @@ do -- setup the glfw window buffer
 	do -- depth buffer to use in render pass
 		local format = "d16_unorm"
 
-		local depth_buffer = Image({
+		local depth_buffer = CreateImage({
 			width = context.width,
 			height = context.height,
 			format = format,
@@ -655,8 +657,8 @@ do -- setup the glfw window buffer
 				storeOp = "store",
 				stencilLoadOp = "dont_care",
 				stencilStoreOp = "dont_care",
-				initialLayout = "color_attachment_optimal",
-				finalLayout = "color_attachment_optimal",
+				initialLayout = "present_src",
+				finalLayout = "present_src",
 			},
 			{
 				format = context.depth_buffer.format,
@@ -680,7 +682,7 @@ do -- setup the glfw window buffer
 				pColorAttachments = {
 					{
 						attachment = 0,
-						layout = "color_attachment_optimal",
+						layout = "present_src",
 					},
 				},
 
@@ -721,7 +723,7 @@ do -- setup the glfw window buffer
 		})
 
 		context.swap_chain_buffers[i] = {
-			command_buffer = CommandBuffer(),
+			command_buffer = CreateCommandBuffer(),
 			framebuffer = context.device:CreateFramebuffer({
 				renderPass = context.render_pass,
 
@@ -788,11 +790,11 @@ do -- data layout
 end
 
 do
-	-- Texture is a function defined further up that returns a lua object
-	context.texture = Texture("./volcano.png", "b8g8r8a8_unorm")
+	-- CreateTexture is a function defined further up that returns a lua object
+	context.texture = CreateTexture("./volcano.png", "b8g8r8a8_unorm")
 end
 
-do
+do -- vertices
 	local vertex_type = ffi.typeof([[
 		struct
 		{
@@ -854,8 +856,8 @@ do
 		vertex.color = {math.random(), math.random(), math.random()}
 	end
 
-	-- Buffer is a function defined further up that returns a lua object
-	context.vertices = Buffer("vertex_buffer", create_vertices(vertices))
+	-- CreateBuffer is a function defined further up that returns a lua object
+	context.vertices = CreateBuffer("vertex_buffer", create_vertices(vertices))
 	context.vertices.tbl = vertices
 end
 
@@ -870,7 +872,7 @@ do -- indices
 		table.insert(indices, i)
 	end
 
-	context.indices = Buffer("index_buffer", create_indices(indices))
+	context.indices = CreateBuffer("index_buffer", create_indices(indices))
 	context.indices.tbl = indices
 	context.indices.count = #indices
 end
@@ -896,7 +898,7 @@ do -- uniforms
 	context.view_matrix:Translate(0,0,-5)
 	context.model_matrix:Rotate(0.5, 0,1,0)
 
-	context.uniforms = Buffer("uniform_buffer", uniforms)
+	context.uniforms = CreateBuffer("uniform_buffer", uniforms)
 
 	--context.view_matrix:Translate(5,3,10)
 	--context.view_matrix:Rotate(math.rad(90), 0,-1,0)
@@ -1127,39 +1129,12 @@ for _, buffer in ipairs(context.swap_chain_buffers) do
 	cmd:BindPipeline("graphics", context.pipeline)
 	cmd:BindDescriptorSets("graphics", context.pipeline_layout, 0, nil, {context.descriptorsets}, 0, nil)
 
-
 	cmd:BindVertexBuffers(0, nil, {context.vertices.buffer}, ffi.new("unsigned long[1]", 0))
 	cmd:BindIndexBuffer(context.indices.buffer, 0, "uint32")
 
 	cmd:DrawIndexed(context.indices.count, 1, 0, 0, 0)
 
 	cmd:EndRenderPass()
-
-	cmd:PipelineBarrier(
-		"all_commands", "top_of_pipe", 0,
-		0, nil,
-		0, nil,
-		nil, {
-			{
-				srcAccessMask = "color_attachment_write",
-				dstAccessMask = "memory_read",
-				oldLayout = "color_attachment_optimal",
-				newLayout = "present_src",
-				srcQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-				dstQueueFamilyIndex = vk.e.QUEUE_FAMILY_IGNORED,
-				subresourceRange = {
-					aspectMask = "color",
-
-					levelCount = 1,
-					baseMipLevel = 0,
-
-					layerCount = 1,
-					baseLayerLevel = 0
-				},
-				image = buffer.image,
-			}
-		}
-	)
 
 	buffer.command_buffer:End()
 end
