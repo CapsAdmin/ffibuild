@@ -27,6 +27,7 @@ local header = ffibuild.BuildCHeader([[
 ]], "-I./repo/include/")
 
 local meta_data = ffibuild.GetMetaData(header)
+
 local header = meta_data:BuildMinimalHeader(function(name) return name:find("^vk") end, function(name) return name:find("^VK_") end, true, true)
 
 local lua = ffibuild.StartLibrary(header)
@@ -197,7 +198,7 @@ do -- enums
 			grouped_enums[start][friendly] = "ffi.cast(\""..basic_type.."\", \""..enum.key.."\")"
 
 			if enum.key:find("_BIT") then
-				grouped_enums[start].make_enums = "function(flags) for i,v in ipairs(flags) do flags[i] = library.e."..start.."[v] end return bit.bor(unpack(flags)) end"
+				grouped_enums[start].make_enums = "function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e."..start.."[v] end return bit.bor(unpack(flags)) end"
 			end
 
 			enum_group_translate[basic_type] = start
@@ -270,7 +271,12 @@ local function translate_arguments(tbl, arg_prefix, struct_type)
 				if basic_type == "int" then
 					local name = type:GetDeclaration()
 					if name:find("Flags") then
-						basic_type = "enum " .. name:gsub("Flags", "FlagBits")
+						if type.prev_type then
+							name = type.prev_type:GetDeclaration()
+							basic_type = "enum " .. name:gsub("Flags", "FlagBits")
+						elseif name:find("Flags") then
+							basic_type = "enum " .. name:gsub("Flags", "FlagBits")
+						end
 					end
 				end
 

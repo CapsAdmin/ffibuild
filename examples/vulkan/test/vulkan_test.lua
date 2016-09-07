@@ -62,7 +62,7 @@ context.window = nil
 
 do -- objects
 	local function get_memory_type_from_properties(type_bits, requirements_mask)
-		requirements_mask = vk.e.memory_property[requirements_mask] or requirements_mask
+		requirements_mask = vk.e.memory_property.make_enums(requirements_mask)
 		for i = 0, 32 - 1 do
 			if bit.band(type_bits, 1) == 1 then
 				if bit.band(context.device_memory_properties.memoryTypes[i].propertyFlags, requirements_mask) == requirements_mask then
@@ -118,16 +118,21 @@ do -- objects
 
 		local properties = context.physical_device:GetFormatProperties(format)
 
+		local cmd = CommandBuffer()
+		cmd:Begin()
+
 		if bit.band(properties.linearTilingFeatures, vk.e.format_feature.sampled_image) ~= 0 then
 			local image = Image({
 				width = self.width,
 				height = self.height,
 				format = format,
-				usage = {"transfer_src", "transfer_dst", "sampled"},
-				tiling = "optimal",
-				required_props = "device_local",
+				usage = {"transfer_dst", "transfer_src", "sampled"},
+				tiling = "undefined",
+				required_props = {"host_visible", "coherent"},
 				levels = self.mip_levels,
 			})
+
+			cmd:SetImageLayout(image.image, "color", "undefined", "transfer_dst_optimal")
 
 			self.image = image.image
 			self.memory = image.memory
@@ -141,7 +146,7 @@ do -- objects
 					format = format,
 					usage = "transfer_src",
 					tiling = "linear",
-					required_props = "host_visible",
+					required_props = {"host_visible", "coherent"},
 				})
 
 				image.width = image_info.width
@@ -152,24 +157,20 @@ do -- objects
 					ffi.copy(data, image_info.data, image.size)
 				end)
 
-				context.setup_cmd:SetImageLayout(image.image, "color", "undefined", "transfer_src_optimal")
+				cmd:SetImageLayout(image.image, "color", "undefined", "transfer_src_optimal")
 
 				image_infos[i] = image
 			end
 
-			context.setup_cmd:SetImageLayout(self.image, "color", "undefined", "transfer_src_optimal")
-
 			-- copy from temporary mip map images to main image
 			for i, mip_map in ipairs(image_infos) do
-				context.setup_cmd:CopyImage(mip_map.image, self.image, mip_map.width, mip_map.height, i - 1)
-				context.device:DestroyImage(mip_map.image, nil)
-				context.device:FreeMemory(mip_map.memory, nil)
+				cmd:CopyImage(mip_map.image, self.image, mip_map.width, mip_map.height, i - 1)
+
+				--context.device:DestroyImage(mip_map.image, nil)
+				--context.device:FreeMemory(mip_map.memory, nil)
 			end
 
-			context.setup_cmd:SetImageLayout(self.image, "color", "transfer_dst_optimal", "shader_read_only_optimal")
-
-			context.setup_cmd:Flush()
-			context.setup_cmd:Create()
+			cmd:SetImageLayout(image.image, "color", "transfer_dst_optimal", "shader_read_only_optimal")
 		else
 			self.mip_levels = 1
 
@@ -179,7 +180,7 @@ do -- objects
 				format = format,
 				usage = "sampled",
 				tiling = "linear",
-				required_props = "host_visible"
+				required_props = {"host_visible"}
 			})
 
 			self.image = info.image
@@ -190,7 +191,7 @@ do -- objects
 				ffi.copy(data, image_infos[1].data, image_infos[1].size)
 			end)
 
-			context.setup_cmd:SetImageLayout(info.image, "color", "undefined", "shader_read_only_optimal")
+			cmd:SetImageLayout(info.image, "color", "undefined", "shader_read_only_optimal")
 		end
 
 		self.sampler = context.device:CreateSampler({
@@ -228,6 +229,10 @@ do -- objects
 		})
 
 		self.format = format
+		self.image_infos = image_infos
+
+		cmd:End()
+		cmd:Flush()
 
 		return self
 	end
@@ -241,7 +246,7 @@ do -- objects
 
 		local memory = context.device:AllocateMemory({
 			allocationSize = size,
-			memoryTypeIndex = get_memory_type_from_properties(context.device:GetBufferMemoryRequirements(buffer).memoryTypeBits, "host_visible"),
+			memoryTypeIndex = get_memory_type_from_properties(context.device:GetBufferMemoryRequirements(buffer).memoryTypeBits, {"host_visible"}),
 		})
 
 		context.device:MapMemory(memory, 0, size, 0, "float", function(cdata)
@@ -279,33 +284,59 @@ do -- objects
 	end
 
 	do -- static object
-		local setup_cmd = {}
+		local META = {}
+		META.__index = META
 
-		function setup_cmd:SetImageLayout(image, aspect_mask, old_layout, new_layout)
-			local src_mask = 0
-			local dst_mask = 0
+		function META:SetImageLayout(image, aspect_mask, old_layout, new_layout)
+			local src_mask = {}
+			local dst_mask = {}
 
+			if old_layout == "undefined" then
+			--	src_mask = {0}
+			elseif old_layout == "preinitialized" then
+				src_mask = {"host_write"}
+			elseif old_layout == "transfer_dst_optimal" then
+				src_mask = {"transfer_write"}
+			end
+
+			if new_layout == "transfer_src_optimal" then
+				dst_mask = {"transfer_read"}
+			elseif new_layout == "transfer_dst_optimal" then
+				dst_mask = {"transfer_write"}
+			elseif new_layout == "shader_read_only_optimal" then
+				dst_mask = {"shader_read"}
+			end
+
+			--[[
 			if old_layout == "color_attachment_optimal" then
-				src_mask = "color_attachment_write"
+				table.insert(src_mask, "color_attachment_write")
 			end
 
 			if new_layout == "transfer_dst_optimal" then
-				dst_mask = "memory_read"
+				table.insert(dst_mask, "memory_read")
+				table.insert(dst_mask, "transfer_write")
+			end
+
+			if new_layout == "transfer_src_optimal" then
+				table.insert(dst_mask, "transfer_read")
 			end
 
 			if new_layout == "shader_read_only_optimal" then
-				src_mask = {"host_write", "transfer_write"}
-				dst_mask = "shader_read"
+				table.insert(src_mask, "host_write")
+				table.insert(src_mask, "transfer_write")
+
+				table.insert(dst_mask, "shader_read")
 			end
 
 			if new_layout == "color_attachment_optimal" then
-				dst_mask = "color_attachment_read"
+				table.insert(dst_mask, "color_attachment_read")
 			end
 
 			if new_layout == "depth_stencil_attachment_optimal" then
-				dst_mask = "depth_stencil_attachment_read"
+				table.insert(dst_mask, "depth_stencil_attachment_read")
+				table.insert(dst_mask, "depth_stencil_attachment_write")
 			end
-
+]]
 			self.cmd:PipelineBarrier(
 				"top_of_pipe", "top_of_pipe", 0,
 				0, nil,
@@ -331,7 +362,7 @@ do -- objects
 			)
 		end
 
-		function setup_cmd:CopyImage(src, dst, w, h, mip_level)
+		function META:CopyImage(src, dst, w, h, mip_level)
 			self.cmd:CopyImage(
 				src, "transfer_src_optimal",
 				dst, "transfer_dst_optimal",
@@ -359,15 +390,7 @@ do -- objects
 			)
 		end
 
-		function setup_cmd:Create()
-			self.cmd = context.device:AllocateCommandBuffers({
-				commandPool = context.device_command_pool,
-				level = "primary",
-				commandBufferCount = 1,
-			})
-		end
-
-		function setup_cmd:Begin()
+		function META:Begin()
 			self.cmd:Begin({
 				flags = 0,
 				pInheritanceInfo = {
@@ -381,10 +404,13 @@ do -- objects
 			})
 		end
 
-		function setup_cmd:Flush()
+		function META:End()
+			self.cmd:End()
+		end
+
+		function META:Flush()
 			if not self.cmd then return end
 
-			self.cmd:End()
 			context.device_queue:Submit(
 				nil, {
 					{
@@ -411,10 +437,17 @@ do -- objects
 					self.cmd
 				}
 			)
-			self.cmd = nil
 		end
 
-		context.setup_cmd = setup_cmd
+		function CommandBuffer()
+			local self = {}
+			self.cmd = context.device:AllocateCommandBuffers({
+				commandPool = context.device_command_pool,
+				level = "primary",
+				commandBufferCount = 1,
+			})
+			return setmetatable(self, META)
+		end
 	end
 
 end
@@ -454,8 +487,6 @@ do -- create vulkan instance
 			"VK_EXT_debug_report",
 		}),
 	})
-    
-    print(instance, err)
 
 	if instance:LoadProcAddr("vkCreateDebugReportCallbackEXT") then
 		instance:CreateDebugReportCallback({
@@ -555,8 +586,8 @@ do -- setup the glfw window buffer
 	local present_mode = "immediate"
 
 	for _, mode in ipairs(context.physical_device:GetSurfacePresentModes(surface)) do
-		if mode == vk.e.present_mode.fifo then
-			present_mode = "fifo"
+		if mode == vk.e.present_mode.fifo or mode == vk.e.present_mode.mailbox then
+			present_mode = mode
 			break
 		end
 	end
@@ -583,9 +614,6 @@ do -- setup the glfw window buffer
 		clipped = true,
 	})
 
-	context.setup_cmd:Create()
-    context.setup_cmd:Begin()
-
 	do -- depth buffer to use in render pass
 		local format = "d16_unorm"
 
@@ -595,10 +623,8 @@ do -- setup the glfw window buffer
 			format = format,
 			usage = "depth_stencil_attachment",
 			tiling = "optimal",
-			required_props = "device_local"
+			required_props = {"device_local"},
 		})
-
-		context.setup_cmd:SetImageLayout(depth_buffer.image, "depth", "undefined", "depth_stencil_attachment_optimal")
 
 		depth_buffer.view = context.device:CreateImageView({
 			viewType = "2d",
@@ -677,8 +703,6 @@ do -- setup the glfw window buffer
 	context.swap_chain_buffers = {}
 
 	for i, image in ipairs(context.device:GetSwapchainImages(context.swap_chain)) do
-		context.setup_cmd:SetImageLayout(image, "color", "undefined", "present_src")
-
 		local view = context.device:CreateImageView({
 			viewType = "2d",
 			image = image,
@@ -697,11 +721,7 @@ do -- setup the glfw window buffer
 		})
 
 		context.swap_chain_buffers[i] = {
-			cmd = context.device:AllocateCommandBuffers({
-				commandPool = context.device_command_pool,
-				level = "primary",
-				commandBufferCount = 1,
-			}),
+			command_buffer = CommandBuffer(),
 			framebuffer = context.device:CreateFramebuffer({
 				renderPass = context.render_pass,
 
@@ -1072,22 +1092,12 @@ context.pipeline = context.device:CreateGraphicsPipelines(
 	}
 )
 
-context.setup_cmd:Flush()
-
 for _, buffer in ipairs(context.swap_chain_buffers) do
-	buffer.cmd:Begin({
-		flags = 0,
-		pInheritanceInfo = {
-			renderPass = nil,
-			subpass = 0,
-			framebuffer = nil,
-			offclusionQueryEnable = false,
-			queryFlags = 0,
-			pipelineStatistics = 0,
-		}
-	})
+	buffer.command_buffer:Begin()
 
-	buffer.cmd:BeginRenderPass(
+	local cmd = buffer.command_buffer.cmd
+
+	cmd:BeginRenderPass(
 		{
 			renderPass = context.render_pass,
 			framebuffer = buffer.framebuffer,
@@ -1100,12 +1110,12 @@ for _, buffer in ipairs(context.swap_chain_buffers) do
 		"inline"
 	)
 
-	buffer.cmd:SetViewport(0, nil,
+	cmd:SetViewport(0, nil,
 		{
 			{0,0,context.height,context.width, 0,1}
 		}
 	)
-	buffer.cmd:SetScissor(0, nil,
+	cmd:SetScissor(0, nil,
 		{
 			{
 				offset = {0, 0},
@@ -1114,18 +1124,18 @@ for _, buffer in ipairs(context.swap_chain_buffers) do
 		}
 	)
 
-	buffer.cmd:BindPipeline("graphics", context.pipeline)
-	buffer.cmd:BindDescriptorSets("graphics", context.pipeline_layout, 0, nil, {context.descriptorsets}, 0, nil)
+	cmd:BindPipeline("graphics", context.pipeline)
+	cmd:BindDescriptorSets("graphics", context.pipeline_layout, 0, nil, {context.descriptorsets}, 0, nil)
 
 
-	buffer.cmd:BindVertexBuffers(0, nil, {context.vertices.buffer}, ffi.new("unsigned long[1]", 0))
-	buffer.cmd:BindIndexBuffer(context.indices.buffer, 0, "uint32")
+	cmd:BindVertexBuffers(0, nil, {context.vertices.buffer}, ffi.new("unsigned long[1]", 0))
+	cmd:BindIndexBuffer(context.indices.buffer, 0, "uint32")
 
-	buffer.cmd:DrawIndexed(context.indices.count, 1, 0, 0, 0)
+	cmd:DrawIndexed(context.indices.count, 1, 0, 0, 0)
 
-	buffer.cmd:EndRenderPass()
+	cmd:EndRenderPass()
 
-	buffer.cmd:PipelineBarrier(
+	cmd:PipelineBarrier(
 		"all_commands", "top_of_pipe", 0,
 		0, nil,
 		0, nil,
@@ -1151,10 +1161,8 @@ for _, buffer in ipairs(context.swap_chain_buffers) do
 		}
 	)
 
-	buffer.cmd:End()
+	buffer.command_buffer:End()
 end
-
-context.setup_cmd:Flush()
 
 while glfw.WindowShouldClose(context.window) == 0 do
 	context.device_queue:WaitIdle()
@@ -1197,7 +1205,7 @@ while glfw.WindowShouldClose(context.window) == 0 do
 
 
 				pCommandBuffers = {
-					context.swap_chain_buffers[index].cmd
+					context.swap_chain_buffers[index].command_buffer.cmd
 				},
 			},
 		},

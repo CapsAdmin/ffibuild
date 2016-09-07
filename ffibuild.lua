@@ -7,7 +7,14 @@ function ffibuild.BuildSharedLibrary(name, clone, build, copy)
 		if clone:find("%.git$") then
 			os.execute("if [ -d ./repo ]; then git -C ./repo pull; else git clone " .. clone .. " repo --depth 1; fi")
 		elseif clone:find("hg%.") then
-			os.execute("hg clone " .. clone .. " repo")
+            local clone_, branch = clone:match("(.+);(.+)")
+            clone = clone_ or clone
+            print(clone, branch)
+            if branch then
+                os.execute("hg clone " .. clone .. " repo -r " .. branch)
+            else
+                os.execute("hg clone " .. clone .. " repo")
+            end
 		else
 			os.execute(clone)
 		end
@@ -1252,11 +1259,15 @@ do -- type metatables
 					local type
 					if meta_data and meta_data.typedefs[declaration] then
 						type = meta_data.typedefs[declaration]:GetCopy()
+						type.prev_type = ffibuild.CreateType("type", declaration, array_size)
+						print(declaration, line)
 					else
 						type = ffibuild.CreateType("type", declaration, array_size)
 					end
 					type.array_size = type.array_size or array_size
 					type.name = name
+
+if line:find("imageUsage") then print(declaration, name, array_size, type.name, type:GetDeclaration(), meta_data.typedefs[declaration]:GetDeclaration(), meta_data.typedefs[declaration]:GetCopy():GetDeclaration()) end
 
 					table.insert(out, type)
 				end

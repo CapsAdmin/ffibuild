@@ -1,11 +1,10 @@
 package.path = package.path .. ";../../?.lua"
 local ffibuild = require("ffibuild")
 
-
 ffibuild.BuildSharedLibrary(
 	"SDL2",
-	"http://hg.libsdl.org/SDL",
-	"mkdir build && cd build && ../configure && make && cd ../"
+	"https://github.com/spurious/SDL-mirror.git",
+	"./autogen.sh && mkdir build && cd build && ../configure && make && cd ../"
 )
 
 local header = ffibuild.BuildCHeader([[
@@ -30,6 +29,7 @@ typedef enum  {
 } SDL_grrrrrr;
 
 	#include "SDL.h"
+    #include "SDL_syswm.h"
 
 ]], "-I./repo/include")
 

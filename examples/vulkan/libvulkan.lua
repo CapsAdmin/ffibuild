@@ -1512,7 +1512,7 @@ library.e = {
 		tessellation_control_shader_patches = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT"),
 		vertex_shader_invocations = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT"),
 		clipping_invocations = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.query_pipeline_statistic[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.query_pipeline_statistic[v] end return bit.bor(unpack(flags)) end,
 		geometry_shader_invocations = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT"),
 		input_assembly_vertices = ffi.cast("enum VkQueryPipelineStatisticFlagBits", "VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT"),
 	},
@@ -1528,7 +1528,7 @@ library.e = {
 		flag_bits_max_enum = ffi.cast("enum VkDisplayPlaneAlphaFlagBitsKHR", "VK_DISPLAY_PLANE_ALPHA_FLAG_BITS_MAX_ENUM_KHR"),
 		per_pixel = ffi.cast("enum VkDisplayPlaneAlphaFlagBitsKHR", "VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR"),
 		global = ffi.cast("enum VkDisplayPlaneAlphaFlagBitsKHR", "VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.display_plane_alpha[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.display_plane_alpha[v] end return bit.bor(unpack(flags)) end,
 		per_pixel_premultiplied = ffi.cast("enum VkDisplayPlaneAlphaFlagBitsKHR", "VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR"),
 		opaque = ffi.cast("enum VkDisplayPlaneAlphaFlagBitsKHR", "VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR"),
 	},
@@ -1542,7 +1542,7 @@ library.e = {
 	},
 	command_buffer_reset = {
 		flag_bits_max_enum = ffi.cast("enum VkCommandBufferResetFlagBits", "VK_COMMAND_BUFFER_RESET_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.command_buffer_reset[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.command_buffer_reset[v] end return bit.bor(unpack(flags)) end,
 		release_resources = ffi.cast("enum VkCommandBufferResetFlagBits", "VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT"),
 	},
 	access = {
@@ -1562,7 +1562,7 @@ library.e = {
 		input_attachment_read = ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT"),
 		index_read = ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_INDEX_READ_BIT"),
 		flag_bits_max_enum = ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.access[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.access[v] end return bit.bor(unpack(flags)) end,
 		indirect_command_read = ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_INDIRECT_COMMAND_READ_BIT"),
 		transfer_read = ffi.cast("enum VkAccessFlagBits", "VK_ACCESS_TRANSFER_READ_BIT"),
 	},
@@ -1578,13 +1578,13 @@ library.e = {
 		disable_optimization = ffi.cast("enum VkPipelineCreateFlagBits", "VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT"),
 		derivative = ffi.cast("enum VkPipelineCreateFlagBits", "VK_PIPELINE_CREATE_DERIVATIVE_BIT"),
 		allow_derivatives = ffi.cast("enum VkPipelineCreateFlagBits", "VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.pipeline_create[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.pipeline_create[v] end return bit.bor(unpack(flags)) end,
 	},
 	stencil_face = {
 		front_and_back = ffi.cast("enum VkStencilFaceFlagBits", "VK_STENCIL_FRONT_AND_BACK"),
 		back = ffi.cast("enum VkStencilFaceFlagBits", "VK_STENCIL_FACE_BACK_BIT"),
 		front = ffi.cast("enum VkStencilFaceFlagBits", "VK_STENCIL_FACE_FRONT_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.stencil_face[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.stencil_face[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkStencilFaceFlagBits", "VK_STENCIL_FACE_FLAG_BITS_MAX_ENUM"),
 	},
 	blend_factor = {
@@ -1732,20 +1732,20 @@ library.e = {
 		storage_texel_buffer_atomic = ffi.cast("enum VkFormatFeatureFlagBits", "VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT"),
 		vertex_buffer = ffi.cast("enum VkFormatFeatureFlagBits", "VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT"),
 		color_attachment = ffi.cast("enum VkFormatFeatureFlagBits", "VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.format_feature[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.format_feature[v] end return bit.bor(unpack(flags)) end,
 		storage_image = ffi.cast("enum VkFormatFeatureFlagBits", "VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT"),
 		storage_texel_buffer = ffi.cast("enum VkFormatFeatureFlagBits", "VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT"),
 	},
 	command_buffer_usage = {
 		render_pass_continue = ffi.cast("enum VkCommandBufferUsageFlagBits", "VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT"),
 		simultaneous_use = ffi.cast("enum VkCommandBufferUsageFlagBits", "VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.command_buffer_usage[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.command_buffer_usage[v] end return bit.bor(unpack(flags)) end,
 		one_time_submit = ffi.cast("enum VkCommandBufferUsageFlagBits", "VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT"),
 		flag_bits_max_enum = ffi.cast("enum VkCommandBufferUsageFlagBits", "VK_COMMAND_BUFFER_USAGE_FLAG_BITS_MAX_ENUM"),
 	},
 	query_control = {
 		flag_bits_max_enum = ffi.cast("enum VkQueryControlFlagBits", "VK_QUERY_CONTROL_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.query_control[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.query_control[v] end return bit.bor(unpack(flags)) end,
 		precise = ffi.cast("enum VkQueryControlFlagBits", "VK_QUERY_CONTROL_PRECISE_BIT"),
 	},
 	logic_op = {
@@ -1772,7 +1772,7 @@ library.e = {
 	},
 	command_pool_create = {
 		transient = ffi.cast("enum VkCommandPoolCreateFlagBits", "VK_COMMAND_POOL_CREATE_TRANSIENT_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.command_pool_create[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.command_pool_create[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkCommandPoolCreateFlagBits", "VK_COMMAND_POOL_CREATE_FLAG_BITS_MAX_ENUM"),
 		reset_command_buffer = ffi.cast("enum VkCommandPoolCreateFlagBits", "VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT"),
 	},
@@ -1830,7 +1830,7 @@ library.e = {
 		flag_bits_max_enum = ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_FLAG_BITS_MAX_ENUM_EXT"),
 		performance_warning = ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT"),
 		debug = ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_DEBUG_BIT_EXT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.debug_report[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.debug_report[v] end return bit.bor(unpack(flags)) end,
 		error = ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_ERROR_BIT_EXT"),
 		information = ffi.cast("enum VkDebugReportFlagBitsEXT", "VK_DEBUG_REPORT_INFORMATION_BIT_EXT"),
 	},
@@ -1839,7 +1839,7 @@ library.e = {
 		sparse_aliased = ffi.cast("enum VkImageCreateFlagBits", "VK_IMAGE_CREATE_SPARSE_ALIASED_BIT"),
 		cube_compatible = ffi.cast("enum VkImageCreateFlagBits", "VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT"),
 		mutable_format = ffi.cast("enum VkImageCreateFlagBits", "VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.image_create[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.image_create[v] end return bit.bor(unpack(flags)) end,
 		sparse_binding = ffi.cast("enum VkImageCreateFlagBits", "VK_IMAGE_CREATE_SPARSE_BINDING_BIT"),
 		sparse_residency = ffi.cast("enum VkImageCreateFlagBits", "VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT"),
 	},
@@ -1863,19 +1863,19 @@ library.e = {
 	composite_alpha = {
 		flag_bits_max_enum = ffi.cast("enum VkCompositeAlphaFlagBitsKHR", "VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR"),
 		opaque = ffi.cast("enum VkCompositeAlphaFlagBitsKHR", "VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.composite_alpha[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.composite_alpha[v] end return bit.bor(unpack(flags)) end,
 		post_multiplied = ffi.cast("enum VkCompositeAlphaFlagBitsKHR", "VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR"),
 		inherit = ffi.cast("enum VkCompositeAlphaFlagBitsKHR", "VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR"),
 		pre_multiplied = ffi.cast("enum VkCompositeAlphaFlagBitsKHR", "VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR"),
 	},
 	attachment_description = {
 		flag_bits_max_enum = ffi.cast("enum VkAttachmentDescriptionFlagBits", "VK_ATTACHMENT_DESCRIPTION_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.attachment_description[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.attachment_description[v] end return bit.bor(unpack(flags)) end,
 		may_alias = ffi.cast("enum VkAttachmentDescriptionFlagBits", "VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT"),
 	},
 	command_pool_reset = {
 		flag_bits_max_enum = ffi.cast("enum VkCommandPoolResetFlagBits", "VK_COMMAND_POOL_RESET_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.command_pool_reset[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.command_pool_reset[v] end return bit.bor(unpack(flags)) end,
 		release_resources = ffi.cast("enum VkCommandPoolResetFlagBits", "VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT"),
 	},
 	format = {
@@ -2122,14 +2122,14 @@ library.e = {
 		none = ffi.cast("enum VkCullModeFlagBits", "VK_CULL_MODE_NONE"),
 		back = ffi.cast("enum VkCullModeFlagBits", "VK_CULL_MODE_BACK_BIT"),
 		front = ffi.cast("enum VkCullModeFlagBits", "VK_CULL_MODE_FRONT_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.cull_mode[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.cull_mode[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkCullModeFlagBits", "VK_CULL_MODE_FLAG_BITS_MAX_ENUM"),
 		front_and_back = ffi.cast("enum VkCullModeFlagBits", "VK_CULL_MODE_FRONT_AND_BACK"),
 	},
 	buffer_create = {
 		flag_bits_max_enum = ffi.cast("enum VkBufferCreateFlagBits", "VK_BUFFER_CREATE_FLAG_BITS_MAX_ENUM"),
 		sparse_aliased = ffi.cast("enum VkBufferCreateFlagBits", "VK_BUFFER_CREATE_SPARSE_ALIASED_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.buffer_create[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.buffer_create[v] end return bit.bor(unpack(flags)) end,
 		sparse_binding = ffi.cast("enum VkBufferCreateFlagBits", "VK_BUFFER_CREATE_SPARSE_BINDING_BIT"),
 		sparse_residency = ffi.cast("enum VkBufferCreateFlagBits", "VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT"),
 	},
@@ -2137,7 +2137,7 @@ library.e = {
 		flag_bits_max_enum = ffi.cast("enum VkQueueFlagBits", "VK_QUEUE_FLAG_BITS_MAX_ENUM"),
 		sparse_binding = ffi.cast("enum VkQueueFlagBits", "VK_QUEUE_SPARSE_BINDING_BIT"),
 		compute = ffi.cast("enum VkQueueFlagBits", "VK_QUEUE_COMPUTE_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.queue[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.queue[v] end return bit.bor(unpack(flags)) end,
 		graphics = ffi.cast("enum VkQueueFlagBits", "VK_QUEUE_GRAPHICS_BIT"),
 		transfer = ffi.cast("enum VkQueueFlagBits", "VK_QUEUE_TRANSFER_BIT"),
 	},
@@ -2149,7 +2149,7 @@ library.e = {
 		transfer_dst = ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_TRANSFER_DST_BIT"),
 		flag_bits_max_enum = ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_FLAG_BITS_MAX_ENUM"),
 		depth_stencil_attachment = ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.image_usage[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.image_usage[v] end return bit.bor(unpack(flags)) end,
 		transient_attachment = ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT"),
 		storage = ffi.cast("enum VkImageUsageFlagBits", "VK_IMAGE_USAGE_STORAGE_BIT"),
 	},
@@ -2177,11 +2177,11 @@ library.e = {
 		vertex = ffi.cast("enum VkShaderStageFlagBits", "VK_SHADER_STAGE_VERTEX_BIT"),
 		tessellation_control = ffi.cast("enum VkShaderStageFlagBits", "VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT"),
 		tessellation_evaluation = ffi.cast("enum VkShaderStageFlagBits", "VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.shader_stage[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.shader_stage[v] end return bit.bor(unpack(flags)) end,
 	},
 	sparse_memory_bind = {
 		metadata = ffi.cast("enum VkSparseMemoryBindFlagBits", "VK_SPARSE_MEMORY_BIND_METADATA_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.sparse_memory_bind[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.sparse_memory_bind[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkSparseMemoryBindFlagBits", "VK_SPARSE_MEMORY_BIND_FLAG_BITS_MAX_ENUM"),
 	},
 	image_layout = {
@@ -2212,7 +2212,7 @@ library.e = {
 		flag_bits_max_enum = ffi.cast("enum VkQueryResultFlagBits", "VK_QUERY_RESULT_FLAG_BITS_MAX_ENUM"),
 		["64"] = ffi.cast("enum VkQueryResultFlagBits", "VK_QUERY_RESULT_64_BIT"),
 		with_availability = ffi.cast("enum VkQueryResultFlagBits", "VK_QUERY_RESULT_WITH_AVAILABILITY_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.query_result[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.query_result[v] end return bit.bor(unpack(flags)) end,
 		partial = ffi.cast("enum VkQueryResultFlagBits", "VK_QUERY_RESULT_PARTIAL_BIT"),
 		wait = ffi.cast("enum VkQueryResultFlagBits", "VK_QUERY_RESULT_WAIT_BIT"),
 	},
@@ -2225,7 +2225,7 @@ library.e = {
 		rotate_270 = ffi.cast("enum VkSurfaceTransformFlagBitsKHR", "VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR"),
 		horizontal_mirror = ffi.cast("enum VkSurfaceTransformFlagBitsKHR", "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR"),
 		flag_bits_max_enum = ffi.cast("enum VkSurfaceTransformFlagBitsKHR", "VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.surface_transform[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.surface_transform[v] end return bit.bor(unpack(flags)) end,
 		inherit = ffi.cast("enum VkSurfaceTransformFlagBitsKHR", "VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR"),
 		horizontal_mirror_rotate_90 = ffi.cast("enum VkSurfaceTransformFlagBitsKHR", "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR"),
 	},
@@ -2233,7 +2233,7 @@ library.e = {
 		que_win32_kmt_bit_nv = ffi.cast("enum VkExternalMemoryHandleTypeFlagBitsNV", "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV"),
 		["11_image_bit_nv"] = ffi.cast("enum VkExternalMemoryHandleTypeFlagBitsNV", "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV"),
 		g_bits_max_enum_nv = ffi.cast("enum VkExternalMemoryHandleTypeFlagBitsNV", "VK_EXTERNAL_MEMORY_HANDLE_TYPE_FLAG_BITS_MAX_ENUM_NV"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.external_memory_handle_type_nv[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.external_memory_handle_type_nv[v] end return bit.bor(unpack(flags)) end,
 		["11_image_kmt_bit_nv"] = ffi.cast("enum VkExternalMemoryHandleTypeFlagBitsNV", "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV"),
 		que_win32_bit_nv = ffi.cast("enum VkExternalMemoryHandleTypeFlagBitsNV", "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV"),
 	},
@@ -2256,7 +2256,7 @@ library.e = {
 	},
 	descriptor_pool_create = {
 		flag_bits_max_enum = ffi.cast("enum VkDescriptorPoolCreateFlagBits", "VK_DESCRIPTOR_POOL_CREATE_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.descriptor_pool_create[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.descriptor_pool_create[v] end return bit.bor(unpack(flags)) end,
 		free_descriptor_set = ffi.cast("enum VkDescriptorPoolCreateFlagBits", "VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT"),
 	},
 	rasterization_order_amd = {
@@ -2297,13 +2297,13 @@ library.e = {
 	sparse_image_format = {
 		nonstandard_block_size = ffi.cast("enum VkSparseImageFormatFlagBits", "VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT"),
 		aligned_mip_size = ffi.cast("enum VkSparseImageFormatFlagBits", "VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.sparse_image_format[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.sparse_image_format[v] end return bit.bor(unpack(flags)) end,
 		single_miptail = ffi.cast("enum VkSparseImageFormatFlagBits", "VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT"),
 		flag_bits_max_enum = ffi.cast("enum VkSparseImageFormatFlagBits", "VK_SPARSE_IMAGE_FORMAT_FLAG_BITS_MAX_ENUM"),
 	},
 	dependency = {
 		flag_bits_max_enum = ffi.cast("enum VkDependencyFlagBits", "VK_DEPENDENCY_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.dependency[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.dependency[v] end return bit.bor(unpack(flags)) end,
 		by_region = ffi.cast("enum VkDependencyFlagBits", "VK_DEPENDENCY_BY_REGION_BIT"),
 	},
 	pipeline_cache_header_version = {
@@ -2320,13 +2320,13 @@ library.e = {
 		["2"] = ffi.cast("enum VkSampleCountFlagBits", "VK_SAMPLE_COUNT_2_BIT"),
 		["64"] = ffi.cast("enum VkSampleCountFlagBits", "VK_SAMPLE_COUNT_64_BIT"),
 		flag_bits_max_enum = ffi.cast("enum VkSampleCountFlagBits", "VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.sample_count[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.sample_count[v] end return bit.bor(unpack(flags)) end,
 		["1"] = ffi.cast("enum VkSampleCountFlagBits", "VK_SAMPLE_COUNT_1_BIT"),
 		["16"] = ffi.cast("enum VkSampleCountFlagBits", "VK_SAMPLE_COUNT_16_BIT"),
 	},
 	external_memory_feature_nv = {
 		g_bits_max_enum_nv = ffi.cast("enum VkExternalMemoryFeatureFlagBitsNV", "VK_EXTERNAL_MEMORY_FEATURE_FLAG_BITS_MAX_ENUM_NV"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.external_memory_feature_nv[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.external_memory_feature_nv[v] end return bit.bor(unpack(flags)) end,
 		ortable_bit_nv = ffi.cast("enum VkExternalMemoryFeatureFlagBitsNV", "VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV"),
 		icated_only_bit_nv = ffi.cast("enum VkExternalMemoryFeatureFlagBitsNV", "VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV"),
 	},
@@ -2356,7 +2356,7 @@ library.e = {
 		bottom_of_pipe = ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT"),
 		late_fragment_tests = ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT"),
 		geometry_shader = ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.pipeline_stage[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.pipeline_stage[v] end return bit.bor(unpack(flags)) end,
 		vertex_shader = ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_VERTEX_SHADER_BIT"),
 		fragment_shader = ffi.cast("enum VkPipelineStageFlagBits", "VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT"),
 	},
@@ -2370,7 +2370,7 @@ library.e = {
 	},
 	fence_create = {
 		signaled = ffi.cast("enum VkFenceCreateFlagBits", "VK_FENCE_CREATE_SIGNALED_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.fence_create[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.fence_create[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkFenceCreateFlagBits", "VK_FENCE_CREATE_FLAG_BITS_MAX_ENUM"),
 	},
 	debug_report_object_type = {
@@ -2421,7 +2421,7 @@ library.e = {
 	},
 	memory_heap = {
 		device_local = ffi.cast("enum VkMemoryHeapFlagBits", "VK_MEMORY_HEAP_DEVICE_LOCAL_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.memory_heap[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.memory_heap[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkMemoryHeapFlagBits", "VK_MEMORY_HEAP_FLAG_BITS_MAX_ENUM"),
 	},
 	result = {
@@ -2472,7 +2472,7 @@ library.e = {
 		vertex_buffer = ffi.cast("enum VkBufferUsageFlagBits", "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT"),
 		storage_texel_buffer = ffi.cast("enum VkBufferUsageFlagBits", "VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT"),
 		indirect_buffer = ffi.cast("enum VkBufferUsageFlagBits", "VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.buffer_usage[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.buffer_usage[v] end return bit.bor(unpack(flags)) end,
 		storage_buffer = ffi.cast("enum VkBufferUsageFlagBits", "VK_BUFFER_USAGE_STORAGE_BUFFER_BIT"),
 		transfer_dst = ffi.cast("enum VkBufferUsageFlagBits", "VK_BUFFER_USAGE_TRANSFER_DST_BIT"),
 	},
@@ -2496,7 +2496,7 @@ library.e = {
 		b = ffi.cast("enum VkColorComponentFlagBits", "VK_COLOR_COMPONENT_B_BIT"),
 		flag_bits_max_enum = ffi.cast("enum VkColorComponentFlagBits", "VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM"),
 		r = ffi.cast("enum VkColorComponentFlagBits", "VK_COLOR_COMPONENT_R_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.color_component[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.color_component[v] end return bit.bor(unpack(flags)) end,
 		a = ffi.cast("enum VkColorComponentFlagBits", "VK_COLOR_COMPONENT_A_BIT"),
 		g = ffi.cast("enum VkColorComponentFlagBits", "VK_COLOR_COMPONENT_G_BIT"),
 	},
@@ -2514,7 +2514,7 @@ library.e = {
 		stencil = ffi.cast("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_STENCIL_BIT"),
 		color = ffi.cast("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_COLOR_BIT"),
 		metadata = ffi.cast("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_METADATA_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.image_aspect[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.image_aspect[v] end return bit.bor(unpack(flags)) end,
 		depth = ffi.cast("enum VkImageAspectFlagBits", "VK_IMAGE_ASPECT_DEPTH_BIT"),
 	},
 	colorspace = {
@@ -2554,7 +2554,7 @@ library.e = {
 		host_coherent = ffi.cast("enum VkMemoryPropertyFlagBits", "VK_MEMORY_PROPERTY_HOST_COHERENT_BIT"),
 		host_cached = ffi.cast("enum VkMemoryPropertyFlagBits", "VK_MEMORY_PROPERTY_HOST_CACHED_BIT"),
 		lazily_allocated = ffi.cast("enum VkMemoryPropertyFlagBits", "VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT"),
-		make_enums = function(flags) for i,v in ipairs(flags) do flags[i] = library.e.memory_property[v] end return bit.bor(unpack(flags)) end,
+		make_enums = function(flags) if #flags == 0 then return 0 end for i,v in ipairs(flags) do flags[i] = library.e.memory_property[v] end return bit.bor(unpack(flags)) end,
 		flag_bits_max_enum = ffi.cast("enum VkMemoryPropertyFlagBits", "VK_MEMORY_PROPERTY_FLAG_BITS_MAX_ENUM"),
 		host_visible = ffi.cast("enum VkMemoryPropertyFlagBits", "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT"),
 	},
@@ -3177,6 +3177,11 @@ function library.s.BindSparseInfo(tbl, table_only)
 end
 function library.s.FenceCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_FENCE_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.fence_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.fence_create[tbl.flags]
+	end
 	return table_only and tbl or ffi.new("struct VkFenceCreateInfo", tbl)
 end
 function library.s.SemaphoreCreateInfo(tbl, table_only)
@@ -3192,10 +3197,20 @@ function library.s.QueryPoolCreateInfo(tbl, table_only)
 	if type(tbl.queryType) == "string" then
 		tbl.queryType = library.e.query_type[tbl.queryType]
 	end
+	if type(tbl.pipelineStatistics) == "table" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic.make_enums(tbl.pipelineStatistics)
+	elseif type(tbl.pipelineStatistics) == "string" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic[tbl.pipelineStatistics]
+	end
 	return table_only and tbl or ffi.new("struct VkQueryPoolCreateInfo", tbl)
 end
 function library.s.BufferCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.buffer_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.buffer_create[tbl.flags]
+	end
 	if type(tbl.usage) == "table" then
 		tbl.usage = library.e.buffer_usage.make_enums(tbl.usage)
 	elseif type(tbl.usage) == "string" then
@@ -3215,6 +3230,11 @@ function library.s.BufferViewCreateInfo(tbl, table_only)
 end
 function library.s.ImageCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.image_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.image_create[tbl.flags]
+	end
 	if type(tbl.imageType) == "string" then
 		tbl.imageType = library.e.image_type[tbl.imageType]
 	end
@@ -3395,6 +3415,11 @@ function library.s.PipelineDynamicStateCreateInfo(tbl, table_only)
 end
 function library.s.GraphicsPipelineCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.pipeline_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.pipeline_create[tbl.flags]
+	end
 	if type(tbl.pStages) == "table" then
 		if not tbl.stageCount then
 			tbl.stageCount = #tbl.pStages
@@ -3432,6 +3457,11 @@ function library.s.GraphicsPipelineCreateInfo(tbl, table_only)
 end
 function library.s.ComputePipelineCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.pipeline_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.pipeline_create[tbl.flags]
+	end
 	if type(tbl.stage) == "table" then
 		tbl.stage = library.s.PipelineShaderStageCreateInfo(tbl.stage, true)
 	end
@@ -3495,6 +3525,11 @@ function library.s.DescriptorSetLayoutCreateInfo(tbl, table_only)
 end
 function library.s.DescriptorPoolCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.descriptor_pool_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.descriptor_pool_create[tbl.flags]
+	end
 	if type(tbl.pPoolSizes) == "table" then
 		if not tbl.poolSizeCount then
 			tbl.poolSizeCount = #tbl.pPoolSizes
@@ -3576,6 +3611,11 @@ function library.s.RenderPassCreateInfo(tbl, table_only)
 end
 function library.s.CommandPoolCreateInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.command_pool_create.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.command_pool_create[tbl.flags]
+	end
 	return table_only and tbl or ffi.new("struct VkCommandPoolCreateInfo", tbl)
 end
 function library.s.CommandBufferAllocateInfo(tbl, table_only)
@@ -3588,10 +3628,25 @@ end
 function library.s.CommandBufferInheritanceInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO"
 	tbl.occlusionQueryEnable = tbl.occlusionQueryEnable and 1 or 0
+	if type(tbl.queryFlags) == "table" then
+		tbl.queryFlags = library.e.query_control.make_enums(tbl.queryFlags)
+	elseif type(tbl.queryFlags) == "string" then
+		tbl.queryFlags = library.e.query_control[tbl.queryFlags]
+	end
+	if type(tbl.pipelineStatistics) == "table" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic.make_enums(tbl.pipelineStatistics)
+	elseif type(tbl.pipelineStatistics) == "string" then
+		tbl.pipelineStatistics = library.e.query_pipeline_statistic[tbl.pipelineStatistics]
+	end
 	return table_only and tbl or ffi.new("struct VkCommandBufferInheritanceInfo", tbl)
 end
 function library.s.CommandBufferBeginInfo(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO"
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.command_buffer_usage.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.command_buffer_usage[tbl.flags]
+	end
 	if type(tbl.pInheritanceInfo) == "table" then
 		tbl.pInheritanceInfo = library.s.CommandBufferInheritanceInfo(tbl.pInheritanceInfo, false)
 	end
@@ -3612,6 +3667,16 @@ function library.s.RenderPassBeginInfo(tbl, table_only)
 end
 function library.s.BufferMemoryBarrier(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER"
+	if type(tbl.srcAccessMask) == "table" then
+		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
+	elseif type(tbl.srcAccessMask) == "string" then
+		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
+	end
+	if type(tbl.dstAccessMask) == "table" then
+		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
+	elseif type(tbl.dstAccessMask) == "string" then
+		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
+	end
 	return table_only and tbl or ffi.new("struct VkBufferMemoryBarrier", tbl)
 end
 function library.s.ImageMemoryBarrier(tbl, table_only)
@@ -3639,6 +3704,16 @@ function library.s.ImageMemoryBarrier(tbl, table_only)
 end
 function library.s.MemoryBarrier(tbl, table_only)
 	tbl.sType = "VK_STRUCTURE_TYPE_MEMORY_BARRIER"
+	if type(tbl.srcAccessMask) == "table" then
+		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
+	elseif type(tbl.srcAccessMask) == "string" then
+		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
+	end
+	if type(tbl.dstAccessMask) == "table" then
+		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
+	elseif type(tbl.dstAccessMask) == "string" then
+		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
+	end
 	return table_only and tbl or ffi.new("struct VkMemoryBarrier", tbl)
 end
 function library.s.SwapchainCreateInfoKHR(tbl, table_only)
@@ -3651,6 +3726,11 @@ function library.s.SwapchainCreateInfoKHR(tbl, table_only)
 	end
 	if type(tbl.imageExtent) == "table" then
 		tbl.imageExtent = library.s.Extent2D(tbl.imageExtent, true)
+	end
+	if type(tbl.imageUsage) == "table" then
+		tbl.imageUsage = library.e.image_usage.make_enums(tbl.imageUsage)
+	elseif type(tbl.imageUsage) == "string" then
+		tbl.imageUsage = library.e.image_usage[tbl.imageUsage]
 	end
 	if type(tbl.imageSharingMode) == "string" then
 		tbl.imageSharingMode = library.e.sharing_mode[tbl.imageSharingMode]
@@ -3758,6 +3838,11 @@ function library.s.DebugMarkerMarkerInfoEXT(tbl, table_only)
 	return table_only and tbl or ffi.new("struct VkDebugMarkerMarkerInfoEXT", tbl)
 end
 function library.s.ExportMemoryAllocateInfoNV(tbl, table_only)
+	if type(tbl.handleTypes) == "table" then
+		tbl.handleTypes = library.e.external_memory_handle_type_nv.make_enums(tbl.handleTypes)
+	elseif type(tbl.handleTypes) == "string" then
+		tbl.handleTypes = library.e.external_memory_handle_type_nv[tbl.handleTypes]
+	end
 	return table_only and tbl or ffi.new("struct VkExportMemoryAllocateInfoNV", tbl)
 end
 function library.s.ExportMemoryAllocateInfoNVArray(tbl)
@@ -3767,6 +3852,11 @@ function library.s.ExportMemoryAllocateInfoNVArray(tbl)
 	return ffi.new("struct VkExportMemoryAllocateInfoNV[?]", #tbl, tbl)
 end
 function library.s.ExternalMemoryImageCreateInfoNV(tbl, table_only)
+	if type(tbl.handleTypes) == "table" then
+		tbl.handleTypes = library.e.external_memory_handle_type_nv.make_enums(tbl.handleTypes)
+	elseif type(tbl.handleTypes) == "string" then
+		tbl.handleTypes = library.e.external_memory_handle_type_nv[tbl.handleTypes]
+	end
 	return table_only and tbl or ffi.new("struct VkExternalMemoryImageCreateInfoNV", tbl)
 end
 function library.s.ExternalMemoryImageCreateInfoNVArray(tbl)
@@ -4007,6 +4097,11 @@ function library.s.RenderPassBeginInfoArray(tbl)
 	return ffi.new("struct VkRenderPassBeginInfo[?]", #tbl, tbl)
 end
 function library.s.DisplayPlaneCapabilitiesKHR(tbl, table_only)
+	if type(tbl.supportedAlpha) == "table" then
+		tbl.supportedAlpha = library.e.display_plane_alpha.make_enums(tbl.supportedAlpha)
+	elseif type(tbl.supportedAlpha) == "string" then
+		tbl.supportedAlpha = library.e.display_plane_alpha[tbl.supportedAlpha]
+	end
 	if type(tbl.minSrcPosition) == "table" then
 		tbl.minSrcPosition = library.s.Offset2D(tbl.minSrcPosition, true)
 	end
@@ -4046,6 +4141,11 @@ function library.s.DisplayPropertiesKHR(tbl, table_only)
 	if type(tbl.physicalResolution) == "table" then
 		tbl.physicalResolution = library.s.Extent2D(tbl.physicalResolution, true)
 	end
+	if type(tbl.supportedTransforms) == "table" then
+		tbl.supportedTransforms = library.e.surface_transform.make_enums(tbl.supportedTransforms)
+	elseif type(tbl.supportedTransforms) == "string" then
+		tbl.supportedTransforms = library.e.surface_transform[tbl.supportedTransforms]
+	end
 	return table_only and tbl or ffi.new("struct VkDisplayPropertiesKHR", tbl)
 end
 function library.s.DisplayPropertiesKHRArray(tbl)
@@ -4069,6 +4169,11 @@ function library.s.ComputePipelineCreateInfoArray(tbl)
 	return ffi.new("struct VkComputePipelineCreateInfo[?]", #tbl, tbl)
 end
 function library.s.SparseMemoryBind(tbl, table_only)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.sparse_memory_bind.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.sparse_memory_bind[tbl.flags]
+	end
 	return table_only and tbl or ffi.new("struct VkSparseMemoryBind", tbl)
 end
 function library.s.SparseMemoryBindArray(tbl)
@@ -4135,6 +4240,11 @@ function library.s.PipelineColorBlendAttachmentState(tbl, table_only)
 	if type(tbl.alphaBlendOp) == "string" then
 		tbl.alphaBlendOp = library.e.blend_op[tbl.alphaBlendOp]
 	end
+	if type(tbl.colorWriteMask) == "table" then
+		tbl.colorWriteMask = library.e.color_component.make_enums(tbl.colorWriteMask)
+	elseif type(tbl.colorWriteMask) == "string" then
+		tbl.colorWriteMask = library.e.color_component[tbl.colorWriteMask]
+	end
 	return table_only and tbl or ffi.new("struct VkPipelineColorBlendAttachmentState", tbl)
 end
 function library.s.PipelineColorBlendAttachmentStateArray(tbl)
@@ -4199,10 +4309,25 @@ function library.s.SurfaceCapabilitiesKHR(tbl, table_only)
 	if type(tbl.maxImageExtent) == "table" then
 		tbl.maxImageExtent = library.s.Extent2D(tbl.maxImageExtent, true)
 	end
+	if type(tbl.supportedTransforms) == "table" then
+		tbl.supportedTransforms = library.e.surface_transform.make_enums(tbl.supportedTransforms)
+	elseif type(tbl.supportedTransforms) == "string" then
+		tbl.supportedTransforms = library.e.surface_transform[tbl.supportedTransforms]
+	end
 	if type(tbl.currentTransform) == "table" then
 		tbl.currentTransform = library.e.surface_transform.make_enums(tbl.currentTransform)
 	elseif type(tbl.currentTransform) == "string" then
 		tbl.currentTransform = library.e.surface_transform[tbl.currentTransform]
+	end
+	if type(tbl.supportedCompositeAlpha) == "table" then
+		tbl.supportedCompositeAlpha = library.e.composite_alpha.make_enums(tbl.supportedCompositeAlpha)
+	elseif type(tbl.supportedCompositeAlpha) == "string" then
+		tbl.supportedCompositeAlpha = library.e.composite_alpha[tbl.supportedCompositeAlpha]
+	end
+	if type(tbl.supportedUsageFlags) == "table" then
+		tbl.supportedUsageFlags = library.e.image_usage.make_enums(tbl.supportedUsageFlags)
+	elseif type(tbl.supportedUsageFlags) == "string" then
+		tbl.supportedUsageFlags = library.e.image_usage[tbl.supportedUsageFlags]
 	end
 	return table_only and tbl or ffi.new("struct VkSurfaceCapabilitiesKHR", tbl)
 end
@@ -4222,6 +4347,11 @@ function library.s.ImageFormatProperties(tbl, table_only)
 	if type(tbl.maxExtent) == "table" then
 		tbl.maxExtent = library.s.Extent3D(tbl.maxExtent, true)
 	end
+	if type(tbl.sampleCounts) == "table" then
+		tbl.sampleCounts = library.e.sample_count.make_enums(tbl.sampleCounts)
+	elseif type(tbl.sampleCounts) == "string" then
+		tbl.sampleCounts = library.e.sample_count[tbl.sampleCounts]
+	end
 	return table_only and tbl or ffi.new("struct VkImageFormatProperties", tbl)
 end
 function library.s.ImageFormatPropertiesArray(tbl)
@@ -4231,6 +4361,11 @@ function library.s.ImageFormatPropertiesArray(tbl)
 	return ffi.new("struct VkImageFormatProperties[?]", #tbl, tbl)
 end
 function library.s.AttachmentDescription(tbl, table_only)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.attachment_description.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.attachment_description[tbl.flags]
+	end
 	if type(tbl.format) == "string" then
 		tbl.format = library.e.format[tbl.format]
 	end
@@ -4426,6 +4561,11 @@ function library.s.SubpassDescriptionArray(tbl)
 	return ffi.new("struct VkSubpassDescription[?]", #tbl, tbl)
 end
 function library.s.ClearAttachment(tbl, table_only)
+	if type(tbl.aspectMask) == "table" then
+		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
+	elseif type(tbl.aspectMask) == "string" then
+		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
+	end
 	if type(tbl.clearValue) == "table" then
 		tbl.clearValue = library.s.ClearValue(tbl.clearValue, true)
 	end
@@ -4447,8 +4587,18 @@ function library.s.SubresourceLayoutArray(tbl)
 	return ffi.new("struct VkSubresourceLayout[?]", #tbl, tbl)
 end
 function library.s.SparseImageFormatProperties(tbl, table_only)
+	if type(tbl.aspectMask) == "table" then
+		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
+	elseif type(tbl.aspectMask) == "string" then
+		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
+	end
 	if type(tbl.imageGranularity) == "table" then
 		tbl.imageGranularity = library.s.Extent3D(tbl.imageGranularity, true)
+	end
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.sparse_image_format.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.sparse_image_format[tbl.flags]
 	end
 	return table_only and tbl or ffi.new("struct VkSparseImageFormatProperties", tbl)
 end
@@ -4460,6 +4610,11 @@ function library.s.SparseImageFormatPropertiesArray(tbl)
 end
 function library.s.DeviceMemoryArray(tbl) return ffi.new("struct VkDeviceMemory_T *[?]", #tbl, tbl) end
 function library.s.QueueFamilyProperties(tbl, table_only)
+	if type(tbl.queueFlags) == "table" then
+		tbl.queueFlags = library.e.queue.make_enums(tbl.queueFlags)
+	elseif type(tbl.queueFlags) == "string" then
+		tbl.queueFlags = library.e.queue[tbl.queueFlags]
+	end
 	if type(tbl.minImageTransferGranularity) == "table" then
 		tbl.minImageTransferGranularity = library.s.Extent3D(tbl.minImageTransferGranularity, true)
 	end
@@ -4530,6 +4685,21 @@ function library.s.ExternalImageFormatPropertiesNV(tbl, table_only)
 	if type(tbl.imageFormatProperties) == "table" then
 		tbl.imageFormatProperties = library.s.ImageFormatProperties(tbl.imageFormatProperties, true)
 	end
+	if type(tbl.externalMemoryFeatures) == "table" then
+		tbl.externalMemoryFeatures = library.e.external_memory_feature_nv.make_enums(tbl.externalMemoryFeatures)
+	elseif type(tbl.externalMemoryFeatures) == "string" then
+		tbl.externalMemoryFeatures = library.e.external_memory_feature_nv[tbl.externalMemoryFeatures]
+	end
+	if type(tbl.exportFromImportedHandleTypes) == "table" then
+		tbl.exportFromImportedHandleTypes = library.e.external_memory_handle_type_nv.make_enums(tbl.exportFromImportedHandleTypes)
+	elseif type(tbl.exportFromImportedHandleTypes) == "string" then
+		tbl.exportFromImportedHandleTypes = library.e.external_memory_handle_type_nv[tbl.exportFromImportedHandleTypes]
+	end
+	if type(tbl.compatibleHandleTypes) == "table" then
+		tbl.compatibleHandleTypes = library.e.external_memory_handle_type_nv.make_enums(tbl.compatibleHandleTypes)
+	elseif type(tbl.compatibleHandleTypes) == "string" then
+		tbl.compatibleHandleTypes = library.e.external_memory_handle_type_nv[tbl.compatibleHandleTypes]
+	end
 	return table_only and tbl or ffi.new("struct VkExternalImageFormatPropertiesNV", tbl)
 end
 function library.s.ExternalImageFormatPropertiesNVArray(tbl)
@@ -4563,6 +4733,21 @@ function library.s.CommandBufferAllocateInfoArray(tbl)
 	return ffi.new("struct VkCommandBufferAllocateInfo[?]", #tbl, tbl)
 end
 function library.s.FormatProperties(tbl, table_only)
+	if type(tbl.linearTilingFeatures) == "table" then
+		tbl.linearTilingFeatures = library.e.format_feature.make_enums(tbl.linearTilingFeatures)
+	elseif type(tbl.linearTilingFeatures) == "string" then
+		tbl.linearTilingFeatures = library.e.format_feature[tbl.linearTilingFeatures]
+	end
+	if type(tbl.optimalTilingFeatures) == "table" then
+		tbl.optimalTilingFeatures = library.e.format_feature.make_enums(tbl.optimalTilingFeatures)
+	elseif type(tbl.optimalTilingFeatures) == "string" then
+		tbl.optimalTilingFeatures = library.e.format_feature[tbl.optimalTilingFeatures]
+	end
+	if type(tbl.bufferFeatures) == "table" then
+		tbl.bufferFeatures = library.e.format_feature.make_enums(tbl.bufferFeatures)
+	elseif type(tbl.bufferFeatures) == "string" then
+		tbl.bufferFeatures = library.e.format_feature[tbl.bufferFeatures]
+	end
 	return table_only and tbl or ffi.new("struct VkFormatProperties", tbl)
 end
 function library.s.FormatPropertiesArray(tbl)
@@ -4572,6 +4757,11 @@ function library.s.FormatPropertiesArray(tbl)
 	return ffi.new("struct VkFormatProperties[?]", #tbl, tbl)
 end
 function library.s.ImageSubresource(tbl, table_only)
+	if type(tbl.aspectMask) == "table" then
+		tbl.aspectMask = library.e.image_aspect.make_enums(tbl.aspectMask)
+	elseif type(tbl.aspectMask) == "string" then
+		tbl.aspectMask = library.e.image_aspect[tbl.aspectMask]
+	end
 	return table_only and tbl or ffi.new("struct VkImageSubresource", tbl)
 end
 function library.s.ImageSubresourceArray(tbl)
@@ -4677,6 +4867,31 @@ function library.s.SparseImageMemoryRequirementsArray(tbl)
 	return ffi.new("struct VkSparseImageMemoryRequirements[?]", #tbl, tbl)
 end
 function library.s.SubpassDependency(tbl, table_only)
+	if type(tbl.srcStageMask) == "table" then
+		tbl.srcStageMask = library.e.pipeline_stage.make_enums(tbl.srcStageMask)
+	elseif type(tbl.srcStageMask) == "string" then
+		tbl.srcStageMask = library.e.pipeline_stage[tbl.srcStageMask]
+	end
+	if type(tbl.dstStageMask) == "table" then
+		tbl.dstStageMask = library.e.pipeline_stage.make_enums(tbl.dstStageMask)
+	elseif type(tbl.dstStageMask) == "string" then
+		tbl.dstStageMask = library.e.pipeline_stage[tbl.dstStageMask]
+	end
+	if type(tbl.srcAccessMask) == "table" then
+		tbl.srcAccessMask = library.e.access.make_enums(tbl.srcAccessMask)
+	elseif type(tbl.srcAccessMask) == "string" then
+		tbl.srcAccessMask = library.e.access[tbl.srcAccessMask]
+	end
+	if type(tbl.dstAccessMask) == "table" then
+		tbl.dstAccessMask = library.e.access.make_enums(tbl.dstAccessMask)
+	elseif type(tbl.dstAccessMask) == "string" then
+		tbl.dstAccessMask = library.e.access[tbl.dstAccessMask]
+	end
+	if type(tbl.dependencyFlags) == "table" then
+		tbl.dependencyFlags = library.e.dependency.make_enums(tbl.dependencyFlags)
+	elseif type(tbl.dependencyFlags) == "string" then
+		tbl.dependencyFlags = library.e.dependency[tbl.dependencyFlags]
+	end
 	return table_only and tbl or ffi.new("struct VkSubpassDependency", tbl)
 end
 function library.s.SubpassDependencyArray(tbl)
@@ -4849,6 +5064,51 @@ function library.s.PhysicalDeviceMemoryPropertiesArray(tbl)
 	return ffi.new("struct VkPhysicalDeviceMemoryProperties[?]", #tbl, tbl)
 end
 function library.s.PhysicalDeviceLimits(tbl, table_only)
+	if type(tbl.framebufferColorSampleCounts) == "table" then
+		tbl.framebufferColorSampleCounts = library.e.sample_count.make_enums(tbl.framebufferColorSampleCounts)
+	elseif type(tbl.framebufferColorSampleCounts) == "string" then
+		tbl.framebufferColorSampleCounts = library.e.sample_count[tbl.framebufferColorSampleCounts]
+	end
+	if type(tbl.framebufferDepthSampleCounts) == "table" then
+		tbl.framebufferDepthSampleCounts = library.e.sample_count.make_enums(tbl.framebufferDepthSampleCounts)
+	elseif type(tbl.framebufferDepthSampleCounts) == "string" then
+		tbl.framebufferDepthSampleCounts = library.e.sample_count[tbl.framebufferDepthSampleCounts]
+	end
+	if type(tbl.framebufferStencilSampleCounts) == "table" then
+		tbl.framebufferStencilSampleCounts = library.e.sample_count.make_enums(tbl.framebufferStencilSampleCounts)
+	elseif type(tbl.framebufferStencilSampleCounts) == "string" then
+		tbl.framebufferStencilSampleCounts = library.e.sample_count[tbl.framebufferStencilSampleCounts]
+	end
+	if type(tbl.framebufferNoAttachmentsSampleCounts) == "table" then
+		tbl.framebufferNoAttachmentsSampleCounts = library.e.sample_count.make_enums(tbl.framebufferNoAttachmentsSampleCounts)
+	elseif type(tbl.framebufferNoAttachmentsSampleCounts) == "string" then
+		tbl.framebufferNoAttachmentsSampleCounts = library.e.sample_count[tbl.framebufferNoAttachmentsSampleCounts]
+	end
+	if type(tbl.sampledImageColorSampleCounts) == "table" then
+		tbl.sampledImageColorSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageColorSampleCounts)
+	elseif type(tbl.sampledImageColorSampleCounts) == "string" then
+		tbl.sampledImageColorSampleCounts = library.e.sample_count[tbl.sampledImageColorSampleCounts]
+	end
+	if type(tbl.sampledImageIntegerSampleCounts) == "table" then
+		tbl.sampledImageIntegerSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageIntegerSampleCounts)
+	elseif type(tbl.sampledImageIntegerSampleCounts) == "string" then
+		tbl.sampledImageIntegerSampleCounts = library.e.sample_count[tbl.sampledImageIntegerSampleCounts]
+	end
+	if type(tbl.sampledImageDepthSampleCounts) == "table" then
+		tbl.sampledImageDepthSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageDepthSampleCounts)
+	elseif type(tbl.sampledImageDepthSampleCounts) == "string" then
+		tbl.sampledImageDepthSampleCounts = library.e.sample_count[tbl.sampledImageDepthSampleCounts]
+	end
+	if type(tbl.sampledImageStencilSampleCounts) == "table" then
+		tbl.sampledImageStencilSampleCounts = library.e.sample_count.make_enums(tbl.sampledImageStencilSampleCounts)
+	elseif type(tbl.sampledImageStencilSampleCounts) == "string" then
+		tbl.sampledImageStencilSampleCounts = library.e.sample_count[tbl.sampledImageStencilSampleCounts]
+	end
+	if type(tbl.storageImageSampleCounts) == "table" then
+		tbl.storageImageSampleCounts = library.e.sample_count.make_enums(tbl.storageImageSampleCounts)
+	elseif type(tbl.storageImageSampleCounts) == "string" then
+		tbl.storageImageSampleCounts = library.e.sample_count[tbl.storageImageSampleCounts]
+	end
 	return table_only and tbl or ffi.new("struct VkPhysicalDeviceLimits", tbl)
 end
 function library.s.PhysicalDeviceLimitsArray(tbl)
@@ -4866,6 +5126,11 @@ function library.s.SparseImageMemoryBind(tbl, table_only)
 	end
 	if type(tbl.extent) == "table" then
 		tbl.extent = library.s.Extent3D(tbl.extent, true)
+	end
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.sparse_memory_bind.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.sparse_memory_bind[tbl.flags]
 	end
 	return table_only and tbl or ffi.new("struct VkSparseImageMemoryBind", tbl)
 end
@@ -4888,6 +5153,11 @@ function library.s.MemoryAllocateInfoArray(tbl)
 	return ffi.new("struct VkMemoryAllocateInfo[?]", #tbl, tbl)
 end
 function library.s.MemoryHeap(tbl, table_only)
+	if type(tbl.flags) == "table" then
+		tbl.flags = library.e.memory_heap.make_enums(tbl.flags)
+	elseif type(tbl.flags) == "string" then
+		tbl.flags = library.e.memory_heap[tbl.flags]
+	end
 	return table_only and tbl or ffi.new("struct VkMemoryHeap", tbl)
 end
 function library.s.MemoryHeapArray(tbl)
@@ -4903,6 +5173,11 @@ function library.s.SemaphoreCreateInfoArray(tbl)
 	return ffi.new("struct VkSemaphoreCreateInfo[?]", #tbl, tbl)
 end
 function library.s.MemoryType(tbl, table_only)
+	if type(tbl.propertyFlags) == "table" then
+		tbl.propertyFlags = library.e.memory_property.make_enums(tbl.propertyFlags)
+	elseif type(tbl.propertyFlags) == "string" then
+		tbl.propertyFlags = library.e.memory_property[tbl.propertyFlags]
+	end
 	return table_only and tbl or ffi.new("struct VkMemoryType", tbl)
 end
 function library.s.MemoryTypeArray(tbl)
@@ -5089,6 +5364,11 @@ function library.s.MemoryBarrierArray(tbl)
 	return ffi.new("struct VkMemoryBarrier[?]", #tbl, tbl)
 end
 function library.s.PushConstantRange(tbl, table_only)
+	if type(tbl.stageFlags) == "table" then
+		tbl.stageFlags = library.e.shader_stage.make_enums(tbl.stageFlags)
+	elseif type(tbl.stageFlags) == "string" then
+		tbl.stageFlags = library.e.shader_stage[tbl.stageFlags]
+	end
 	return table_only and tbl or ffi.new("struct VkPushConstantRange", tbl)
 end
 function library.s.PushConstantRangeArray(tbl)
