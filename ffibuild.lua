@@ -1,24 +1,28 @@
 local ffibuild = {}
 
+function ffibuild.Clone(str, dir)
+	dir = dir or "repo"
+	if str:find("%.git$") then
+		os.execute("if [ -d ./" .. dir .. " ]; then git -C ./" .. dir .. " pull; else git clone " .. str .. " " .. dir .. " --depth 1; fi")
+	elseif str:find("hg%.") then
+		local clone_, branch = str:match("(.+);(.+)")
+		str = clone_ or str
+		if branch then
+			os.execute("hg clone " .. str .. " " .. dir .. " -r " .. branch)
+		else
+			os.execute("hg clone " .. str .. " " .. dir)
+		end
+	else
+		os.execute(str)
+	end
+end
+
 function ffibuild.BuildSharedLibrary(name, clone, build, copy)
 	--os.execute("git --git-dir=./repo/.git pull")
 	local ext = jit.os == "OSX" and ".dylib" or ".so"
 	local f = io.open("lib"..name..ext, "r")
 	if not f then
-		if clone:find("%.git$") then
-			os.execute("if [ -d ./repo ]; then git -C ./repo pull; else git clone " .. clone .. " repo --depth 1; fi")
-		elseif clone:find("hg%.") then
-            local clone_, branch = clone:match("(.+);(.+)")
-            clone = clone_ or clone
-            print(clone, branch)
-            if branch then
-                os.execute("hg clone " .. clone .. " repo -r " .. branch)
-            else
-                os.execute("hg clone " .. clone .. " repo")
-            end
-		else
-			os.execute(clone)
-		end
+		ffibuild.Clone(clone)
 		if build then
 			os.execute("cd repo && " .. build .. " && cd ..")
 		end
