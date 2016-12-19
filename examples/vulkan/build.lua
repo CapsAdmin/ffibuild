@@ -10,13 +10,14 @@ local extensions = {
 	"EXT",
 	"KHR",
 	"AMD",
+	"NVX",
 	"NV",
 }
 
 local function is_extension(func_name)
 	for _, ext in ipairs(extensions) do
 		if func_name:sub(-#ext):upper() == ext then
-			return true
+			return #ext
 		end
 	end
 	return false
@@ -169,6 +170,10 @@ do -- enums
 				key = key:gsub("^VK_", "VK_RESULT_")
 			end
 
+            if decl == "enum VkIndirectCommandsTokenTypeNVX" then
+                key = key:gsub("^VK_INDIRECT_COMMANDS_TOKEN_", "VK_INDIRECT_COMMANDS_TOKEN_TYPE_")
+            end
+
 			if decl == "enum VkColorSpaceKHR" then
 				decl = "enum VkColorspaceKHR"
 			end
@@ -176,8 +181,9 @@ do -- enums
 
 			local start = ffibuild.ChangeCase(decl:match("^enum Vk(.+)"), "FooBar", "foo_bar")
 
-			start = start:gsub("_khr$", "")
-			start = start:gsub("_ext$", "")
+            for _, ext in ipairs(extensions) do
+                start = start:gsub("_"..ext:lower().."$", "")
+            end
 			start = start:gsub("_flag_bits", "")
 
 
@@ -185,8 +191,9 @@ do -- enums
 
 			friendly = friendly:lower()
 
-			friendly = friendly:gsub("_ext$", "")
-			friendly = friendly:gsub("_khr$", "")
+			for _, ext in ipairs(extensions) do
+                friendly = friendly:gsub("_"..ext:lower().."$", "")
+            end
 			friendly = friendly:gsub("_bit$", "")
 
 			if tonumber(friendly:sub(1, 1)) or ffibuild.IsKeyword(friendly) then
@@ -503,7 +510,8 @@ do -- struct creation helpers
 		local friendly = ffibuild.ChangeCase(name:lower(), "foo_bar", "FooBar")
 
 		if is_extension(friendly) then
-			friendly = friendly:sub(0, -4) .. friendly:sub(-3):upper()
+            local len = is_extension(friendly)
+			friendly = friendly:sub(0, -len-1) .. friendly:sub(-len):upper()
 		end
 
 		local struct = meta_data.structs["struct Vk" .. friendly]
