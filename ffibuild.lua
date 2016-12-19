@@ -1615,6 +1615,7 @@ do -- lua helper functions
 		lua = lua .. "return library\n"
 
 		local file = io.open("./lib"..ffibuild.lib_name..".lua", "wb")
+
 		file:write(lua)
 		file:close()
 
@@ -1634,6 +1635,11 @@ do -- lua helper functions
 					i = i + 1
 				end
 			end
+		else
+			local path = "../../../../data/bin/" .. jit.os:lower() .. "_" .. jit.arch:lower() .. "/"
+			print("copying lib* files to: ", path)
+			os.execute("mkdir -p " .. path)
+			os.execute("cp lib* " .. path)
 		end
 	end
 
