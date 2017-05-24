@@ -463,7 +463,7 @@ do -- create glfw window
 end
 
 do -- create vulkan instance
-	local instance, err = vk.CreateInstance({
+	local instance = vk.Assert(vk.CreateInstance({
 		pApplicationInfo = {
 			pApplicationName = "goluwa",
 			applicationVersion = 0,
@@ -476,9 +476,9 @@ do -- create vulkan instance
 			--"VK_LAYER_LUNARG_mem_tracker",
 			--"VK_LAYER_LUNARG_object_tracker",
 			--"VK_LAYER_LUNARG_draw_state",
-            "VK_LAYER_LUNARG_parameter_validation",
-            "VK_LAYER_LUNARG_core_validation",
-            "VK_LAYER_LUNARG_standard_validation",
+            --"VK_LAYER_LUNARG_parameter_validation",
+            --"VK_LAYER_LUNARG_core_validation",
+            --"VK_LAYER_LUNARG_standard_validation",
 			--"VK_LAYER_LUNARG_parameter_validation",
 			--"VK_LAYER_LUNARG_swapchain",
 			--"VK_LAYER_LUNARG_device_limits",
@@ -488,7 +488,7 @@ do -- create vulkan instance
 		ppEnabledExtensionNames = glfw.GetRequiredInstanceExtensions({
 			"VK_EXT_debug_report",
 		}),
-	})
+	}))
 
 	if instance:LoadProcAddr("vkCreateDebugReportCallbackEXT") then
 		instance:CreateDebugReportCallback({

@@ -12,6 +12,8 @@ local extensions = {
 	"AMD",
 	"NVX",
 	"NV",
+	"KHX",
+	"GOOGLE",
 }
 
 local function is_extension(func_name)
@@ -70,6 +72,20 @@ function library.util.GLSLToSpirV(type, glsl)
 	end
 
 	return {pCode = ffi.cast("uint32_t *", spirv), codeSize = #spirv}
+end
+function library.Assert(var, res)
+	if var == nil and res ~= "VK_SUCCESS" then
+		for name, v in pairs(library.e.result) do
+			if res == v then
+				name = name:gsub("error_", "")
+				name = name:gsub("_", " ")
+				error("Assertion failed: " .. name, 2)
+				break
+			end
+		end
+	end
+
+	return var
 end
 function library.e(str_enum)
 	return ffi.cast("enum GLFWenum", str_enum)
@@ -307,19 +323,33 @@ local function translate_arguments(tbl, arg_prefix, struct_type)
 					if type.name:find("Type$") and tbl[i - 1] and tbl[i - 1].name:find("Count$") then
 						local count_var = tbl[i - 1]
 
+						local ok = true
+
 						for i = i + 1, #tbl do
 							local type = tbl[i]
 							if not type then break end
 
-							local basic_type = type:GetBasicType(meta_data)
-							local friendly = basic_type:match("^.- Vk(.+)")
-							friendly = friendly:gsub("_T", "")
-							s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
-							s = s .. "\t\tif not "..p..""..count_var.name.." then\n"
-							s = s .. "\t\t\t"..p..""..count_var.name.." = #"..p..""..type.name.."\n"
-							s = s .. "\t\tend\n"
-							s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."Array("..p.."" .. type.name .. ")\n"
-							s = s .. "\tend\n"
+							if type:GetDeclaration(meta_data):sub(-1) ~= "*" then
+								ok = false
+								break
+							end
+						end
+
+						if ok then
+							for i = i + 1, #tbl do
+								local type = tbl[i]
+								if not type then break end
+
+								local basic_type = type:GetBasicType(meta_data)
+								local friendly = basic_type:match("^.- Vk(.+)")
+								friendly = friendly:gsub("_T", "")
+								s = s .. "\tif type("..p.."" .. type.name .. ") == \"table\" then\n"
+								s = s .. "\t\tif not "..p..""..count_var.name.." then\n"
+								s = s .. "\t\t\t"..p..""..count_var.name.." = #"..p..""..type.name.."\n"
+								s = s .. "\t\tend\n"
+								s = s .. "\t\t"..p.."" .. type.name .. " = library.s."..friendly.."Array("..p.."" .. type.name .. ")\n"
+								s = s .. "\tend\n"
+							end
 						end
 						break
 					end
