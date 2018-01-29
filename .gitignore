@@ -1,5 +1,9 @@
-LuaJIT/
 *repo/
+*include/
+*result
+
+# temp files
+*.nix
 
 # Object files
 *.o
@@ -18,3 +22,5 @@ LuaJIT/
 *.exe
 *.out
 *.app
+*.directory
+*.DS_Store

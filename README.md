@@ -1,16 +1,24 @@
+ffibuild is a utility to generate FFI bindings for LuaJIT. It can use the Nix package manager to automatically setup the build environment and build the library you want. 
+
+There are also helper functions to build more manually, but this assumes you have the  required packages to build.
+
+ffibuild is used on Linux and macOS. Because it assumes a posix ish environment it does not work on Windows. Nix reportedly works on Windows under Cygwin but I'm not sure how to get it working properly.
+
+Most of the examples use Nix, some build manually and some do not really use the ffibuild system but are there for completeness and use in [goluwa](https://gitlab.com/CapsAdmin/goluwa).
+
+
 ## simple example:
 
 ```lua
-local header = ffibuild.BuildCHeader([[
+local code = "local CLIB = ffi.load('purple')\n"
+code = code .. "local library = {}\n"
+
+local header = ffibuild.ProcessSourceFileGCC([[
 	#define PURPLE_PLUGINS
 	#include <libpurple/purple.h>
 ]], "$(pkg-config purple --cflags)")
 
 local meta_data = ffibuild.GetMetaData(header)
-
-local code = "local CLIB = ffi.load('purple')\n"
-
-code = code .. "local library = {}\n"
 
 for func_name, func_type in pairs(meta_data.functions) do
 	local friendly_name = ffibuild.ChangeCase(func_name, "foo_bar", "fooBar")
@@ -21,7 +29,6 @@ code = code .. "return library\n"
 ```
 
 This creates a bunch of globals from this_casing to thisCasing based header input.
-
 
 
 
@@ -57,7 +64,7 @@ meta_data:BuildEnums(pattern) -- this builds a table of enums. usually in exampl
 ## types
 ```lua
 -- all functions that take meta_data will attempt to get the most primitive type or declaration
-string = type:GetDeclaration(meta_data) -- Gets the declaration for the type such as "const char *", "void (*)(int, char)", "enums {FOO=1,BAR=2}", etc
+string = type:GetDeclaration(meta_data) -- Gets the declaration for the type such as "const char *", "void (*)(int, char)", "enums {FOO=1,BAR=2}", etc
 string = type:GetBasicType(meta_data) -- Gets the basic type such as if type:GetDeclaration() would return "const char *" type:GetbasicType() would return "char"
 [type] = type:GetPrimitive(meta_data) -- Attempts to get the primitive type.
 ```
@@ -84,11 +91,21 @@ In the first example you would get glib functions exported as well since purple 
     local header = meta_data:BuildMinimalHeader(function(name) return name:find("^purple_") end, function(name) return name:find("PURPLE_") end, true)
 ```
 
-This would return a header with all functions that start with purple_ and the required structs, unions and enums based on what those functions need. The check enum function will just remove any global or typedef enum that don't start with PURPLE_
+This would return a header with all functions that start with `purple_` and the required structs, unions and enums based on what those functions need. The check enum function will just remove any global or typedef enum that don't start with `PURPLE_`
+
+## caveats:
+
+Sometimes you need to hack the meta data so ffi.cdef can understand it. For instance:
+
+* #define enums can sometimes be problematic, however there are tools to deal with this
+* sometimes a library can define a function that uses problematic types.
+
+The examples provided should explain some of these workarounds to get an idea of what you need to do. Usually the easy way is to make the problematic type `void *`
 
 ## todo
-Use mingw, visual studio or maybe lcpp on windows somehow.
-Don't strip out pragma pack and other compiler specific things
-Make struct to table functions
-Have a way to make anonymous definitions using typeof and parameterized types
-add a way to prefix types for "namespaces" to avoid conflicting libraries
+* Get this and Nix working in msys2 somehow. <https://gist.github.com/CapsAdmin/ee77100c499ec9a55730e999759a166b>
+* Provide nix expressions for lesser known libraries (VTFLib, graphene, etc)
+* Don't strip out pragma pack and other compiler specific things
+* Make struct to table functions
+* Have a way to make anonymous definitions using typeof and parameterized types
+* add a way to prefix types for "namespaces" to avoid conflicting libraries
