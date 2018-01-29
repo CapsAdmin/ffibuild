@@ -9,7 +9,6 @@ typedef enum _ENetSocketType{ENET_SOCKET_TYPE_STREAM=1,ENET_SOCKET_TYPE_DATAGRAM
 typedef enum _ENetPeerState{ENET_PEER_STATE_DISCONNECTED=0,ENET_PEER_STATE_CONNECTING=1,ENET_PEER_STATE_ACKNOWLEDGING_CONNECT=2,ENET_PEER_STATE_CONNECTION_PENDING=3,ENET_PEER_STATE_CONNECTION_SUCCEEDED=4,ENET_PEER_STATE_CONNECTED=5,ENET_PEER_STATE_DISCONNECT_LATER=6,ENET_PEER_STATE_DISCONNECTING=7,ENET_PEER_STATE_ACKNOWLEDGING_DISCONNECT=8,ENET_PEER_STATE_ZOMBIE=9};
 typedef enum _ENetPacketFlag{ENET_PACKET_FLAG_RELIABLE=1,ENET_PACKET_FLAG_UNSEQUENCED=2,ENET_PACKET_FLAG_NO_ALLOCATE=4,ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT=8,ENET_PACKET_FLAG_SENT=256};
 typedef enum _ENetProtocolCommand{ENET_PROTOCOL_COMMAND_NONE=0,ENET_PROTOCOL_COMMAND_ACKNOWLEDGE=1,ENET_PROTOCOL_COMMAND_CONNECT=2,ENET_PROTOCOL_COMMAND_VERIFY_CONNECT=3,ENET_PROTOCOL_COMMAND_DISCONNECT=4,ENET_PROTOCOL_COMMAND_PING=5,ENET_PROTOCOL_COMMAND_SEND_RELIABLE=6,ENET_PROTOCOL_COMMAND_SEND_UNRELIABLE=7,ENET_PROTOCOL_COMMAND_SEND_FRAGMENT=8,ENET_PROTOCOL_COMMAND_SEND_UNSEQUENCED=9,ENET_PROTOCOL_COMMAND_BANDWIDTH_LIMIT=10,ENET_PROTOCOL_COMMAND_THROTTLE_CONFIGURE=11,ENET_PROTOCOL_COMMAND_SEND_UNRELIABLE_FRAGMENT=12,ENET_PROTOCOL_COMMAND_COUNT=13,ENET_PROTOCOL_COMMAND_MASK=15};
-struct fd_set {long __fds_bits[1024/(8*(int)sizeof(__fd_mask))];};
 struct ENetBuffer {void*data;unsigned long dataLength;};
 struct _ENetProtocolCommandHeader {unsigned char command;unsigned char channelID;unsigned short reliableSequenceNumber;};
 struct _ENetProtocolAcknowledge {struct _ENetProtocolCommandHeader header;unsigned short receivedReliableSequenceNumber;unsigned short receivedSentTime;};
@@ -106,7 +105,7 @@ int(enet_socket_shutdown)(int,enum _ENetSocketShutdown);
 unsigned long(enet_range_coder_decompress)(void*,const unsigned char*,unsigned long,unsigned char*,unsigned long);
 void(enet_peer_reset_queues)(struct _ENetPeer*);
 int(enet_host_compress_with_range_coder)(struct _ENetHost*);
-int(enet_socketset_select)(int,struct fd_set*,struct fd_set*,unsigned int);
+int(enet_socketset_select)(int,void*,void*,unsigned int);
 unsigned long(enet_list_size)(struct _ENetList*);
 void(enet_host_bandwidth_limit)(struct _ENetHost*,unsigned int,unsigned int);
 ]])
