@@ -493,7 +493,7 @@ function ffibuild.NixBuild(data)
 
 	os.execute("cp -r -f result/* .")
 
-  local tool = jit.os == "OSX" and "otool -L" or "ldd"
+	local tool = jit.os == "OSX" and "otool -L" or "ldd"
 
 	for path in os.readexecute(tool .. " " .. lib_name):gmatch("(/nix/.-) %(") do
 		os.execute("cp " .. path .. " .")
@@ -2134,9 +2134,9 @@ do -- lua helper functions
 		end
 
 		function ffibuild.CopyLibraries(path)
-			path = path:gsub("{OS}", jit.os:lower())
-			path = path:gsub("{ARCH}", jit.arch:lower())
-			local ext = (jit.os == "OSX" and "dylib" or jit.os == "Windows" and "dll") or "so"
+			path = path:gsub("{OS}", OS)
+			path = path:gsub("{ARCH}", ARCH)
+			local ext = (OS == "osx" and "dylib" or OS == "windows" and "dll") or "so"
 			execute("mkdir -p " .. path)
 			execute("cp -f *." .. ext .. " " .. path)
 			execute("cp -f *." .. ext .. ".* " .. path)
