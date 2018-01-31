@@ -6,9 +6,11 @@ if [ "$1" = "clean" ]; then
 	mv build.lua ../tmp/
 	mv build.sh ../tmp/
 	mv .gitignore ../tmp/
+	mv readme.md ../tmp/
 	rm -rf ./*
 	mv ../tmp/* .
-	rmdir ../tmp
+	mv ../tmp/.gitignore .
+	rm -rf ../tmp
 	exit
 fi
 
