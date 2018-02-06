@@ -5,7 +5,17 @@ local ffibuild = require("ffibuild")
 local header = ffibuild.NixBuild({
 	package_name = "SDL2",
 	custom = [[
-		SDL2 = SDL2.overrideAttrs (old: { configureFlags = old.configureFlags ++ [ "--disable-audio" ]; });
+        SDL2 = pkgs.SDL2.override { 
+            pulseaudioSupport = false;
+            waylandSupport = false;
+            x11Support = false;
+            alsaSupport = fasle;        
+        };
+        
+		#SDL2 = SDL2.overrideAttrs (old: { 
+        #    configureFlags = old.configureFlags ++ [ "--disable-audio" "--disable-render" "--disable-haptic" "--disable-filesystem" "--disable-file" ]; 
+        #});
+        
 	]],
 	src = [[
 typedef enum  {

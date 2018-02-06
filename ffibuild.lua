@@ -456,16 +456,16 @@ function ffibuild.NixBuild(data)
 		lib_name = lib_name .. "." .. (OSX and "dylib" or UNIX and "so" or WINDOWS and "dll")
 	end
 
-
-	local custom = data.custom or ""
-
 	-- temporary default.nix file
 	io.writefile(tmp_nix,
 [==[
 	with import <nixpkgs> {};
 
+	]==] .. (data.custom2 or "") .. [==[
+
 	stdenv.mkDerivation {
-		]==] .. custom .. [==[
+
+		]==] .. (data.custom or "") .. [==[
 
 		name = "ffibuild_luajit";
 		src = ./.;
@@ -482,7 +482,7 @@ function ffibuild.NixBuild(data)
 ]==])
 
   -- now execute nix-build
-	os.execute("nix-build " .. tmp_nix)
+	os.execute("nix-build --show-trace " .. tmp_nix)
 
 	-- return the preprocessed main.c file
 	local str
@@ -492,12 +492,6 @@ function ffibuild.NixBuild(data)
 	end
 
 	os.execute("cp -r -f result/* .")
-
-	local tool = jit.os == "OSX" and "otool -L" or "ldd"
-
-	for path in os.readexecute(tool .. " " .. lib_name):gmatch("(/nix/.-) %(") do
-		os.execute("cp " .. path .. " .")
-	end
 
 	--os.remove(tmp_nix)
 
@@ -932,20 +926,22 @@ function ffibuild.GetMetaData(header)
 		return header
 	end
 
-	function meta_data:BuildFunctions(pattern, from, to, clib)
+	function meta_data:BuildFunctions(pattern, from, to, clib, callback)
 		local s = "{\n"
 		for func_name, func_type in pairs(self.functions) do
-			local friendly_name
+			if not callback or callback(func_type.name) ~= false then
+				local friendly_name
 
-			if pattern then
-				friendly_name = func_name:match(pattern)
-			else
-				friendly_name = func_name
-			end
+				if pattern then
+					friendly_name = func_name:match(pattern)
+				else
+					friendly_name = func_name
+				end
 
-			if friendly_name then
-				if from then friendly_name = ffibuild.ChangeCase(friendly_name, from, to) end
-				s = s .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type, nil, nil, nil, clib) .. ",\n"
+				if friendly_name then
+					if from then friendly_name = ffibuild.ChangeCase(friendly_name, from, to) end
+					s = s .. "\t" .. friendly_name .. " = " .. ffibuild.BuildLuaFunction(func_type.name, func_type, nil, nil, nil, clib) .. ",\n"
+				end
 			end
 		end
 		s = s .. "}\n"
