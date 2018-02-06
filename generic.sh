@@ -4,7 +4,7 @@ if [ "$1" = "clean" ]; then
 	rm -rf repo/
 	mkdir ../tmp
 	mv build.lua ../tmp/
-	mv build.sh ../tmp/
+	mv make.sh ../tmp/
 	mv .gitignore ../tmp/
 	mv readme.md ../tmp/
 	rm -rf ./*
