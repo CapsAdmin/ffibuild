@@ -11,16 +11,16 @@ dSphereClass=0,dBoxClass=1,dCapsuleClass=2,dCylinderClass=3,dPlaneClass=4,dRayCl
 dTRIMESHDATA__MIN=0,dTRIMESHDATA_FACE_NORMALS=0,dTRIMESHDATA_USE_FLAGS=1,dTRIMESHDATA__MAX=2,
 dMESHDATAUSE_EDGE1=1,dMESHDATAUSE_EDGE2=2,dMESHDATAUSE_EDGE3=4,dMESHDATAUSE_VERTEX1=8,dMESHDATAUSE_VERTEX2=16,dMESHDATAUSE_VERTEX3=32,
 dTRIDATAPREPROCESS_BUILD__MIN=0,dTRIDATAPREPROCESS_BUILD_CONCAVE_EDGES=0,dTRIDATAPREPROCESS_BUILD_FACE_ANGLES=1,dTRIDATAPREPROCESS_BUILD__MAX=2,
-dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA__MIN=0,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA_BYTE_POSITIVE=0,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA_BYTE_ALL=1,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA_WORD_ALL=2,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA__MAX=3,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA__DEFAULT=0,};typedef enum dSpaceAxis{dSA__MIN=0,dSA_X=0,dSA_Y=1,dSA_Z=2,dSA__MAX=3};
+dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA__MIN=0,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA_BYTE_POSITIVE=0,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA_BYTE_ALL=1,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA_WORD_ALL=2,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA__MAX=3,dTRIDATAPREPROCESS_FACE_ANGLES_EXTRA__DEFAULT=0,};typedef enum dMat3Element{dM3E__MIN=0,dM3E__X_MIN=0,dM3E__X_AXES_MIN=0,dM3E_XX=0,dM3E_XY=1,dM3E_XZ=2,dM3E__X_AXES_MAX=3,dM3E_XPAD=3,dM3E__X_MAX=4,dM3E__Y_MIN=4,dM3E__Y_AXES_MIN=4,dM3E_YX=4,dM3E_YY=5,dM3E_YZ=6,dM3E__Y_AXES_MAX=7,dM3E_YPAD=7,dM3E__Y_MAX=8,dM3E__Z_MIN=8,dM3E__Z_AXES_MIN=8,dM3E_ZX=8,dM3E_ZY=9,dM3E_ZZ=10,dM3E__Z_AXES_MAX=11,dM3E_ZPAD=11,dM3E__Z_MAX=12,dM3E__MAX=12};
 typedef enum dVec4Element{dV4E__MIN=0,dV4E_X=0,dV4E_Y=1,dV4E_Z=2,dV4E_O=3,dV4E__MAX=4};
-typedef enum dMeshTriangleVertex{dMTV__MIN=0,dMTV_FIRST=0,dMTV_SECOND=1,dMTV_THIRD=2,dMTV__MAX=3};
 typedef enum dMat4Element{dM4E__MIN=0,dM4E__X_MIN=0,dM4E_XX=0,dM4E_XY=1,dM4E_XZ=2,dM4E_XO=3,dM4E__X_MAX=4,dM4E__Y_MIN=4,dM4E_YX=4,dM4E_YY=5,dM4E_YZ=6,dM4E_YO=7,dM4E__Y_MAX=8,dM4E__Z_MIN=8,dM4E_ZX=8,dM4E_ZY=9,dM4E_ZZ=10,dM4E_ZO=11,dM4E__Z_MAX=12,dM4E__O_MIN=12,dM4E_OX=12,dM4E_OY=13,dM4E_OZ=14,dM4E_OO=15,dM4E__O_MAX=16,dM4E__MAX=16};
 typedef enum dDynamicsAxis{dDA__MIN=0,dDA__L_MIN=0,dDA_LX=0,dDA_LY=1,dDA_LZ=2,dDA__L_MAX=3,dDA__A_MIN=3,dDA_AX=3,dDA_AY=4,dDA_AZ=5,dDA__A_MAX=6,dDA__MAX=6};
-typedef enum dMotionDynamics{dMD__MIN=0,dMD_LINEAR=0,dMD_ANGULAR=1,dMD__MAX=2};
+typedef enum dMeshTriangleVertex{dMTV__MIN=0,dMTV_FIRST=0,dMTV_SECOND=1,dMTV_THIRD=2,dMTV__MAX=3};
 typedef enum dAllocateODEDataFlags{dAllocateFlagBasicData=0,dAllocateFlagCollisionData=1,dAllocateMaskAll=-1};
 typedef enum dQuatElement{dQUE__MIN=0,dQUE_R=0,dQUE__AXIS_MIN=1,dQUE_I=1,dQUE_J=2,dQUE_K=3,dQUE__AXIS_MAX=4,dQUE__MAX=4};
+typedef enum dMotionDynamics{dMD__MIN=0,dMD_LINEAR=0,dMD_ANGULAR=1,dMD__MAX=2};
 typedef enum dJointType{dJointTypeNone=0,dJointTypeBall=1,dJointTypeHinge=2,dJointTypeSlider=3,dJointTypeContact=4,dJointTypeUniversal=5,dJointTypeHinge2=6,dJointTypeFixed=7,dJointTypeNull=8,dJointTypeAMotor=9,dJointTypeLMotor=10,dJointTypePlane2D=11,dJointTypePR=12,dJointTypePU=13,dJointTypePiston=14,dJointTypeDBall=15,dJointTypeDHinge=16,dJointTypeTransmission=17};
-typedef enum dMat3Element{dM3E__MIN=0,dM3E__X_MIN=0,dM3E__X_AXES_MIN=0,dM3E_XX=0,dM3E_XY=1,dM3E_XZ=2,dM3E__X_AXES_MAX=3,dM3E_XPAD=3,dM3E__X_MAX=4,dM3E__Y_MIN=4,dM3E__Y_AXES_MIN=4,dM3E_YX=4,dM3E_YY=5,dM3E_YZ=6,dM3E__Y_AXES_MAX=7,dM3E_YPAD=7,dM3E__Y_MAX=8,dM3E__Z_MIN=8,dM3E__Z_AXES_MIN=8,dM3E_ZX=8,dM3E_ZY=9,dM3E_ZZ=10,dM3E__Z_AXES_MAX=11,dM3E_ZPAD=11,dM3E__Z_MAX=12,dM3E__MAX=12};
+typedef enum dSpaceAxis{dSA__MIN=0,dSA_X=0,dSA_Y=1,dSA_Z=2,dSA__MAX=3};
 typedef enum dInitODEFlags{dInitFlagManualThreadCleanup=1};
 typedef enum dVec3Element{dV3E__MIN=0,dV3E__AXES_MIN=0,dV3E_X=0,dV3E_Y=1,dV3E_Z=2,dV3E__AXES_MAX=3,dV3E_PAD=3,dV3E__MAX=4,dV3E__AXES_COUNT=3};
 struct _IO_marker {struct _IO_marker*_next;struct _IO_FILE*_sbuf;int _pos;};
@@ -35,9 +35,13 @@ struct dJointFeedback {double f1[dV3E__MAX];double t1[dV3E__MAX];double f2[dV3E_
 struct dSurfaceParameters {int mode;double mu;double mu2;double rho;double rho2;double rhoN;double bounce;double bounce_vel;double soft_erp;double soft_cfm;double motion1;double motion2;double motionN;double slip1;double slip2;};
 struct dContactGeom {double pos[dV3E__MAX];double normal[dV3E__MAX];double depth;struct dxGeom*g1;struct dxGeom*g2;int side1;int side2;};
 struct dContact {struct dSurfaceParameters surface;struct dContactGeom geom;double fdir1[dV3E__MAX];};
+struct dxThreadingImplementation {};
+struct dxThreadingFunctionsInfo {unsigned int struct_size;struct dxMutexGroup*(alloc_mutex_group)(struct dxThreadingImplementation*,unsigned int,const char*const*);void(free_mutex_group)(struct dxThreadingImplementation*,struct dxMutexGroup*);void(lock_group_mutex)(struct dxThreadingImplementation*,struct dxMutexGroup*,unsigned int);void(unlock_group_mutex)(struct dxThreadingImplementation*,struct dxMutexGroup*,unsigned int);struct dxCallWait*(alloc_call_wait)(struct dxThreadingImplementation*);void(reset_call_wait)(struct dxThreadingImplementation*,struct dxCallWait*);void(free_call_wait)(struct dxThreadingImplementation*,struct dxCallWait*);void(post_call)(struct dxThreadingImplementation*,int*,struct dxCallReleasee**,unsigned long,struct dxCallReleasee*,struct dxCallWait*,int(call_func)(void*,unsigned long,struct dxCallReleasee*),void*,unsigned long,const char*);void(alter_call_dependencies_count)(struct dxThreadingImplementation*,struct dxCallReleasee*,long);void(wait_call)(struct dxThreadingImplementation*,int*,struct dxCallWait*,const struct dxThreadedWaitTime*,const char*);unsigned int(retrieve_thread_count)(struct dxThreadingImplementation*);int(preallocate_resources_for_calls)(struct dxThreadingImplementation*,unsigned long);};
+struct dxCooperative {};
+struct dxResourceRequirements {};
+struct dxResourceContainer {};
 struct dStopwatch {double time;unsigned long cc[2];};
 struct dMass {double mass;double c[dV3E__MAX];double I[dM3E__MAX];};
-struct dxThreadingImplementation {};
 struct dWorldStepReserveInfo {unsigned int struct_size;float reserve_factor;unsigned int reserve_minimum;};
 struct dWorldStepMemoryFunctionsInfo {unsigned int struct_size;void*(*alloc_block)(unsigned long);void*(*shrink_block)(void*,unsigned long,unsigned long);void(*free_block)(void*,unsigned long);};
 struct dxTriMeshData {};
@@ -65,7 +69,7 @@ int(dBoxBox)(const double[dV3E__MAX],const double[dM3E__MAX],const double[dV3E__
 void(dGeomTriMeshSetRayCallback)(struct dxGeom*,int(Callback)(struct dxGeom*,struct dxGeom*,int,double,double));
 void(dBodySetAutoDisableTime)(struct dxBody*,double);
 void(dGeomSetCategoryBits)(struct dxGeom*,unsigned long);
-void(dJointSetPUParam)(struct dxJoint*,int,double);
+void(dJointSetPRParam)(struct dxJoint*,int,double);
 int(dOrthogonalizeR)(double[dM3E__MAX]);
 void(dGeomRaySetBackfaceCull)(struct dxGeom*,int);
 struct dxHeightfieldData*(dGeomHeightfieldGetHeightfieldData)(struct dxGeom*);
@@ -80,7 +84,7 @@ void(dJointSetDBallDistance)(struct dxJoint*,double);
 void(dBodyGetFiniteRotationAxis)(struct dxBody*,double[dV3E__MAX]);
 void(dBodyDestroy)(struct dxBody*);
 void(dHashSpaceGetLevels)(struct dxSpace*,int*,int*);
-struct dxJoint*(dBodyGetJoint)(struct dxBody*,int);
+void(dBodySetFiniteRotationAxis)(struct dxBody*,double,double,double);
 void(dGeomMoved)(struct dxGeom*);
 void*(dAlloc)(unsigned long);
 struct dJointFeedback*(dJointGetFeedback)(struct dxJoint*);
@@ -91,23 +95,25 @@ double(dStopwatchTime)(struct dStopwatch*);
 void(dJointSetPUAxis3)(struct dxJoint*,double,double,double);
 struct dxJoint*(dJointCreateBall)(struct dxWorld*,struct dxJointGroup*);
 double(dWorldGetContactSurfaceLayer)(struct dxWorld*);
+double(dWorldGetLinearDamping)(struct dxWorld*);
 struct dxGeom*(dBodyGetNextGeom)(struct dxGeom*);
+void(dCooperativelySolveL1Straight)(struct dxResourceContainer*,unsigned int,const double*,double*,unsigned int,unsigned int);
 struct dxJoint*(dJointCreateSlider)(struct dxWorld*,struct dxJointGroup*);
 struct dxWorld*(dWorldCreate)();
 double(dJointGetHingeParam)(struct dxJoint*,int);
 double(dJointGetAMotorParam)(struct dxJoint*,int);
+void(dEstimateCooperativelySolveL1TransposedResourceRequirements)(struct dxResourceRequirements*,unsigned int,unsigned int);
 int(dJointIsEnabled)(struct dxJoint*);
 void(dBodySetKinematic)(struct dxBody*);
-void(dMassSetBox)(struct dMass*,double,double,double,double);
 int(dAllocateODEDataForThread)(unsigned int);
 void(dBodySetAngularDampingThreshold)(struct dxBody*,double);
 void(dGeomSetPosition)(struct dxGeom*,double,double,double);
-void(dJointSetHinge2Axis1)(struct dxJoint*,double,double,double);
 void(dJointSetLMotorParam)(struct dxJoint*,int,double);
 void(dJointGroupEmpty)(struct dxJointGroup*);
 void(dJointSetAMotorParam)(struct dxJoint*,int,double);
 void(dJointSetTransmissionMode)(struct dxJoint*,int);
 struct dxGeom*(dCreateRay)(struct dxSpace*,double);
+void(dTimerEnd)();
 void(dJointGetTransmissionAxis)(struct dxJoint*,double[dV3E__MAX]);
 void(dGeomPlaneSetParams)(struct dxGeom*,double,double,double,double);
 double(dJointGetLMotorParam)(struct dxJoint*,int);
@@ -120,11 +126,9 @@ const double*(dBodyGetAngularVel)(struct dxBody*);
 unsigned long(dGeomGetCollideBits)(struct dxGeom*);
 void(dBodyGetMass)(struct dxBody*,struct dMass*);
 void(dGeomGetAABB)(struct dxGeom*,double);
-void(dJointSetSliderAxis)(struct dxJoint*,double,double,double);
 void*(dGeomGetData)(struct dxGeom*);
 void(dDebug)(int,const char*,...);
 void(dBodyAddForceAtRelPos)(struct dxBody*,double,double,double,double,double,double);
-void(dJointSetUniversalAxis2Offset)(struct dxJoint*,double,double,double,double,double);
 void(dMassSetBoxTotal)(struct dMass*,double,double,double,double);
 void(dBodySetRotation)(struct dxBody*,const double[dM3E__MAX]);
 void(dGeomSetCollideBits)(struct dxGeom*,unsigned long);
@@ -141,7 +145,6 @@ int(dMassCheck)(const struct dMass*);
 int(dBodyGetAutoDisableSteps)(struct dxBody*);
 int(dWorldSetStepMemoryManager)(struct dxWorld*,const struct dWorldStepMemoryFunctionsInfo*);
 void(dRemoveRowCol)(double*,int,int,int);
-void(dJointSetPUAxis2)(struct dxJoint*,double,double,double);
 void(dJointGetPUAxis3)(struct dxJoint*,double[dV3E__MAX]);
 void(dCloseODE)();
 double(dJointGetPRAngleRate)(struct dxJoint*);
@@ -160,11 +163,14 @@ void(dWorldSetGravity)(struct dxWorld*,double,double,double);
 void(*dGetMessageHandler())(int,const char*,__builtin_va_list);
 void(dVectorScale)(double*,const double*,int);
 void(dLDLTRemove)(double**,const int*,double*,double*,int,int,int,int);
+void(dCooperativelySolveL1Transposed)(struct dxResourceContainer*,unsigned int,const double*,double*,unsigned int,unsigned int);
 void(dRFromAxisAndAngle)(double[dM3E__MAX],double,double,double,double);
 void(dJointSetHingeAnchor)(struct dxJoint*,double,double,double);
+int(dSafeNormalize3)(double[dV3E__MAX]);
 int(dCheckConfiguration)(const char*);
 void(dBodySetAutoDisableLinearThreshold)(struct dxBody*,double);
 unsigned long(dRand)();
+void(dEstimateCooperativelySolveLDLTResourceRequirements)(struct dxResourceRequirements*,unsigned int,unsigned int);
 int(dBoxTouchesBox)(const double[dV3E__MAX],const double[dM3E__MAX],const double[dV3E__MAX],const double[dV3E__MAX],const double[dM3E__MAX],const double[dV3E__MAX]);
 void(dQfromR)(double[dQUE__MAX],const double[dM3E__MAX]);
 void(dMassSetParameters)(struct dMass*,double,double,double,double,double,double,double,double,double,double);
@@ -187,7 +193,8 @@ struct dxSpace*(dGeomGetSpace)(struct dxGeom*);
 double(dJointGetPUAngle2)(struct dxJoint*);
 void(dSpaceCollide)(struct dxSpace*,void*,void(callback)(void*,struct dxGeom*,struct dxGeom*));
 void(dJointSetTransmissionAxis2)(struct dxJoint*,double,double,double);
-void(dSpaceSetManualCleanup)(struct dxSpace*,int);
+void(dResourceRequirementsDestroy)(struct dxResourceRequirements*);
+void(dCooperativelyFactorLDLT)(struct dxResourceContainer*,unsigned int,double*,double*,unsigned int,unsigned int);
 struct dxJoint*(dJointCreatePlane2D)(struct dxWorld*,struct dxJointGroup*);
 void(dQMultiply2)(double[dQUE__MAX],const double[dQUE__MAX],const double[dQUE__MAX]);
 void(dJointSetHingeAxis)(struct dxJoint*,double,double,double);
@@ -223,12 +230,11 @@ void(dJointSetPlane2DXParam)(struct dxJoint*,int,double);
 void(dJointAttach)(struct dxJoint*,struct dxBody*,struct dxBody*);
 int(dWorldSetStepMemoryReservationPolicy)(struct dxWorld*,const struct dWorldStepReserveInfo*);
 void(dJointGetUniversalAnchor)(struct dxJoint*,double[dV3E__MAX]);
-void(dJointSetPUAnchorDelta)(struct dxJoint*,double,double,double,double,double,double);
+void(dWorldSetAutoDisableAngularThreshold)(struct dxWorld*,double);
 void(dMassSetCylinder)(struct dMass*,double,int,double,double);
 void(dBodyGetRelPointVel)(struct dxBody*,double,double,double,double[dV3E__MAX]);
 void(dGeomTriMeshDataBuildSimple1)(struct dxTriMeshData*,const double*,int,const unsigned int*,int,const int*);
 double(dBodyGetAngularDamping)(struct dxBody*);
-void(dJointSetHinge2Axis2)(struct dxJoint*,double,double,double);
 void(dWorldSetData)(struct dxWorld*,void*);
 void(dJointSetTransmissionRatio)(struct dxJoint*,double);
 double(dWorldGetERP)(struct dxWorld*);
@@ -243,9 +249,11 @@ void(dBodySetLinearDamping)(struct dxBody*,double);
 void(dThreadingImplementationCleanupForRestart)(struct dxThreadingImplementation*);
 void*(dJointGetData)(struct dxJoint*);
 void(dJointSetPlane2DAngleParam)(struct dxJoint*,int,double);
+void(dCooperativelySolveLDLT)(struct dxResourceContainer*,unsigned int,const double*,const double*,double*,unsigned int,unsigned int);
 void(dInfiniteAABB)(struct dxGeom*,double);
 void(dWorldSetAngularDamping)(struct dxWorld*,double);
 void(dGeomRaySetParams)(struct dxGeom*,int,int);
+void(dEstimateCooperativelySolveL1StraightResourceRequirements)(struct dxResourceRequirements*,unsigned int,unsigned int);
 double(dWorldGetAngularDamping)(struct dxWorld*);
 void(dPrintMatrix)(const double*,int,int,const char*,struct _IO_FILE*);
 void(dGeomTriMeshDataBuildSingle1)(struct dxTriMeshData*,const void*,int,int,const void*,int,int,const void*);
@@ -257,20 +265,19 @@ void(dJointGetUniversalAngles)(struct dxJoint*,double*,double*);
 int(dJointGetAMotorAxisRel)(struct dxJoint*,int);
 const double*(dGeomTriMeshGetLastTransform)(struct dxGeom*);
 double(dJointGetTransmissionParam)(struct dxJoint*,int);
+struct dxCooperative*(dCooperativeCreate)(const struct dxThreadingFunctionsInfo*,struct dxThreadingImplementation*);
 void(dJointSetDHingeParam)(struct dxJoint*,int,double);
-void(dJointGetDHingeAxis)(struct dxJoint*,double[dV3E__MAX]);
 void(dGeomTriMeshDataGetBuffer)(struct dxTriMeshData*,unsigned char**,int*);
 void(dJointGetUniversalAxis1)(struct dxJoint*,double[dV3E__MAX]);
+void(dCooperativeDestroy)(struct dxCooperative*);
 void(dJointSetHinge2Param)(struct dxJoint*,int,double);
 void(dWorldCleanupWorkingMemory)(struct dxWorld*);
-void(dJointSetUniversalAxis1)(struct dxJoint*,double,double,double);
 int(dBodyGetGravityMode)(struct dxBody*);
 double(dJointGetHinge2Param)(struct dxJoint*,int);
 void(dJointSetPUAnchorOffset)(struct dxJoint*,double,double,double,double,double,double);
 void(dJointAddHinge2Torques)(struct dxJoint*,double,double);
 void(dGeomHeightfieldDataBuildSingle)(struct dxHeightfieldData*,const float*,int,double,double,int,int,double,double,double,int);
 int(dBodyIsEnabled)(struct dxBody*);
-int(dFactorCholesky)(double*,int);
 double(dJointGetFixedParam)(struct dxJoint*,int);
 void(dStopwatchReset)(struct dStopwatch*);
 void(dWorldSetDamping)(struct dxWorld*,double,double);
@@ -302,12 +309,14 @@ void(dMassSetCappedCylinder)(struct dMass*,double,int,double,double);
 void(dGeomRayGet)(struct dxGeom*,double[dV3E__MAX],double[dV3E__MAX]);
 void(dBodySetTorque)(struct dxBody*,double,double,double);
 void(dBodySetLinearDampingThreshold)(struct dxBody*,double);
+void(dScaleVector)(double*,const double*,int);
 const double*(dBodyGetTorque)(struct dxBody*);
 int(dSpaceGetNumGeoms)(struct dxSpace*);
 struct dxJoint*(dJointCreateContact)(struct dxWorld*,struct dxJointGroup*,const struct dContact*);
 int(dGeomRayGetClosestHit)(struct dxGeom*);
 void(dGeomRayGetParams)(struct dxGeom*,int*,int*);
 void(dThreadingImplementationShutdownProcessing)(struct dxThreadingImplementation*);
+void(dJointAddPRTorque)(struct dxJoint*,double);
 void(dGeomSetOffsetWorldPosition)(struct dxGeom*,double,double,double);
 struct dxJoint*(dJointCreatePU)(struct dxWorld*,struct dxJointGroup*);
 void(dJointSetHingeParam)(struct dxJoint*,int,double);
@@ -319,32 +328,23 @@ void(dBodySetAutoDisableDefaults)(struct dxBody*);
 void(dJointSetBallAnchor2)(struct dxJoint*,double,double,double);
 struct dxThreadingImplementation*(dThreadingAllocateSelfThreadedImplementation)();
 struct dxJointGroup*(dJointGroupCreate)(int);
-double(dWorldGetLinearDampingThreshold)(struct dxWorld*);
-void(dJointSetTransmissionAxis)(struct dxJoint*,double,double,double);
-double(dJointGetDHingeDistance)(struct dxJoint*);
-void(dJointGetBallAnchor2)(struct dxJoint*,double[dV3E__MAX]);
 void(dWorldExportDIF)(struct dxWorld*,struct _IO_FILE*,const char*);
 void(dThreadingFreeThreadPool)(struct dxThreadingThreadPool*);
+double(dWorldGetLinearDampingThreshold)(struct dxWorld*);
+void(dJointSetTransmissionAxis)(struct dxJoint*,double,double,double);
 void(dThreadingThreadPoolServeMultiThreadedImplementation)(struct dxThreadingThreadPool*,struct dxThreadingImplementation*);
 void(dExternalThreadingServeMultiThreadedImplementation)(struct dxThreadingImplementation*,void(readiness_callback)(void*),void*);
 struct dxThreadingImplementation*(dThreadingAllocateMultiThreadedImplementation)();
-double(dJointGetAMotorAngle)(struct dxJoint*,int);
+void(dClearUpperTriangle)(double*,int);
+void(dTimerStart)(const char*);
+double(dJointGetDHingeDistance)(struct dxJoint*);
+void(dJointGetBallAnchor2)(struct dxJoint*,double[dV3E__MAX]);
 void*(dGeomGetClassData)(struct dxGeom*);
-void(dJointSetDBallAnchor1)(struct dxJoint*,double,double,double);
-void(dSetValue)(double*,int,double);
-void(dGeomSetQuaternion)(struct dxGeom*,const double[dQUE__MAX]);
-void(dJointGetDBallAnchor1)(struct dxJoint*,double[dV3E__MAX]);
-void(dJointGetDBallAnchor2)(struct dxJoint*,double[dV3E__MAX]);
 void(dClosestLineSegmentPoints)(const double[dV3E__MAX],const double[dV3E__MAX],const double[dV3E__MAX],const double[dV3E__MAX],double[dV3E__MAX],double[dV3E__MAX]);
-void(dNormalize3)(double[dV3E__MAX]);
-void(dGeomTriMeshSetLastTransform)(struct dxGeom*,const double[dM4E__MAX]);
-void(dJointGetSliderAxis)(struct dxJoint*,double[dV3E__MAX]);
+struct dxGeom*(dCreateBox)(struct dxSpace*,double,double,double);
 void(dGeomHeightfieldDataBuildShort)(struct dxHeightfieldData*,const short*,int,double,double,int,int,double,double,double,int);
-void(dJointSetTransmissionAxis1)(struct dxJoint*,double,double,double);
-void(dJointSetAMotorAxis)(struct dxJoint*,int,int,double,double,double);
 void(dGeomHeightfieldDataDestroy)(struct dxHeightfieldData*);
 struct dxHeightfieldData*(dGeomHeightfieldDataCreate)();
-double(dJointGetPUAngle1Rate)(struct dxJoint*);
 struct dxGeom*(dCreateHeightfield)(struct dxSpace*,struct dxHeightfieldData*,int);
 int(dGeomTransformGetInfo)(struct dxGeom*);
 int(dGeomTransformGetCleanup)(struct dxGeom*);
@@ -354,178 +354,206 @@ struct dxGeom*(dCreateGeomTransform)(struct dxSpace*);
 void(dGeomTriMeshDataUpdate)(struct dxTriMeshData*);
 int(dGeomTriMeshGetTriangleCount)(struct dxGeom*);
 void(dGeomTriMeshGetTriangle)(struct dxGeom*,int,double*[dV3E__MAX],double*[dV3E__MAX],double*[dV3E__MAX]);
-void(dMakeRandomVector)(double*,int,double);
 struct dxTriMeshData*(dGeomTriMeshGetTriMeshDataID)(struct dxGeom*);
+void(dEstimateCooperativelyFactorLDLTResourceRequirements)(struct dxResourceRequirements*,unsigned int,unsigned int);
 void(dGeomTriMeshEnableTC)(struct dxGeom*,int,int);
 struct dxTriMeshData*(dGeomTriMeshGetData)(struct dxGeom*);
 void(dGeomTriMeshSetData)(struct dxGeom*,struct dxTriMeshData*);
+void(dJointSetDBallAnchor1)(struct dxJoint*,double,double,double);
+void(dQFromAxisAndAngle)(double[dQUE__MAX],double,double,double,double);
+void(dGeomSetQuaternion)(struct dxGeom*,const double[dQUE__MAX]);
+void(dJointGetDBallAnchor1)(struct dxJoint*,double[dV3E__MAX]);
+void(dJointGetDBallAnchor2)(struct dxJoint*,double[dV3E__MAX]);
 struct dxGeom*(dCreateTriMesh)(struct dxSpace*,struct dxTriMeshData*,int(Callback)(struct dxGeom*,struct dxGeom*,int),void(ArrayCallback)(struct dxGeom*,struct dxGeom*,const int*,int),int(RayCallback)(struct dxGeom*,struct dxGeom*,int,double,double));
 int(*dGeomTriMeshGetTriMergeCallback(struct dxGeom*))(struct dxGeom*,int,int);
+void(dNormalize3)(double[dV3E__MAX]);
 void(dGeomTriMeshSetTriMergeCallback)(struct dxGeom*,int(Callback)(struct dxGeom*,int,int));
-void(dJointSetTransmissionAnchor1)(struct dxJoint*,double,double,double);
-double(dJointGetPUParam)(struct dxJoint*,int);
+void(dJointGetSliderAxis)(struct dxJoint*,double[dV3E__MAX]);
+double(dJointGetHinge2Angle1Rate)(struct dxJoint*);
 void(*dGeomTriMeshGetArrayCallback(struct dxGeom*))(struct dxGeom*,struct dxGeom*,const int*,int);
 void(dGeomTriMeshSetArrayCallback)(struct dxGeom*,void(ArrayCallback)(struct dxGeom*,struct dxGeom*,const int*,int));
-void(dJointGetPRAxis1)(struct dxJoint*,double[dV3E__MAX]);
-struct dxJoint*(dJointCreateUniversal)(struct dxWorld*,struct dxJointGroup*);
+void(dJointGetHingeAnchor)(struct dxJoint*,double[dV3E__MAX]);
 void(dGeomTriMeshDataSetBuffer)(struct dxTriMeshData*,unsigned char*);
-void(dJointGetTransmissionAnchor1)(struct dxJoint*,double[dV3E__MAX]);
-double(dBodyGetMaxAngularSpeed)(struct dxBody*);
+double(dJointGetPUAngle1Rate)(struct dxJoint*);
 int(dGeomTriMeshDataPreprocess)(struct dxTriMeshData*);
 void(dGeomTriMeshDataBuildSimple)(struct dxTriMeshData*,const double*,int,const unsigned int*,int);
-void(dHashSpaceSetLevels)(struct dxSpace*,int,int);
 void(dGeomTriMeshDataBuildDouble)(struct dxTriMeshData*,const void*,int,int,const void*,int,int);
-void(dJointSetFeedback)(struct dxJoint*,struct dJointFeedback*);
 void(dGeomTriMeshDataBuildSingle)(struct dxTriMeshData*,const void*,int,int,const void*,int,int);
-void(dGeomHeightfieldDataSetBounds)(struct dxHeightfieldData*,double,double);
-void(dRFromZAxis)(double[dM3E__MAX],double,double,double);
-void(dBodySetData)(struct dxBody*,void*);
+void(dGeomTriMeshSetLastTransform)(struct dxGeom*,const double[dM4E__MAX]);
 void*(dGeomTriMeshDataGet2)(struct dxTriMeshData*,int,unsigned long*);
-double(dJointGetHinge2Angle2Rate)(struct dxJoint*);
+void(dJointSetPistonAnchorOffset)(struct dxJoint*,double,double,double,double,double,double);
 void(dGeomTriMeshDataSet)(struct dxTriMeshData*,int,void*);
 void(dGeomTriMeshDataDestroy)(struct dxTriMeshData*);
 struct dxTriMeshData*(dGeomTriMeshDataCreate)();
+void(dMakeRandomVector)(double*,int,double);
 void(dGeomRaySetClosestHit)(struct dxGeom*,int);
 int(dGeomRayGetBackfaceCull)(struct dxGeom*);
 int(dGeomRayGetFirstContact)(struct dxGeom*);
-void(dMakeRandomMatrix)(double*,int,int,double);
 void(dGeomRaySet)(struct dxGeom*,double,double,double,double,double,double);
 void(dGeomCylinderGetParams)(struct dxGeom*,double*,double*);
 void(dGeomCylinderSetParams)(struct dxGeom*,double,double);
+void(dJointSetTransmissionAnchor1)(struct dxJoint*,double,double,double);
 struct dxGeom*(dCreateCylinder)(struct dxSpace*,double,double);
 double(dGeomCapsulePointDepth)(struct dxGeom*,double,double,double);
 void(dGeomCapsuleGetParams)(struct dxGeom*,double*,double*);
 void(dGeomCapsuleSetParams)(struct dxGeom*,double,double);
+struct dxJoint*(dJointCreateUniversal)(struct dxWorld*,struct dxJointGroup*);
+void(dJointGetTransmissionAnchor1)(struct dxJoint*,double[dV3E__MAX]);
+double(dBodyGetMaxAngularSpeed)(struct dxBody*);
 void(dGeomPlaneGetParams)(struct dxGeom*,double[dV4E__MAX]);
 struct dxGeom*(dCreatePlane)(struct dxSpace*,double,double,double,double);
-void(dMassSetCapsuleTotal)(struct dMass*,double,int,double,double);
+void(dHashSpaceSetLevels)(struct dxSpace*,int,int);
 void(dGeomBoxGetLengths)(struct dxGeom*,double[dV3E__MAX]);
+void(dJointSetFeedback)(struct dxJoint*,struct dJointFeedback*);
 void(dGeomBoxSetLengths)(struct dxGeom*,double,double,double);
-struct dxGeom*(dCreateBox)(struct dxSpace*,double,double,double);
+void(dGeomHeightfieldDataSetBounds)(struct dxHeightfieldData*,double,double);
+void(dRFromZAxis)(double[dM3E__MAX],double,double,double);
+void(dBodySetData)(struct dxBody*,void*);
 void(dGeomSetConvex)(struct dxGeom*,const double*,unsigned int,const double*,unsigned int,const unsigned int*);
 double(dGeomSpherePointDepth)(struct dxGeom*,double,double,double);
 void(dSpaceCollide2)(struct dxGeom*,struct dxGeom*,void*,void(callback)(void*,struct dxGeom*,struct dxGeom*));
 int(dCollide)(struct dxGeom*,struct dxGeom*,int,struct dContactGeom*,int);
-void(dSpaceClean)(struct dxSpace*);
-enum dJointType(dJointGetType)(struct dxJoint*);
+double(dJointGetDBallDistance)(struct dxJoint*);
 void(dGeomCopyOffsetRotation)(struct dxGeom*,double[dM3E__MAX]);
 const double*(dGeomGetOffsetRotation)(struct dxGeom*);
 void(dGeomCopyOffsetPosition)(struct dxGeom*,double[dV3E__MAX]);
-void(dJointSetHinge2Axes)(struct dxJoint*,const double*,const double*);
+void(dMakeRandomMatrix)(double*,int,int,double);
 const double*(dGeomGetOffsetPosition)(struct dxGeom*);
-struct dxJoint*(dJointCreateDHinge)(struct dxWorld*,struct dxJointGroup*);
-double(dJointGetAMotorAngleRate)(struct dxJoint*,int);
+void(dJointGetPRAxis1)(struct dxJoint*,double[dV3E__MAX]);
 void(dGeomClearOffset)(struct dxGeom*);
 void(dGeomSetOffsetWorldQuaternion)(struct dxGeom*,const double[dQUE__MAX]);
 void(dGeomSetOffsetWorldRotation)(struct dxGeom*,const double[dM3E__MAX]);
 void(dGeomSetOffsetQuaternion)(struct dxGeom*,const double[dQUE__MAX]);
 void(dGeomSetOffsetRotation)(struct dxGeom*,const double[dM3E__MAX]);
 void(dGeomSetOffsetPosition)(struct dxGeom*,double,double,double);
-void(dJointSetPistonParam)(struct dxJoint*,int,double);
-void(dJointSetHingeAnchorDelta)(struct dxJoint*,double,double,double,double,double,double);
+void(dJointSetHinge2Axis1)(struct dxJoint*,double,double,double);
 void(dGeomVectorToWorld)(struct dxGeom*,double,double,double,double[dV3E__MAX]);
+void(dMassSetCapsuleTotal)(struct dMass*,double,int,double,double);
 void(dGeomGetPosRelPoint)(struct dxGeom*,double,double,double,double[dV3E__MAX]);
 int(dGeomLowLevelControl)(struct dxGeom*,int,int,void*,int*);
 int(dGeomGetClass)(struct dxGeom*);
 const double*(dGeomGetRotation)(struct dxGeom*);
-void(dJointGetPistonAnchor)(struct dxJoint*,double[dV3E__MAX]);
 const double*(dGeomGetPosition)(struct dxGeom*);
-double(dJointGetBallParam)(struct dxJoint*,int);
 void(dGeomSetBody)(struct dxGeom*,struct dxBody*);
+enum dJointType(dJointGetType)(struct dxJoint*);
 int(dSpaceGetClass)(struct dxSpace*);
-void(dStopwatchStop)(struct dStopwatch*);
 struct dxGeom*(dSpaceGetGeom)(struct dxSpace*,int);
-void(dGeomGetOffsetQuaternion)(struct dxGeom*,double[dQUE__MAX]);
-double(dTimerTicksPerSecond)();
-int(dRandInt)(int);
+void(dSpaceClean)(struct dxSpace*);
+void(dJointSetHinge2Axes)(struct dxJoint*,const double*,const double*);
+void(dMultiply2)(double*,const double*,const double*,int,int,int);
+struct dxJoint*(dJointCreateDHinge)(struct dxWorld*,struct dxJointGroup*);
 void(dSpaceAdd)(struct dxSpace*,struct dxGeom*);
-void(dBodySetMaxAngularSpeed)(struct dxBody*,double);
+void(dSpaceSetManualCleanup)(struct dxSpace*,int);
+void(dBodySetFiniteRotationMode)(struct dxBody*,int);
 void(dSpaceSetSublevel)(struct dxSpace*,int);
-void(dSetMessageHandler)(void(fn)(int,const char*,__builtin_va_list));
 struct dxSpace*(dSweepAndPruneSpaceCreate)(struct dxSpace*,int);
-double(dJointGetPistonPosition)(struct dxJoint*);
+void(dError)(int,const char*,...);
+void(dJointSetHingeAnchorDelta)(struct dxJoint*,double,double,double,double,double,double);
 struct dxSpace*(dHashSpaceCreate)(struct dxSpace*);
 int(dAreConnectedExcluding)(struct dxBody*,struct dxBody*,int);
 int(dAreConnected)(struct dxBody*,struct dxBody*);
 double(dJointGetDHingeParam)(struct dxJoint*,int);
-double(dJointGetUniversalAngle1Rate)(struct dxJoint*);
+void(dJointSetAMotorNumAxes)(struct dxJoint*,int);
 void(dJointGetDHingeAnchor1)(struct dxJoint*,double[dV3E__MAX]);
 void(dJointSetDHingeAnchor2)(struct dxJoint*,double,double,double);
-void(dMassAdd)(struct dMass*,const struct dMass*);
-double(dBodyGetAutoDisableLinearThreshold)(struct dxBody*);
+void(dJointGetDHingeAxis)(struct dxJoint*,double[dV3E__MAX]);
+double(dJointGetBallParam)(struct dxJoint*,int);
+void(dWorldSetContactMaxCorrectingVel)(struct dxWorld*,double);
 double(dJointGetDBallParam)(struct dxJoint*,int);
-void(dInitODE)();
-void(dBodyCopyQuaternion)(struct dxBody*,double[dQUE__MAX]);
+void(dStopwatchStop)(struct dStopwatch*);
 void(dJointSetDBallParam)(struct dxJoint*,int,double);
-double(dJointGetDBallDistance)(struct dxJoint*);
+void(dGeomGetOffsetQuaternion)(struct dxGeom*,double[dQUE__MAX]);
 void(dJointSetDBallAnchor2)(struct dxJoint*,double,double,double);
-void(dJointGetPistonAnchor2)(struct dxJoint*,double[dV3E__MAX]);
-void(dWorldDestroy)(struct dxWorld*);
+double(dJointGetUniversalAngle1)(struct dxJoint*);
+int(dRandInt)(int);
+double(dJointGetHingeAngle)(struct dxJoint*);
 void(dJointSetTransmissionRadius2)(struct dxJoint*,double);
 void(dJointSetTransmissionRadius1)(struct dxJoint*,double);
-void(dBodyCopyPosition)(struct dxBody*,double[dV3E__MAX]);
-void(dBodySetFiniteRotationMode)(struct dxBody*,int);
+struct dxGeom*(dGeomGetBodyNext)(struct dxGeom*);
+void(dSetMessageHandler)(void(fn)(int,const char*,__builtin_va_list));
 double(dJointGetTransmissionRadius1)(struct dxJoint*);
-void(dBodySetDamping)(struct dxBody*,double,double);
+void(dJointSetPistonParam)(struct dxJoint*,int,double);
+double(dJointGetPistonPosition)(struct dxJoint*);
 double(dJointGetTransmissionAngle1)(struct dxJoint*);
-int(dWorldUseSharedWorkingMemory)(struct dxWorld*,struct dxWorld*);
-struct dxJoint*(dJointCreateHinge2)(struct dxWorld*,struct dxJointGroup*);
 int(dJointGetTransmissionMode)(struct dxJoint*);
 void(dJointGetTransmissionAxis2)(struct dxJoint*,double[dV3E__MAX]);
-void(dGeomHeightfieldDataBuildByte)(struct dxHeightfieldData*,const unsigned char*,int,double,double,int,int,double,double,double,int);
+void(dJointSetTransmissionAxis1)(struct dxJoint*,double,double,double);
 void(dJointGetTransmissionContactPoint2)(struct dxJoint*,double[dV3E__MAX]);
-void(dJointSetPUAxisP)(struct dxJoint*,double,double,double);
 void(dJointGetTransmissionContactPoint1)(struct dxJoint*,double[dV3E__MAX]);
-int(dGeomIsOffset)(struct dxGeom*);
-struct dxGeom*(dCreateGeom)(int);
+double(dJointGetAMotorAngleRate)(struct dxJoint*,int);
+double(dJointGetAMotorAngle)(struct dxJoint*,int);
+void(dInitODE)();
+void(dBodyCopyQuaternion)(struct dxBody*,double[dQUE__MAX]);
 void(dJointGetAMotorAxis)(struct dxJoint*,int,double[dV3E__MAX]);
+void(dSolveL1T)(const double*,double*,int,int);
 double(dJointGetPistonParam)(struct dxJoint*,int);
-int(dWorldQuickStep)(struct dxWorld*,double);
 void(dJointGetPistonAxis)(struct dxJoint*,double[dV3E__MAX]);
-void(dJointSetTransmissionBacklash)(struct dxJoint*,double);
-void(dGeomCopyPosition)(struct dxGeom*,double[dV3E__MAX]);
+void(dJointGetPistonAnchor2)(struct dxJoint*,double[dV3E__MAX]);
+void(dWorldDestroy)(struct dxWorld*);
+void(dJointGetPistonAnchor)(struct dxJoint*,double[dV3E__MAX]);
 double(dJointGetPistonAngle)(struct dxJoint*);
+void(dBodyCopyPosition)(struct dxBody*,double[dV3E__MAX]);
 double(dJointGetPistonPositionRate)(struct dxJoint*);
-int(*dGeomTriMeshGetRayCallback(struct dxGeom*))(struct dxGeom*,struct dxGeom*,int,double,double);
+double(dJointGetPUParam)(struct dxJoint*,int);
+void(dBodySetDamping)(struct dxBody*,double,double);
 double(dJointGetPUAngle2Rate)(struct dxJoint*);
-void(dWorldGetGravity)(struct dxWorld*,double[dV3E__MAX]);
+int(dWorldUseSharedWorkingMemory)(struct dxWorld*,struct dxWorld*);
+struct dxJoint*(dJointCreateHinge2)(struct dxWorld*,struct dxJointGroup*);
+struct dxJoint*(dBodyGetJoint)(struct dxBody*,int);
 void(dJointGetPUAxis2)(struct dxJoint*,double[dV3E__MAX]);
 void(dJointGetPUAxis1)(struct dxJoint*,double[dV3E__MAX]);
-void(dWorldSetAutoDisableFlag)(struct dxWorld*,int);
-void(dWorldSetERP)(struct dxWorld*,double);
-void(dJointSetData)(struct dxJoint*,void*);
-double(dJointGetTransmissionBacklash)(struct dxJoint*);
+void(dGeomHeightfieldDataBuildByte)(struct dxHeightfieldData*,const unsigned char*,int,double,double,int,int,double,double,double,int);
 void(dJointGetPUAnchor)(struct dxJoint*,double[dV3E__MAX]);
+void(dJointSetPUAxisP)(struct dxJoint*,double,double,double);
 double(dJointGetPRParam)(struct dxJoint*,int);
-void(dGeomTriMeshSetCallback)(struct dxGeom*,int(Callback)(struct dxGeom*,struct dxGeom*,int));
-struct dxJoint*(dJointCreateAMotor)(struct dxWorld*,struct dxJointGroup*);
+int(dGeomIsOffset)(struct dxGeom*);
+struct dxGeom*(dCreateGeom)(int);
 double(dJointGetPRPositionRate)(struct dxJoint*);
 double(dJointGetUniversalAngle2Rate)(struct dxJoint*);
-void(dJointGetDHingeAnchor2)(struct dxJoint*,double[dV3E__MAX]);
-double(dJointGetUniversalAngle1)(struct dxJoint*);
-double(dJointGetTransmissionAngle2)(struct dxJoint*);
+int(dWorldQuickStep)(struct dxWorld*,double);
+double(dJointGetUniversalAngle1Rate)(struct dxJoint*);
+void(dJointSetTransmissionBacklash)(struct dxJoint*,double);
+void(dGeomCopyPosition)(struct dxGeom*,double[dV3E__MAX]);
 void(dJointGetUniversalAnchor2)(struct dxJoint*,double[dV3E__MAX]);
-void(dJointSetBallAnchor)(struct dxJoint*,double,double,double);
-double(dJointGetHinge2Angle1Rate)(struct dxJoint*);
+double(dJointGetHinge2Angle2Rate)(struct dxJoint*);
+int(*dGeomTriMeshGetRayCallback(struct dxGeom*))(struct dxGeom*,struct dxGeom*,int,double,double);
 double(dJointGetHinge2Angle2)(struct dxJoint*);
 void(dJointGetHinge2Axis2)(struct dxJoint*,double[dV3E__MAX]);
 void(dJointGetHinge2Axis1)(struct dxJoint*,double[dV3E__MAX]);
 double(dJointGetSliderPositionRate)(struct dxJoint*);
 double(dJointGetSliderPosition)(struct dxJoint*);
-double(dJointGetHingeAngle)(struct dxJoint*);
-void(dClearUpperTriangle)(double*,int);
+void(dWorldSetAutoDisableFlag)(struct dxWorld*,int);
+void(dWorldSetERP)(struct dxWorld*,double);
+void(dJointSetData)(struct dxJoint*,void*);
+double(dJointGetTransmissionBacklash)(struct dxJoint*);
 void(dJointGetHingeAnchor2)(struct dxJoint*,double[dV3E__MAX]);
-void(dJointGetHingeAnchor)(struct dxJoint*,double[dV3E__MAX]);
+void(dGeomTriMeshSetCallback)(struct dxGeom*,int(Callback)(struct dxGeom*,struct dxGeom*,int));
 void(dJointGetBallAnchor)(struct dxJoint*,double[dV3E__MAX]);
 void(dJointSetPlane2DYParam)(struct dxJoint*,int,double);
 void(dJointSetAMotorMode)(struct dxJoint*,int);
+void(dJointSetAMotorAxis)(struct dxJoint*,int,int,double,double,double);
+void(dJointGetDHingeAnchor2)(struct dxJoint*,double[dV3E__MAX]);
+void(dJointSetFixedParam)(struct dxJoint*,int,double);
+double(dJointGetTransmissionAngle2)(struct dxJoint*);
+void(dJointSetPistonAxis)(struct dxJoint*,double,double,double);
+void(dJointSetBallAnchor)(struct dxJoint*,double,double,double);
+void(dJointSetPUParam)(struct dxJoint*,int,double);
+void(dJointSetPUAxis2)(struct dxJoint*,double,double,double);
+void(dJointSetPUAxis1)(struct dxJoint*,double,double,double);
+void(dJointSetPUAnchorDelta)(struct dxJoint*,double,double,double,double,double,double);
+void(dJointSetPUAnchor)(struct dxJoint*,double,double,double);
+void(dJointSetPRAxis2)(struct dxJoint*,double,double,double);
+void(dJointSetUniversalParam)(struct dxJoint*,int,double);
+void(dJointSetUniversalAxis2Offset)(struct dxJoint*,double,double,double,double,double);
+void(dJointSetUniversalAxis1Offset)(struct dxJoint*,double,double,double,double,double);
+void(dJointSetUniversalAxis1)(struct dxJoint*,double,double,double);
 void(dGeomHeightfieldDataBuildCallback)(struct dxHeightfieldData*,void*,double(pCallback)(void*,int,int),double,double,int,int,double,double,double,int);
 void(dJointAddSliderForce)(struct dxJoint*,double);
-void(dJointSetAMotorNumAxes)(struct dxJoint*,int);
-void(dJointSetFixedParam)(struct dxJoint*,int,double);
+struct dxResourceRequirements*(dResourceRequirementsClone)(struct dxResourceRequirements*);
+void(dJointSetHinge2Axis2)(struct dxJoint*,double,double,double);
 void(dGeomVectorFromWorld)(struct dxGeom*,double,double,double,double[dV3E__MAX]);
-void(dJointSetPistonAxis)(struct dxJoint*,double,double,double);
-void(dJointSetPistonAnchorOffset)(struct dxJoint*,double,double,double,double,double,double);
+void(dJointSetHinge2Anchor)(struct dxJoint*,double,double,double);
+void(dJointSetSliderAxis)(struct dxJoint*,double,double,double);
 void(dBodyAddForce)(struct dxBody*,double,double,double);
 int(dWorldGetAutoDisableAverageSamplesCount)(struct dxWorld*);
 void(*dGetFreeHandler())(void*,unsigned long);
@@ -533,22 +561,18 @@ void(dWorldImpulseToForce)(struct dxWorld*,double,double,double,double,double[dV
 unsigned long(dRandGetSeed)();
 void(dRFrom2Axes)(double[dM3E__MAX],double,double,double,double,double,double);
 void(dBodySetDampingDefaults)(struct dxBody*);
-double(dBodyGetAngularDampingThreshold)(struct dxBody*);
 void(dFactorLDLT)(double*,double*,int,int);
-double(dBodyGetLinearDampingThreshold)(struct dxBody*);
-void(dJointAddPRTorque)(struct dxJoint*,double);
 void(dJointGetHingeAxis)(struct dxJoint*,double[dV3E__MAX]);
+void(dBodySetPosition)(struct dxBody*,double,double,double);
 void(dRFromEulerAngles)(double[dM3E__MAX],double,double,double);
 double(dJointGetPRPosition)(struct dxJoint*);
-void(dWorldSetLinearDamping)(struct dxWorld*,double);
 void(*dGetDebugHandler())(int,const char*,__builtin_va_list);
-void(dJointSetPRParam)(struct dxJoint*,int,double);
-double(dWorldGetAutoDisableAngularThreshold)(struct dxWorld*);
+double(dMaxDifferenceLowerTriangle)(const double*,const double*,int);
 void(dCleanupODEAllDataForThread)();
 struct dxJoint*(dJointCreateDBall)(struct dxWorld*,struct dxJointGroup*);
 void(dGeomRaySetFirstContact)(struct dxGeom*,int);
-void(dWorldSetStepIslandsProcessingMaxThreadCount)(struct dxWorld*,unsigned int);
 void(dJointSetPistonAnchor)(struct dxJoint*,double,double,double);
+void(dTimerReport)(struct _IO_FILE*,int);
 void*(*dGetAllocHandler())(unsigned long);
 void(dLDLTAddTL)(double*,double*,const double*,int,int);
 void(dSpaceDestroy)(struct dxSpace*);
@@ -557,19 +581,16 @@ void*(*dGetReallocHandler())(void*,unsigned long,unsigned long);
 int(dBodyGetAutoDisableFlag)(struct dxBody*);
 double(dJointGetHingeAngleRate)(struct dxJoint*);
 int(dWorldStep)(struct dxWorld*,double);
-void(dJointSetPUAxis1)(struct dxJoint*,double,double,double);
-void(dMassSetSphere)(struct dMass*,double,double);
-void(dRfromQ)(double[dM3E__MAX],const double[dQUE__MAX]);
-int(dSpaceQuery)(struct dxSpace*,struct dxGeom*);
-void(dTimerReport)(struct _IO_FILE*,int);
-double(dJointGetPRAngle)(struct dxJoint*);
+void(dJointSetPRAxis1)(struct dxJoint*,double,double,double);
 int(dInvertPDMatrix)(const double*,double*,int);
-void(dMultiply2)(double*,const double*,const double*,int,int,int);
-int(dJointGetNumBodies)(struct dxJoint*);
-int(dSafeNormalize3)(double[dV3E__MAX]);
+int(dFactorCholesky)(double*,int);
+int(dSpaceQuery)(struct dxSpace*,struct dxGeom*);
+double(dJointGetPRAngle)(struct dxJoint*);
+struct dxJoint*(dJointCreateAMotor)(struct dxWorld*,struct dxJointGroup*);
+void(dSetReallocHandler)(void*(fn)(void*,unsigned long,unsigned long));
+struct dxResourceContainer*(dResourceContainerAcquire)(struct dxResourceRequirements*);
 void(dBodyGetPointVel)(struct dxBody*,double,double,double,double[dV3E__MAX]);
 void(dJointSetUniversalAnchor)(struct dxJoint*,double,double,double);
-void(dError)(int,const char*,...);
 void(dJointGetPUAxisP)(struct dxJoint*,double[dV3E__MAX]);
 int(dTestRand)();
 double(dMaxDifference)(const double*,const double*,int,int);
@@ -579,8 +600,8 @@ void*(dRealloc)(void*,unsigned long,unsigned long);
 void(dBodySetAngularDamping)(struct dxBody*,double);
 int(dWorldGetAutoDisableSteps)(struct dxWorld*);
 void(dMassAdjust)(struct dMass*,double);
-void(dJointSetPRAnchor)(struct dxJoint*,double,double,double);
-struct dxJoint*(dJointCreateTransmission)(struct dxWorld*,struct dxJointGroup*);
+void(dSetAllocHandler)(void*(fn)(unsigned long));
+struct dxGeom*(dBodyGetFirstGeom)(struct dxBody*);
 const char*(dGetConfiguration)();
 void(dGeomTransformSetInfo)(struct dxGeom*,int);
 double(dJointGetTransmissionRatio)(struct dxJoint*);
@@ -594,71 +615,73 @@ void(dThreadingThreadPoolWaitIdleState)(struct dxThreadingThreadPool*);
 double(dJointGetPUPositionRate)(struct dxJoint*);
 struct dxGeom*(dCreateSphere)(struct dxSpace*,double);
 double(dJointGetUniversalParam)(struct dxJoint*,int);
-void(dSolveL1T)(const double*,double*,int,int);
 int(dJointGetAMotorNumAxes)(struct dxJoint*);
 void(dBodySetQuaternion)(struct dxBody*,const double[dQUE__MAX]);
-void(dJointSetUniversalParam)(struct dxJoint*,int,double);
-void(dJointSetPUAnchor)(struct dxJoint*,double,double,double);
-void(dSetAllocHandler)(void*(fn)(unsigned long));
+void(dJointSetPRAnchor)(struct dxJoint*,double,double,double);
 double(dBodyGetLinearDamping)(struct dxBody*);
-void(dJointSetPRAxis1)(struct dxJoint*,double,double,double);
 void*(dBodyGetData)(struct dxBody*);
 struct dxGeom*(dCreateCapsule)(struct dxSpace*,double,double);
 double(dWorldGetAutoDisableLinearThreshold)(struct dxWorld*);
 double(dJointGetPUAngle1)(struct dxJoint*);
-void(dSetFreeHandler)(void(fn)(void*,unsigned long));
 void(dBodySetLinearVel)(struct dxBody*,double,double,double);
-int(dInitODE2)(unsigned int);
-void(dSetReallocHandler)(void*(fn)(void*,unsigned long,unsigned long));
-void(dFree)(void*,unsigned long);
+void(dSetFreeHandler)(void(fn)(void*,unsigned long));
 struct dxSpace*(dQuadTreeSpaceCreate)(struct dxSpace*,const double[dV3E__MAX],const double[dV3E__MAX],int);
 const double*(dBodyGetLinearVel)(struct dxBody*);
 void(dBodySetMass)(struct dxBody*,const struct dMass*);
 struct dxJoint*(dJointCreateLMotor)(struct dxWorld*,struct dxJointGroup*);
-void(dTimerStart)(const char*);
-void(dTimerEnd)();
-void(dQMultiply0)(double[dQUE__MAX],const double[dQUE__MAX],const double[dQUE__MAX]);
+void(dFree)(void*,unsigned long);
+void(dBodyDisable)(struct dxBody*);
+void(dSetValue)(double*,int,double);
 void(dGeomTriMeshClearTCCache)(struct dxGeom*);
 void(dMassSetSphereTotal)(struct dMass*,double,double);
-void(dMassSetTrimeshTotal)(struct dMass*,double,struct dxGeom*);
 void(dSpaceRemove)(struct dxSpace*,struct dxGeom*);
+struct dxResourceRequirements*(dResourceRequirementsCreate)(struct dxCooperative*);
 void(dRSetIdentity)(double[dM3E__MAX]);
-double(dMaxDifferenceLowerTriangle)(const double*,const double*,int);
 void(dWorldSetQuickStepW)(struct dxWorld*,double);
+int(dInitODE2)(unsigned int);
+void(dEstimateCooperativelyScaleVectorResourceRequirements)(struct dxResourceRequirements*,unsigned int,unsigned int);
+void(dCooperativelyScaleVector)(struct dxResourceContainer*,unsigned int,double*,const double*,unsigned int);
+double(dTimerTicksPerSecond)();
 void(dBodyAddRelTorque)(struct dxBody*,double,double,double);
-void(dQFromAxisAndAngle)(double[dQUE__MAX],double,double,double,double);
+void(dQMultiply0)(double[dQUE__MAX],const double[dQUE__MAX],const double[dQUE__MAX]);
+void(dRfromQ)(double[dM3E__MAX],const double[dQUE__MAX]);
 void(dJointGetPUAngles)(struct dxJoint*,double*,double*);
-void(*dGetErrorHandler())(int,const char*,__builtin_va_list);
+void(dMassSetSphere)(struct dMass*,double,double);
+void(dMassSetBox)(struct dMass*,double,double,double,double);
 void(dJointSetTransmissionParam)(struct dxJoint*,int,double);
-double(dWorldGetContactMaxCorrectingVel)(struct dxWorld*);
+void(dMassSetTrimeshTotal)(struct dMass*,double,struct dxGeom*);
+void(dMassAdd)(struct dMass*,const struct dMass*);
 void(dBodySetForce)(struct dxBody*,double,double,double);
 void(dMassSetCylinderTotal)(struct dMass*,double,int,double,double);
-void(dWorldSetAutoDisableAngularThreshold)(struct dxWorld*,double);
+void(dResourceContainerDestroy)(struct dxResourceContainer*);
+void(dWorldGetGravity)(struct dxWorld*,double[dV3E__MAX]);
+double(dWorldGetCFM)(struct dxWorld*);
+void(dWorldSetStepIslandsProcessingMaxThreadCount)(struct dxWorld*,unsigned int);
+void(dJointSetDHingeAxis)(struct dxJoint*,double,double,double);
+double(dWorldGetContactMaxCorrectingVel)(struct dxWorld*);
+void(dBodyVectorToWorld)(struct dxBody*,double,double,double,double[dV3E__MAX]);
+double(dWorldGetAutoDisableAngularThreshold)(struct dxWorld*);
 void(dWorldSetAutoDisableSteps)(struct dxWorld*,int);
 double(dWorldGetAngularDampingThreshold)(struct dxWorld*);
 void(dWorldSetAngularDampingThreshold)(struct dxWorld*,double);
-double(dWorldGetLinearDamping)(struct dxWorld*);
-void(dJointSetDHingeAxis)(struct dxJoint*,double,double,double);
-double(dBodyGetAutoDisableAngularThreshold)(struct dxBody*);
-void(dBodyVectorToWorld)(struct dxBody*,double,double,double,double[dV3E__MAX]);
-void(dBodySetAutoDisableAverageSamplesCount)(struct dxBody*,unsigned int);
-double(dWorldGetCFM)(struct dxWorld*);
-void(dBodySetAutoDisableSteps)(struct dxBody*,int);
-void(dBodySetPosition)(struct dxBody*,double,double,double);
-void(dWorldSetContactMaxCorrectingVel)(struct dxWorld*,double);
 void(dWorldSetLinearDampingThreshold)(struct dxWorld*,double);
-struct dxGeom*(dGeomGetBodyNext)(struct dxGeom*);
+void(dWorldSetLinearDamping)(struct dxWorld*,double);
+double(dBodyGetAutoDisableLinearThreshold)(struct dxBody*);
+double(dBodyGetAutoDisableAngularThreshold)(struct dxBody*);
+void(dResourceRequirementsMergeIn)(struct dxResourceRequirements*,struct dxResourceRequirements*);
+void(dBodySetAutoDisableAverageSamplesCount)(struct dxBody*,unsigned int);
+void(dBodySetAutoDisableSteps)(struct dxBody*,int);
 int(dGeomIsEnabled)(struct dxGeom*);
 double(dJointGetTransmissionRadius2)(struct dxJoint*);
-void(dBodyDisable)(struct dxBody*);
-struct dxGeom*(dBodyGetFirstGeom)(struct dxBody*);
 void(dQMultiply3)(double[dQUE__MAX],const double[dQUE__MAX],const double[dQUE__MAX]);
 int(dSpaceGetSublevel)(struct dxSpace*);
 void(dSetZero)(double*,int);
-void(dBodySetFiniteRotationAxis)(struct dxBody*,double,double,double);
-void(dJointSetHinge2Anchor)(struct dxJoint*,double,double,double);
-void(dJointSetUniversalAxis1Offset)(struct dxJoint*,double,double,double,double,double);
-void(dJointSetPRAxis2)(struct dxJoint*,double,double,double);
+void(*dGetErrorHandler())(int,const char*,__builtin_va_list);
+double(dBodyGetLinearDampingThreshold)(struct dxBody*);
+double(dBodyGetAngularDampingThreshold)(struct dxBody*);
+void(dBodySetMaxAngularSpeed)(struct dxBody*,double);
+struct dxJoint*(dJointCreateTransmission)(struct dxWorld*,struct dxJointGroup*);
+int(dJointGetNumBodies)(struct dxJoint*);
 void(dWorldSetAutoDisableAverageSamplesCount)(struct dxWorld*,unsigned int);
 ]])
 local CLIB = ffi.load(_G.FFI_LIB or "ode")
@@ -686,7 +709,7 @@ library = {
 	GeomTriMeshSetRayCallback = CLIB.dGeomTriMeshSetRayCallback,
 	BodySetAutoDisableTime = CLIB.dBodySetAutoDisableTime,
 	GeomSetCategoryBits = CLIB.dGeomSetCategoryBits,
-	JointSetPUParam = CLIB.dJointSetPUParam,
+	JointSetPRParam = CLIB.dJointSetPRParam,
 	OrthogonalizeR = CLIB.dOrthogonalizeR,
 	GeomRaySetBackfaceCull = CLIB.dGeomRaySetBackfaceCull,
 	GeomHeightfieldGetHeightfieldData = CLIB.dGeomHeightfieldGetHeightfieldData,
@@ -701,7 +724,7 @@ library = {
 	BodyGetFiniteRotationAxis = CLIB.dBodyGetFiniteRotationAxis,
 	BodyDestroy = CLIB.dBodyDestroy,
 	HashSpaceGetLevels = CLIB.dHashSpaceGetLevels,
-	BodyGetJoint = CLIB.dBodyGetJoint,
+	BodySetFiniteRotationAxis = CLIB.dBodySetFiniteRotationAxis,
 	GeomMoved = CLIB.dGeomMoved,
 	Alloc = CLIB.dAlloc,
 	JointGetFeedback = CLIB.dJointGetFeedback,
@@ -712,23 +735,25 @@ library = {
 	JointSetPUAxis3 = CLIB.dJointSetPUAxis3,
 	JointCreateBall = CLIB.dJointCreateBall,
 	WorldGetContactSurfaceLayer = CLIB.dWorldGetContactSurfaceLayer,
+	WorldGetLinearDamping = CLIB.dWorldGetLinearDamping,
 	BodyGetNextGeom = CLIB.dBodyGetNextGeom,
+	CooperativelySolveL1Straight = CLIB.dCooperativelySolveL1Straight,
 	JointCreateSlider = CLIB.dJointCreateSlider,
 	WorldCreate = CLIB.dWorldCreate,
 	JointGetHingeParam = CLIB.dJointGetHingeParam,
 	JointGetAMotorParam = CLIB.dJointGetAMotorParam,
+	EstimateCooperativelySolveL1TransposedResourceRequirements = CLIB.dEstimateCooperativelySolveL1TransposedResourceRequirements,
 	JointIsEnabled = CLIB.dJointIsEnabled,
 	BodySetKinematic = CLIB.dBodySetKinematic,
-	MassSetBox = CLIB.dMassSetBox,
 	AllocateODEDataForThread = CLIB.dAllocateODEDataForThread,
 	BodySetAngularDampingThreshold = CLIB.dBodySetAngularDampingThreshold,
 	GeomSetPosition = CLIB.dGeomSetPosition,
-	JointSetHinge2Axis1 = CLIB.dJointSetHinge2Axis1,
 	JointSetLMotorParam = CLIB.dJointSetLMotorParam,
 	JointGroupEmpty = CLIB.dJointGroupEmpty,
 	JointSetAMotorParam = CLIB.dJointSetAMotorParam,
 	JointSetTransmissionMode = CLIB.dJointSetTransmissionMode,
 	CreateRay = CLIB.dCreateRay,
+	TimerEnd = CLIB.dTimerEnd,
 	JointGetTransmissionAxis = CLIB.dJointGetTransmissionAxis,
 	GeomPlaneSetParams = CLIB.dGeomPlaneSetParams,
 	JointGetLMotorParam = CLIB.dJointGetLMotorParam,
@@ -741,11 +766,9 @@ library = {
 	GeomGetCollideBits = CLIB.dGeomGetCollideBits,
 	BodyGetMass = CLIB.dBodyGetMass,
 	GeomGetAABB = CLIB.dGeomGetAABB,
-	JointSetSliderAxis = CLIB.dJointSetSliderAxis,
 	GeomGetData = CLIB.dGeomGetData,
 	Debug = CLIB.dDebug,
 	BodyAddForceAtRelPos = CLIB.dBodyAddForceAtRelPos,
-	JointSetUniversalAxis2Offset = CLIB.dJointSetUniversalAxis2Offset,
 	MassSetBoxTotal = CLIB.dMassSetBoxTotal,
 	BodySetRotation = CLIB.dBodySetRotation,
 	GeomSetCollideBits = CLIB.dGeomSetCollideBits,
@@ -762,7 +785,6 @@ library = {
 	BodyGetAutoDisableSteps = CLIB.dBodyGetAutoDisableSteps,
 	WorldSetStepMemoryManager = CLIB.dWorldSetStepMemoryManager,
 	RemoveRowCol = CLIB.dRemoveRowCol,
-	JointSetPUAxis2 = CLIB.dJointSetPUAxis2,
 	JointGetPUAxis3 = CLIB.dJointGetPUAxis3,
 	CloseODE = CLIB.dCloseODE,
 	JointGetPRAngleRate = CLIB.dJointGetPRAngleRate,
@@ -781,11 +803,14 @@ library = {
 	GetMessageHandler = CLIB.dGetMessageHandler,
 	VectorScale = CLIB.dVectorScale,
 	LDLTRemove = CLIB.dLDLTRemove,
+	CooperativelySolveL1Transposed = CLIB.dCooperativelySolveL1Transposed,
 	RFromAxisAndAngle = CLIB.dRFromAxisAndAngle,
 	JointSetHingeAnchor = CLIB.dJointSetHingeAnchor,
+	SafeNormalize3 = CLIB.dSafeNormalize3,
 	CheckConfiguration = CLIB.dCheckConfiguration,
 	BodySetAutoDisableLinearThreshold = CLIB.dBodySetAutoDisableLinearThreshold,
 	Rand = CLIB.dRand,
+	EstimateCooperativelySolveLDLTResourceRequirements = CLIB.dEstimateCooperativelySolveLDLTResourceRequirements,
 	BoxTouchesBox = CLIB.dBoxTouchesBox,
 	QfromR = CLIB.dQfromR,
 	MassSetParameters = CLIB.dMassSetParameters,
@@ -808,7 +833,8 @@ library = {
 	JointGetPUAngle2 = CLIB.dJointGetPUAngle2,
 	SpaceCollide = CLIB.dSpaceCollide,
 	JointSetTransmissionAxis2 = CLIB.dJointSetTransmissionAxis2,
-	SpaceSetManualCleanup = CLIB.dSpaceSetManualCleanup,
+	ResourceRequirementsDestroy = CLIB.dResourceRequirementsDestroy,
+	CooperativelyFactorLDLT = CLIB.dCooperativelyFactorLDLT,
 	JointCreatePlane2D = CLIB.dJointCreatePlane2D,
 	QMultiply2 = CLIB.dQMultiply2,
 	JointSetHingeAxis = CLIB.dJointSetHingeAxis,
@@ -844,12 +870,11 @@ library = {
 	JointAttach = CLIB.dJointAttach,
 	WorldSetStepMemoryReservationPolicy = CLIB.dWorldSetStepMemoryReservationPolicy,
 	JointGetUniversalAnchor = CLIB.dJointGetUniversalAnchor,
-	JointSetPUAnchorDelta = CLIB.dJointSetPUAnchorDelta,
+	WorldSetAutoDisableAngularThreshold = CLIB.dWorldSetAutoDisableAngularThreshold,
 	MassSetCylinder = CLIB.dMassSetCylinder,
 	BodyGetRelPointVel = CLIB.dBodyGetRelPointVel,
 	GeomTriMeshDataBuildSimple1 = CLIB.dGeomTriMeshDataBuildSimple1,
 	BodyGetAngularDamping = CLIB.dBodyGetAngularDamping,
-	JointSetHinge2Axis2 = CLIB.dJointSetHinge2Axis2,
 	WorldSetData = CLIB.dWorldSetData,
 	JointSetTransmissionRatio = CLIB.dJointSetTransmissionRatio,
 	WorldGetERP = CLIB.dWorldGetERP,
@@ -864,9 +889,11 @@ library = {
 	ThreadingImplementationCleanupForRestart = CLIB.dThreadingImplementationCleanupForRestart,
 	JointGetData = CLIB.dJointGetData,
 	JointSetPlane2DAngleParam = CLIB.dJointSetPlane2DAngleParam,
+	CooperativelySolveLDLT = CLIB.dCooperativelySolveLDLT,
 	InfiniteAABB = CLIB.dInfiniteAABB,
 	WorldSetAngularDamping = CLIB.dWorldSetAngularDamping,
 	GeomRaySetParams = CLIB.dGeomRaySetParams,
+	EstimateCooperativelySolveL1StraightResourceRequirements = CLIB.dEstimateCooperativelySolveL1StraightResourceRequirements,
 	WorldGetAngularDamping = CLIB.dWorldGetAngularDamping,
 	PrintMatrix = CLIB.dPrintMatrix,
 	GeomTriMeshDataBuildSingle1 = CLIB.dGeomTriMeshDataBuildSingle1,
@@ -878,20 +905,19 @@ library = {
 	JointGetAMotorAxisRel = CLIB.dJointGetAMotorAxisRel,
 	GeomTriMeshGetLastTransform = CLIB.dGeomTriMeshGetLastTransform,
 	JointGetTransmissionParam = CLIB.dJointGetTransmissionParam,
+	CooperativeCreate = CLIB.dCooperativeCreate,
 	JointSetDHingeParam = CLIB.dJointSetDHingeParam,
-	JointGetDHingeAxis = CLIB.dJointGetDHingeAxis,
 	GeomTriMeshDataGetBuffer = CLIB.dGeomTriMeshDataGetBuffer,
 	JointGetUniversalAxis1 = CLIB.dJointGetUniversalAxis1,
+	CooperativeDestroy = CLIB.dCooperativeDestroy,
 	JointSetHinge2Param = CLIB.dJointSetHinge2Param,
 	WorldCleanupWorkingMemory = CLIB.dWorldCleanupWorkingMemory,
-	JointSetUniversalAxis1 = CLIB.dJointSetUniversalAxis1,
 	BodyGetGravityMode = CLIB.dBodyGetGravityMode,
 	JointGetHinge2Param = CLIB.dJointGetHinge2Param,
 	JointSetPUAnchorOffset = CLIB.dJointSetPUAnchorOffset,
 	JointAddHinge2Torques = CLIB.dJointAddHinge2Torques,
 	GeomHeightfieldDataBuildSingle = CLIB.dGeomHeightfieldDataBuildSingle,
 	BodyIsEnabled = CLIB.dBodyIsEnabled,
-	FactorCholesky = CLIB.dFactorCholesky,
 	JointGetFixedParam = CLIB.dJointGetFixedParam,
 	StopwatchReset = CLIB.dStopwatchReset,
 	WorldSetDamping = CLIB.dWorldSetDamping,
@@ -923,12 +949,14 @@ library = {
 	GeomRayGet = CLIB.dGeomRayGet,
 	BodySetTorque = CLIB.dBodySetTorque,
 	BodySetLinearDampingThreshold = CLIB.dBodySetLinearDampingThreshold,
+	ScaleVector = CLIB.dScaleVector,
 	BodyGetTorque = CLIB.dBodyGetTorque,
 	SpaceGetNumGeoms = CLIB.dSpaceGetNumGeoms,
 	JointCreateContact = CLIB.dJointCreateContact,
 	GeomRayGetClosestHit = CLIB.dGeomRayGetClosestHit,
 	GeomRayGetParams = CLIB.dGeomRayGetParams,
 	ThreadingImplementationShutdownProcessing = CLIB.dThreadingImplementationShutdownProcessing,
+	JointAddPRTorque = CLIB.dJointAddPRTorque,
 	GeomSetOffsetWorldPosition = CLIB.dGeomSetOffsetWorldPosition,
 	JointCreatePU = CLIB.dJointCreatePU,
 	JointSetHingeParam = CLIB.dJointSetHingeParam,
@@ -940,32 +968,23 @@ library = {
 	JointSetBallAnchor2 = CLIB.dJointSetBallAnchor2,
 	ThreadingAllocateSelfThreadedImplementation = CLIB.dThreadingAllocateSelfThreadedImplementation,
 	JointGroupCreate = CLIB.dJointGroupCreate,
-	WorldGetLinearDampingThreshold = CLIB.dWorldGetLinearDampingThreshold,
-	JointSetTransmissionAxis = CLIB.dJointSetTransmissionAxis,
-	JointGetDHingeDistance = CLIB.dJointGetDHingeDistance,
-	JointGetBallAnchor2 = CLIB.dJointGetBallAnchor2,
 	WorldExportDIF = CLIB.dWorldExportDIF,
 	ThreadingFreeThreadPool = CLIB.dThreadingFreeThreadPool,
+	WorldGetLinearDampingThreshold = CLIB.dWorldGetLinearDampingThreshold,
+	JointSetTransmissionAxis = CLIB.dJointSetTransmissionAxis,
 	ThreadingThreadPoolServeMultiThreadedImplementation = CLIB.dThreadingThreadPoolServeMultiThreadedImplementation,
 	ExternalThreadingServeMultiThreadedImplementation = CLIB.dExternalThreadingServeMultiThreadedImplementation,
 	ThreadingAllocateMultiThreadedImplementation = CLIB.dThreadingAllocateMultiThreadedImplementation,
-	JointGetAMotorAngle = CLIB.dJointGetAMotorAngle,
+	ClearUpperTriangle = CLIB.dClearUpperTriangle,
+	TimerStart = CLIB.dTimerStart,
+	JointGetDHingeDistance = CLIB.dJointGetDHingeDistance,
+	JointGetBallAnchor2 = CLIB.dJointGetBallAnchor2,
 	GeomGetClassData = CLIB.dGeomGetClassData,
-	JointSetDBallAnchor1 = CLIB.dJointSetDBallAnchor1,
-	SetValue = CLIB.dSetValue,
-	GeomSetQuaternion = CLIB.dGeomSetQuaternion,
-	JointGetDBallAnchor1 = CLIB.dJointGetDBallAnchor1,
-	JointGetDBallAnchor2 = CLIB.dJointGetDBallAnchor2,
 	ClosestLineSegmentPoints = CLIB.dClosestLineSegmentPoints,
-	Normalize3 = CLIB.dNormalize3,
-	GeomTriMeshSetLastTransform = CLIB.dGeomTriMeshSetLastTransform,
-	JointGetSliderAxis = CLIB.dJointGetSliderAxis,
+	CreateBox = CLIB.dCreateBox,
 	GeomHeightfieldDataBuildShort = CLIB.dGeomHeightfieldDataBuildShort,
-	JointSetTransmissionAxis1 = CLIB.dJointSetTransmissionAxis1,
-	JointSetAMotorAxis = CLIB.dJointSetAMotorAxis,
 	GeomHeightfieldDataDestroy = CLIB.dGeomHeightfieldDataDestroy,
 	GeomHeightfieldDataCreate = CLIB.dGeomHeightfieldDataCreate,
-	JointGetPUAngle1Rate = CLIB.dJointGetPUAngle1Rate,
 	CreateHeightfield = CLIB.dCreateHeightfield,
 	GeomTransformGetInfo = CLIB.dGeomTransformGetInfo,
 	GeomTransformGetCleanup = CLIB.dGeomTransformGetCleanup,
@@ -975,178 +994,206 @@ library = {
 	GeomTriMeshDataUpdate = CLIB.dGeomTriMeshDataUpdate,
 	GeomTriMeshGetTriangleCount = CLIB.dGeomTriMeshGetTriangleCount,
 	GeomTriMeshGetTriangle = CLIB.dGeomTriMeshGetTriangle,
-	MakeRandomVector = CLIB.dMakeRandomVector,
 	GeomTriMeshGetTriMeshDataID = CLIB.dGeomTriMeshGetTriMeshDataID,
+	EstimateCooperativelyFactorLDLTResourceRequirements = CLIB.dEstimateCooperativelyFactorLDLTResourceRequirements,
 	GeomTriMeshEnableTC = CLIB.dGeomTriMeshEnableTC,
 	GeomTriMeshGetData = CLIB.dGeomTriMeshGetData,
 	GeomTriMeshSetData = CLIB.dGeomTriMeshSetData,
+	JointSetDBallAnchor1 = CLIB.dJointSetDBallAnchor1,
+	QFromAxisAndAngle = CLIB.dQFromAxisAndAngle,
+	GeomSetQuaternion = CLIB.dGeomSetQuaternion,
+	JointGetDBallAnchor1 = CLIB.dJointGetDBallAnchor1,
+	JointGetDBallAnchor2 = CLIB.dJointGetDBallAnchor2,
 	CreateTriMesh = CLIB.dCreateTriMesh,
 	GeomTriMeshGetTriMergeCallback = CLIB.dGeomTriMeshGetTriMergeCallback,
+	Normalize3 = CLIB.dNormalize3,
 	GeomTriMeshSetTriMergeCallback = CLIB.dGeomTriMeshSetTriMergeCallback,
-	JointSetTransmissionAnchor1 = CLIB.dJointSetTransmissionAnchor1,
-	JointGetPUParam = CLIB.dJointGetPUParam,
+	JointGetSliderAxis = CLIB.dJointGetSliderAxis,
+	JointGetHinge2Angle1Rate = CLIB.dJointGetHinge2Angle1Rate,
 	GeomTriMeshGetArrayCallback = CLIB.dGeomTriMeshGetArrayCallback,
 	GeomTriMeshSetArrayCallback = CLIB.dGeomTriMeshSetArrayCallback,
-	JointGetPRAxis1 = CLIB.dJointGetPRAxis1,
-	JointCreateUniversal = CLIB.dJointCreateUniversal,
+	JointGetHingeAnchor = CLIB.dJointGetHingeAnchor,
 	GeomTriMeshDataSetBuffer = CLIB.dGeomTriMeshDataSetBuffer,
-	JointGetTransmissionAnchor1 = CLIB.dJointGetTransmissionAnchor1,
-	BodyGetMaxAngularSpeed = CLIB.dBodyGetMaxAngularSpeed,
+	JointGetPUAngle1Rate = CLIB.dJointGetPUAngle1Rate,
 	GeomTriMeshDataPreprocess = CLIB.dGeomTriMeshDataPreprocess,
 	GeomTriMeshDataBuildSimple = CLIB.dGeomTriMeshDataBuildSimple,
-	HashSpaceSetLevels = CLIB.dHashSpaceSetLevels,
 	GeomTriMeshDataBuildDouble = CLIB.dGeomTriMeshDataBuildDouble,
-	JointSetFeedback = CLIB.dJointSetFeedback,
 	GeomTriMeshDataBuildSingle = CLIB.dGeomTriMeshDataBuildSingle,
-	GeomHeightfieldDataSetBounds = CLIB.dGeomHeightfieldDataSetBounds,
-	RFromZAxis = CLIB.dRFromZAxis,
-	BodySetData = CLIB.dBodySetData,
+	GeomTriMeshSetLastTransform = CLIB.dGeomTriMeshSetLastTransform,
 	GeomTriMeshDataGet2 = CLIB.dGeomTriMeshDataGet2,
-	JointGetHinge2Angle2Rate = CLIB.dJointGetHinge2Angle2Rate,
+	JointSetPistonAnchorOffset = CLIB.dJointSetPistonAnchorOffset,
 	GeomTriMeshDataSet = CLIB.dGeomTriMeshDataSet,
 	GeomTriMeshDataDestroy = CLIB.dGeomTriMeshDataDestroy,
 	GeomTriMeshDataCreate = CLIB.dGeomTriMeshDataCreate,
+	MakeRandomVector = CLIB.dMakeRandomVector,
 	GeomRaySetClosestHit = CLIB.dGeomRaySetClosestHit,
 	GeomRayGetBackfaceCull = CLIB.dGeomRayGetBackfaceCull,
 	GeomRayGetFirstContact = CLIB.dGeomRayGetFirstContact,
-	MakeRandomMatrix = CLIB.dMakeRandomMatrix,
 	GeomRaySet = CLIB.dGeomRaySet,
 	GeomCylinderGetParams = CLIB.dGeomCylinderGetParams,
 	GeomCylinderSetParams = CLIB.dGeomCylinderSetParams,
+	JointSetTransmissionAnchor1 = CLIB.dJointSetTransmissionAnchor1,
 	CreateCylinder = CLIB.dCreateCylinder,
 	GeomCapsulePointDepth = CLIB.dGeomCapsulePointDepth,
 	GeomCapsuleGetParams = CLIB.dGeomCapsuleGetParams,
 	GeomCapsuleSetParams = CLIB.dGeomCapsuleSetParams,
+	JointCreateUniversal = CLIB.dJointCreateUniversal,
+	JointGetTransmissionAnchor1 = CLIB.dJointGetTransmissionAnchor1,
+	BodyGetMaxAngularSpeed = CLIB.dBodyGetMaxAngularSpeed,
 	GeomPlaneGetParams = CLIB.dGeomPlaneGetParams,
 	CreatePlane = CLIB.dCreatePlane,
-	MassSetCapsuleTotal = CLIB.dMassSetCapsuleTotal,
+	HashSpaceSetLevels = CLIB.dHashSpaceSetLevels,
 	GeomBoxGetLengths = CLIB.dGeomBoxGetLengths,
+	JointSetFeedback = CLIB.dJointSetFeedback,
 	GeomBoxSetLengths = CLIB.dGeomBoxSetLengths,
-	CreateBox = CLIB.dCreateBox,
+	GeomHeightfieldDataSetBounds = CLIB.dGeomHeightfieldDataSetBounds,
+	RFromZAxis = CLIB.dRFromZAxis,
+	BodySetData = CLIB.dBodySetData,
 	GeomSetConvex = CLIB.dGeomSetConvex,
 	GeomSpherePointDepth = CLIB.dGeomSpherePointDepth,
 	SpaceCollide2 = CLIB.dSpaceCollide2,
 	Collide = CLIB.dCollide,
-	SpaceClean = CLIB.dSpaceClean,
-	JointGetType = CLIB.dJointGetType,
+	JointGetDBallDistance = CLIB.dJointGetDBallDistance,
 	GeomCopyOffsetRotation = CLIB.dGeomCopyOffsetRotation,
 	GeomGetOffsetRotation = CLIB.dGeomGetOffsetRotation,
 	GeomCopyOffsetPosition = CLIB.dGeomCopyOffsetPosition,
-	JointSetHinge2Axes = CLIB.dJointSetHinge2Axes,
+	MakeRandomMatrix = CLIB.dMakeRandomMatrix,
 	GeomGetOffsetPosition = CLIB.dGeomGetOffsetPosition,
-	JointCreateDHinge = CLIB.dJointCreateDHinge,
-	JointGetAMotorAngleRate = CLIB.dJointGetAMotorAngleRate,
+	JointGetPRAxis1 = CLIB.dJointGetPRAxis1,
 	GeomClearOffset = CLIB.dGeomClearOffset,
 	GeomSetOffsetWorldQuaternion = CLIB.dGeomSetOffsetWorldQuaternion,
 	GeomSetOffsetWorldRotation = CLIB.dGeomSetOffsetWorldRotation,
 	GeomSetOffsetQuaternion = CLIB.dGeomSetOffsetQuaternion,
 	GeomSetOffsetRotation = CLIB.dGeomSetOffsetRotation,
 	GeomSetOffsetPosition = CLIB.dGeomSetOffsetPosition,
-	JointSetPistonParam = CLIB.dJointSetPistonParam,
-	JointSetHingeAnchorDelta = CLIB.dJointSetHingeAnchorDelta,
+	JointSetHinge2Axis1 = CLIB.dJointSetHinge2Axis1,
 	GeomVectorToWorld = CLIB.dGeomVectorToWorld,
+	MassSetCapsuleTotal = CLIB.dMassSetCapsuleTotal,
 	GeomGetPosRelPoint = CLIB.dGeomGetPosRelPoint,
 	GeomLowLevelControl = CLIB.dGeomLowLevelControl,
 	GeomGetClass = CLIB.dGeomGetClass,
 	GeomGetRotation = CLIB.dGeomGetRotation,
-	JointGetPistonAnchor = CLIB.dJointGetPistonAnchor,
 	GeomGetPosition = CLIB.dGeomGetPosition,
-	JointGetBallParam = CLIB.dJointGetBallParam,
 	GeomSetBody = CLIB.dGeomSetBody,
+	JointGetType = CLIB.dJointGetType,
 	SpaceGetClass = CLIB.dSpaceGetClass,
-	StopwatchStop = CLIB.dStopwatchStop,
 	SpaceGetGeom = CLIB.dSpaceGetGeom,
-	GeomGetOffsetQuaternion = CLIB.dGeomGetOffsetQuaternion,
-	TimerTicksPerSecond = CLIB.dTimerTicksPerSecond,
-	RandInt = CLIB.dRandInt,
+	SpaceClean = CLIB.dSpaceClean,
+	JointSetHinge2Axes = CLIB.dJointSetHinge2Axes,
+	Multiply2 = CLIB.dMultiply2,
+	JointCreateDHinge = CLIB.dJointCreateDHinge,
 	SpaceAdd = CLIB.dSpaceAdd,
-	BodySetMaxAngularSpeed = CLIB.dBodySetMaxAngularSpeed,
+	SpaceSetManualCleanup = CLIB.dSpaceSetManualCleanup,
+	BodySetFiniteRotationMode = CLIB.dBodySetFiniteRotationMode,
 	SpaceSetSublevel = CLIB.dSpaceSetSublevel,
-	SetMessageHandler = CLIB.dSetMessageHandler,
 	SweepAndPruneSpaceCreate = CLIB.dSweepAndPruneSpaceCreate,
-	JointGetPistonPosition = CLIB.dJointGetPistonPosition,
+	Error = CLIB.dError,
+	JointSetHingeAnchorDelta = CLIB.dJointSetHingeAnchorDelta,
 	HashSpaceCreate = CLIB.dHashSpaceCreate,
 	AreConnectedExcluding = CLIB.dAreConnectedExcluding,
 	AreConnected = CLIB.dAreConnected,
 	JointGetDHingeParam = CLIB.dJointGetDHingeParam,
-	JointGetUniversalAngle1Rate = CLIB.dJointGetUniversalAngle1Rate,
+	JointSetAMotorNumAxes = CLIB.dJointSetAMotorNumAxes,
 	JointGetDHingeAnchor1 = CLIB.dJointGetDHingeAnchor1,
 	JointSetDHingeAnchor2 = CLIB.dJointSetDHingeAnchor2,
-	MassAdd = CLIB.dMassAdd,
-	BodyGetAutoDisableLinearThreshold = CLIB.dBodyGetAutoDisableLinearThreshold,
+	JointGetDHingeAxis = CLIB.dJointGetDHingeAxis,
+	JointGetBallParam = CLIB.dJointGetBallParam,
+	WorldSetContactMaxCorrectingVel = CLIB.dWorldSetContactMaxCorrectingVel,
 	JointGetDBallParam = CLIB.dJointGetDBallParam,
-	InitODE = CLIB.dInitODE,
-	BodyCopyQuaternion = CLIB.dBodyCopyQuaternion,
+	StopwatchStop = CLIB.dStopwatchStop,
 	JointSetDBallParam = CLIB.dJointSetDBallParam,
-	JointGetDBallDistance = CLIB.dJointGetDBallDistance,
+	GeomGetOffsetQuaternion = CLIB.dGeomGetOffsetQuaternion,
 	JointSetDBallAnchor2 = CLIB.dJointSetDBallAnchor2,
-	JointGetPistonAnchor2 = CLIB.dJointGetPistonAnchor2,
-	WorldDestroy = CLIB.dWorldDestroy,
+	JointGetUniversalAngle1 = CLIB.dJointGetUniversalAngle1,
+	RandInt = CLIB.dRandInt,
+	JointGetHingeAngle = CLIB.dJointGetHingeAngle,
 	JointSetTransmissionRadius2 = CLIB.dJointSetTransmissionRadius2,
 	JointSetTransmissionRadius1 = CLIB.dJointSetTransmissionRadius1,
-	BodyCopyPosition = CLIB.dBodyCopyPosition,
-	BodySetFiniteRotationMode = CLIB.dBodySetFiniteRotationMode,
+	GeomGetBodyNext = CLIB.dGeomGetBodyNext,
+	SetMessageHandler = CLIB.dSetMessageHandler,
 	JointGetTransmissionRadius1 = CLIB.dJointGetTransmissionRadius1,
-	BodySetDamping = CLIB.dBodySetDamping,
+	JointSetPistonParam = CLIB.dJointSetPistonParam,
+	JointGetPistonPosition = CLIB.dJointGetPistonPosition,
 	JointGetTransmissionAngle1 = CLIB.dJointGetTransmissionAngle1,
-	WorldUseSharedWorkingMemory = CLIB.dWorldUseSharedWorkingMemory,
-	JointCreateHinge2 = CLIB.dJointCreateHinge2,
 	JointGetTransmissionMode = CLIB.dJointGetTransmissionMode,
 	JointGetTransmissionAxis2 = CLIB.dJointGetTransmissionAxis2,
-	GeomHeightfieldDataBuildByte = CLIB.dGeomHeightfieldDataBuildByte,
+	JointSetTransmissionAxis1 = CLIB.dJointSetTransmissionAxis1,
 	JointGetTransmissionContactPoint2 = CLIB.dJointGetTransmissionContactPoint2,
-	JointSetPUAxisP = CLIB.dJointSetPUAxisP,
 	JointGetTransmissionContactPoint1 = CLIB.dJointGetTransmissionContactPoint1,
-	GeomIsOffset = CLIB.dGeomIsOffset,
-	CreateGeom = CLIB.dCreateGeom,
+	JointGetAMotorAngleRate = CLIB.dJointGetAMotorAngleRate,
+	JointGetAMotorAngle = CLIB.dJointGetAMotorAngle,
+	InitODE = CLIB.dInitODE,
+	BodyCopyQuaternion = CLIB.dBodyCopyQuaternion,
 	JointGetAMotorAxis = CLIB.dJointGetAMotorAxis,
+	SolveL1T = CLIB.dSolveL1T,
 	JointGetPistonParam = CLIB.dJointGetPistonParam,
-	WorldQuickStep = CLIB.dWorldQuickStep,
 	JointGetPistonAxis = CLIB.dJointGetPistonAxis,
-	JointSetTransmissionBacklash = CLIB.dJointSetTransmissionBacklash,
-	GeomCopyPosition = CLIB.dGeomCopyPosition,
+	JointGetPistonAnchor2 = CLIB.dJointGetPistonAnchor2,
+	WorldDestroy = CLIB.dWorldDestroy,
+	JointGetPistonAnchor = CLIB.dJointGetPistonAnchor,
 	JointGetPistonAngle = CLIB.dJointGetPistonAngle,
+	BodyCopyPosition = CLIB.dBodyCopyPosition,
 	JointGetPistonPositionRate = CLIB.dJointGetPistonPositionRate,
-	GeomTriMeshGetRayCallback = CLIB.dGeomTriMeshGetRayCallback,
+	JointGetPUParam = CLIB.dJointGetPUParam,
+	BodySetDamping = CLIB.dBodySetDamping,
 	JointGetPUAngle2Rate = CLIB.dJointGetPUAngle2Rate,
-	WorldGetGravity = CLIB.dWorldGetGravity,
+	WorldUseSharedWorkingMemory = CLIB.dWorldUseSharedWorkingMemory,
+	JointCreateHinge2 = CLIB.dJointCreateHinge2,
+	BodyGetJoint = CLIB.dBodyGetJoint,
 	JointGetPUAxis2 = CLIB.dJointGetPUAxis2,
 	JointGetPUAxis1 = CLIB.dJointGetPUAxis1,
-	WorldSetAutoDisableFlag = CLIB.dWorldSetAutoDisableFlag,
-	WorldSetERP = CLIB.dWorldSetERP,
-	JointSetData = CLIB.dJointSetData,
-	JointGetTransmissionBacklash = CLIB.dJointGetTransmissionBacklash,
+	GeomHeightfieldDataBuildByte = CLIB.dGeomHeightfieldDataBuildByte,
 	JointGetPUAnchor = CLIB.dJointGetPUAnchor,
+	JointSetPUAxisP = CLIB.dJointSetPUAxisP,
 	JointGetPRParam = CLIB.dJointGetPRParam,
-	GeomTriMeshSetCallback = CLIB.dGeomTriMeshSetCallback,
-	JointCreateAMotor = CLIB.dJointCreateAMotor,
+	GeomIsOffset = CLIB.dGeomIsOffset,
+	CreateGeom = CLIB.dCreateGeom,
 	JointGetPRPositionRate = CLIB.dJointGetPRPositionRate,
 	JointGetUniversalAngle2Rate = CLIB.dJointGetUniversalAngle2Rate,
-	JointGetDHingeAnchor2 = CLIB.dJointGetDHingeAnchor2,
-	JointGetUniversalAngle1 = CLIB.dJointGetUniversalAngle1,
-	JointGetTransmissionAngle2 = CLIB.dJointGetTransmissionAngle2,
+	WorldQuickStep = CLIB.dWorldQuickStep,
+	JointGetUniversalAngle1Rate = CLIB.dJointGetUniversalAngle1Rate,
+	JointSetTransmissionBacklash = CLIB.dJointSetTransmissionBacklash,
+	GeomCopyPosition = CLIB.dGeomCopyPosition,
 	JointGetUniversalAnchor2 = CLIB.dJointGetUniversalAnchor2,
-	JointSetBallAnchor = CLIB.dJointSetBallAnchor,
-	JointGetHinge2Angle1Rate = CLIB.dJointGetHinge2Angle1Rate,
+	JointGetHinge2Angle2Rate = CLIB.dJointGetHinge2Angle2Rate,
+	GeomTriMeshGetRayCallback = CLIB.dGeomTriMeshGetRayCallback,
 	JointGetHinge2Angle2 = CLIB.dJointGetHinge2Angle2,
 	JointGetHinge2Axis2 = CLIB.dJointGetHinge2Axis2,
 	JointGetHinge2Axis1 = CLIB.dJointGetHinge2Axis1,
 	JointGetSliderPositionRate = CLIB.dJointGetSliderPositionRate,
 	JointGetSliderPosition = CLIB.dJointGetSliderPosition,
-	JointGetHingeAngle = CLIB.dJointGetHingeAngle,
-	ClearUpperTriangle = CLIB.dClearUpperTriangle,
+	WorldSetAutoDisableFlag = CLIB.dWorldSetAutoDisableFlag,
+	WorldSetERP = CLIB.dWorldSetERP,
+	JointSetData = CLIB.dJointSetData,
+	JointGetTransmissionBacklash = CLIB.dJointGetTransmissionBacklash,
 	JointGetHingeAnchor2 = CLIB.dJointGetHingeAnchor2,
-	JointGetHingeAnchor = CLIB.dJointGetHingeAnchor,
+	GeomTriMeshSetCallback = CLIB.dGeomTriMeshSetCallback,
 	JointGetBallAnchor = CLIB.dJointGetBallAnchor,
 	JointSetPlane2DYParam = CLIB.dJointSetPlane2DYParam,
 	JointSetAMotorMode = CLIB.dJointSetAMotorMode,
+	JointSetAMotorAxis = CLIB.dJointSetAMotorAxis,
+	JointGetDHingeAnchor2 = CLIB.dJointGetDHingeAnchor2,
+	JointSetFixedParam = CLIB.dJointSetFixedParam,
+	JointGetTransmissionAngle2 = CLIB.dJointGetTransmissionAngle2,
+	JointSetPistonAxis = CLIB.dJointSetPistonAxis,
+	JointSetBallAnchor = CLIB.dJointSetBallAnchor,
+	JointSetPUParam = CLIB.dJointSetPUParam,
+	JointSetPUAxis2 = CLIB.dJointSetPUAxis2,
+	JointSetPUAxis1 = CLIB.dJointSetPUAxis1,
+	JointSetPUAnchorDelta = CLIB.dJointSetPUAnchorDelta,
+	JointSetPUAnchor = CLIB.dJointSetPUAnchor,
+	JointSetPRAxis2 = CLIB.dJointSetPRAxis2,
+	JointSetUniversalParam = CLIB.dJointSetUniversalParam,
+	JointSetUniversalAxis2Offset = CLIB.dJointSetUniversalAxis2Offset,
+	JointSetUniversalAxis1Offset = CLIB.dJointSetUniversalAxis1Offset,
+	JointSetUniversalAxis1 = CLIB.dJointSetUniversalAxis1,
 	GeomHeightfieldDataBuildCallback = CLIB.dGeomHeightfieldDataBuildCallback,
 	JointAddSliderForce = CLIB.dJointAddSliderForce,
-	JointSetAMotorNumAxes = CLIB.dJointSetAMotorNumAxes,
-	JointSetFixedParam = CLIB.dJointSetFixedParam,
+	ResourceRequirementsClone = CLIB.dResourceRequirementsClone,
+	JointSetHinge2Axis2 = CLIB.dJointSetHinge2Axis2,
 	GeomVectorFromWorld = CLIB.dGeomVectorFromWorld,
-	JointSetPistonAxis = CLIB.dJointSetPistonAxis,
-	JointSetPistonAnchorOffset = CLIB.dJointSetPistonAnchorOffset,
+	JointSetHinge2Anchor = CLIB.dJointSetHinge2Anchor,
+	JointSetSliderAxis = CLIB.dJointSetSliderAxis,
 	BodyAddForce = CLIB.dBodyAddForce,
 	WorldGetAutoDisableAverageSamplesCount = CLIB.dWorldGetAutoDisableAverageSamplesCount,
 	GetFreeHandler = CLIB.dGetFreeHandler,
@@ -1154,22 +1201,18 @@ library = {
 	RandGetSeed = CLIB.dRandGetSeed,
 	RFrom2Axes = CLIB.dRFrom2Axes,
 	BodySetDampingDefaults = CLIB.dBodySetDampingDefaults,
-	BodyGetAngularDampingThreshold = CLIB.dBodyGetAngularDampingThreshold,
 	FactorLDLT = CLIB.dFactorLDLT,
-	BodyGetLinearDampingThreshold = CLIB.dBodyGetLinearDampingThreshold,
-	JointAddPRTorque = CLIB.dJointAddPRTorque,
 	JointGetHingeAxis = CLIB.dJointGetHingeAxis,
+	BodySetPosition = CLIB.dBodySetPosition,
 	RFromEulerAngles = CLIB.dRFromEulerAngles,
 	JointGetPRPosition = CLIB.dJointGetPRPosition,
-	WorldSetLinearDamping = CLIB.dWorldSetLinearDamping,
 	GetDebugHandler = CLIB.dGetDebugHandler,
-	JointSetPRParam = CLIB.dJointSetPRParam,
-	WorldGetAutoDisableAngularThreshold = CLIB.dWorldGetAutoDisableAngularThreshold,
+	MaxDifferenceLowerTriangle = CLIB.dMaxDifferenceLowerTriangle,
 	CleanupODEAllDataForThread = CLIB.dCleanupODEAllDataForThread,
 	JointCreateDBall = CLIB.dJointCreateDBall,
 	GeomRaySetFirstContact = CLIB.dGeomRaySetFirstContact,
-	WorldSetStepIslandsProcessingMaxThreadCount = CLIB.dWorldSetStepIslandsProcessingMaxThreadCount,
 	JointSetPistonAnchor = CLIB.dJointSetPistonAnchor,
+	TimerReport = CLIB.dTimerReport,
 	GetAllocHandler = CLIB.dGetAllocHandler,
 	LDLTAddTL = CLIB.dLDLTAddTL,
 	SpaceDestroy = CLIB.dSpaceDestroy,
@@ -1178,19 +1221,16 @@ library = {
 	BodyGetAutoDisableFlag = CLIB.dBodyGetAutoDisableFlag,
 	JointGetHingeAngleRate = CLIB.dJointGetHingeAngleRate,
 	WorldStep = CLIB.dWorldStep,
-	JointSetPUAxis1 = CLIB.dJointSetPUAxis1,
-	MassSetSphere = CLIB.dMassSetSphere,
-	RfromQ = CLIB.dRfromQ,
-	SpaceQuery = CLIB.dSpaceQuery,
-	TimerReport = CLIB.dTimerReport,
-	JointGetPRAngle = CLIB.dJointGetPRAngle,
+	JointSetPRAxis1 = CLIB.dJointSetPRAxis1,
 	InvertPDMatrix = CLIB.dInvertPDMatrix,
-	Multiply2 = CLIB.dMultiply2,
-	JointGetNumBodies = CLIB.dJointGetNumBodies,
-	SafeNormalize3 = CLIB.dSafeNormalize3,
+	FactorCholesky = CLIB.dFactorCholesky,
+	SpaceQuery = CLIB.dSpaceQuery,
+	JointGetPRAngle = CLIB.dJointGetPRAngle,
+	JointCreateAMotor = CLIB.dJointCreateAMotor,
+	SetReallocHandler = CLIB.dSetReallocHandler,
+	ResourceContainerAcquire = CLIB.dResourceContainerAcquire,
 	BodyGetPointVel = CLIB.dBodyGetPointVel,
 	JointSetUniversalAnchor = CLIB.dJointSetUniversalAnchor,
-	Error = CLIB.dError,
 	JointGetPUAxisP = CLIB.dJointGetPUAxisP,
 	TestRand = CLIB.dTestRand,
 	MaxDifference = CLIB.dMaxDifference,
@@ -1200,8 +1240,8 @@ library = {
 	BodySetAngularDamping = CLIB.dBodySetAngularDamping,
 	WorldGetAutoDisableSteps = CLIB.dWorldGetAutoDisableSteps,
 	MassAdjust = CLIB.dMassAdjust,
-	JointSetPRAnchor = CLIB.dJointSetPRAnchor,
-	JointCreateTransmission = CLIB.dJointCreateTransmission,
+	SetAllocHandler = CLIB.dSetAllocHandler,
+	BodyGetFirstGeom = CLIB.dBodyGetFirstGeom,
 	GetConfiguration = CLIB.dGetConfiguration,
 	GeomTransformSetInfo = CLIB.dGeomTransformSetInfo,
 	JointGetTransmissionRatio = CLIB.dJointGetTransmissionRatio,
@@ -1215,90 +1255,108 @@ library = {
 	JointGetPUPositionRate = CLIB.dJointGetPUPositionRate,
 	CreateSphere = CLIB.dCreateSphere,
 	JointGetUniversalParam = CLIB.dJointGetUniversalParam,
-	SolveL1T = CLIB.dSolveL1T,
 	JointGetAMotorNumAxes = CLIB.dJointGetAMotorNumAxes,
 	BodySetQuaternion = CLIB.dBodySetQuaternion,
-	JointSetUniversalParam = CLIB.dJointSetUniversalParam,
-	JointSetPUAnchor = CLIB.dJointSetPUAnchor,
-	SetAllocHandler = CLIB.dSetAllocHandler,
+	JointSetPRAnchor = CLIB.dJointSetPRAnchor,
 	BodyGetLinearDamping = CLIB.dBodyGetLinearDamping,
-	JointSetPRAxis1 = CLIB.dJointSetPRAxis1,
 	BodyGetData = CLIB.dBodyGetData,
 	CreateCapsule = CLIB.dCreateCapsule,
 	WorldGetAutoDisableLinearThreshold = CLIB.dWorldGetAutoDisableLinearThreshold,
 	JointGetPUAngle1 = CLIB.dJointGetPUAngle1,
-	SetFreeHandler = CLIB.dSetFreeHandler,
 	BodySetLinearVel = CLIB.dBodySetLinearVel,
-	InitODE2 = CLIB.dInitODE2,
-	SetReallocHandler = CLIB.dSetReallocHandler,
-	Free = CLIB.dFree,
+	SetFreeHandler = CLIB.dSetFreeHandler,
 	QuadTreeSpaceCreate = CLIB.dQuadTreeSpaceCreate,
 	BodyGetLinearVel = CLIB.dBodyGetLinearVel,
 	BodySetMass = CLIB.dBodySetMass,
 	JointCreateLMotor = CLIB.dJointCreateLMotor,
-	TimerStart = CLIB.dTimerStart,
-	TimerEnd = CLIB.dTimerEnd,
-	QMultiply0 = CLIB.dQMultiply0,
+	Free = CLIB.dFree,
+	BodyDisable = CLIB.dBodyDisable,
+	SetValue = CLIB.dSetValue,
 	GeomTriMeshClearTCCache = CLIB.dGeomTriMeshClearTCCache,
 	MassSetSphereTotal = CLIB.dMassSetSphereTotal,
-	MassSetTrimeshTotal = CLIB.dMassSetTrimeshTotal,
 	SpaceRemove = CLIB.dSpaceRemove,
+	ResourceRequirementsCreate = CLIB.dResourceRequirementsCreate,
 	RSetIdentity = CLIB.dRSetIdentity,
-	MaxDifferenceLowerTriangle = CLIB.dMaxDifferenceLowerTriangle,
 	WorldSetQuickStepW = CLIB.dWorldSetQuickStepW,
+	InitODE2 = CLIB.dInitODE2,
+	EstimateCooperativelyScaleVectorResourceRequirements = CLIB.dEstimateCooperativelyScaleVectorResourceRequirements,
+	CooperativelyScaleVector = CLIB.dCooperativelyScaleVector,
+	TimerTicksPerSecond = CLIB.dTimerTicksPerSecond,
 	BodyAddRelTorque = CLIB.dBodyAddRelTorque,
-	QFromAxisAndAngle = CLIB.dQFromAxisAndAngle,
+	QMultiply0 = CLIB.dQMultiply0,
+	RfromQ = CLIB.dRfromQ,
 	JointGetPUAngles = CLIB.dJointGetPUAngles,
-	GetErrorHandler = CLIB.dGetErrorHandler,
+	MassSetSphere = CLIB.dMassSetSphere,
+	MassSetBox = CLIB.dMassSetBox,
 	JointSetTransmissionParam = CLIB.dJointSetTransmissionParam,
-	WorldGetContactMaxCorrectingVel = CLIB.dWorldGetContactMaxCorrectingVel,
+	MassSetTrimeshTotal = CLIB.dMassSetTrimeshTotal,
+	MassAdd = CLIB.dMassAdd,
 	BodySetForce = CLIB.dBodySetForce,
 	MassSetCylinderTotal = CLIB.dMassSetCylinderTotal,
-	WorldSetAutoDisableAngularThreshold = CLIB.dWorldSetAutoDisableAngularThreshold,
+	ResourceContainerDestroy = CLIB.dResourceContainerDestroy,
+	WorldGetGravity = CLIB.dWorldGetGravity,
+	WorldGetCFM = CLIB.dWorldGetCFM,
+	WorldSetStepIslandsProcessingMaxThreadCount = CLIB.dWorldSetStepIslandsProcessingMaxThreadCount,
+	JointSetDHingeAxis = CLIB.dJointSetDHingeAxis,
+	WorldGetContactMaxCorrectingVel = CLIB.dWorldGetContactMaxCorrectingVel,
+	BodyVectorToWorld = CLIB.dBodyVectorToWorld,
+	WorldGetAutoDisableAngularThreshold = CLIB.dWorldGetAutoDisableAngularThreshold,
 	WorldSetAutoDisableSteps = CLIB.dWorldSetAutoDisableSteps,
 	WorldGetAngularDampingThreshold = CLIB.dWorldGetAngularDampingThreshold,
 	WorldSetAngularDampingThreshold = CLIB.dWorldSetAngularDampingThreshold,
-	WorldGetLinearDamping = CLIB.dWorldGetLinearDamping,
-	JointSetDHingeAxis = CLIB.dJointSetDHingeAxis,
-	BodyGetAutoDisableAngularThreshold = CLIB.dBodyGetAutoDisableAngularThreshold,
-	BodyVectorToWorld = CLIB.dBodyVectorToWorld,
-	BodySetAutoDisableAverageSamplesCount = CLIB.dBodySetAutoDisableAverageSamplesCount,
-	WorldGetCFM = CLIB.dWorldGetCFM,
-	BodySetAutoDisableSteps = CLIB.dBodySetAutoDisableSteps,
-	BodySetPosition = CLIB.dBodySetPosition,
-	WorldSetContactMaxCorrectingVel = CLIB.dWorldSetContactMaxCorrectingVel,
 	WorldSetLinearDampingThreshold = CLIB.dWorldSetLinearDampingThreshold,
-	GeomGetBodyNext = CLIB.dGeomGetBodyNext,
+	WorldSetLinearDamping = CLIB.dWorldSetLinearDamping,
+	BodyGetAutoDisableLinearThreshold = CLIB.dBodyGetAutoDisableLinearThreshold,
+	BodyGetAutoDisableAngularThreshold = CLIB.dBodyGetAutoDisableAngularThreshold,
+	ResourceRequirementsMergeIn = CLIB.dResourceRequirementsMergeIn,
+	BodySetAutoDisableAverageSamplesCount = CLIB.dBodySetAutoDisableAverageSamplesCount,
+	BodySetAutoDisableSteps = CLIB.dBodySetAutoDisableSteps,
 	GeomIsEnabled = CLIB.dGeomIsEnabled,
 	JointGetTransmissionRadius2 = CLIB.dJointGetTransmissionRadius2,
-	BodyDisable = CLIB.dBodyDisable,
-	BodyGetFirstGeom = CLIB.dBodyGetFirstGeom,
 	QMultiply3 = CLIB.dQMultiply3,
 	SpaceGetSublevel = CLIB.dSpaceGetSublevel,
 	SetZero = CLIB.dSetZero,
-	BodySetFiniteRotationAxis = CLIB.dBodySetFiniteRotationAxis,
-	JointSetHinge2Anchor = CLIB.dJointSetHinge2Anchor,
-	JointSetUniversalAxis1Offset = CLIB.dJointSetUniversalAxis1Offset,
-	JointSetPRAxis2 = CLIB.dJointSetPRAxis2,
+	GetErrorHandler = CLIB.dGetErrorHandler,
+	BodyGetLinearDampingThreshold = CLIB.dBodyGetLinearDampingThreshold,
+	BodyGetAngularDampingThreshold = CLIB.dBodyGetAngularDampingThreshold,
+	BodySetMaxAngularSpeed = CLIB.dBodySetMaxAngularSpeed,
+	JointCreateTransmission = CLIB.dJointCreateTransmission,
+	JointGetNumBodies = CLIB.dJointGetNumBodies,
 	WorldSetAutoDisableAverageSamplesCount = CLIB.dWorldSetAutoDisableAverageSamplesCount,
 }
 library.e = {
-	SA__MIN = ffi.cast("enum dSpaceAxis", "dSA__MIN"),
-	SA_X = ffi.cast("enum dSpaceAxis", "dSA_X"),
-	SA_Y = ffi.cast("enum dSpaceAxis", "dSA_Y"),
-	SA_Z = ffi.cast("enum dSpaceAxis", "dSA_Z"),
-	SA__MAX = ffi.cast("enum dSpaceAxis", "dSA__MAX"),
+	M3E__MIN = ffi.cast("enum dMat3Element", "dM3E__MIN"),
+	M3E__X_MIN = ffi.cast("enum dMat3Element", "dM3E__X_MIN"),
+	M3E__X_AXES_MIN = ffi.cast("enum dMat3Element", "dM3E__X_AXES_MIN"),
+	M3E_XX = ffi.cast("enum dMat3Element", "dM3E_XX"),
+	M3E_XY = ffi.cast("enum dMat3Element", "dM3E_XY"),
+	M3E_XZ = ffi.cast("enum dMat3Element", "dM3E_XZ"),
+	M3E__X_AXES_MAX = ffi.cast("enum dMat3Element", "dM3E__X_AXES_MAX"),
+	M3E_XPAD = ffi.cast("enum dMat3Element", "dM3E_XPAD"),
+	M3E__X_MAX = ffi.cast("enum dMat3Element", "dM3E__X_MAX"),
+	M3E__Y_MIN = ffi.cast("enum dMat3Element", "dM3E__Y_MIN"),
+	M3E__Y_AXES_MIN = ffi.cast("enum dMat3Element", "dM3E__Y_AXES_MIN"),
+	M3E_YX = ffi.cast("enum dMat3Element", "dM3E_YX"),
+	M3E_YY = ffi.cast("enum dMat3Element", "dM3E_YY"),
+	M3E_YZ = ffi.cast("enum dMat3Element", "dM3E_YZ"),
+	M3E__Y_AXES_MAX = ffi.cast("enum dMat3Element", "dM3E__Y_AXES_MAX"),
+	M3E_YPAD = ffi.cast("enum dMat3Element", "dM3E_YPAD"),
+	M3E__Y_MAX = ffi.cast("enum dMat3Element", "dM3E__Y_MAX"),
+	M3E__Z_MIN = ffi.cast("enum dMat3Element", "dM3E__Z_MIN"),
+	M3E__Z_AXES_MIN = ffi.cast("enum dMat3Element", "dM3E__Z_AXES_MIN"),
+	M3E_ZX = ffi.cast("enum dMat3Element", "dM3E_ZX"),
+	M3E_ZY = ffi.cast("enum dMat3Element", "dM3E_ZY"),
+	M3E_ZZ = ffi.cast("enum dMat3Element", "dM3E_ZZ"),
+	M3E__Z_AXES_MAX = ffi.cast("enum dMat3Element", "dM3E__Z_AXES_MAX"),
+	M3E_ZPAD = ffi.cast("enum dMat3Element", "dM3E_ZPAD"),
+	M3E__Z_MAX = ffi.cast("enum dMat3Element", "dM3E__Z_MAX"),
+	M3E__MAX = ffi.cast("enum dMat3Element", "dM3E__MAX"),
 	V4E__MIN = ffi.cast("enum dVec4Element", "dV4E__MIN"),
 	V4E_X = ffi.cast("enum dVec4Element", "dV4E_X"),
 	V4E_Y = ffi.cast("enum dVec4Element", "dV4E_Y"),
 	V4E_Z = ffi.cast("enum dVec4Element", "dV4E_Z"),
 	V4E_O = ffi.cast("enum dVec4Element", "dV4E_O"),
 	V4E__MAX = ffi.cast("enum dVec4Element", "dV4E__MAX"),
-	MTV__MIN = ffi.cast("enum dMeshTriangleVertex", "dMTV__MIN"),
-	MTV_FIRST = ffi.cast("enum dMeshTriangleVertex", "dMTV_FIRST"),
-	MTV_SECOND = ffi.cast("enum dMeshTriangleVertex", "dMTV_SECOND"),
-	MTV_THIRD = ffi.cast("enum dMeshTriangleVertex", "dMTV_THIRD"),
-	MTV__MAX = ffi.cast("enum dMeshTriangleVertex", "dMTV__MAX"),
 	M4E__MIN = ffi.cast("enum dMat4Element", "dM4E__MIN"),
 	M4E__X_MIN = ffi.cast("enum dMat4Element", "dM4E__X_MIN"),
 	M4E_XX = ffi.cast("enum dMat4Element", "dM4E_XX"),
@@ -1337,10 +1395,11 @@ library.e = {
 	DA_AZ = ffi.cast("enum dDynamicsAxis", "dDA_AZ"),
 	DA__A_MAX = ffi.cast("enum dDynamicsAxis", "dDA__A_MAX"),
 	DA__MAX = ffi.cast("enum dDynamicsAxis", "dDA__MAX"),
-	MD__MIN = ffi.cast("enum dMotionDynamics", "dMD__MIN"),
-	MD_LINEAR = ffi.cast("enum dMotionDynamics", "dMD_LINEAR"),
-	MD_ANGULAR = ffi.cast("enum dMotionDynamics", "dMD_ANGULAR"),
-	MD__MAX = ffi.cast("enum dMotionDynamics", "dMD__MAX"),
+	MTV__MIN = ffi.cast("enum dMeshTriangleVertex", "dMTV__MIN"),
+	MTV_FIRST = ffi.cast("enum dMeshTriangleVertex", "dMTV_FIRST"),
+	MTV_SECOND = ffi.cast("enum dMeshTriangleVertex", "dMTV_SECOND"),
+	MTV_THIRD = ffi.cast("enum dMeshTriangleVertex", "dMTV_THIRD"),
+	MTV__MAX = ffi.cast("enum dMeshTriangleVertex", "dMTV__MAX"),
 	AllocateFlagBasicData = ffi.cast("enum dAllocateODEDataFlags", "dAllocateFlagBasicData"),
 	AllocateFlagCollisionData = ffi.cast("enum dAllocateODEDataFlags", "dAllocateFlagCollisionData"),
 	AllocateMaskAll = ffi.cast("enum dAllocateODEDataFlags", "dAllocateMaskAll"),
@@ -1352,6 +1411,10 @@ library.e = {
 	QUE_K = ffi.cast("enum dQuatElement", "dQUE_K"),
 	QUE__AXIS_MAX = ffi.cast("enum dQuatElement", "dQUE__AXIS_MAX"),
 	QUE__MAX = ffi.cast("enum dQuatElement", "dQUE__MAX"),
+	MD__MIN = ffi.cast("enum dMotionDynamics", "dMD__MIN"),
+	MD_LINEAR = ffi.cast("enum dMotionDynamics", "dMD_LINEAR"),
+	MD_ANGULAR = ffi.cast("enum dMotionDynamics", "dMD_ANGULAR"),
+	MD__MAX = ffi.cast("enum dMotionDynamics", "dMD__MAX"),
 	JointTypeNone = ffi.cast("enum dJointType", "dJointTypeNone"),
 	JointTypeBall = ffi.cast("enum dJointType", "dJointTypeBall"),
 	JointTypeHinge = ffi.cast("enum dJointType", "dJointTypeHinge"),
@@ -1370,32 +1433,11 @@ library.e = {
 	JointTypeDBall = ffi.cast("enum dJointType", "dJointTypeDBall"),
 	JointTypeDHinge = ffi.cast("enum dJointType", "dJointTypeDHinge"),
 	JointTypeTransmission = ffi.cast("enum dJointType", "dJointTypeTransmission"),
-	M3E__MIN = ffi.cast("enum dMat3Element", "dM3E__MIN"),
-	M3E__X_MIN = ffi.cast("enum dMat3Element", "dM3E__X_MIN"),
-	M3E__X_AXES_MIN = ffi.cast("enum dMat3Element", "dM3E__X_AXES_MIN"),
-	M3E_XX = ffi.cast("enum dMat3Element", "dM3E_XX"),
-	M3E_XY = ffi.cast("enum dMat3Element", "dM3E_XY"),
-	M3E_XZ = ffi.cast("enum dMat3Element", "dM3E_XZ"),
-	M3E__X_AXES_MAX = ffi.cast("enum dMat3Element", "dM3E__X_AXES_MAX"),
-	M3E_XPAD = ffi.cast("enum dMat3Element", "dM3E_XPAD"),
-	M3E__X_MAX = ffi.cast("enum dMat3Element", "dM3E__X_MAX"),
-	M3E__Y_MIN = ffi.cast("enum dMat3Element", "dM3E__Y_MIN"),
-	M3E__Y_AXES_MIN = ffi.cast("enum dMat3Element", "dM3E__Y_AXES_MIN"),
-	M3E_YX = ffi.cast("enum dMat3Element", "dM3E_YX"),
-	M3E_YY = ffi.cast("enum dMat3Element", "dM3E_YY"),
-	M3E_YZ = ffi.cast("enum dMat3Element", "dM3E_YZ"),
-	M3E__Y_AXES_MAX = ffi.cast("enum dMat3Element", "dM3E__Y_AXES_MAX"),
-	M3E_YPAD = ffi.cast("enum dMat3Element", "dM3E_YPAD"),
-	M3E__Y_MAX = ffi.cast("enum dMat3Element", "dM3E__Y_MAX"),
-	M3E__Z_MIN = ffi.cast("enum dMat3Element", "dM3E__Z_MIN"),
-	M3E__Z_AXES_MIN = ffi.cast("enum dMat3Element", "dM3E__Z_AXES_MIN"),
-	M3E_ZX = ffi.cast("enum dMat3Element", "dM3E_ZX"),
-	M3E_ZY = ffi.cast("enum dMat3Element", "dM3E_ZY"),
-	M3E_ZZ = ffi.cast("enum dMat3Element", "dM3E_ZZ"),
-	M3E__Z_AXES_MAX = ffi.cast("enum dMat3Element", "dM3E__Z_AXES_MAX"),
-	M3E_ZPAD = ffi.cast("enum dMat3Element", "dM3E_ZPAD"),
-	M3E__Z_MAX = ffi.cast("enum dMat3Element", "dM3E__Z_MAX"),
-	M3E__MAX = ffi.cast("enum dMat3Element", "dM3E__MAX"),
+	SA__MIN = ffi.cast("enum dSpaceAxis", "dSA__MIN"),
+	SA_X = ffi.cast("enum dSpaceAxis", "dSA_X"),
+	SA_Y = ffi.cast("enum dSpaceAxis", "dSA_Y"),
+	SA_Z = ffi.cast("enum dSpaceAxis", "dSA_Z"),
+	SA__MAX = ffi.cast("enum dSpaceAxis", "dSA__MAX"),
 	InitFlagManualThreadCleanup = ffi.cast("enum dInitODEFlags", "dInitFlagManualThreadCleanup"),
 	V3E__MIN = ffi.cast("enum dVec3Element", "dV3E__MIN"),
 	V3E__AXES_MIN = ffi.cast("enum dVec3Element", "dV3E__AXES_MIN"),
