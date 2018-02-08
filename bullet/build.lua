@@ -1,5 +1,6 @@
 if render then
-	os.execute("cd /home/caps/goluwa/goluwa/data/ffibuild/bullet/ && bash make.sh")
+	os.execute("cd ../ffibuild/bullet/ && bash make.sh")
+	os.execute("cp -f ../ffibuild/bullet/bullet.lua ./bullet.lua")
 	return
 end
 
@@ -20,6 +21,8 @@ local header = ffibuild.ProcessSourceFileGCC([[
 
 ]], "-I./repo/libbulletc/libbulletc/src/")
 
+io.writefile("lol.c", header)
+
 local meta_data = ffibuild.GetMetaData(header)
 
 local objects = {}
@@ -37,15 +40,30 @@ for key, tbl in pairs(meta_data.functions) do
 	end
 end
 
-for t, data in pairs(objects) do
+do
+	local temp = {}
+	for k,v in pairs(objects) do
+		v.name = k
+		table.insert(temp, v)
+	end
+	table.sort(temp, function(a, b) return #a.name > #b.name end)
+
+	objects = temp
+end
+
+local done = {}
+
+for _, info in ipairs(objects) do
 	for key, tbl in pairs(meta_data.functions) do
-		if key:find(t, 0, true) then
+		if not done[key] and key:sub(1, #info.name) == info.name then
 			if key:find("_new", nil, true) then
-				table.insert(objects[t].ctors, key)
+				table.insert(info.ctors, key)
+				done[key] = true
 			else
-				local friendly = key:sub(#t+2)
+				local friendly = key:sub(#info.name+2)
 				if friendly == "" then friendly = key end
-				table.insert(objects[t].functions, {func = key, friendly = friendly})
+				table.insert(info.functions, {func = key, friendly = ffibuild.ChangeCase(friendly, "fooBar", "FooBar")})
+				done[key] = true
 			end
 		end
 	end
@@ -66,26 +84,60 @@ lua = lua .. "library = " .. meta_data:BuildFunctions("^bt(%u.+)", nil, nil, nil
 end)
 lua = lua .. "library.e = " .. meta_data:BuildEnums("^bt(%u.+)")
 
+lua = lua .. "library.metatables = {}\n"
+
+local inheritance = {
+	btDiscreteDynamicsWorld = "btDynamicsWorld",
+	btDynamicsWorld = "btCollisionWorld",
+
+	btRigidBody = "btCollisionObject",
+
+	btBoxShape = "btConvexInternalShape",
+	btSphereShape = "btConvexInternalShape",
+	btConvexInternalShape = "btConvexShape",
+	btConvexShape = "btCollisionShape",
+}
+
 do
 	collectgarbage()
 
-	for k,v in pairs(objects) do
+	for _, info in ipairs(objects) do
 		local s = ""
 
-		s = s .. "do -- " .. k .. "\n"
+		s = s .. "do -- " .. info.name .. "\n"
 		s = s .. "\tlocal META = {}\n"
-		s = s .. "\tMETA.__index = META\n"
+		s = s .. "\tlibrary.metatables."..info.name.." = META\n"
 
-		for i,v in ipairs(v.ctors) do
+		if inheritance[info.name] then
+			s = s .. "\tfunction META:__index(k)\n"
+
+				s = s .. "\t\tlocal v\n\n"
+
+				s = s .. "\t\tv = META[k]\n"
+				s = s .. "\t\tif v ~= nil then\n"
+					s = s .. "\t\t\treturn v\n"
+				s = s .. "\t\tend\n"
+
+				s = s .. "\t\tv = library.metatables."..inheritance[info.name]..".__index(self, k)\n"
+				s = s .. "\t\tif v ~= nil then\n"
+					s = s .. "\t\t\treturn v\n"
+				s = s .. "\t\tend\n"
+
+			s = s .. "\tend\n"
+		else
+			s = s .. "\tMETA.__index = function(s, k) return META[k] end\n"
+		end
+
+		for i, func_name in ipairs(info.ctors) do
 			if i == 1 then i = "" end
-			s = s .. "\tfunction library.Create" .. k:sub(3) .. i .. "(...)\n"
+			s = s .. "\tfunction library.Create" .. info.name:sub(3) .. i .. "(...)\n"
 			s = s .. "\t\tlocal self = setmetatable({}, META)\n"
-			s = s .. "\t\tself.ptr = CLIB."..v.."(...)\n"
+			s = s .. "\t\tself.ptr = CLIB."..func_name.."(...)\n"
 			s = s .. "\t\treturn self\n"
 			s = s .. "\tend\n"
 		end
 
-		for k,v in ipairs(v.functions) do
+		for k,v in ipairs(info.functions) do
 			s = s .. "\tfunction META:" .. v.friendly .. "(...)\n"
 			s = s .. "\t\treturn CLIB." .. v.func .. "(self.ptr, ...)\n"
 			s = s .. "\tend\n"
