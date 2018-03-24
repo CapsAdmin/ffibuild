@@ -1,16 +1,16 @@
 #!/bin/sh
 
 if [ "$1" = "clean" ]; then
-	rm -rf repo/
-	mkdir ../tmp
-	mv build.lua ../tmp/
-	mv make.sh ../tmp/
-	mv .gitignore ../tmp/
-	mv readme.md ../tmp/
-	rm -rf ./*
-	mv ../tmp/* .
-	mv ../tmp/.gitignore .
-	rm -rf ../tmp
+	rm -rf repo/ 2> /dev/null
+	mkdir ../tmp 2> /dev/null
+	mv build.lua ../tmp/ 2> /dev/null
+	mv make.sh ../tmp/ 2> /dev/null
+	mv .gitignore ../tmp/ 2> /dev/null
+	mv readme.md ../tmp/ 2> /dev/null
+	rm -rf ./* 2> /dev/null
+	mv ../tmp/* . 2> /dev/null
+	mv ../tmp/.gitignore . 2> /dev/null
+	rm -rf ../tmp 2> /dev/null
 	exit
 fi
 
