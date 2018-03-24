@@ -422,6 +422,10 @@ function ffibuild.ManualBuild(name, clone, build, copy)
 end
 
 function ffibuild.NixBuild(data)
+	if not os.iscmd("nix-build") then
+		error("you need to install the nix package manager for ffibuild.NixBuild to work. See https://nixos.org/nix/", 2) 
+	end
+
 	-- the output directory
 	local output_dir = os.getcd()
 
