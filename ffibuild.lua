@@ -890,10 +890,13 @@ function ffibuild.GetMetaData(header)
 			local basic_type = type:GetBasicType(self)
 
 			if type:GetSubType() == "struct" then
-				if not self.structs[basic_type] then print(basic_type) end
-				table.insert(temp, {type = type, i = self.structs[basic_type].i})
+				if self.structs[basic_type] then
+					table.insert(temp, {type = type, i = self.structs[basic_type].i})
+				end
 			elseif type:GetSubType() == "union" then
-				table.insert(temp, {type = type, i = self.unions[basic_type].i})
+				if self.unions[basic_type] then
+					table.insert(temp, {type = type, i = self.unions[basic_type].i})
+				end
 			end
 		end
 
